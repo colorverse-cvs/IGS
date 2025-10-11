@@ -1,0 +1,200 @@
+@import "tailwindcss";
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap'); */
+html,
+body,
+#root {
+  height: 100%;
+}
+.container {
+  /* @apply max-w-7xl mx-auto; */
+}
+* {
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  border-color: var(--color-gray-300);
+  /* font-weight: <weight>;
+  font-style: normal; */
+}
+:root {
+  --border-xs: 2px;
+  --border-sm: 4px;
+  --border-md: 6px;
+  --border-lg: 8px;
+  --border-xl: 10px;
+  --border-2xl: 12px;
+  --border-3xl: 16px;
+  --border-4xl: 20px;
+  --circle: 2000px;
+  --color-brand-25: #fcf7fd;
+  --color-brand-50: #f6ebf9;
+  --color-brand-100: #ecd6f0;
+  --color-brand-200: #e0bee8;
+  --color-brand-300: #d2a3e0;
+  --color-brand-400: #c285d7;
+  --color-brand-500: #b368ce;
+  --color-brand-600: #a34fc6;
+  --color-brand-700: #9339bd;
+  --color-brand-800: #8526b5;
+  --color-brand-900: #730fa8;
+  --color-gray-25: #fafafa;
+  --color-gray-50: #f2f2f2;
+  --color-gray-100: #e5e5e5;
+  --color-gray-200: #d1d1d1;
+  --color-gray-300: #b3b3b3;
+  --color-gray-400: #8c8c8c;
+  --color-gray-500: #6b6b6b;
+  --color-gray-600: #4d4d4d;
+  --color-gray-700: #2e2e2e;
+  --color-gray-800: #1f1f1f;
+  --color-gray-900: #111111;
+  --color-white: #ffffff;
+  --color-black: #000000;
+}
+/* --- BACKGROUND COLOR CLASSES (Brand) --- */
+.bg-brand-25 {
+  background-color: var(--color-brand-25);
+}
+.bg-brand-50 {
+  background-color: var(--color-brand-50);
+}
+.bg-brand-100 {
+  background-color: var(--color-brand-100);
+}
+.bg-brand-200 {
+  background-color: var(--color-brand-200);
+}
+.bg-brand-300 {
+  background-color: var(--color-brand-300);
+}
+.bg-brand-400 {
+  background-color: var(--color-brand-400);
+}
+.bg-brand-500 {
+  background-color: var(--color-brand-500);
+}
+.bg-brand-600 {
+  background-color: var(--color-brand-600);
+}
+.bg-brand-700 {
+  background-color: var(--color-brand-700);
+}
+.bg-brand-800 {
+  background-color: var(--color-brand-800);
+}
+.bg-brand-900 {
+  background-color: var(--color-brand-900);
+}
+
+/* --- BACKGROUND COLOR CLASSES (Gray & Base) --- */
+.bg-gray-25 {
+  background-color: var(--color-gray-25);
+}
+.bg-gray-50 {
+  background-color: var(--color-gray-50);
+}
+.bg-gray-100 {
+  background-color: var(--color-gray-100);
+}
+.bg-gray-200 {
+  background-color: var(--color-gray-200);
+}
+.bg-gray-300 {
+  background-color: var(--color-gray-300);
+}
+.bg-gray-400 {
+  background-color: var(--color-gray-400);
+}
+.bg-gray-500 {
+  background-color: var(--color-gray-500);
+}
+.bg-gray-600 {
+  background-color: var(--color-gray-600);
+}
+.bg-gray-700 {
+  background-color: var(--color-gray-700);
+}
+.bg-gray-800 {
+  background-color: var(--color-gray-800);
+}
+.bg-gray-900 {
+  background-color: var(--color-gray-900);
+}
+.bg-white {
+  background-color: var(--color-white);
+}
+.bg-black {
+  background-color: var(--color-black);
+}
+
+/* --- BORDER RADIUS CLASS for circle --- */
+.rounded-circle {
+  border-radius: var(--circle); /* Will render as 2000px */
+}
+
+/* For compatibility, you might also want the standard Tailwind 'full' equivalent */
+.rounded-full {
+  border-radius: var(--circle);
+}
+
+/* Range Slider Styles */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  border-radius: 8px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #7c3aed;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #7c3aed;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider::-webkit-slider-track {
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.slider::-moz-range-track {
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+  border: none;
+}
+
+/* Disabled slider styles */
+.slider:disabled::-webkit-slider-thumb {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.slider:disabled::-moz-range-thumb {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.slider:disabled::-webkit-slider-track {
+  background: #f3f4f6;
+}
+
+.slider:disabled::-moz-range-track {
+  background: #f3f4f6;
+}
