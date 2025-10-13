@@ -32,7 +32,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
       {/* --- Side Panel / Drawer --- */}
       <div
         className={`
-                    fixed top-0 right-0 h-full w-full sm:w-96 md:w-1/2 lg:w-96 
+                    fixed top-0 right-0 h-full w-full sm:w-80 md:w-1/2 lg:w-80 
                     bg-white shadow-2xl z-50 transition-transform duration-500 ease-in-out
                     flex flex-col
                     ${isOpen ? "translate-x-0" : "translate-x-full"}
@@ -44,7 +44,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
         {/* Drawer Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <h2 className="text-2xl font-bold text-gray-900">
-            Your Cart ({itemCount})
+            Your Shopping Cart {/* {itemCount === 0 ? "" : itemCount} */}
           </h2>
           <button
             onClick={onClose}
@@ -56,7 +56,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
         </div>
 
         {/* Cart Content (Scrollable) */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 flex justify-center items-center">
           {/* Render the full Cart content inside the drawer */}
           <Cart isDrawer={true} onClose={onClose} />
         </div>

@@ -60,11 +60,11 @@ const ProductCard = ({ product, onOpenProduct }) => {
     "
     >
       {/* --- Image and Tag Section --- */}
-      <div className="relative h-48 w-full bg-gray-100 rounded-t-2xl overflow-hidden flex items-center justify-center transition-all duration-300 group-hover:shadow-2xl group-hover:ring-2 group-hover:ring-purple-200">
+      <div className="relative h-48 w-full bg-gray-100 rounded-t-2xl overflow-hidden flex items-center justify-center transition-all duration-300 group:shadow-2xl group:ring-2 group:ring-purple-200">
         <img src={imageURL} alt={name} className="w-full h-full object-cover" />
 
         {/* Tags at the top left */}
-        <div className="absolute top-3 left-3 flex flex-row gap-1.5">
+        <div className="absolute top-3 left-3 flex flex-col lg:flex-row gap-1.5">
           {isFeatured && (
             <span
               className="
@@ -141,7 +141,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
             {qtyInCart === 0 ? (
               <button
                 className="
-            flex items-center justify-center py-2 px-2 text-white 
+            flex items-center justify-center py-2 px-3 xl:py-2 xl:px-2 text-white 
             bg-purple-700 hover:bg-purple-800 font-semibold text-sm 
             transition-all duration-300 ease-out 
             focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50
@@ -160,13 +160,11 @@ const ProductCard = ({ product, onOpenProduct }) => {
             ) : (
               <div
                 className="
-              inline-flex items-center bg-white border border-purple-700 text-purple-700 rounded-sm 
-              opacity-0 translate-y-1 pointer-events-none
-              group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
+              inline-flex items-center bg-purple-800 text-white border border-purple-700 rounded-sm translate-y-1 pointer-events-none group:translate-y-0 group:pointer-events-auto
             "
               >
                 <button
-                  className="px-2 py-1 hover:bg-purple-50"
+                  className="px-3 py-1"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -182,7 +180,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
                 </button>
                 <span className="px-2 select-none text-sm">{qtyInCart}</span>
                 <button
-                  className="px-2 py-1 hover:bg-purple-50"
+                  className="px-3 py-1"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

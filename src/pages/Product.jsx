@@ -140,79 +140,82 @@ export default function Product() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Breadcrumb Navigation */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-3">
-          <nav className="text-sm text-gray-600">
-            <Link to="/" className="hover:text-purple-700">
-              Home
-            </Link>
-            <span className="mx-2">&gt;</span>
-            <Link to="/filter" className="hover:text-purple-700">
-              Products
-            </Link>
-            <span className="mx-2">&gt;</span>
-            <span className="text-gray-900">{product.category}</span>
-            <span className="mx-2">&gt;</span>
-            <span className="text-gray-900">{title}</span>
-          </nav>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left: Product Images */}
-          <div className="space-y-4">
-            {/* Main Product Image */}
-            <div className="bg-gray-100 rounded-lg p-8 flex items-center justify-center">
-              <img
-                src={currentImage}
-                alt={title}
-                className="max-h-[500px] w-auto object-contain"
-              />
-            </div>
-
-            {/* Thumbnail Gallery */}
-            <div className="flex gap-3">
-              {productImages.map((img, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleThumbnailClick(index)}
-                  className={`w-20 h-20 rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-200 ${
-                    index === selectedImageIndex
-                      ? "border-purple-500 ring-2 ring-purple-200"
-                      : "border-gray-200 hover:border-purple-300"
-                  }`}
-                >
-                  <img
-                    src={img}
-                    alt={`${title} view ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+    <div className="min-h-screen bg-white  px-4 md:px-15 lg:px-20">
+      <div className=" container mx-auto">
+        {/* Breadcrumb Navigation */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="container mx-auto px-4 py-3">
+            <nav className="text-sm text-gray-600">
+              <Link to="/" className="hover:text-purple-700">
+                Home
+              </Link>
+              <span className="mx-2">&gt;</span>
+              <Link to="/filter" className="hover:text-purple-700">
+                Products
+              </Link>
+              <span className="mx-2">&gt;</span>
+              <span className="text-gray-900">{product.category}</span>
+              <span className="mx-2">&gt;</span>
+              <span className="text-gray-900">{title}</span>
+            </nav>
           </div>
+        </div>
 
-          {/* Right: Product Details */}
-          <div className="space-y-6">
-            {/* Header */}
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
-              <div className="flex items-center gap-4 mb-3">
-                <div className="flex items-center text-sm text-gray-600">
-                  <span className="mr-1">{rating}</span>
-                  <Star
-                    size={16}
-                    className="text-yellow-500"
-                    fill="currentColor"
-                  />
-                  <span className="ml-1">({reviews})</span>
-                </div>
-                {isFeatured && (
-                  <span
-                    className="text-xs 
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Left: Product Images */}
+            <div className="space-y-4">
+              {/* Main Product Image */}
+              <div className="bg-gray-100 rounded-lg p-8 flex items-center justify-center">
+                <img
+                  src={currentImage}
+                  alt={title}
+                  className="max-h-[500px] w-auto object-contain"
+                />
+              </div>
+
+              {/* Thumbnail Gallery */}
+              <div className="flex gap-3">
+                {productImages.map((img, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleThumbnailClick(index)}
+                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 cursor-pointer transition-all duration-200 ${
+                      index === selectedImageIndex
+                        ? "border-purple-500 ring-2 ring-purple-200"
+                        : "border-gray-200 hover:border-purple-300"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`${title} view ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Product Details */}
+            <div className="space-y-6">
+              {/* Header */}
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {title}
+                </h1>
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <span className="mr-1">{rating}</span>
+                    <Star
+                      size={16}
+                      className="text-yellow-500"
+                      fill="currentColor"
+                    />
+                    <span className="ml-1">({reviews})</span>
+                  </div>
+                  {isFeatured && (
+                    <span
+                      className="text-xs 
               font-bold
               px-2 
               py-1 
@@ -222,13 +225,13 @@ export default function Product() {
               border 
               border-purple-500
               whitespace-nowrap"
-                  >
-                    Featured
-                  </span>
-                )}
-                {isCustomizable && (
-                  <span
-                    className="text-xs 
+                    >
+                      Featured
+                    </span>
+                  )}
+                  {isCustomizable && (
+                    <span
+                      className="text-xs 
               font-semibold 
               px-2 
               py-1 
@@ -238,222 +241,227 @@ export default function Product() {
               border 
               border-gray-300
               whitespace-nowrap"
-                  >
-                    Customizable
+                    >
+                      Customizable
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Pricing */}
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-bold text-purple-700">
+                  ₹{product.price}
+                </span>
+                {mrp && (
+                  <span className="text-lg line-through text-gray-500">
+                    ₹{mrp}
+                  </span>
+                )}
+                {discount && (
+                  <span className="text-lg font-medium text-purple-600">
+                    {discount}
                   </span>
                 )}
               </div>
-            </div>
 
-            {/* Pricing */}
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-purple-700">
-                ₹{product.price}
-              </span>
-              {mrp && (
-                <span className="text-lg line-through text-gray-500">
-                  ₹{mrp}
-                </span>
-              )}
-              {discount && (
-                <span className="text-lg font-medium text-purple-600">
-                  {discount}
-                </span>
-              )}
-            </div>
+              {/* Purchase Stats */}
+              <p className="text-sm text-gray-600">
+                50 purchased in last month
+              </p>
 
-            {/* Purchase Stats */}
-            <p className="text-sm text-gray-600">50 purchased in last month</p>
-
-            {/* Delivery Check */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Check Delivery
-              </h3>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Enter pincode"
-                  value={pincode}
-                  onChange={(e) => setPincode(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent max-w-[20%] lg:max-w-[30%]"
-                />
-                <button
-                  onClick={handleCheckDelivery}
-                  className="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition"
-                >
-                  Check
-                </button>
-              </div>
-              {deliveryEstimate && (
-                <p className="text-sm text-green-600">{deliveryEstimate}</p>
-              )}
-            </div>
-
-            {/* Material Selection */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Material</h3>
-              <div className="grid grid-cols-4 gap-2">
-                {materialOptions.map((option) => (
-                  <label
-                    key={option.value}
-                    className="flex items-center cursor-pointer p-1 border border-gray-200 rounded-lg hover:border-purple-300 transition"
+              {/* Delivery Check */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Check Delivery
+                </h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter pincode"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent max-w-[20%] lg:max-w-[30%]"
+                  />
+                  <button
+                    onClick={handleCheckDelivery}
+                    className="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition"
                   >
-                    <input
-                      type="radio"
-                      name="material"
-                      value={option.value}
-                      checked={selectedMaterial === option.value}
-                      onChange={(e) => setSelectedMaterial(e.target.value)}
-                      className="mr-3 text-purple-600 focus:ring-purple-500"
-                    />
-                    <span className="text-gray-700">{option.label}</span>
-                  </label>
-                ))}
+                    Check
+                  </button>
+                </div>
+                {deliveryEstimate && (
+                  <p className="text-sm text-green-600">{deliveryEstimate}</p>
+                )}
               </div>
-            </div>
 
-            {/* Size Selection */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-gray-900">Size</h3>
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2">
-                {sizeOptions.map((option) => (
-                  <label
-                    key={option.value}
-                    className="flex items-center cursor-pointer p-1 border border-gray-200 rounded-lg hover:border-purple-300 transition"
-                  >
-                    <input
-                      type="radio"
-                      name="size"
-                      value={option.value}
-                      checked={selectedSize === option.value}
-                      onChange={(e) => setSelectedSize(e.target.value)}
-                      className="mr-3 text-purple-600 focus:ring-purple-500"
-                    />
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {option.label}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        ({option.description})
-                      </div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Quantity and Actions */}
-            <div className="mt-4 flex items-center gap-4">
-              <div className="inline-flex items-center border rounded-lg overflow-hidden">
-                <button
-                  type="button"
-                  onClick={decrement}
-                  className="px-3 py-2 text-gray-700 hover:bg-gray-50"
-                >
-                  -
-                </button>
-                <div className="px-4 py-2 text-sm min-w-10 text-center">
-                  {quantity}
-                </div>
-                <button
-                  type="button"
-                  onClick={increment}
-                  className="px-3 py-2 text-gray-700 hover:bg-gray-50"
-                >
-                  +
-                </button>
-              </div>
-              <button
-                onClick={handleAddToCart}
-                className="px-2 py-2 bg-white text-purple-700 border border-purple-700 rounded-lg hover:bg-purple-50 transition flex items-center gap-2"
-              >
-                Add to Cart <ShoppingCart size={15} />
-              </button>
-              <button
-                onClick={handleBuyNow}
-                className="px-2 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition"
-              >
-                Buy Now
-              </button>
-            </div>
-
-            {/* Features Grid */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-green-600 text-xl">💳</span>
-                </div>
-                <p className="text-xs text-gray-600">
-                  Cash on Delivery available
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Truck size={20} className="text-blue-600" />
-                </div>
-                <p className="text-xs text-gray-600">
-                  Free delivery above ₹1,000
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Shield size={20} className="text-purple-600" />
-                </div>
-                <p className="text-xs text-gray-600">Secure Payments</p>
-              </div>
-            </div>
-
-            {/* About This Item */}
-            <div className="pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                About this item
-              </h3>
-              {product.description && (
-                <p className="text-sm text-gray-700 mb-3">
-                  {product.description}
-                </p>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div className="flex justify-between border rounded-md p-2 bg-gray-50">
-                  <span className="text-gray-600">Primary Material</span>
-                  <span className="font-medium capitalize">
-                    {product.primaryMaterial ||
-                      selectedMaterial ||
-                      product.material ||
-                      "marble"}
-                  </span>
-                </div>
-                <div className="flex justify-between border rounded-md p-2 bg-gray-50">
-                  <span className="text-gray-600">Category</span>
-                  <span className="font-medium">
-                    {product.categoryName || product.category}
-                  </span>
-                </div>
-                <div className="flex justify-between border rounded-md p-2 bg-gray-50">
-                  <span className="text-gray-600">Size</span>
-                  <span className="font-medium">{selectedSize}</span>
-                </div>
-                <div className="flex justify-between border rounded-md p-2 bg-gray-50">
-                  <span className="text-gray-600">Customizable</span>
-                  <span className="font-medium">
-                    {isCustomizable ? "Yes" : "No"}
-                  </span>
-                </div>
-              </div>
-              {Array.isArray(product.specs) && product.specs.length > 0 && (
-                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                  {product.specs.map((spec, idx) => (
-                    <div
-                      key={idx}
-                      className="flex justify-between border rounded-md p-2"
+              {/* Material Selection */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Material
+                </h3>
+                <div className="grid grid-cols-4 gap-2">
+                  {materialOptions.map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center cursor-pointer p-1 border border-gray-200 rounded-lg hover:border-purple-300 transition"
                     >
-                      <span className="text-gray-600">{spec.label}</span>
-                      <span className="font-medium">{spec.value}</span>
-                    </div>
+                      <input
+                        type="radio"
+                        name="material"
+                        value={option.value}
+                        checked={selectedMaterial === option.value}
+                        onChange={(e) => setSelectedMaterial(e.target.value)}
+                        className="mr-3 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span className="text-gray-700">{option.label}</span>
+                    </label>
                   ))}
                 </div>
-              )}
+              </div>
+
+              {/* Size Selection */}
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-900">Size</h3>
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                  {sizeOptions.map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center cursor-pointer p-1 border border-gray-200 rounded-lg hover:border-purple-300 transition"
+                    >
+                      <input
+                        type="radio"
+                        name="size"
+                        value={option.value}
+                        checked={selectedSize === option.value}
+                        onChange={(e) => setSelectedSize(e.target.value)}
+                        className="mr-3 text-purple-600 focus:ring-purple-500"
+                      />
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {option.label}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          ({option.description})
+                        </div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quantity and Actions */}
+              <div className="mt-4 flex items-center gap-4">
+                <div className="inline-flex items-center border rounded-lg overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={decrement}
+                    className="px-3 py-2 text-gray-700 hover:bg-gray-50"
+                  >
+                    -
+                  </button>
+                  <div className="px-4 py-2 text-sm min-w-10 text-center">
+                    {quantity}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={increment}
+                    className="px-3 py-2 text-gray-700 hover:bg-gray-50"
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  onClick={handleAddToCart}
+                  className="px-2 py-2 bg-white text-purple-700 border border-purple-700 rounded-lg hover:bg-purple-50 transition flex items-center gap-2"
+                >
+                  Add to Cart <ShoppingCart size={15} />
+                </button>
+                <button
+                  onClick={handleBuyNow}
+                  className="px-2 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-800 transition"
+                >
+                  Buy Now
+                </button>
+              </div>
+
+              {/* Features Grid */}
+              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <span className="text-green-600 text-xl">💳</span>
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    Cash on Delivery available
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Truck size={20} className="text-blue-600" />
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    Free delivery above ₹1,000
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Shield size={20} className="text-purple-600" />
+                  </div>
+                  <p className="text-xs text-gray-600">Secure Payments</p>
+                </div>
+              </div>
+
+              {/* About This Item */}
+              <div className="pt-6 border-t border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  About this item
+                </h3>
+                {product.description && (
+                  <p className="text-sm text-gray-700 mb-3">
+                    {product.description}
+                  </p>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="flex justify-between border rounded-md p-2 bg-gray-50">
+                    <span className="text-gray-600">Primary Material</span>
+                    <span className="font-medium capitalize">
+                      {product.primaryMaterial ||
+                        selectedMaterial ||
+                        product.material ||
+                        "marble"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border rounded-md p-2 bg-gray-50">
+                    <span className="text-gray-600">Category</span>
+                    <span className="font-medium">
+                      {product.categoryName || product.category}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border rounded-md p-2 bg-gray-50">
+                    <span className="text-gray-600">Size</span>
+                    <span className="font-medium">{selectedSize}</span>
+                  </div>
+                  <div className="flex justify-between border rounded-md p-2 bg-gray-50">
+                    <span className="text-gray-600">Customizable</span>
+                    <span className="font-medium">
+                      {isCustomizable ? "Yes" : "No"}
+                    </span>
+                  </div>
+                </div>
+                {Array.isArray(product.specs) && product.specs.length > 0 && (
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    {product.specs.map((spec, idx) => (
+                      <div
+                        key={idx}
+                        className="flex justify-between border rounded-md p-2"
+                      >
+                        <span className="text-gray-600">{spec.label}</span>
+                        <span className="font-medium">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

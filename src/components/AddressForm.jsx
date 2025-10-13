@@ -4,12 +4,21 @@ import indianStates from "../data/indianStates.json";
 export default function AddressForm({ onSubmit, onCancel, initial, submitLabel = "Use this address" }) {
   const [name, setName] = useState(initial?.name || "");
   const [mobile, setMobile] = useState(initial?.mobile || "");
+  const [email, setEmail] = useState(initial?.email || "");
   const [flat, setFlat] = useState("");
   const [area, setArea] = useState("");
   const [landmark, setLandmark] = useState("");
   const [pincode, setPincode] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
+  const DEFAULT_ALIASES = ["Home", "Work", "Other"];
+  const aliasOptions = React.useMemo(() => {
+    const existing = initial?.tag;
+    return existing && !DEFAULT_ALIASES.includes(existing)
+      ? [existing, ...DEFAULT_ALIASES]
+      : DEFAULT_ALIASES;
+  }, [initial?.tag]);
+  const [alias, setAlias] = useState(initial?.tag || "Home");
   const [makeDefault, setMakeDefault] = useState(initial?.isDefault || false);
   const [errors, setErrors] = useState({});
 
@@ -22,6 +31,7 @@ export default function AddressForm({ onSubmit, onCancel, initial, submitLabel =
 
     const mobileDigits = onlyDigits(mobile);
     if (mobileDigits.length !== 10) validationErrors.mobile = "Enter a valid 10-digit mobile number";
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) validationErrors.email = "Enter a valid email address";
 
     if (!/^[0-9]{6}$/.test(pincode)) validationErrors.pincode = "Pincode must be 6 digits";
     if (!state) validationErrors.state = "Please select your state";
@@ -45,10 +55,10 @@ export default function AddressForm({ onSubmit, onCancel, initial, submitLabel =
     const newAddress = {
       id: initial?.id || `addr_${Date.now()}`,
       name: name.trim(),
-      tag: "Home",
+      tag: alias.trim() || "Home",
       addressLine,
       mobile: `+91 ${mobileDigits}`,
-      email: "",
+      email: email.trim(),
       isDefault: makeDefault,
     };
     onSubmit?.(newAddress);
@@ -67,6 +77,18 @@ export default function AddressForm({ onSubmit, onCancel, initial, submitLabel =
           required
         />
         {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Email ID</label>
+        <input
+          type="email"
+          className={`w-full border rounded px-3 py-2 ${errors.email ? "border-red-500" : ""}`}
+          placeholder="demo@gmail.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
+        />
+        {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
       </div>
       <div>
         <label className="block text-sm font-medium mb-1">Mobile Number *</label>
@@ -146,6 +168,20 @@ export default function AddressForm({ onSubmit, onCancel, initial, submitLabel =
           </select>
           {errors.state && <p className="mt-1 text-xs text-red-600">{errors.state}</p>}
         </div>
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">Alias</label>
+        <select
+          className="w-full border rounded px-3 py-2"
+          value={alias}
+          onChange={(e) => setAlias(e.target.value)}
+        >
+          {aliasOptions.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
       </div>
       <label className="flex items-center gap-2 text-sm">
         <input

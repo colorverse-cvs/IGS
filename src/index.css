@@ -5,17 +5,16 @@ body,
 #root {
   height: 100%;
 }
-.container {
-  /* @apply max-w-7xl mx-auto; */
-}
+/* .container {
+  @apply max-w-7xl mx-auto;
+} */
 * {
   box-sizing: border-box;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
-  border-color: var(--color-gray-300);
-  /* font-weight: <weight>;
-  font-style: normal; */
+  font-weight: 400;
 }
+
 :root {
   --border-xs: 2px;
   --border-sm: 4px;

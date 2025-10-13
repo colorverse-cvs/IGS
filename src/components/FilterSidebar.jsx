@@ -93,7 +93,7 @@ export default function FilterSidebar({
   );
 
   return (
-    <div className="w-80 bg-white p-6 border-r border-gray-200">
+    <div className="xl:w-80 w-70 bg-white p-6 border-r border-gray-200 h-[88vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg font-semibold text-gray-900">Filter Products</h2>
         <button
