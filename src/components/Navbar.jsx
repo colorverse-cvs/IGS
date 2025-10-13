@@ -5,6 +5,7 @@ import { ShoppingCart, Menu, X, Search, ChevronDown } from "lucide-react";
 import CartDrawer from "./CartDrawer"; // Make sure this path is correct
 import AuthModal from "./AuthModal";
 import { logout } from "../features/user/userSlice";
+import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -12,7 +13,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [authTab, setAuthTab] = useState('login');
+  const [authTab, setAuthTab] = useState("login");
 
   // Redux: Get the total number of items in the cart
   const totalItems = useSelector((s) =>
@@ -28,11 +29,11 @@ export default function Navbar() {
   // Auto-open login after 5s on first load if not authenticated
   useEffect(() => {
     if (!user.isAuthenticated) {
-      const alreadyPrompted = sessionStorage.getItem('igs_auth_prompted');
+      const alreadyPrompted = sessionStorage.getItem("igs_auth_prompted");
       if (alreadyPrompted) return;
       const t = setTimeout(() => {
         setIsAuthOpen(true);
-        sessionStorage.setItem('igs_auth_prompted', '1');
+        sessionStorage.setItem("igs_auth_prompted", "1");
       }, 5000);
       return () => clearTimeout(t);
     }
@@ -81,9 +82,9 @@ export default function Navbar() {
               <Link to="/" className="flex items-center">
                 {/* Replace with your actual logo component or image path */}
                 <img
-                  src="/images/ashita-gallery-logo.png"
+                  src={IshitaGalleryLogo}
                   alt="Ishita Gallery"
-                  className="h-12 w-auto"
+                  className="h-15 w-auto"
                 />
               </Link>
             </div>
@@ -180,20 +181,31 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-semibold">
-                    {user.profile.name?.[0] || 'U'}
+                    {user.profile.name?.[0] || "U"}
                   </div>
-                  <button className="text-sm text-gray-600 hover:text-purple-700" onClick={() => dispatch(logout())}>Logout</button>
+                  <button
+                    className="text-sm text-gray-600 hover:text-purple-700"
+                    onClick={() => dispatch(logout())}
+                  >
+                    Logout
+                  </button>
                 </div>
               ) : (
                 <>
                   <button
-                    onClick={() => { setAuthTab('login'); setIsAuthOpen(true); }}
+                    onClick={() => {
+                      setAuthTab("login");
+                      setIsAuthOpen(true);
+                    }}
                     className="text-gray-700 hover:text-purple-700 text-sm font-medium transition hidden sm:block"
                   >
                     Log In
                   </button>
                   <button
-                    onClick={() => { setAuthTab('signup'); setIsAuthOpen(true); }}
+                    onClick={() => {
+                      setAuthTab("signup");
+                      setIsAuthOpen(true);
+                    }}
                     className="px-5 py-2 text-sm font-medium text-white bg-purple-700 rounded hover:bg-purple-800 transition"
                   >
                     Sign Up
@@ -265,7 +277,7 @@ export default function Navbar() {
           </div>
 
           {/* Navigation Links (Scrollable area) */}
-            <div className="flex-1 px-4 py-4 space-y-1">
+          <div className="flex-1 px-4 py-4 space-y-1">
             {/* Mobile Products Dropdown */}
             <div className="border-b border-gray-100 pb-2 mb-2">
               <button
@@ -332,9 +344,26 @@ export default function Navbar() {
             {/* Cart Status and Login */}
             <div className="flex justify-between items-center mb-3">
               {user.isAuthenticated ? (
-                <button onClick={() => { toggleMenu(); dispatch(logout()); }} className="text-gray-700 font-semibold hover:text-purple-700">Logout</button>
+                <button
+                  onClick={() => {
+                    toggleMenu();
+                    dispatch(logout());
+                  }}
+                  className="text-gray-700 font-semibold hover:text-purple-700"
+                >
+                  Logout
+                </button>
               ) : (
-                <button onClick={() => { toggleMenu(); setAuthTab('login'); setIsAuthOpen(true); }} className="text-gray-700 font-semibold hover:text-purple-700">Log In</button>
+                <button
+                  onClick={() => {
+                    toggleMenu();
+                    setAuthTab("login");
+                    setIsAuthOpen(true);
+                  }}
+                  className="text-gray-700 font-semibold hover:text-purple-700"
+                >
+                  Log In
+                </button>
               )}
               <button
                 onClick={() => {
@@ -350,7 +379,11 @@ export default function Navbar() {
             {/* Sign Up Button (Prominent CTA) */}
             {!user.isAuthenticated && (
               <button
-                onClick={() => { toggleMenu(); setAuthTab('signup'); setIsAuthOpen(true); }}
+                onClick={() => {
+                  toggleMenu();
+                  setAuthTab("signup");
+                  setIsAuthOpen(true);
+                }}
                 className="w-full text-center inline-block px-4 py-3 text-sm font-bold text-white bg-purple-700 rounded-lg hover:bg-purple-800 transition shadow-md"
               >
                 Sign Up
@@ -362,7 +395,11 @@ export default function Navbar() {
 
       {/* --- Cart Drawer Component (Always positioned outside the Navbar) --- */}
       <CartDrawer isOpen={isCartOpen} onClose={toggleCart} />
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} initialTab={authTab} />
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        initialTab={authTab}
+      />
     </>
   );
 }

@@ -5,10 +5,10 @@ import {
   updateQty,
   clearCart,
 } from "../features/cart/cartSlice";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Trash2, X, Minus, Plus } from "lucide-react";
-import Modal from "../components/Modal";
-import CheckoutContent from "../components/CheckoutContent";
+// Removed in-drawer payment modal; we navigate to /checkout instead
+import EmptyShoppingCart from "../assets/empty-shopping-cart.svg";
 
 /**
  * Cart Component: Handles both the full-page cart view and the narrow drawer/popup view.
@@ -16,12 +16,25 @@ import CheckoutContent from "../components/CheckoutContent";
  * @param {function} onClose - Function to close the parent drawer/popup.
  */
 export default function Cart({ isDrawer = false, onClose }) {
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   // Redux State and Dispatch
   const items = useSelector((s) => s.cart.items);
   const dispatch = useDispatch();
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+
+  // Gift wrap UI in drawer (₹20 per unit) – matches Checkout Review design
+  const WRAP_FEE_PER_UNIT = 20;
+  const [wrapMap, setWrapMap] = React.useState({});
+  React.useEffect(() => {
+    setWrapMap((prev) => {
+      const next = { ...prev };
+      for (const it of items) {
+        if (next[it.id] === undefined) next[it.id] = false;
+      }
+      return next;
+    });
+  }, [items]);
 
   // --- Handler Functions ---
   const handleQtyChange = (id, newQty) => {
@@ -39,15 +52,10 @@ export default function Cart({ isDrawer = false, onClose }) {
     dispatch(clearCart());
   };
 
-  // Handler to open the modal (used in both drawer and full page)
-  const handleOpenPaymentModal = () => {
-    setIsPaymentModalOpen(true);
-  };
-
-  // Handler run after payment is successfully simulated in CheckoutContent
-  const handlePaymentSuccessAndClose = () => {
-    setIsPaymentModalOpen(false); // Close the Payment Modal
-    if (onClose) onClose(); // Close the cart drawer ONLY after successful payment
+  // Navigate to full checkout page (same flow as Buy Now)
+  const handleProceedToCheckout = () => {
+    if (onClose) onClose();
+    navigate("/checkout");
   };
 
   // --- Conditional Styling ---
@@ -68,27 +76,21 @@ export default function Cart({ isDrawer = false, onClose }) {
           <div
             className={`${
               isDrawer
-                ? "py-10 text-center"
+                ? "text-center flex flex-col items-center"
                 : "py-16 bg-white rounded-xl shadow-md text-center"
             }`}
           >
+            <img src={EmptyShoppingCart} alt="" />
             <p className="text-xl text-gray-600 mb-4">
-              Your cart is feeling a bit light! Start shopping now.
+              Your cart seems kind empty.
             </p>
-            <Link
-              to="/"
-              onClick={onClose}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-purple-600 hover:bg-purple-700 transition"
-            >
-              Continue Shopping →
-            </Link>
           </div>
         ) : (
           // MAIN CONTENT LAYOUT
           <div
             className={`flex ${
               isDrawer
-                ? "flex-col pt-4 px-4 h-dvh"
+                ? "flex-col p-4 h-[90vh]"
                 : "flex-col md:flex-row gap-8 h-100 "
             }`}
           >
@@ -96,102 +98,178 @@ export default function Cart({ isDrawer = false, onClose }) {
             <div
               className={`${
                 isDrawer
-                  ? "flex-1"
+                  ? "flex-1 overflow-y-auto"
                   : "md:w-3/4 bg-white p-6 rounded-xl shadow-lg"
               } space-y-6`}
             >
-              {items.map((it) => (
-                <div
-                  key={it.id}
-                  className={`flex ${
-                    isDrawer ? "flex-col items-start" : "flex-row items-center"
-                  } py-4 border-b last:border-b-0 relative`}
-                >
-                  {/* Image and Product Info */}
-                  <img
-                    src={it.image}
-                    alt={it.title}
-                    className="w-24 h-24 object-cover rounded-lg mr-4 flex-shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-lg font-semibold text-gray-800 truncate">
-                      {it.title}
-                    </div>
-                    <div className="text-md font-bold text-gray-900 mt-1">
-                      ₹{it.price}
-                    </div>
-                  </div>
-
-                  {/* Controls/Actions Section */}
-                  <div
-                    className={`${
-                      isDrawer
-                        ? "mt-3 flex justify-between w-full"
-                        : "flex items-center space-x-4"
-                    }`}
-                  >
-                    {/* Quantity Controls */}
-                    <div className="flex items-center border border-gray-300 rounded-lg p-1">
-                      <button
-                        onClick={() => handleQtyChange(it.id, it.qty - 1)}
-                        className="p-1 text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50"
-                        disabled={it.qty <= 1}
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <input
-                        type="number"
-                        value={it.qty}
-                        min={1}
-                        onChange={(e) => handleQtyChange(it.id, e.target.value)}
-                        className="w-10 text-center font-medium border-none focus:ring-0 p-0 text-sm"
+              {items.map((it) => {
+                if (isDrawer) {
+                  const lineWrap = wrapMap[it.id]
+                    ? WRAP_FEE_PER_UNIT * it.qty
+                    : 0;
+                  const lineTotal = it.price * it.qty + lineWrap;
+                  return (
+                    <div
+                      key={it.id}
+                      className="py-4 flex items-start gap-4 text-sm border-b last:border-b-0"
+                    >
+                      <img
+                        src={it.image}
+                        alt={it.title}
+                        className="w-28 h-28 rounded object-cover"
                       />
-                      <button
-                        onClick={() => handleQtyChange(it.id, it.qty + 1)}
-                        className="p-1 text-gray-600 hover:bg-gray-100 rounded-full"
-                      >
-                        <Plus size={16} />
-                      </button>
+                      <div className="min-w-0">
+                        <div className="font-medium text-gray-900">
+                          {it.title}
+                        </div>
+                        <div className="text-gray-500">
+                          Material: {it.material || "-"} &nbsp; Size:{" "}
+                          {it.size || "-"}
+                        </div>
+                        <div className="text-purple-700 font-semibold">
+                          ₹{it.price}
+                        </div>
+                        <div className="flex gap-5 py-2">
+                          <div className="flex items-center gap-2 border border-gray-200 rounded">
+                            <button
+                              type="button"
+                              className="px-2"
+                              onClick={() =>
+                                it.qty > 1
+                                  ? dispatch(
+                                      updateQty({ id: it.id, qty: it.qty - 1 })
+                                    )
+                                  : dispatch(removeFromCart(it.id))
+                              }
+                            >
+                              -
+                            </button>
+                            <span>{it.qty}</span>
+                            <button
+                              type="button"
+                              className="px-2"
+                              onClick={() =>
+                                dispatch(
+                                  updateQty({ id: it.id, qty: it.qty + 1 })
+                                )
+                              }
+                            >
+                              +
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            className="text-red-600 text-xs"
+                            onClick={() => dispatch(removeFromCart(it.id))}
+                          >
+                            Remove from cart
+                          </button>
+                        </div>
+                        <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
+                          <input
+                            type="checkbox"
+                            checked={!!wrapMap[it.id]}
+                            onChange={(e) =>
+                              setWrapMap((prev) => ({
+                                ...prev,
+                                [it.id]: e.target.checked,
+                              }))
+                            }
+                          />
+                          Gift wrap this item (₹20 for wrapping)
+                        </label>
+                      </div>
                     </div>
-
-                    {/* Subtotal (Drawer/Full Page) */}
+                  );
+                }
+                // Full page cart layout (unchanged)
+                return (
+                  <div
+                    key={it.id}
+                    className={`flex ${
+                      isDrawer
+                        ? "flex-col items-start"
+                        : "flex-row items-center"
+                    } py-4 border-b last:border-b-0 relative`}
+                  >
+                    <img
+                      src={it.image}
+                      alt={it.title}
+                      className="w-24 h-24 object-cover rounded-lg mr-4 flex-shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <div className="text-lg font-semibold text-gray-800 truncate">
+                        {it.title}
+                      </div>
+                      <div className="text-md font-bold text-gray-900 mt-1">
+                        ₹{it.price}
+                      </div>
+                    </div>
                     <div
                       className={`${
-                        isDrawer ? "text-lg font-bold" : "hidden"
-                      } text-gray-900`}
+                        isDrawer
+                          ? "mt-3 flex justify-between w-full"
+                          : "flex items-center space-x-4"
+                      }`}
                     >
-                      ₹{it.price * it.qty}
-                    </div>
-                    {!isDrawer && (
-                      <div className="text-lg font-bold text-gray-900 w-24 text-right">
+                      <div className="flex items-center border border-gray-300 rounded-lg p-1">
+                        <button
+                          onClick={() => handleQtyChange(it.id, it.qty - 1)}
+                          className="p-1 text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50"
+                          disabled={it.qty <= 1}
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <input
+                          type="number"
+                          value={it.qty}
+                          min={1}
+                          onChange={(e) =>
+                            handleQtyChange(it.id, e.target.value)
+                          }
+                          className="w-10 text-center font-medium border-none focus:ring-0 p-0 text-sm"
+                        />
+                        <button
+                          onClick={() => handleQtyChange(it.id, it.qty + 1)}
+                          className="p-1 text-gray-600 hover:bg-gray-100 rounded-full"
+                        >
+                          <Plus size={16} />
+                        </button>
+                      </div>
+                      <div
+                        className={`${
+                          isDrawer ? "text-lg font-bold" : "hidden"
+                        } text-gray-900`}
+                      >
                         ₹{it.price * it.qty}
                       </div>
-                    )}
-
-                    {/* Remove Button (for full-page) */}
-                    {!isDrawer && (
+                      {!isDrawer && (
+                        <div className="text-lg font-bold text-gray-900 w-24 text-right">
+                          ₹{it.price * it.qty}
+                        </div>
+                      )}
+                      {!isDrawer && (
+                        <button
+                          onClick={() => handleRemoveItem(it.id)}
+                          className="text-red-500 hover:text-red-700 transition"
+                          aria-label="Remove item"
+                        >
+                          <Trash2 size={20} />
+                        </button>
+                      )}
+                    </div>
+                    {isDrawer && (
                       <button
                         onClick={() => handleRemoveItem(it.id)}
-                        className="text-red-500 hover:text-red-700 transition"
+                        className="text-red-500 hover:text-red-700 transition absolute top-4 right-0"
                         aria-label="Remove item"
                       >
                         <Trash2 size={20} />
                       </button>
                     )}
                   </div>
-
-                  {/* Drawer Only Remove Button */}
-                  {isDrawer && (
-                    <button
-                      onClick={() => handleRemoveItem(it.id)}
-                      className="text-red-500 hover:text-red-700 transition absolute top-4 right-0"
-                      aria-label="Remove item"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
 
               {/* Clear Cart Button (Only show on full page) */}
               {!isDrawer && (
@@ -209,18 +287,18 @@ export default function Cart({ isDrawer = false, onClose }) {
             {/* --- Order Summary / Checkout Section --- */}
             {isDrawer ? (
               // DRAWER: Sticky Bottom Checkout
-              <div className="sticky bottom-0 bg-white p-4 border-t shadow-lg z-10">
+              <div className="bottom-0 bg-white py-4 border-t shadow-lg z-10">
                 <div className="flex justify-between items-center text-xl font-bold mb-4">
                   <span>Total:</span>
                   <span className="text-purple-700">₹{total}</span>
                 </div>
-                <Link
-                  to="#"
-                  onClick={handleOpenPaymentModal} // Opens modal, DOES NOT close drawer
+                <button
+                  type="button"
+                  onClick={handleProceedToCheckout}
                   className="w-full inline-block text-center px-4 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
                 >
                   Proceed to Checkout
-                </Link>
+                </button>
                 <button
                   onClick={handleClearCart}
                   className="w-full mt-2 text-sm text-gray-500 hover:text-gray-700 transition"
@@ -246,13 +324,13 @@ export default function Cart({ isDrawer = false, onClose }) {
                   </div>
                 </div>
                 {/* Checkout Button */}
-                <Link
-                  to="#"
-                  onClick={handleOpenPaymentModal} // Opens modal
+                <button
+                  type="button"
+                  onClick={handleProceedToCheckout}
                   className="w-full mt-6 inline-block px-4 py-3 text-center bg-purple-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition shadow-lg"
                 >
                   Proceed to Checkout
-                </Link>
+                </button>
                 <div className="text-center text-xs text-gray-500 mt-4">
                   Taxes and shipping calculated at checkout.
                 </div>
@@ -262,15 +340,7 @@ export default function Cart({ isDrawer = false, onClose }) {
         )}
       </div>
 
-      {/* --- MODAL COMPONENT (Viewport Centered) --- */}
-      <Modal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)} // User can close the modal manually
-        title="Secure Payment"
-      >
-        {/* Passes the success handler to close the modal AND the cart drawer on payment */}
-        <CheckoutContent onSuccess={handlePaymentSuccessAndClose} />
-      </Modal>
+      {/* No modal - we navigate to /checkout so the flow matches Buy Now */}
     </>
   );
 }
