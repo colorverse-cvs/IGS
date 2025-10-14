@@ -241,7 +241,8 @@ export default function Checkout() {
     switch (paymentType) {
       case "upi":
         if (upiOption === "qr") return true;
-        if (upiOption === "id") return isValidUpiId(upiId) && upiStatus === "valid";
+        if (upiOption === "id")
+          return isValidUpiId(upiId) && upiStatus === "valid";
         return false;
       case "card":
         return Boolean(selectedCardId);
@@ -273,7 +274,7 @@ export default function Checkout() {
           paymentType === "card"
             ? `debit card **${selectedCard?.mask || "0000"}`
             : paymentType === "upi"
-            ? `UPI ${upiOption === "id" ? (upiId || "(ID verified)") : "QR"}`
+            ? `UPI ${upiOption === "id" ? upiId || "(ID verified)" : "QR"}`
             : paymentType === "netbanking" && selectedBank
             ? `Netbanking ${selectedBank}`
             : paymentType,
@@ -295,6 +296,8 @@ export default function Checkout() {
 
   const handlePrimaryAction = () => {
     if (currentStep === 1) {
+      // Require a selected address before proceeding
+      if (!selectedAddress) return;
       setOpen({ address: false, payment: true, review: false });
       setDone((d) => ({ ...d, address: true }));
     } else if (currentStep === 2) {
@@ -305,7 +308,7 @@ export default function Checkout() {
       // Place order then show pre-success page
       (async () => {
         const order = await handlePay();
-        navigate('/order-placed', { state: { order } });
+        navigate("/order-placed", { state: { order } });
       })();
     }
   };
@@ -422,8 +425,8 @@ export default function Checkout() {
                     >
                       Add new address
                     </button>
-                    <button
-                      className="px-4 py-2 bg-purple-700 text-white rounded disabled:opacity-50"
+                <button
+                      className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
                       disabled={!selectedAddress}
                       onClick={() => {
                         setDone((d) => ({ ...d, address: true }));
@@ -491,7 +494,8 @@ export default function Checkout() {
                               disabled={!isValidUpiId(upiId)}
                               onClick={() => {
                                 // Mock verification: treat IDs ending with a digit as valid
-                                const ok = isValidUpiId(upiId) && /\d$/.test(upiId);
+                                const ok =
+                                  isValidUpiId(upiId) && /\d$/.test(upiId);
                                 setUpiStatus(ok ? "valid" : "invalid");
                               }}
                             >
@@ -627,7 +631,7 @@ export default function Checkout() {
                 <div className="mt-4">
                   <button
                     type="button"
-                    className="px-4 py-2 bg-purple-700 text-white rounded disabled:opacity-50"
+                    className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
                     disabled={!isPaymentValid}
                     onClick={() => {
                       if (!isPaymentValid) return;
@@ -800,9 +804,11 @@ export default function Checkout() {
                 </div>
                 <button
                   onClick={handlePrimaryAction}
-                  className="w-full mt-4 px-4 py-2 bg-purple-700 text-white rounded disabled:opacity-50"
+                  className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
                   disabled={
-                    items.length === 0 || (currentStep === 2 && !isPaymentValid)
+                    items.length === 0 ||
+                    (currentStep === 1 && !selectedAddress) ||
+                    (currentStep === 2 && !isPaymentValid)
                   }
                 >
                   {ctaLabel}
@@ -976,7 +982,7 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={!isCardValid}
-                  className="px-4 py-2 bg-purple-700 text-white rounded disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
                 >
                   Save card
                 </button>

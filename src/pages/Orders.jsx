@@ -88,7 +88,7 @@ export default function Orders() {
     }
     return (
       <div className="flex flex-col gap-2">
-        <button className="px-3 py-1 bg-purple-700 text-white rounded text-sm">
+        <button className="px-3 py-1 bg-brand-700 text-white rounded text-sm">
           Track package
         </button>
         <button className="px-3 py-1 border rounded text-sm">
@@ -115,7 +115,7 @@ export default function Orders() {
           <button
             className={`pb-2 ${
               activeTab === "orders"
-                ? "border-b-2 border-purple-700 text-purple-700"
+                ? "border-b-2 border-brand-700 text-purple-700"
                 : "text-gray-600"
             }`}
             onClick={() => setActiveTab("orders")}
@@ -125,7 +125,7 @@ export default function Orders() {
           <button
             className={`pb-2 ${
               activeTab === "current"
-                ? "border-b-2 border-purple-700 text-purple-700"
+                ? "border-b-2 border-brand-700 text-purple-700"
                 : "text-gray-600"
             }`}
             onClick={() => setActiveTab("current")}
@@ -135,7 +135,7 @@ export default function Orders() {
           <button
             className={`pb-2 ${
               activeTab === "previous"
-                ? "border-b-2 border-purple-700 text-purple-700"
+                ? "border-b-2 border-brand-700 text-purple-700"
                 : "text-gray-600"
             }`}
             onClick={() => setActiveTab("previous")}

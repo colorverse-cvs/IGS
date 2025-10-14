@@ -1,0 +1,13 @@
+{
+  "dimensions": "H:5.5 in x W:4.0 in x D:3.0 in (14 cm x 10 cm x 7.6 cm)",
+  "weight": "800gm",
+  "origin": "Crafted by Master Artisan V. Sharma in Maharashtra, India",
+  "primaryMaterialByMaterial": {
+    "marble": "Hand-Carved White Indian Marble (Single Block)",
+    "resin": "Hand-Carved White Indian Resin (Single Block)"
+  },
+  "finishByMaterial": {
+    "marble": "Polished, Natural White Marble",
+    "resin": "Polished, Natural White Resin"
+  }
+}

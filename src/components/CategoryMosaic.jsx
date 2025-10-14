@@ -54,7 +54,7 @@ export default function CategoryMosaic() {
   const row2 = rows[1] || [];
 
   return (
-    <section className=" py-12">
+    <section>
       <div className="container mx-auto">
         <div className="text-center py-12">
           <h2 className="text-5xl font-bold text-gray-900 mb-4">
@@ -81,8 +81,12 @@ export default function CategoryMosaic() {
               />
               <div className="absolute inset-0 bg-black/40"></div>
               <div className="absolute bottom-3 left-3 right-3 text-white text-left">
-                <div className="text-md font-bold leading-tight">Custom Order</div>
-                <div className="text-sm opacity-90 line-clamp-2">Turn your vision into a personalized, one-of-a-kind sculpture.</div>
+                <div className="text-md font-bold leading-tight">
+                  Custom Order
+                </div>
+                <div className="text-sm opacity-90 line-clamp-2">
+                  Turn your vision into a personalized, one-of-a-kind sculpture.
+                </div>
               </div>
             </button>
           )}

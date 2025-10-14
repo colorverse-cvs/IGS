@@ -9,7 +9,9 @@ export default function OrderSuccess() {
     return (
       <div className="text-center py-16">
         <h1 className="text-2xl font-bold mb-2">No order to show</h1>
-        <Link to="/" className="text-purple-700 underline">Go home</Link>
+        <Link to="/" className="text-purple-700 underline">
+          Go home
+        </Link>
       </div>
     );
   }
@@ -24,12 +26,12 @@ export default function OrderSuccess() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-purple-700 mb-2">
+      <h1 className="text-2xl font-bold text-purple-700 m-2">
         Your Order Has Been Placed Successfully!
       </h1>
       <p className="text-gray-700 mb-8">
-        Thank you for shopping with us{firstName ? `, ${firstName}` : ""}. Your beautiful
-        statue will be delivered soon.
+        Thank you for shopping with us{firstName ? `, ${firstName}` : ""}. Your
+        beautiful statue will be delivered soon.
       </p>
 
       <div className="border rounded-lg overflow-hidden">
@@ -41,16 +43,28 @@ export default function OrderSuccess() {
           <div>Total</div>
         </div>
         {order.items.map((it, idx) => (
-          <div key={it.id || idx} className="grid grid-cols-6 items-center px-4 py-3 text-sm border-t">
+          <div
+            key={it.id || idx}
+            className="grid grid-cols-6 items-center px-4 py-3 text-sm border-t"
+          >
             <div>{order.id}</div>
             <div className="col-span-2 flex items-center gap-4">
-              <img src={it.image} alt="item" className="w-20 h-20 object-cover rounded" />
+              <img
+                src={it.image}
+                alt="item"
+                className="w-20 h-20 object-cover rounded"
+              />
               <div>
                 <div className="font-medium">{it.title}</div>
-                <div className="text-xs text-gray-500">Material: {it.material || "-"} &nbsp; Size: {it.size || "-"}</div>
+                <div className="text-xs text-gray-500">
+                  Material: {it.material || "-"} &nbsp; Size: {it.size || "-"}
+                </div>
                 <div className="text-purple-700 font-semibold">₹{it.price}</div>
                 <div className="text-xs text-gray-500">
-                  Will be delivered by – <span className="font-semibold">{formatShort(min)} - {formatShort(max)}, 8am - 10pm</span>
+                  Will be delivered by –{" "}
+                  <span className="font-semibold">
+                    {formatShort(min)} - {formatShort(max)}, 8am - 10pm
+                  </span>
                 </div>
               </div>
             </div>
@@ -62,7 +76,9 @@ export default function OrderSuccess() {
       </div>
 
       <div className="mt-6 flex gap-3">
-        <button className="px-4 py-2 bg-purple-700 text-white rounded">Track package</button>
+        <button className="px-4 py-2 bg-brand-700 text-white rounded">
+          Track package
+        </button>
         <button className="px-4 py-2 border rounded">View or Edit order</button>
         <button className="px-4 py-2 border rounded">Download Invoice</button>
       </div>
@@ -78,7 +94,9 @@ export default function OrderSuccess() {
         </div>
         <div className="border rounded-lg p-4">
           <div className="font-semibold mb-2">Payment</div>
-          <div className="text-gray-700 capitalize">{order.payment?.label || order.payment?.type}</div>
+          <div className="text-gray-700 capitalize">
+            {order.payment?.label || order.payment?.type}
+          </div>
           <div className="flex justify-between mt-2">
             <span className="text-gray-600">Items Total</span>
             <span>₹{order.totals?.mrpTotal}</span>
@@ -99,7 +117,9 @@ export default function OrderSuccess() {
       </div>
 
       <div className="mt-8">
-        <Link to="/" className="text-purple-700 underline">Continue shopping</Link>
+        <Link to="/" className="text-purple-700 underline">
+          Continue shopping
+        </Link>
       </div>
     </div>
   );
