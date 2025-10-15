@@ -40,14 +40,14 @@ export default function ProductSection({
       {/* Section Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
-          <div>
+          <h3>
             <Link
               to={`/filter?category=${getCategoryFilterId(title)}`}
               className="flex items-center justify-center gap-2 text-3xl font-bold text-gray-900 mb-2 hover:text-purple-700"
             >
               {title} <ChevronRight size={20} className="mt-1" />
             </Link>
-          </div>
+          </h3>
         </div>
         <p className="text-gray-600 text-sm">{subtitle}</p>
       </div>

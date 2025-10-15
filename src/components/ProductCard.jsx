@@ -56,11 +56,11 @@ const ProductCard = ({ product, onOpenProduct }) => {
       h-full
       shadow-sm
       hover:shadow-lg
-      focus:outline-none focus:ring-2 focus:ring-purple-500
+      focus:outline-none focus:ring-2 focus:ring-brand-500
     "
     >
       {/* --- Image and Tag Section --- */}
-      <div className="relative h-48 w-full bg-gray-100 rounded-t-2xl overflow-hidden flex items-center justify-center transition-all duration-300 group:shadow-2xl group:ring-2 group:ring-purple-200">
+      <div className="relative h-48 w-full bg-gray-100 rounded-t-2xl overflow-hidden flex items-center justify-center transition-all duration-300 group:shadow-2xl group:ring-2 group:ring-brand-200">
         <img src={imageURL} alt={name} className="w-full h-full object-cover" />
 
         {/* Tags at the top left */}
@@ -73,10 +73,10 @@ const ProductCard = ({ product, onOpenProduct }) => {
               px-2 
               py-1 
               rounded-md 
-              bg-purple-100 
+              bg-brand-100 
               text-purple-500 
               border 
-              border-purple-500
+              border-brand-500
               whitespace-nowrap
             "
             >
@@ -108,14 +108,16 @@ const ProductCard = ({ product, onOpenProduct }) => {
       <div className="p-4 flex-grow flex flex-col justify-between min-h-[120px]">
         {/* Product Title - Fixed height to prevent layout shifts */}
         <div>
-          <h3 className="text-base font-semibold text-gray-800 mb-2 overflow-hidden leading-5">
+          <div className="text-base font-extrabold text-gray-800 mb-2 overflow-hidden leading-5 truncate">
             {name}
-          </h3>
+          </div>
         </div>
 
         {/* Price Row */}
         <div className="flex items-baseline space-x-2 mb-2">
-          <span className="text-lg font-bold text-purple-700">₹{price}</span>
+          <span className="text-lg font-extrabold text-purple-700">
+            ₹{price}
+          </span>
           <span className="text-xs line-through text-gray-500">
             MRP: ₹{mrp}
           </span>
@@ -125,7 +127,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
         </div>
 
         {/* Rating and Add to Cart */}
-        <div className="flex flex-col xl:flex-row justify-between items-center gap-2 mt-auto">
+        <div className="flex flex-col xl:flex-row justify-between first:items-start [&amp;:nth-child(2)]:items-center xl:items-center gap-2 mt-auto">
           <div>
             <div className="flex items-center text-sm text-gray-600">
               <span>{rating}</span>
@@ -137,17 +139,17 @@ const ProductCard = ({ product, onOpenProduct }) => {
               <span className="text-xs text-gray-500">({reviews})</span>
             </div>
           </div>
-          <div>
+          <div className="flex items-center justify-center">
             {qtyInCart === 0 ? (
               <button
                 className="
             flex items-center justify-center py-2 px-3 xl:py-2 xl:px-2 text-white 
-            bg-purple-700 hover:bg-purple-800 font-semibold text-sm 
+            bg-brand-700 hover:bg-brand-800 font-semibold text-sm 
             transition-all duration-300 ease-out 
-            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50
+            focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-50
             rounded-sm
-            opacity-0 translate-y-1 pointer-events-none
-            group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto gap-2 md:text-sm
+            md:opacity-0 md:translate-y-1 md:pointer-events-none
+            md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm
           "
                 onClick={(e) => {
                   e.preventDefault();
@@ -160,7 +162,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
             ) : (
               <div
                 className="
-              inline-flex items-center bg-purple-800 text-white border border-purple-700 rounded-sm translate-y-1 pointer-events-none group:translate-y-0 group:pointer-events-auto
+              inline-flex items-center bg-brand-800 text-white border border-brand-700 rounded-sm md:translate-y-1 md:pointer-events-none md:group-hover:translate-y-0 md:group-hover:pointer-events-auto
             "
               >
                 <button

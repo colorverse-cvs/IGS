@@ -73,7 +73,7 @@ export default function FilterSidebar({
         value={value}
         checked={checked}
         onChange={(e) => onChange(e.target.value)}
-        className="mr-2 text-purple-600 focus:ring-purple-500"
+        className="mr-2 text-purple-600 focus:ring-brand-500"
       />
       <span className="text-sm text-gray-700">{label}</span>
     </label>
@@ -86,7 +86,7 @@ export default function FilterSidebar({
         value={value}
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mr-2 text-purple-600 focus:ring-purple-500"
+        className="mr-2 text-purple-600 focus:ring-brand-500"
       />
       <span className="text-sm text-gray-700">{label}</span>
     </label>

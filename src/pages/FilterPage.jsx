@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import FilterSidebar from "../components/FilterSidebar";
 import ProductCard from "../components/ProductCard";
-import { Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronDown, ArrowLeft, ArrowRight } from "lucide-react";
 import categoriesData from "../data/categories.json";
 import products from "../data/products.json";
 
@@ -23,6 +23,7 @@ export default function FilterPage() {
   const [sortBy, setSortBy] = useState("popular");
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState("1");
 
   // Initialize filters from URL params
   useEffect(() => {
@@ -163,6 +164,11 @@ export default function FilterPage() {
     };
   };
 
+  // keep input string in sync when currentPage changes elsewhere
+  useEffect(() => {
+    setPageInput(String(currentPage));
+  }, [currentPage]);
+
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
 
@@ -210,9 +216,9 @@ export default function FilterPage() {
         />
 
         {/* Main Content */}
-        <div className="flex-1 p-6 h-[88vh] overflow-y-auto">
+        <div className="flex-1 p-6 h-[88vh] overflow-y-auto relative">
           {/* Header Controls */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="bg-brand-25 rounded-lg shadow-lg p-6 mb-6 sticky top-0 z-1">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div className="text-gray-700">
                 Displaying {paginatedProducts.length} out of {total} products
@@ -258,7 +264,7 @@ export default function FilterPage() {
                 </div>
 
                 {/* Search */}
-                <div className="relative">
+                <div className="relative flex justify-between items-center">
                   <input
                     type="text"
                     placeholder="Search for a product"
@@ -267,11 +273,11 @@ export default function FilterPage() {
                       setSearchQuery(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent p-1"
                   />
                   <Search
                     size={16}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   />
                 </div>
               </div>
@@ -302,30 +308,85 @@ export default function FilterPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-between items-center">
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="flex items-center gap-1 px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft size={16} />
-                Previous page
-              </button>
-
-              <span className="text-sm text-gray-600">
-                Page {currentPage} of {totalPages}
-              </span>
-
-              <button
-                onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
-                }
-                disabled={currentPage === totalPages}
-                className="flex items-center gap-1 px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next page
-                <ChevronRight size={16} />
-              </button>
+            <div className="flex items-center mt-4  justify-between">
+              <div className="lg:invisible sm:hidden md:hidden lg:block items-center gap-2 text-sm text-gray-700">
+                <span>Page</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={pageInput}
+                  onChange={(e) => {
+                    // allow empty while typing; only digits
+                    const digits = e.target.value.replace(/\D/g, "");
+                    setPageInput(digits);
+                  }}
+                  onBlur={() => {
+                    const v = parseInt(pageInput, 10);
+                    if (Number.isNaN(v)) {
+                      setPageInput(String(currentPage));
+                      return;
+                    }
+                    const clamped = Math.max(1, Math.min(totalPages, v));
+                    setCurrentPage(clamped);
+                    setPageInput(String(clamped));
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  className="w-14 px-2 py-1 border rounded text-center"
+                />
+                <span>of {totalPages}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-2 px-2 lg:px-4 py-2 rounded-md text-sm border disabled:opacity-50"
+                >
+                  <ArrowLeft size={16} /> Previous page
+                </button>
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-2 px-2 lg:px-4 py-2 rounded-md text-sm border disabled:opacity-50"
+                >
+                  Next page <ArrowRight size={16} />
+                </button>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-700">
+                <span>Page</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={pageInput}
+                  onChange={(e) => {
+                    // allow empty while typing; only digits
+                    const digits = e.target.value.replace(/\D/g, "");
+                    setPageInput(digits);
+                  }}
+                  onBlur={() => {
+                    const v = parseInt(pageInput, 10);
+                    if (Number.isNaN(v)) {
+                      setPageInput(String(currentPage));
+                      return;
+                    }
+                    const clamped = Math.max(1, Math.min(totalPages, v));
+                    setCurrentPage(clamped);
+                    setPageInput(String(clamped));
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  className="w-14 px-2 py-1 border rounded text-center"
+                />
+                <span>of {totalPages}</span>
+              </div>
             </div>
           )}
         </div>

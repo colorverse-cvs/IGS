@@ -295,7 +295,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                 <button
                   type="button"
                   onClick={handleProceedToCheckout}
-                  className="w-full inline-block text-center px-4 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition"
+                  className="w-full inline-block text-center px-4 py-3 bg-brand-600 text-white rounded-lg font-semibold hover:bg-brand-700 transition"
                 >
                   Proceed to Checkout
                 </button>
@@ -327,7 +327,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                 <button
                   type="button"
                   onClick={handleProceedToCheckout}
-                  className="w-full mt-6 inline-block px-4 py-3 text-center bg-purple-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition shadow-lg"
+                  className="w-full mt-6 inline-block px-4 py-3 text-center bg-brand-700 text-white rounded-lg font-semibold hover:bg-brand-800 transition shadow-lg"
                 >
                   Proceed to Checkout
                 </button>

@@ -5,6 +5,9 @@ import Clippathgroup from "../assets/clip-path-group.svg";
 import { useNavigate } from "react-router-dom";
 import Collections from "./Collections.jsx";
 import CategoryMosaic from "../components/CategoryMosaic.jsx";
+import HowCustomizationWorks from "../components/HowCustomizationWorks.jsx";
+import Testimonials from "../components/Testimonials.jsx";
+import testimonials from "../data/testimonials.json";
 
 function Home() {
   const navigate = useNavigate();
@@ -27,11 +30,11 @@ function Home() {
               <div className="flex flex-wrap gap-4 py-5">
                 <button
                   onClick={() => navigate("/filter")}
-                  className="bg-purple-900 text-white py-1 px-2 rounded-lg font-medium hover:bg-purple-800 transition"
+                  className="bg-brand-900 text-white py-1 px-2 rounded-lg font-medium hover:bg-brand-800 transition"
                 >
                   Explore Collection
                 </button>
-                <button className="border-2 border-purple-700 text-purple-700  py-1 px-1 rounded-lg font-medium hover:bg-purple-50 transition">
+                <button className="border-2 border-brand-700 text-purple-700  py-1 px-1 rounded-lg font-medium hover:bg-brand-50 transition">
                   Custom Order
                 </button>
               </div>
@@ -89,12 +92,16 @@ function Home() {
       </div>
       <div className="bg-brand-50">
         <div className="px-4 md:px-15 lg:px-20">
-          <div className="container py-6 mx-auto">
+          <div className="container pt-6 pb-20 mx-auto">
             <CategoryMosaic />
           </div>
         </div>
         {/* New Mosaic Section below collections */}
       </div>
+
+      {/* Called sections from separate components */}
+      <HowCustomizationWorks />
+      <Testimonials items={testimonials} />
     </>
   );
 }

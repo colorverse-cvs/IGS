@@ -5,16 +5,22 @@ body,
 #root {
   height: 100%;
 }
-/* .container {
-  @apply max-w-7xl mx-auto;
-} */
+html {
+  /* Smooth scroll across the whole app */
+  scroll-behavior: smooth;
+}
+
 * {
   box-sizing: border-box;
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
 }
-
+h1, h2, h3, h4, h5, h6, h7, h1 a, h2 a, h3 a, h4 a, h5 a {
+  font-family: "Playfair Display", serif !important;
+  font-optical-sizing: auto;
+  font-weight: 500;
+}
 :root {
   --border-xs: 2px;
   --border-sm: 4px;
@@ -49,6 +55,13 @@ body,
   --color-gray-900: #111111;
   --color-white: #ffffff;
   --color-black: #000000;
+}
+
+/* Global scrollbar styling (all pages) */
+/* Firefox */
+* {
+  scrollbar-width: thin; /* thin/auto/none */
+  scrollbar-color: var(--color-gray-300) rgba(147, 57, 189, 0.15);
 }
 /* --- BACKGROUND COLOR CLASSES (Brand) --- */
 .bg-brand-25 {
@@ -150,7 +163,7 @@ body,
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #7c3aed;
+  background: var(--color-brand-300);
   cursor: pointer;
   border: 2px solid #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
