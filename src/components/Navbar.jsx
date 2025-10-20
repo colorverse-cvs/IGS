@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, ChevronDown } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingCart, Menu, X, Search, ChevronDown, Star } from "lucide-react";
 import CartDrawer from "./CartDrawer"; // Make sure this path is correct
+import SearchDrawer from "./SearchDrawer.jsx";
 import AuthModal from "./AuthModal";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
+import categoriesData from "../data/categories.json";
 
 export default function Navbar() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState("login");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Redux: Get the total number of items in the cart
   const totalItems = useSelector((s) =>
@@ -53,8 +59,8 @@ export default function Navbar() {
     { name: "Chhatrapati Shivaji Maharaj Statues", scrollTo: "shivaji" },
     { name: "Mavale Statues", scrollTo: "mavale" },
     { name: "God Statues", scrollTo: "god-statues" },
-    { name: "Motivational Statues", scrollTo: "motivational" },
     { name: "Home Decor", scrollTo: "home-decor" },
+    { name: "Motivational Statues", scrollTo: "motivational" },
   ];
 
   const handleCategoryClick = (link) => {
@@ -71,9 +77,85 @@ export default function Navbar() {
     toggleProductsDropdown();
   };
 
+  // Build a searchable list of products from categories.json
+  const allProducts = useMemo(() => {
+    const arr = [];
+    categoriesData.sections.forEach((section) =>
+      section.products.forEach((p) =>
+        arr.push({
+          ...p,
+          categoryId: section.id,
+          categoryName: section.title,
+        })
+      )
+    );
+    return arr;
+  }, []);
+
+  const toSlug = (val) => (val || "").toLowerCase().replace(/\s+/g, "-");
+
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    const qNum = Number(q);
+    return allProducts.filter((p) => {
+      const priceStr = String(p.price || "");
+      const ratingStr = String(p.rating || "");
+      return (
+        (p.name || "").toLowerCase().includes(q) ||
+        (p.material || "").toLowerCase().includes(q) ||
+        (p.size || "").toLowerCase().includes(q) ||
+        (p.categoryName || "").toLowerCase().includes(q) ||
+        priceStr.includes(q) ||
+        ratingStr.includes(q) ||
+        (!Number.isNaN(qNum) && ((p.price || 0) === qNum || (p.rating || 0) === qNum))
+      );
+    });
+  }, [searchQuery, allProducts]);
+
+  // Sticky glass effect on scroll
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll);
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Prevent background scroll when mobile menu open
+  useEffect(() => {
+    if (isMenuOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [isMenuOpen]);
+
+  const openSearch = () => setIsSearchOpen(true);
+  const closeSearch = () => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+  };
+
+  const handleSearchResultClick = (p) => {
+    const params = new URLSearchParams();
+    params.set("category", p.categoryId || toSlug(p.categoryName));
+    if (p.material) params.set("material", (p.material || "").toLowerCase());
+    if (p.size) params.set("size", p.size);
+    closeSearch();
+    navigate(`/filter?${params.toString()}`);
+  };
+
   return (
     <>
-      <nav className="bg-white shadow-sm sticky top-0 z-30 border-b border-gray-100">
+      <nav
+        className={`sticky top-0 z-30 border-b transition-colors ${
+          isScrolled
+            ? "backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/80 border-gray-200 shadow-sm"
+            : "bg-white border-gray-100"
+        }`}
+      >
         <div className="mx-auto px-4 md:px-15 lg:px-20">
           <div className="flex justify-between items-center h-20">
             {/* Logo/Brand */}
@@ -108,7 +190,7 @@ export default function Navbar() {
                     </button>
 
                     {isProductsDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-40">
+                      <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-40">
                         <div
                           className="py-1"
                           role="menu"
@@ -159,6 +241,7 @@ export default function Navbar() {
               <button
                 className="text-gray-500 hover:text-purple-700 transition hidden sm:block"
                 aria-label="Search"
+                onClick={openSearch}
               >
                 <Search size={20} />
               </button>
@@ -178,14 +261,8 @@ export default function Navbar() {
               </button>
 
               {user.isAuthenticated ? (
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-2 group"
-                  aria-label="Open your profile"
-                >
-                  <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-purple-700 font-semibold group-hover:bg-brand-200">
-                    {user.profile.name?.[0] || "U"}
-                  </div>
+                <Link to="/profile" className="text-sm font-medium text-gray-700 hover:text-purple-700">
+                  Hey, {user.profile?.name || "User"}
                 </Link>
               ) : (
                 <>
@@ -389,6 +466,8 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
+
+      <SearchDrawer isOpen={isSearchOpen} onClose={closeSearch} />
 
       {/* --- Cart Drawer Component (Always positioned outside the Navbar) --- */}
       <CartDrawer isOpen={isCartOpen} onClose={toggleCart} />

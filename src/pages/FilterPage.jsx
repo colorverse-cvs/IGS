@@ -4,7 +4,7 @@ import FilterSidebar from "../components/FilterSidebar";
 import ProductCard from "../components/ProductCard";
 import { Search, ChevronDown, ArrowLeft, ArrowRight } from "lucide-react";
 import categoriesData from "../data/categories.json";
-import products from "../data/products.json";
+import Breadcrumb from "../components/Breadcrumb.jsx";
 
 export default function FilterPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -48,7 +48,7 @@ export default function FilterPage() {
     });
   }, [searchParams]);
 
-  // Get all products from categories
+  // Build a unified list of products from categories and standalone list
   const getAllProducts = () => {
     const allProducts = [];
     categoriesData.sections.forEach((section) => {
@@ -60,7 +60,7 @@ export default function FilterPage() {
         });
       });
     });
-    return [...allProducts, ...products]; // Include standalone products too
+    return allProducts; // single source: categories.json
   };
 
   // Filter products based on current filters
@@ -127,10 +127,7 @@ export default function FilterPage() {
       });
     }
 
-    // In stock filter (placeholder - would need stock data in products)
-    // if (filters.inStockOnly) {
-    //   filtered = filtered.filter(product => product.inStock);
-    // }
+    // In stock filter (placeholder for future stock data)
 
     return filtered;
   };
@@ -164,15 +161,16 @@ export default function FilterPage() {
     };
   };
 
-  // keep input string in sync when currentPage changes elsewhere
+  // Keep page input in sync when currentPage changes elsewhere
   useEffect(() => {
     setPageInput(String(currentPage));
   }, [currentPage]);
 
+  // Update filters state and URL params
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
 
-    // Update URL params
+    // Update URL params from non-empty filter values
     const params = new URLSearchParams();
     Object.entries(newFilters).forEach(([key, value]) => {
       if (value && value !== "all" && value !== "") {
@@ -180,9 +178,10 @@ export default function FilterPage() {
       }
     });
     setSearchParams(params);
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
+  // Clear all filters and reset URL/query/pagination
   const handleResetFilters = () => {
     const resetFilters = {
       category: null,
@@ -205,8 +204,13 @@ export default function FilterPage() {
     totalPages,
   } = getPaginatedProducts();
 
+  const breadcrumbItems = [{ label: "Home", link: "/" }, { label: "Products" }];
+
   return (
     <div className="bg-white">
+      <div className="py-1 px-4 md:px-15 lg:px-20">
+        <Breadcrumb items={breadcrumbItems} />
+      </div>
       <div className="flex">
         {/* Filter Sidebar */}
         <FilterSidebar
@@ -236,7 +240,7 @@ export default function FilterPage() {
                       setItemsPerPage(parseInt(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                    className="border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent p-1 focus-visible:outline-0"
                   >
                     <option value={4}>4</option>
                     <option value={8}>8</option>
@@ -254,7 +258,7 @@ export default function FilterPage() {
                       setSortBy(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                    className="border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent p-1 focus-visible:outline-0"
                   >
                     <option value="popular">Popular</option>
                     <option value="price-low">Price: Low to High</option>
@@ -273,7 +277,7 @@ export default function FilterPage() {
                       setSearchQuery(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent p-1"
+                    className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent p-1 focus-visible:outline-0"
                   />
                   <Search
                     size={16}
@@ -349,7 +353,9 @@ export default function FilterPage() {
                   <ArrowLeft size={16} /> Previous page
                 </button>
                 <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="flex items-center gap-2 px-2 lg:px-4 py-2 rounded-md text-sm border disabled:opacity-50"
                 >

@@ -21,7 +21,90 @@ export default function ProductSection({
   categoryId,
   onOpenProduct,
 }) {
-  const displayedProducts = products.slice(0, maxItems);
+  const [viewportWidth, setViewportWidth] = React.useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
+  const isLg = viewportWidth >= 1024;
+  const isMedium = viewportWidth >= 768 && viewportWidth < 1024;
+
+  // Always show all products in carousel
+  const renderItems = products;
+
+  // Determine items per view and step size
+  let itemsPerView, stepSize, cardWidthPercent;
+  if (isLg) {
+    itemsPerView = 4;
+    stepSize = 4;
+    cardWidthPercent = 25; // 25% width for each of 4 cards on large screens
+  } else if (isMedium) {
+    // Medium: show 2 cards at 50% width each
+    itemsPerView = 2;
+    stepSize = 1; // Move one card at a time for strip effect
+    cardWidthPercent = 50;
+  } else {
+    // Mobile: show 2 cards at 48% width each
+    itemsPerView = 2;
+    stepSize = 1; // Move one card at a time for strip effect
+    cardWidthPercent = 50;
+  }
+
+  const carouselActive = true; // Always active to show all cards
+  const maxIndex = Math.max(0, renderItems.length - itemsPerView);
+  const [firstVisibleIndex, setFirstVisibleIndex] = React.useState(0);
+  const dragStateRef = React.useRef({ dragging: false, startX: 0, moved: 0 });
+
+  React.useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  React.useEffect(() => {
+    setFirstVisibleIndex((idx) => Math.min(idx, maxIndex));
+  }, [maxIndex]);
+
+  React.useEffect(() => {
+    if (renderItems.length <= itemsPerView) return;
+    const id = setInterval(() => {
+      setFirstVisibleIndex((idx) => {
+        const next = idx + stepSize;
+        return next > maxIndex ? 0 : next;
+      });
+    }, 3000);
+    return () => clearInterval(id);
+  }, [renderItems.length, itemsPerView, stepSize, maxIndex]);
+
+  const onPointerDown = (e) => {
+    dragStateRef.current = {
+      dragging: true,
+      startX: e.clientX ?? (e.touches ? e.touches[0].clientX : 0),
+      moved: 0,
+    };
+  };
+  const onPointerMove = (e) => {
+    if (!dragStateRef.current.dragging) return;
+    const x = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
+    dragStateRef.current.moved = x - dragStateRef.current.startX;
+  };
+  const onPointerUp = (e) => {
+    if (!dragStateRef.current.dragging) return;
+    const delta = dragStateRef.current.moved;
+    dragStateRef.current.dragging = false;
+    const threshold = 30;
+    if (Math.abs(delta) > threshold) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (delta < 0) {
+        setFirstVisibleIndex((idx) =>
+          idx + stepSize > maxIndex ? 0 : idx + stepSize
+        );
+      } else {
+        setFirstVisibleIndex((idx) =>
+          idx - stepSize < 0 ? maxIndex : idx - stepSize
+        );
+      }
+    }
+  };
 
   // Map category titles to filter IDs
   const getCategoryFilterId = (title) => {
@@ -52,16 +135,80 @@ export default function ProductSection({
         <p className="text-gray-600 text-sm">{subtitle}</p>
       </div>
 
-      {/* Products Grid - Responsive Design */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-        {displayedProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onOpenProduct={onOpenProduct}
-          />
-        ))}
-      </div>
+      {/* Products Carousel - Always show carousel to access all cards */}
+      {renderItems.length === 0 ? (
+        <div className="text-center text-gray-500 py-8">
+          No products available
+        </div>
+      ) : (
+        <div className="relative">
+          <div
+            className="overflow-hidden select-none"
+            onMouseDown={onPointerDown}
+            onMouseMove={onPointerMove}
+            onMouseUp={onPointerUp}
+            onMouseLeave={onPointerUp}
+            onTouchStart={onPointerDown}
+            onTouchMove={onPointerMove}
+            onTouchEnd={onPointerUp}
+          >
+            <div
+              className="flex transition-transform duration-500 ease-out"
+              style={{
+                transform: `translateX(-${
+                  cardWidthPercent * firstVisibleIndex
+                }%)`,
+              }}
+            >
+              {renderItems.map((product) => (
+                <div
+                  key={product.id}
+                  style={{
+                    flex: `0 0 ${cardWidthPercent}%`,
+                    width: `${cardWidthPercent}%`,
+                    maxWidth: `${cardWidthPercent}%`,
+                    minWidth: `${cardWidthPercent}%`,
+                  }}
+                  className="px-1"
+                >
+                  <ProductCard
+                    product={product}
+                    onOpenProduct={onOpenProduct}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          {renderItems.length > itemsPerView && (
+            <>
+              <button
+                type="button"
+                aria-label="Previous"
+                onClick={() =>
+                  setFirstVisibleIndex((idx) =>
+                    idx - stepSize < 0 ? maxIndex : idx - stepSize
+                  )
+                }
+                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-purple-500 hover:bg-gray-100"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                aria-label="Next"
+                onClick={() =>
+                  setFirstVisibleIndex((idx) =>
+                    idx + stepSize > maxIndex ? 0 : idx + stepSize
+                  )
+                }
+                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-purple-500 hover:bg-gray-100"
+              >
+                →
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </section>
   );
 }

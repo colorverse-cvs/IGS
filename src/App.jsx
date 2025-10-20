@@ -7,8 +7,8 @@ export default function App() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <div className="">
-        <div className="">
+      <div>
+        <div>
           <RoutesMap />
         </div>
       </div>
