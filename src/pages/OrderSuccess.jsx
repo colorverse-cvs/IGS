@@ -8,7 +8,7 @@ export default function OrderSuccess() {
   if (!order) {
     return (
       <div className="text-center py-16">
-        <h1 className="text-2xl font-bold mb-2">No order to show</h1>
+        <h2 className="text-2xl font-bold mb-2">No order to show</h2>
         <Link to="/" className="text-purple-700 underline">
           Go home
         </Link>
@@ -26,9 +26,9 @@ export default function OrderSuccess() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-purple-700 m-2">
+      <h2 className="text-2xl font-bold text-purple-700 m-2">
         Your Order Has Been Placed Successfully!
-      </h1>
+      </h2>
       <p className="text-gray-700 mb-8">
         Thank you for shopping with us{firstName ? `, ${firstName}` : ""}. Your
         beautiful statue will be delivered soon.

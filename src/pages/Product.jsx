@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import ProductExtras from "./ProductExtras";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
-import products from "../data/products.json";
 import categoriesData from "../data/categories.json";
 import { Star, Truck, Shield, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
+import Breadcrumb from "../components/Breadcrumb.jsx";
 
 export default function Product() {
   const { id } = useParams();
@@ -15,11 +16,16 @@ export default function Product() {
   const [selectedMaterial, setSelectedMaterial] = useState("marble");
   const [selectedSize, setSelectedSize] = useState("small");
   const [pincode, setPincode] = useState("");
-  const [pincodeStatus, setPincodeStatus] = useState("idle"); // 'idle'|'invalid'|'ok'|'no-service'
+  const [pincodeStatus, setPincodeStatus] = useState("idle");
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Build a unified product list from categories and standalone products
+  // Scroll to top when component mounts or id changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
+
+  // Build a unified product list from categories (single source of truth)
   const getAllProducts = () => {
     const all = [];
     categoriesData.sections.forEach((section) => {
@@ -27,11 +33,13 @@ export default function Product() {
         all.push({ ...p, categoryId: section.id, categoryName: section.title });
       });
     });
-    return [...all, ...products];
+    return all;
   };
 
   const allProducts = getAllProducts();
   const product = allProducts.find((p) => p.id === id);
+  const categorySlug =
+    product?.categoryId || (product?.category || "").toLowerCase().replace(/\s+/g, "-");
 
   if (!product) {
     return (
@@ -48,7 +56,7 @@ export default function Product() {
   const isCustomizable = product.isCustomizable;
   const isFeatured = product.isFeatured;
 
-  // Images – prefer product.images from JSON if present
+  // Images: prefer product.images from JSON if present
   const productImages =
     Array.isArray(product.images) && product.images.length
       ? product.images
@@ -91,7 +99,7 @@ export default function Product() {
     setSelectedImageIndex(index);
   };
 
-  // Materials – derive dynamically from JSON if provided
+  // Material options: derive dynamically from product JSON if provided
   const materialOptions = (
     Array.isArray(product.materials) && product.materials.length
       ? product.materials
@@ -108,7 +116,7 @@ export default function Product() {
       : m
   );
 
-  // Sizes – derive dynamically from JSON if provided
+  // Size options: derive dynamically from product JSON if provided
   const sizeOptions = (
     Array.isArray(product.sizes) && product.sizes.length
       ? product.sizes
@@ -141,7 +149,7 @@ export default function Product() {
     null ||
     product.material ||
     "—";
-  // Exact rows per design, populated dynamically
+  // About section rows (dynamic values per selection/defaults)
   const aboutRows = [
     { label: "Primary Material", value: primaryMaterialStr || "—" },
     {
@@ -187,42 +195,32 @@ export default function Product() {
 
   const handleBuyNow = () => {
     handleAddToCart();
-    // Use client-side navigation so Redux cart state is preserved
     navigate("/checkout");
   };
 
-  return (
-    <div className="bg-white  px-4 md:px-15 lg:px-20">
-      <div className=" container mx-auto">
-        {/* Breadcrumb Navigation */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="container mx-auto px-4 py-3">
-            <nav className="text-sm text-gray-600">
-              <Link to="/" className="hover:text-purple-700">
-                Home
-              </Link>
-              <span className="mx-2">&gt;</span>
-              <Link to="/filter" className="hover:text-purple-700">
-                Products
-              </Link>
-              <span className="mx-2">&gt;</span>
-              <span className="text-gray-900">{product.category}</span>
-              <span className="mx-2">&gt;</span>
-              <span className="text-gray-900">{title}</span>
-            </nav>
-          </div>
-        </div>
+  const breadcrumbItems = [
+    { label: "Home", link: "/" },
+    { label: "Products", link: "/filter" },
+    { label: product.category || "Category", link: `/filter?category=${categorySlug}` },
+    { label: title },
+  ];
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+  return (
+    <>
+    <div className="bg-white px-4 md:px-15 lg:px-20">
+      <Breadcrumb items={breadcrumbItems} />
+      <div className=" container mx-auto">
+        
+        <div className="container mx-auto py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {/* Left: Product Images */}
-            <div className="space-y-4">
+            <div className="flex flex-col w-full lg:justify-start lg:flex-col gap-4">
               {/* Main Product Image */}
-              <div className="bg-gray-100 rounded-lg p-8 flex items-center justify-center">
+              <div className="bg-gray-100 h-[60vh] rounded-lg flex items-center justify-center">
                 <img
                   src={currentImage}
                   alt={title}
-                  className="max-h-[500px] w-auto object-contain"
+                  className="rounded-lg w-full h-full object-cover"
                 />
               </div>
 
@@ -525,5 +523,9 @@ export default function Product() {
         </div>
       </div>
     </div>
+    
+      {/* Additional sections below the main product details */}
+      <ProductExtras productId={product.id} />
+    </>
   );
 }

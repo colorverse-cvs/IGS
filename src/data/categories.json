@@ -3,7 +3,7 @@
     {
       "id": "shivaji",
       "title": "Chhatrapati Shivaji Maharaj Statues",
-      "subtitle": "Honor the great Maratha warrior king",
+      "subtitle": "Iconic warrior king in detailed miniature form.",
       "products": [
         {
           "id": "SHV001",
@@ -74,7 +74,7 @@
     {
       "id": "mavale",
       "title": "Mavale Statues",
-      "subtitle": "Warriors of Maratha Empire",
+      "subtitle": "Brave companions of Shivaji Maharaj, finely sculpted collectibles.",
       "products": [
         {
           "id": "MVL001",
@@ -145,7 +145,7 @@
     {
       "id": "god-statues",
       "title": "God Statues",
-      "subtitle": "Divine figures for spiritual spaces",
+      "subtitle": "Sacred idols crafted for devotion and gifting.",
       "products": [
         {
           "id": "GOD001",
@@ -214,80 +214,9 @@
       ]
     },
     {
-      "id": "motivational",
-      "title": "Motivational Statues",
-      "subtitle": "Inspire greatness in your space",
-      "products": [
-        {
-          "id": "MOT001",
-          "name": "Thinker Statue Bronze",
-          "category": "Motivational Statue",
-          "price": 800,
-          "mrp": 1200,
-          "discount": "33% Off",
-          "rating": 4.4,
-          "reviews": 72,
-          "isFeatured": false,
-          "isCustomizable": true,
-          "imageURL": "https://picsum.photos/300/300?random=17",
-          "material": "bronze",
-          "size": "medium",
-          "sizeDescription": "6 in - 10 in"
-        },
-        {
-          "id": "MOT002",
-          "name": "Success Motivational Figure",
-          "category": "Motivational Statue",
-          "price": 950,
-          "mrp": 1400,
-          "discount": "32% Off",
-          "rating": 4.5,
-          "reviews": 89,
-          "isFeatured": true,
-          "isCustomizable": true,
-          "imageURL": "https://picsum.photos/300/300?random=18",
-          "material": "resin",
-          "size": "small",
-          "sizeDescription": "Under 6 in"
-        },
-        {
-          "id": "MOT003",
-          "name": "Achievement Trophy Statue",
-          "category": "Motivational Statue",
-          "price": 700,
-          "mrp": 1050,
-          "discount": "33% Off",
-          "rating": 4.3,
-          "reviews": 54,
-          "isFeatured": false,
-          "isCustomizable": false,
-          "imageURL": "https://picsum.photos/300/300?random=19",
-          "material": "resin",
-          "size": "small",
-          "sizeDescription": "Under 6 in"
-        },
-        {
-          "id": "MOT004",
-          "name": "Determination Statue",
-          "category": "Motivational Statue",
-          "price": 850,
-          "mrp": 1250,
-          "discount": "32% Off",
-          "rating": 4.6,
-          "reviews": 76,
-          "isFeatured": true,
-          "isCustomizable": true,
-          "imageURL": "https://picsum.photos/300/300?random=20",
-          "material": "marble",
-          "size": "large",
-          "sizeDescription": "10 in - 15 in"
-        }
-      ]
-    },
-    {
       "id": "home-decor",
       "title": "Home Decor",
-      "subtitle": "Beautiful pieces for every corner",
+      "subtitle": "Art pieces designed to elevate and transform any interior space.",
       "products": [
         {
           "id": "DEC001",
@@ -352,6 +281,77 @@
           "material": "marble",
           "size": "small",
           "sizeDescription": "Under 6 in"
+        }
+      ]
+    },
+    {
+      "id": "motivational",
+      "title": "Motivational Statues",
+      "subtitle": "Inspiring figures symbolizing courage, leadership, and strength.",
+      "products": [
+        {
+          "id": "MOT001",
+          "name": "Thinker Statue Bronze",
+          "category": "Motivational Statue",
+          "price": 800,
+          "mrp": 1200,
+          "discount": "33% Off",
+          "rating": 4.4,
+          "reviews": 72,
+          "isFeatured": false,
+          "isCustomizable": true,
+          "imageURL": "https://picsum.photos/300/300?random=17",
+          "material": "bronze",
+          "size": "medium",
+          "sizeDescription": "6 in - 10 in"
+        },
+        {
+          "id": "MOT002",
+          "name": "Success Motivational Figure",
+          "category": "Motivational Statue",
+          "price": 950,
+          "mrp": 1400,
+          "discount": "32% Off",
+          "rating": 4.5,
+          "reviews": 89,
+          "isFeatured": true,
+          "isCustomizable": true,
+          "imageURL": "https://picsum.photos/300/300?random=18",
+          "material": "resin",
+          "size": "small",
+          "sizeDescription": "Under 6 in"
+        },
+        {
+          "id": "MOT003",
+          "name": "Achievement Trophy Statue",
+          "category": "Motivational Statue",
+          "price": 700,
+          "mrp": 1050,
+          "discount": "33% Off",
+          "rating": 4.3,
+          "reviews": 54,
+          "isFeatured": false,
+          "isCustomizable": false,
+          "imageURL": "https://picsum.photos/300/300?random=19",
+          "material": "resin",
+          "size": "small",
+          "sizeDescription": "Under 6 in"
+        },
+        {
+          "id": "MOT004",
+          "name": "Determination Statue",
+          "category": "Motivational Statue",
+          "price": 850,
+          "mrp": 1250,
+          "discount": "32% Off",
+          "rating": 4.6,
+          "reviews": 76,
+          "isFeatured": true,
+          "isCustomizable": true,
+          "imageURL": "https://picsum.photos/300/300?random=20",
+          "material": "marble",
+          "size": "large",
+          "sizeDescription": "10 in - 15 in"
         }
       ]
     }

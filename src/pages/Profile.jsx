@@ -8,6 +8,8 @@ import {
 } from "../features/user/userSlice";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
+import Breadcrumb from "../components/Breadcrumb.jsx";
+import { ChevronDown } from "lucide-react";
 
 export default function Profile() {
   const user = useSelector((s) => s.user);
@@ -23,6 +25,7 @@ export default function Profile() {
   const [dob, setDob] = React.useState(user?.profile?.dob || "");
   const [gender, setGender] = React.useState(user?.profile?.gender || "Male");
   const [profileErrors, setProfileErrors] = React.useState({});
+  const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false);
 
   const onlyDigits = (v) => v.replace(/\D/g, "");
   const strongEmail = (v) => /\S+@\S+\.\S+/.test(v);
@@ -60,6 +63,7 @@ export default function Profile() {
   const billingCard =
     cards.find((c) => c.id === defaultCardId) || cards[0] || null;
   const [isCardModalOpen, setIsCardModalOpen] = React.useState(false);
+  const [editingCard, setEditingCard] = React.useState(null); // when set, modal edits existing card
   const [cardName, setCardName] = React.useState("");
   const [cardNumber, setCardNumber] = React.useState("");
   const [cardExpiry, setCardExpiry] = React.useState("");
@@ -102,38 +106,66 @@ export default function Profile() {
     const errs = {};
     if (!cardName.trim()) errs.name = "Name on card is required";
     const expectedLen = cardBrand === "amex" ? 15 : 16;
-    if (cardDigits.length !== expectedLen)
-      errs.number =
-        expectedLen === 15
-          ? "AMEX requires 15 digits"
-          : "Card number must be 16 digits";
-    else if (!luhnCheck(cardDigits)) errs.number = "Invalid card number";
+    const isEditing = !!editingCard;
+    // For editing, card number is optional; validate only if provided
+    if (!isEditing || cardDigits.length > 0) {
+      if (cardDigits.length !== expectedLen)
+        errs.number =
+          expectedLen === 15
+            ? "AMEX requires 15 digits"
+            : "Card number must be 16 digits";
+      else if (!luhnCheck(cardDigits)) errs.number = "Invalid card number";
+    }
     if (!/^\d{2}\/\d{2}$/.test(cardExpiry) || !isFutureExpiry(cardExpiry))
       errs.expiry = "Enter valid MM/YY";
     const cvvLen = cardBrand === "amex" ? 4 : 3;
-    if (onlyDigitsCard(cardCvv).length !== cvvLen)
-      errs.cvv =
-        cardBrand === "amex"
-          ? "AMEX CVV must be 4 digits"
-          : "CVV must be 3 digits";
+    if (!editingCard || onlyDigitsCard(cardCvv).length > 0) {
+      if (onlyDigitsCard(cardCvv).length !== cvvLen)
+        errs.cvv =
+          cardBrand === "amex"
+            ? "AMEX CVV must be 4 digits"
+            : "CVV must be 3 digits";
+    }
     return errs;
-  }, [cardName, cardDigits, cardExpiry, cardCvv, cardBrand]);
+  }, [cardName, cardDigits, cardExpiry, cardCvv, cardBrand, editingCard]);
   const isCardValid = Object.keys(cardErrors).length === 0;
+  const [openCardId, setOpenCardId] = React.useState(null);
 
   const saveCard = () => {
     if (!isCardValid) return;
-    const mask = cardDigits.slice(-4);
-    const newCard = {
-      id: `card_${cardBrand}_${mask}`,
-      brand: cardBrand,
-      mask,
-      label: `${cardBrand.toUpperCase()} card ending with ${mask}`,
-    };
-    const next = [...cards, newCard];
-    setCards(next);
-    const payload = { cards: next };
-    if (!defaultCardId) payload.defaultCardId = newCard.id; // first saved card becomes billing by default
-    dispatch(updateProfile(payload));
+    if (editingCard) {
+      const current = editingCard;
+      let updated = { ...current, name: cardName.trim(), expiry: cardExpiry };
+      if (cardDigits.length > 0 && luhnCheck(cardDigits)) {
+        const newMask = cardDigits.slice(-4);
+        const newBrand = cardBrand;
+        updated = {
+          ...updated,
+          brand: newBrand,
+          mask: newMask,
+          label: `${newBrand.toUpperCase()} card ending with ${newMask}`,
+        };
+      }
+      const next = cards.map((c) => (c.id === current.id ? updated : c));
+      setCards(next);
+      dispatch(updateProfile({ cards: next }));
+      setEditingCard(null);
+    } else {
+      const mask = cardDigits.slice(-4);
+      const newCard = {
+        id: `card_${cardBrand}_${mask}`,
+        brand: cardBrand,
+        mask,
+        label: `${cardBrand.toUpperCase()} card ending with ${mask}`,
+        name: cardName.trim(),
+        expiry: cardExpiry,
+      };
+      const next = [...cards, newCard];
+      setCards(next);
+      const payload = { cards: next };
+      if (!defaultCardId) payload.defaultCardId = newCard.id; // first saved card becomes billing by default
+      dispatch(updateProfile(payload));
+    }
     setIsCardModalOpen(false);
     setCardName("");
     setCardNumber("");
@@ -155,8 +187,33 @@ export default function Profile() {
     );
   };
 
+  const AccordionBody = ({ isOpen, children }) => {
+    const innerRef = React.useRef(null);
+    const [maxHeight, setMaxHeight] = React.useState(0);
+    React.useEffect(() => {
+      if (innerRef.current) {
+        setMaxHeight(innerRef.current.scrollHeight);
+      }
+    }, [children, isOpen]);
+    return (
+      <div
+        className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
+        style={{ maxHeight: isOpen ? maxHeight : 0 }}
+      >
+        <div ref={innerRef} className="border-t p-4 text-sm space-y-3">
+          {children}
+        </div>
+      </div>
+    );
+  };
+
+  
+
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="mx-auto py-6 px-4 md:px-15 lg:px-20">
+      <div className="py-1">
+        <Breadcrumb items={[{ label: "Home", link: "/" }, { label: "Profile" }]} />
+      </div>
       {/* Tabs */}
       <div className="flex gap-6 text-sm mb-6">
         <button
@@ -202,7 +259,7 @@ export default function Profile() {
       </div>
 
       {tab === "profile" && (
-        <div className="bg-white py-6 max-w-5xl">
+        <div className="bg-white py-4 max-w-5xl">
           <h2 className="text-lg font-semibold mb-4">Profile</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -210,10 +267,12 @@ export default function Profile() {
               <input
                 className={`w-full border rounded px-3 py-2 ${
                   profileErrors.name ? "border-red-500" : "border-gray-200"
-                }`}
+                } bg-gray-50 cursor-not-allowed`}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
+                disabled
+                readOnly
               />
               {profileErrors.name && (
                 <p className="text-xs text-red-600 mt-1">
@@ -226,13 +285,15 @@ export default function Profile() {
               <input
                 className={`w-full border rounded px-3 py-2 ${
                   profileErrors.mobile ? "border-red-500" : "border-gray-200"
-                }`}
+                } bg-gray-50 cursor-not-allowed`}
                 value={mobile}
                 onChange={(e) =>
                   setMobile(onlyDigits(e.target.value).slice(0, 10))
                 }
                 placeholder="0000000000"
                 inputMode="numeric"
+                disabled
+                readOnly
               />
               {profileErrors.mobile && (
                 <p className="text-xs text-red-600 mt-1">
@@ -245,10 +306,12 @@ export default function Profile() {
               <input
                 className={`w-full border rounded px-3 py-2 ${
                   profileErrors.email ? "border-red-500" : "border-gray-200"
-                }`}
+                } bg-gray-50 cursor-not-allowed`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="demo@email.com"
+                disabled
+                readOnly
               />
               {profileErrors.email && (
                 <p className="text-xs text-red-600 mt-1">
@@ -259,18 +322,21 @@ export default function Profile() {
             <div>
               <label className="block text-sm mb-1">Date of Birth</label>
               <input
-                className="w-full border rounded px-3 py-2 border-gray-200"
+                className="w-full border rounded px-3 py-2 border-gray-200 bg-gray-50 cursor-not-allowed"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
                 placeholder="DD/MM/YYYY"
+                disabled
+                readOnly
               />
             </div>
             <div>
               <label className="block text-sm mb-1">Gender</label>
               <select
-                className="w-full border rounded px-3 py-2 border-gray-200"
+                className="w-full border rounded px-3 py-2 border-gray-200 bg-gray-50 cursor-not-allowed"
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
+                disabled
               >
                 <option>Male</option>
                 <option>Female</option>
@@ -279,11 +345,97 @@ export default function Profile() {
             </div>
           </div>
           <button
-            onClick={handleSaveProfile}
+            onClick={() => setIsProfileModalOpen(true)}
             className="mt-4 px-4 py-2 bg-brand-700 text-white rounded"
           >
             Edit Profile
           </button>
+          <Modal
+            isOpen={isProfileModalOpen}
+            onClose={() => setIsProfileModalOpen(false)}
+            title="Edit Profile"
+          >
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSaveProfile();
+                if (Object.keys(profileErrors).length === 0) {
+                  setIsProfileModalOpen(false);
+                }
+              }}
+              className="space-y-3"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm mb-1">Name *</label>
+                  <input
+                    className={`w-full border rounded px-3 py-2 ${
+                      profileErrors.name ? "border-red-500" : "border-gray-200"
+                    }`}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Mobile Number *</label>
+                  <input
+                    className={`w-full border rounded px-3 py-2 ${
+                      profileErrors.mobile ? "border-red-500" : "border-gray-200"
+                    }`}
+                    value={mobile}
+                    onChange={(e) => setMobile(onlyDigits(e.target.value).slice(0, 10))}
+                    placeholder="0000000000"
+                    inputMode="numeric"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Email</label>
+                  <input
+                    className={`w-full border rounded px-3 py-2 ${
+                      profileErrors.email ? "border-red-500" : "border-gray-200"
+                    }`}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="demo@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Date of Birth</label>
+                  <input
+                    className="w-full border rounded px-3 py-2 border-gray-200"
+                    value={dob}
+                    onChange={(e) => setDob(e.target.value)}
+                    placeholder="DD/MM/YYYY"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Gender</label>
+                  <select
+                    className="w-full border rounded px-3 py-2 border-gray-200"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                  >
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsProfileModalOpen(false)}
+                  className="px-4 py-2 border rounded"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 bg-brand-700 text-white rounded">
+                  Save changes
+                </button>
+              </div>
+            </form>
+          </Modal>
         </div>
       )}
 
@@ -368,7 +520,7 @@ export default function Profile() {
                         </span>
                       )}
                       {addr.isDefault && (
-                        <span className="ml-2 text-xs bg-gray-100 px-2 py-0.5 rounded border border-gray-200 text-gray-600">
+                        <span className="ml-2 text-xs bg-brand-50 px-2 py-0.5 rounded border border-purple-800 text-purple-900 font-extrabold ">
                           Default address
                         </span>
                       )}
@@ -400,7 +552,7 @@ export default function Profile() {
                       </button>
                       {!addr.isDefault && (
                         <button
-                          className="ml-auto text-xs border rounded px-2 py-1"
+                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold"
                           onClick={() => dispatch(setDefaultAddress(addr.id))}
                         >
                           Set as Default address
@@ -442,111 +594,109 @@ export default function Profile() {
       {tab === "payments" && (
         <div className="max-w-4xl">
           <h2 className="text-lg font-semibold mb-4">Payment Options</h2>
-          <div className="space-y-4">
-            {cards.map((c) => (
-              <div
-                key={c.id}
-                className="border rounded p-4 flex items-center justify-between"
-              >
-                <div className="text-sm flex items-center">
-                  <BrandBadge brand={c.brand} />
-                  <div>
-                    <div className="font-medium uppercase">{c.brand}</div>
-                    <div className="text-gray-600">{c.label}</div>
+          <div className="space-y-3">
+            {cards.map((c) => {
+              const isOpen = openCardId === c.id;
+              const defaultAddr =
+                addresses.find((a) => a.isDefault) || addresses[0] || null;
+              return (
+                <div key={c.id} className="border-y border-gray-300">
+                  <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => setOpenCardId(isOpen ? null : c.id)}>
+                    <div className="text-sm flex items-center gap-2">
+                      <BrandBadge brand={c.brand} />
+                      <div>
+                        <div className="font-medium uppercase">{c.brand}</div>
+                        <div className="text-gray-600">{c.label}</div>
+                      </div>
+                      {billingCard?.id === c.id && (
+                        <span className="ml-2 px-2 py-1 text-xs rounded border-2 border-purple-300 bg-brand-50 text-purple-700 font-bold">Billing card</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="px-3 py-1 border border-gray-300 text-gray-700 rounded text-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Open edit modal with prefilled values
+                          setEditingCard(c);
+                          setCardName(c.name || "");
+                          setCardNumber(""); // keep masked, allow re-entry if they change
+                          setCardExpiry(c.expiry || "");
+                          setCardCvv("");
+                          setIsCardModalOpen(true);
+                        }}
+                      >
+                        Edit card details
+                      </button>
+                      <button
+                        className="px-3 py-1 border border-gray-300 text-gray-700 rounded text-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const next = cards.filter((x) => x.id !== c.id);
+                          setCards(next);
+                          dispatch(
+                            updateProfile({
+                              cards: next,
+                              defaultCardId: next[0]?.id || null,
+                            })
+                          );
+                        }}
+                      >
+                        Delete Card
+                      </button>
+                      <ChevronDown size={18} className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"}`} />
+                    </div>
                   </div>
+                  <AccordionBody isOpen={isOpen}>
+                    <div className="text-gray-700">Billing address</div>
+                    {defaultAddr ? (
+                      <div className="text-gray-600 space-y-1">
+                        <div>
+                          {defaultAddr.name}
+                          {defaultAddr.tag && (
+                            <span className="ml-2 text-xs bg-gray-100 px-2 py-0.5 rounded border border-gray-200">{defaultAddr.tag}</span>
+                          )}
+                        </div>
+                        <div>Delivery address: {defaultAddr.addressLine}</div>
+                        <div>Mobile number: {defaultAddr.mobile}</div>
+                        {defaultAddr.email && <div>Email: {defaultAddr.email}</div>}
+                      </div>
+                    ) : (
+                      <div className="text-gray-500">No address saved. Add one in Saved Addresses.</div>
+                    )}
+                    {billingCard?.id !== c.id && (
+                      <button
+                        className="mt-2 px-3 py-1 border border-gray-300 text-gray-700 rounded text-sm"
+                        onClick={() => dispatch(updateProfile({ defaultCardId: c.id }))}
+                      >
+                        Set as Billing card
+                      </button>
+                    )}
+                  </AccordionBody>
                 </div>
-                <div className="flex gap-2 items-center">
-                  {billingCard?.id === c.id && (
-                    <span className="px-2 py-1 text-xs rounded border border-green-300 text-green-700">
-                      Billing card
-                    </span>
-                  )}
-                  <button
-                    className="px-3 py-1 border rounded text-sm"
-                    onClick={() => {
-                      /* stretch goal: edit card */
-                    }}
-                  >
-                    Edit card details
-                  </button>
-                  <button
-                    className="px-3 py-1 border rounded text-sm"
-                    onClick={() => {
-                      const next = cards.filter((x) => x.id !== c.id);
-                      setCards(next);
-                      dispatch(
-                        updateProfile({
-                          cards: next,
-                          defaultCardId: next[0]?.id || null,
-                        })
-                      );
-                    }}
-                  >
-                    Delete Card
-                  </button>
-                  {billingCard?.id !== c.id && (
-                    <button
-                      className="px-3 py-1 border rounded text-sm"
-                      onClick={() =>
-                        dispatch(updateProfile({ defaultCardId: c.id }))
-                      }
-                    >
-                      Set as Billing card
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-            {cards.length === 0 && (
-              <div className="text-gray-500">No saved cards.</div>
-            )}
+              );
+            })}
+            {cards.length === 0 && <div className="text-gray-500">No saved cards.</div>}
           </div>
-          {billingCard && (
-            <div className="mt-6 border rounded p-4 text-sm">
-              <div className="font-semibold mb-2">Billing card</div>
-              <div className="flex items-center uppercase text-gray-700">
-                <BrandBadge brand={billingCard.brand} />
-                {billingCard.brand}
-              </div>
-              <div className="text-gray-600">{billingCard.label}</div>
-            </div>
-          )}
-          {/* Billing address */}
-          {addresses.find((a) => a.isDefault) && (
-            <div className="mt-6 border-y border-gray-300 ounded p-4 text-sm">
-              <div className="font-semibold mb-2">Billing address</div>
-              <div>
-                {addresses.find((a) => a.isDefault).name}{" "}
-                <span className="ml-2 text-xs bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
-                  {addresses.find((a) => a.isDefault).tag}
-                </span>
-              </div>
-              <div className="text-gray-600">
-                Delivery address:{" "}
-                {addresses.find((a) => a.isDefault).addressLine}
-              </div>
-              <div className="text-gray-600">
-                Mobile number: {addresses.find((a) => a.isDefault).mobile}
-              </div>
-              {addresses.find((a) => a.isDefault).email && (
-                <div className="text-gray-600">
-                  Email: {addresses.find((a) => a.isDefault).email}
-                </div>
-              )}
-            </div>
-          )}
+          {/* Removed global billing summary in favor of per-card accordion details */}
 
           <button
-            className="mt-6 px-4 py-2 border rounded text-sm"
-            onClick={() => setIsCardModalOpen(true)}
+            className="mt-4 px-4 py-2 bg-brand-700 text-white rounded"
+            onClick={() => {
+              setEditingCard(null);
+              setIsCardModalOpen(true);
+            }}
           >
             Add new card
           </button>
 
           <Modal
             isOpen={isCardModalOpen}
-            onClose={() => setIsCardModalOpen(false)}
-            title="Add new card"
+            onClose={() => {
+              setIsCardModalOpen(false);
+              setEditingCard(null);
+            }}
+            title={editingCard ? "Edit card details" : "Add new card"}
           >
             <form
               onSubmit={(e) => {
@@ -558,23 +708,21 @@ export default function Profile() {
               <div>
                 <label className="block text-sm mb-1">Name on card</label>
                 <input
-                  className={`w-full border rounded px-3 py-2 ${
-                    cardErrors.name ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`w-full border rounded px-3 py-2 border-gray-300`}
                   value={cardName}
                   onChange={(e) => setCardName(e.target.value)}
                   placeholder="John Doe"
                 />
-                {cardErrors.name && (
+                {cardErrors.name ? (
                   <p className="text-xs text-red-600 mt-1">{cardErrors.name}</p>
+                ) : (
+                  <p className="text-xs text-gray-400 mt-1">Name on card is required</p>
                 )}
               </div>
               <div>
                 <label className="block text-sm mb-1">Card number</label>
                 <input
-                  className={`w-full border rounded px-3 py-2 ${
-                    cardErrors.number ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`w-full border rounded px-3 py-2 border-gray-300`}
                   value={cardNumber}
                   onChange={(e) => {
                     const digits = onlyDigitsCard(e.target.value).slice(0, 19);
@@ -582,21 +730,19 @@ export default function Profile() {
                     setCardNumber(grouped);
                   }}
                   inputMode="numeric"
-                  placeholder="1234 5678 9012 3456"
+                  placeholder={editingCard ? "(leave blank to keep current)" : "1234 5678 9012 3456"}
                 />
-                {cardErrors.number && (
-                  <p className="text-xs text-red-600 mt-1">
-                    {cardErrors.number}
-                  </p>
+                {cardErrors.number ? (
+                  <p className="text-xs text-red-600 mt-1">{cardErrors.number}</p>
+                ) : (
+                  <p className="text-xs text-gray-400 mt-1">Card number must be 16 digits</p>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm mb-1">Expiry (MM/YY)</label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${
-                      cardErrors.expiry ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`w-full border rounded px-3 py-2 border-gray-300`}
                     value={cardExpiry}
                     onChange={(e) => {
                       const v = onlyDigitsCard(e.target.value).slice(0, 4);
@@ -606,36 +752,37 @@ export default function Profile() {
                     }}
                     placeholder="MM/YY"
                   />
-                  {cardErrors.expiry && (
-                    <p className="text-xs text-red-600 mt-1">
-                      {cardErrors.expiry}
-                    </p>
+                  {cardErrors.expiry ? (
+                    <p className="text-xs text-red-600 mt-1">{cardErrors.expiry}</p>
+                  ) : (
+                    <p className="text-xs text-gray-400 mt-1">Enter valid MM/YY</p>
                   )}
                 </div>
                 <div>
                   <label className="block text-sm mb-1">CVV</label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${
-                      cardErrors.cvv ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`w-full border rounded px-3 py-2 border-gray-300`}
                     value={cardCvv}
                     onChange={(e) =>
                       setCardCvv(onlyDigitsCard(e.target.value).slice(0, 4))
                     }
                     inputMode="numeric"
-                    placeholder={cardBrand === "amex" ? "4 digits" : "3 digits"}
+                    placeholder={editingCard ? "(optional)" : cardBrand === "amex" ? "4 digits" : "3 digits"}
                   />
-                  {cardErrors.cvv && (
-                    <p className="text-xs text-red-600 mt-1">
-                      {cardErrors.cvv}
-                    </p>
+                  {cardErrors.cvv ? (
+                    <p className="text-xs text-red-600 mt-1">{cardErrors.cvv}</p>
+                  ) : (
+                    <p className="text-xs text-gray-400 mt-1">{cardBrand === "amex" ? "CVV must be 4 digits" : "CVV must be 3 digits"}</p>
                   )}
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setIsCardModalOpen(false)}
+                  onClick={() => {
+                    setIsCardModalOpen(false);
+                    setEditingCard(null);
+                  }}
                   className="px-4 py-2 border rounded"
                 >
                   Cancel

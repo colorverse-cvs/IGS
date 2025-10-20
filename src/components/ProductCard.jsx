@@ -49,19 +49,23 @@ const ProductCard = ({ product, onOpenProduct }) => {
       className="
       bg-white 
       overflow-hidden 
-      transition-all duration-300 
+      transition-all duration-200 ease-out
       flex flex-col
       rounded-2xl
       group
       h-full
-      shadow-sm
-      hover:shadow-lg
+      w-full
+      min-w-0
       focus:outline-none focus:ring-2 focus:ring-brand-500
     "
     >
       {/* --- Image and Tag Section --- */}
-      <div className="relative h-48 w-full bg-gray-100 rounded-t-2xl overflow-hidden flex items-center justify-center transition-all duration-300 group:shadow-2xl group:ring-2 group:ring-brand-200">
-        <img src={imageURL} alt={name} className="w-full h-full object-cover" />
+      <div className="relative h-40 md:h-60 w-full bg-gray-100 rounded-2xl overflow-hidden flex items-center justify-center border border-gray-200 transition-all duration-200 ease-out group-hover:shadow-lg group-hover:scale-102 group-hover:-translate-y-1">
+        <img
+          src={imageURL}
+          alt={name}
+          className="w-full h-full object-cover transition-transform duration-200 ease-out group-hover:scale-105"
+        />
 
         {/* Tags at the top left */}
         <div className="absolute top-3 left-3 flex flex-col lg:flex-row gap-1.5">
@@ -105,16 +109,16 @@ const ProductCard = ({ product, onOpenProduct }) => {
       </div>
 
       {/* --- Product Details Section --- */}
-      <div className="p-4 flex-grow flex flex-col justify-between min-h-[120px]">
+      <div className="p-4 flex-grow flex flex-col justify-between min-h-[140px] min-w-0">
         {/* Product Title - Fixed height to prevent layout shifts */}
-        <div>
-          <div className="text-base font-extrabold text-gray-800 mb-2 overflow-hidden leading-5 truncate">
+        <div className="w-full">
+          <div className="text-base font-extrabold text-gray-800 mb-2 overflow-hidden leading-5 truncate w-full">
             {name}
           </div>
         </div>
 
         {/* Price Row */}
-        <div className="flex items-baseline space-x-2 mb-2">
+        <div className="flex flex-col md:flex-row items-baseline space-x-2 mb-2">
           <span className="text-lg font-extrabold text-purple-700">
             ₹{price}
           </span>
@@ -142,15 +146,10 @@ const ProductCard = ({ product, onOpenProduct }) => {
           <div className="flex items-center justify-center">
             {qtyInCart === 0 ? (
               <button
-                className="
-            flex items-center justify-center py-2 px-3 xl:py-2 xl:px-2 text-white 
-            bg-brand-700 hover:bg-brand-800 font-semibold text-sm 
-            transition-all duration-300 ease-out 
-            focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-50
-            rounded-sm
-            md:opacity-0 md:translate-y-1 md:pointer-events-none
-            md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm
-          "
+                className="flex items-center justify-center sm:py-0 md:py-2 px-2 md:px-3 xl:py-2 xl:px-2 text-white bg-brand-700 hover:bg-brand-800 font-semibold text-xs 
+            transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-50
+            rounded-sm md:opacity-0 md:translate-y-1 md:pointer-events-none
+            md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -213,7 +212,15 @@ const ProductCard = ({ product, onOpenProduct }) => {
       </button>
     );
   }
-  return <Link to={`/product/${id}`}>{content}</Link>;
+  return (
+    <Link
+      to={`/product/${id}`}
+      className="block w-full h-full"
+      style={{ textDecoration: "none", color: "inherit" }}
+    >
+      {content}
+    </Link>
+  );
 };
 
 export default ProductCard;

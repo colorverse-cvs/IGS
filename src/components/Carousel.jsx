@@ -53,13 +53,11 @@ export default function Carousel({
   const active = normalizedItems[currentIndex];
 
   return (
-    <div
-      className={`relative rounded-2xl overflow-hidden shadow-lg ${className}`}
-    >
+    <div className={`relative overflow-hidden px-2 ${className}`}>
       <img
         src={active.image}
         alt={active.title || "slide"}
-        className="w-full h-full object-cover transition-all duration-700 ease-in-out"
+        className="w-full h-full object-cover transition-all rounded-2xl shadow-lg duration-700 ease-in-out"
       />
 
       {(active.title || active.description) && (
@@ -77,14 +75,14 @@ export default function Carousel({
         <>
           <button
             onClick={goPrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-purple-500 hover:bg-gray-100"
             aria-label="Previous"
           >
             ←
           </button>
           <button
             onClick={goNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-purple-500 hover:bg-gray-100"
             aria-label="Next"
           >
             →
@@ -93,13 +91,13 @@ export default function Carousel({
       )}
 
       {showIndicators && normalizedItems.length > 1 && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-1 py-0.5 rounded-full bg-white flex gap-1">
           {normalizedItems.map((it, idx) => (
             <button
               key={it.id || idx}
               onClick={() => setCurrentIndex(idx)}
               className={`h-2 rounded-full transition-all ${
-                idx === currentIndex ? "w-6 bg-white" : "w-2 bg-white/60"
+                idx === currentIndex ? "w-3.5 bg-brand-500" : "w-2 bg-gray-300"
               }`}
               aria-label={`Go to slide ${idx + 1}`}
             />

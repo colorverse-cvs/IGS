@@ -8,11 +8,11 @@ export default function OrderPlaced() {
   const order = state?.order || null;
 
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 text-center">
+    <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-12 text-center">
       <img src={OrderSuccessfullyCart} />
-      <h1 className="text-xl md:text-2xl font-semibold text-purple-700 my-2">
+      <h2 className="text-xl md:text-2xl font-semibold text-purple-700 my-2">
         Your Order Has Been Placed Successfully!
-      </h1>
+      </h2>
       <p className="text-gray-600 max-w-xl">
         Thank you for shopping with us
         {order?.address?.name ? `, ${order.address.name.split(" ")[0]}` : ""}.

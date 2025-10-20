@@ -8,20 +8,27 @@ import CategoryMosaic from "../components/CategoryMosaic.jsx";
 import HowCustomizationWorks from "../components/HowCustomizationWorks.jsx";
 import Testimonials from "../components/Testimonials.jsx";
 import testimonials from "../data/testimonials.json";
+import Breadcrumb from "../components/Breadcrumb.jsx";
 
 function Home() {
   const navigate = useNavigate();
+
+  const breadcrumbItems = [{ label: "Home" }];
+
   return (
     <>
+      <div className="py-1 px-4 md:px-15 lg:px-20">
+        <Breadcrumb items={breadcrumbItems} />
+      </div>
       <div className="bg-white px-4 md:px-15 lg:px-20">
         {/* Hero Section */}
-        <section className="container mx-auto flex flex-col lg:flex-row gap-10 py-12">
+        <section className="container mx-auto flex flex-col lg:flex-row gap-8 py-12">
           {/* Left Text Block */}
-          <div className="flex flex-col justify-between lg:h-[80vh]  w-full lg:w-[40%]">
+          <div className="flex flex-col justify-between w-full lg:w-[40%]">
             <div>
-              <h1 className="text-5xl xl:text-6xl font-bold leading-tight text-gray-900">
-                Exquisite Statues for <br /> Every Space
-              </h1>
+              <h2 className="text-4xl md:text-5xl pb-4  xl:text-6xl font-bold leading-tight text-gray-900">
+                Exquisite Statues for Every Space
+              </h2>
               <p className="text-gray-600 text-sm">
                 Discover our collection of handcrafted god statues, motivational
                 sculptures, and custom artwork. Transform your space with
@@ -55,7 +62,7 @@ function Home() {
               </div>
             </div>
             {/* Stats Section */}
-            <div className="container hidden mx-auto md:grid grid-cols-2 gap-6">
+            <div className="container hidden mx-auto md:grid grid-cols-2 gap-2">
               <div className="relative rounded-2xl overflow-hidden w-full object-cover">
                 <SlideshowStripe
                   items={carouselData.itemsLeftTop || carouselData.items}
@@ -75,14 +82,14 @@ function Home() {
               </div>
             </div>
           </div>
-          <div className="h-full lg:h-[80vh]  w-full lg:w-[60%]">
+          <div className="w-full lg:w-[60%]">
             <SlideshowStripe
               items={carouselData.items}
               autoplay={carouselData.autoplay}
               autoplayMs={carouselData.autoplayMs}
               showPrevNext={carouselData.showPrevNext}
               showIndicators={carouselData.showIndicators}
-              className="w-full h-full lg:h-[80vh]"
+              className="w-full h-full"
             />
           </div>
         </section>
