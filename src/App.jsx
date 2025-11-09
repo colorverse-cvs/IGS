@@ -5,13 +5,11 @@ import Footer from "./components/Footer";
 
 export default function App() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div>
-        <div>
-          <RoutesMap />
-        </div>
-      </div>
+      <main>
+        <RoutesMap />
+      </main>
       <Footer />
     </div>
   );

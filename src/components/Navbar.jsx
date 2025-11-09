@@ -1,7 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, ChevronDown, Star } from "lucide-react";
+import {
+  ShoppingCart,
+  Menu,
+  X,
+  Search,
+  ChevronDown,
+  Star,
+  User,
+} from "lucide-react";
 import CartDrawer from "./CartDrawer"; // Make sure this path is correct
 import SearchDrawer from "./SearchDrawer.jsx";
 import AuthModal from "./AuthModal";
@@ -11,6 +19,7 @@ import categoriesData from "../data/categories.json";
 export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false);
@@ -18,7 +27,10 @@ export default function Navbar() {
   const [authTab, setAuthTab] = useState("login");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isScrolled, setIsScrolled] = useState(false);
+
+  const navbarClasses = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full ${
+    isScrolled ? "bg-white/95 backdrop-blur-sm shadow-md" : "bg-white"
+  }`;
 
   // Redux: Get the total number of items in the cart
   const totalItems = useSelector((s) =>
@@ -108,7 +120,8 @@ export default function Navbar() {
         (p.categoryName || "").toLowerCase().includes(q) ||
         priceStr.includes(q) ||
         ratingStr.includes(q) ||
-        (!Number.isNaN(qNum) && ((p.price || 0) === qNum || (p.rating || 0) === qNum))
+        (!Number.isNaN(qNum) &&
+          ((p.price || 0) === qNum || (p.rating || 0) === qNum))
       );
     });
   }, [searchQuery, allProducts]);
@@ -156,8 +169,8 @@ export default function Navbar() {
             : "bg-white border-gray-100"
         }`}
       >
-        <div className="mx-auto px-4 md:px-15 lg:px-20">
-          <div className="flex justify-between items-center h-20">
+        <div className="mx-auto px-4 md:px-15 lg:px-20 max-w-7xl lg:max-w-full">
+          <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
               <Link to="/" className="flex items-center">
@@ -165,7 +178,7 @@ export default function Navbar() {
                 <img
                   src={IshitaGalleryLogo}
                   alt="Ishita Gallery"
-                  className="h-15 w-auto"
+                  className="h-10 md:h-12 w-auto"
                 />
               </Link>
             </div>
@@ -260,38 +273,57 @@ export default function Navbar() {
                 )}
               </button>
 
+              {/* User Profile/Login Icon for all devices */}
               {user.isAuthenticated ? (
-                <Link to="/profile" className="text-sm font-medium text-gray-700 hover:text-purple-700">
-                  Hey, {user.profile?.name || "User"}
+                <Link
+                  to="/profile"
+                  className="p-2 rounded-lg hover:bg-gray-50 transition"
+                  aria-label="Profile"
+                >
+                  <User size={20} className="text-gray-700" />
                 </Link>
               ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setAuthTab("login");
-                      setIsAuthOpen(true);
-                    }}
-                    className="text-gray-700 hover:text-purple-700 text-sm font-medium transition hidden sm:block"
-                  >
-                    Log In
-                  </button>
-                  <button
-                    onClick={() => {
-                      setAuthTab("signup");
-                      setIsAuthOpen(true);
-                    }}
-                    className="px-5 py-2 text-sm font-medium text-white bg-brand-700 rounded hover:bg-brand-800 transition"
-                  >
-                    Sign Up
-                  </button>
-                </>
+                <button
+                  onClick={() => {
+                    setAuthTab("login");
+                    setIsAuthOpen(true);
+                  }}
+                  className="p-2 rounded-lg hover:bg-gray-50 transition"
+                  aria-label="Log In"
+                >
+                  <User size={20} className="text-gray-700" />
+                </button>
               )}
 
-              {/* --- Mobile Menu Button --- */}
-              <div className="flex lg:hidden">
+              {/* --- Mobile Actions (Menu) --- */}
+              <div className="flex lg:hidden items-center gap-3">
+                {/* Mobile Search */}
+                <button
+                  onClick={openSearch}
+                  className="p-2 text-gray-500 hover:text-purple-700 transition md:hidden"
+                  aria-label="Search"
+                >
+                  <Search size={20} />
+                </button>
+
+                {/* Mobile Cart */}
+                <button
+                  onClick={toggleCart}
+                  className="p-2 transition relative md:hidden"
+                  aria-label={`Open shopping cart with ${totalItems} items`}
+                >
+                  <ShoppingCart size={20} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-brand-600 rounded-full">
+                      {totalItems > 99 ? "99+" : totalItems}
+                    </span>
+                  )}
+                </button>
+
+                {/* Mobile Menu Button */}
                 <button
                   onClick={toggleMenu}
-                  className="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition"
+                  className="p-2 -mr-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition"
                   aria-expanded={isMenuOpen}
                   aria-label="Toggle navigation menu"
                 >
@@ -415,30 +447,8 @@ export default function Navbar() {
 
           {/* Footer Actions (Sticky at the bottom) */}
           <div className="p-4 border-t shadow-inner">
-            {/* Cart Status and Login */}
+            {/* Cart Status */}
             <div className="flex justify-between items-center mb-3">
-              {user.isAuthenticated ? (
-                <button
-                  onClick={() => {
-                    toggleMenu();
-                    window.location.href = "/profile";
-                  }}
-                  className="text-gray-700 font-semibold hover:text-purple-700"
-                >
-                  Your Profile
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    toggleMenu();
-                    setAuthTab("login");
-                    setIsAuthOpen(true);
-                  }}
-                  className="text-gray-700 font-semibold hover:text-purple-700"
-                >
-                  Log In
-                </button>
-              )}
               <button
                 onClick={() => {
                   toggleMenu();
@@ -450,7 +460,7 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Sign Up Button (Prominent CTA) */}
+            {/* Sign Up Button (Prominent CTA) - Only show for non-authenticated users */}
             {!user.isAuthenticated && (
               <button
                 onClick={() => {

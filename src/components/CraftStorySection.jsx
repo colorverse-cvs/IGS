@@ -38,7 +38,7 @@ export default function CraftStorySection({ categoryId }) {
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/60 to-white" />
           </div>
           <div className="p-6 lg:p-10 lg:w-[50%] w-full">
-            <h2 className="text-4xl md:text-4xl md:text-5xl   font-serif font-semibold mb-4">
+            <h2 className="text-4xl md:text-4xl lg:text-5xl   font-serif font-semibold mb-4">
               {story.title}
             </h2>
             <p className="text-base leading-7 text-gray-700 mb-2">

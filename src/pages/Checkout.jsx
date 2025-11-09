@@ -367,8 +367,8 @@ export default function Checkout() {
 
   return (
     <>
-    <div className="py-1 px-4 md:px-15 lg:px-20">
-      <Breadcrumb items={breadcrumbItems} />
+      <div className="py-1 px-4 md:px-15 lg:px-20">
+        <Breadcrumb items={breadcrumbItems} />
       </div>
       <div className="py-6 px-4 md:px-15 lg:px-20">
         <div className="container mx-auto">
@@ -436,7 +436,7 @@ export default function Checkout() {
                       Add new address
                     </button>
                     <button
-                      className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
+                      className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={!selectedAddress}
                       onClick={() => {
                         setDone((d) => ({ ...d, address: true }));
@@ -641,7 +641,7 @@ export default function Checkout() {
                 <div className="mt-4">
                   <button
                     type="button"
-                    className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
+                    className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={!isPaymentValid}
                     onClick={() => {
                       if (!isPaymentValid) return;
@@ -814,7 +814,7 @@ export default function Checkout() {
                 </div>
                 <button
                   onClick={handlePrimaryAction}
-                  className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
+                  className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={
                     items.length === 0 ||
                     (currentStep === 1 && !selectedAddress) ||
@@ -992,7 +992,7 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={!isCardValid}
-                  className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Save card
                 </button>
