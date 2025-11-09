@@ -68,20 +68,22 @@ const ProductCard = ({ product, onOpenProduct }) => {
         />
 
         {/* Tags at the top left */}
-        <div className="absolute top-3 left-3 flex flex-col lg:flex-row gap-1.5">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {isFeatured && (
             <span
               className="
+              w-18 lg:w-auto
               text-xs 
               font-bold
               px-2 
               py-1 
               rounded-md 
               bg-brand-100 
-              text-purple-500 
-              border 
+              text-purple-700 
+              border-2 
               border-brand-500
               whitespace-nowrap
+              truncate
             "
             >
               Featured
@@ -90,6 +92,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
           {isCustomizable && (
             <span
               className="
+              w-18 lg:w-auto
               text-xs 
               font-semibold 
               px-2 
@@ -97,9 +100,10 @@ const ProductCard = ({ product, onOpenProduct }) => {
               rounded-md 
               bg-white 
               text-gray-500 
-              border 
+              border-2 
               border-gray-300
               whitespace-nowrap
+              truncate
             "
             >
               Customizable
@@ -109,7 +113,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
       </div>
 
       {/* --- Product Details Section --- */}
-      <div className="p-4 flex-grow flex flex-col justify-between min-h-[140px] min-w-0">
+      <div className="py-4 md:p-4 flex-grow flex flex-col justify-between min-h-[140px] min-w-0">
         {/* Product Title - Fixed height to prevent layout shifts */}
         <div className="w-full">
           <div className="text-base font-extrabold text-gray-800 mb-2 overflow-hidden leading-5 truncate w-full">
@@ -143,10 +147,10 @@ const ProductCard = ({ product, onOpenProduct }) => {
               <span className="text-xs text-gray-500">({reviews})</span>
             </div>
           </div>
-          <div className="flex items-center justify-center">
+          <div className="flex items-center md:justify-center">
             {qtyInCart === 0 ? (
               <button
-                className="flex items-center justify-center sm:py-0 md:py-2 px-2 md:px-3 xl:py-2 xl:px-2 text-white bg-brand-700 hover:bg-brand-800 font-semibold text-xs 
+                className="flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-brand-800 font-semibold text-xs 
             transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-50
             rounded-sm md:opacity-0 md:translate-y-1 md:pointer-events-none
             md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm"

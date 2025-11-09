@@ -53,7 +53,7 @@ export default function Carousel({
   const active = normalizedItems[currentIndex];
 
   return (
-    <div className={`relative overflow-hidden px-2 ${className}`}>
+    <div className={`relative overflow-hidden ${className}`}>
       <img
         src={active.image}
         alt={active.title || "slide"}

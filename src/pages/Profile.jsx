@@ -790,7 +790,7 @@ export default function Profile() {
                 <button
                   type="submit"
                   disabled={!isCardValid}
-                  className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50"
+                  className="px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Save card
                 </button>
