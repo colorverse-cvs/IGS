@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ShoppingCart,
   Menu,
@@ -9,6 +9,8 @@ import {
   ChevronDown,
   Star,
   User,
+  Home,
+  Phone,
 } from "lucide-react";
 import CartDrawer from "./CartDrawer"; // Make sure this path is correct
 import SearchDrawer from "./SearchDrawer.jsx";
@@ -19,6 +21,7 @@ import categoriesData from "../data/categories.json";
 export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,6 +30,8 @@ export default function Navbar() {
   const [authTab, setAuthTab] = useState("login");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const isHomePage = location.pathname === "/";
 
   const navbarClasses = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full ${
     isScrolled ? "bg-white/95 backdrop-blur-sm shadow-md" : "bg-white"
@@ -58,9 +63,8 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Products", isDropdown: true }, // Placeholder for dropdown logic
+    { name: "Products", isDropdown: true },
     { name: "Customization", path: "/customization" },
-    { name: "Corporate Gifting", path: "/corporate-gifting" },
     { name: "About", path: "/about" },
     { name: "Blog", path: "/blog" },
     { name: "Contact", path: "/contact" },
@@ -126,6 +130,26 @@ export default function Navbar() {
     });
   }, [searchQuery, allProducts]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isProductsDropdownOpen) {
+        const dropdown = event.target.closest(".products-dropdown-container");
+        if (!dropdown) {
+          setIsProductsDropdownOpen(false);
+        }
+      }
+    };
+
+    if (isProductsDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isProductsDropdownOpen]);
+
   // Sticky glass effect on scroll
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 8);
@@ -162,10 +186,11 @@ export default function Navbar() {
 
   return (
     <>
+      {/* ========== DESKTOP NAVBAR (Hidden on mobile) ========== */}
       <nav
-        className={`sticky top-0 z-30 border-b transition-colors ${
+        className={`hidden lg:block sticky top-0 z-30 border-b transition-colors ${
           isScrolled
-            ? "backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/80 border-gray-200 shadow-sm"
+            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
             : "bg-white border-gray-100"
         }`}
       >
@@ -174,7 +199,6 @@ export default function Navbar() {
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
               <Link to="/" className="flex items-center">
-                {/* Replace with your actual logo component or image path */}
                 <img
                   src={IshitaGalleryLogo}
                   alt="Ishita Gallery"
@@ -183,12 +207,14 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* --- Desktop Navigation Links --- */}
+            {/* Desktop Navigation Links */}
             <div className="hidden lg:flex lg:items-center">
               {navLinks.map((link) =>
                 link.isDropdown ? (
-                  // Products Dropdown Logic
-                  <div key={link.name} className="relative">
+                  <div
+                    key={link.name}
+                    className="relative products-dropdown-container"
+                  >
                     <button
                       onClick={toggleProductsDropdown}
                       className="text-gray-700 hover:text-purple-700 lg:px-3 lg:py-3 text-sm font-medium flex items-center transition"
@@ -237,7 +263,6 @@ export default function Navbar() {
                     )}
                   </div>
                 ) : (
-                  // Standard Link
                   <Link
                     key={link.name}
                     to={link.path}
@@ -249,20 +274,19 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* --- Desktop Actions (Search, Login, Signup, Cart) --- */}
-            <div className="flex items-center gap-2">
+            {/* Desktop Actions */}
+            <div className="flex items-center gap-4">
               <button
-                className="text-gray-500 hover:text-purple-700 transition hidden sm:block"
+                className="text-gray-500 hover:text-purple-700 transition"
                 aria-label="Search"
                 onClick={openSearch}
               >
                 <Search size={20} />
               </button>
 
-              {/* Cart Icon with Item Count (Desktop) */}
               <button
                 onClick={toggleCart}
-                className="p-2 transition relative hidden sm:block"
+                className="p-2 transition relative"
                 aria-label={`Open shopping cart with ${totalItems} items`}
               >
                 <ShoppingCart size={20} />
@@ -273,7 +297,6 @@ export default function Navbar() {
                 )}
               </button>
 
-              {/* User Profile/Login Icon for all devices */}
               {user.isAuthenticated ? (
                 <Link
                   to="/profile"
@@ -288,87 +311,41 @@ export default function Navbar() {
                     setAuthTab("login");
                     setIsAuthOpen(true);
                   }}
-                  className="p-2 rounded-lg hover:bg-gray-50 transition"
-                  aria-label="Log In"
+                  className="px-5 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
+                  aria-label="Sign In / Log In"
                 >
-                  <User size={20} className="text-gray-700" />
+                  Sign In/Log In
                 </button>
               )}
-
-              {/* --- Mobile Actions (Menu) --- */}
-              <div className="flex lg:hidden items-center gap-3">
-                {/* Mobile Search */}
-                <button
-                  onClick={openSearch}
-                  className="p-2 text-gray-500 hover:text-purple-700 transition md:hidden"
-                  aria-label="Search"
-                >
-                  <Search size={20} />
-                </button>
-
-                {/* Mobile Cart */}
-                <button
-                  onClick={toggleCart}
-                  className="p-2 transition relative md:hidden"
-                  aria-label={`Open shopping cart with ${totalItems} items`}
-                >
-                  <ShoppingCart size={20} />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-brand-600 rounded-full">
-                      {totalItems > 99 ? "99+" : totalItems}
-                    </span>
-                  )}
-                </button>
-
-                {/* Mobile Menu Button */}
-                <button
-                  onClick={toggleMenu}
-                  className="p-2 -mr-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition"
-                  aria-expanded={isMenuOpen}
-                  aria-label="Toggle navigation menu"
-                >
-                  {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* ---------------------------------------------------- */}
-        {/* --- MOBILE MENU DRAWER (Fancy Off-Canvas Panel) --- */}
-        {/* ---------------------------------------------------- */}
-
-        {/* Backdrop Overlay */}
+        {/* Desktop Menu Drawer */}
         <div
           className={`
-                        fixed inset-0 bg-black/50 z-20 transition-opacity duration-300 lg:hidden
-                        ${
-                          isMenuOpen
-                            ? "opacity-100 visible"
-                            : "opacity-0 invisible"
-                        }
-                    `}
+            fixed inset-0 bg-black/50 z-20 transition-opacity duration-300
+            ${isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"}
+          `}
           onClick={toggleMenu}
           aria-hidden={!isMenuOpen}
         />
 
-        {/* Menu Panel (Slides from the left) */}
         <div
           className={`
-                        fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-30 
-                        transition-transform duration-300 ease-in-out lg:hidden 
-                        flex flex-col overflow-y-auto
-                        ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}
-                    `}
+            fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-999 
+            transition-transform duration-300 ease-in-out
+            flex flex-col overflow-y-auto
+            ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}
+          `}
           role="dialog"
           aria-modal="true"
           aria-label="Main navigation"
         >
-          {/* Header and Close Button */}
           <div className="flex justify-between items-center p-5 border-b border-brand-100">
             <Link to="/" onClick={toggleMenu} className="flex items-center">
               <img
-                src="/images/ashita-gallery-logo.png"
+                src={IshitaGalleryLogo}
                 alt="Ishita Gallery"
                 className="h-10 w-auto"
               />
@@ -382,9 +359,7 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Navigation Links (Scrollable area) */}
           <div className="flex-1 px-4 py-4 space-y-1">
-            {/* Mobile Products Dropdown */}
             <div className="border-b border-gray-100 pb-2 mb-2">
               <button
                 onClick={toggleProductsDropdown}
@@ -430,7 +405,6 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Other Mobile Links */}
             {navLinks
               .filter((l) => !l.isDropdown)
               .map((link) => (
@@ -445,22 +419,19 @@ export default function Navbar() {
               ))}
           </div>
 
-          {/* Footer Actions (Sticky at the bottom) */}
           <div className="p-4 border-t shadow-inner">
-            {/* Cart Status */}
             <div className="flex justify-between items-center mb-3">
               <button
                 onClick={() => {
                   toggleMenu();
                   toggleCart();
                 }}
-                className="flex items-center text-purple-700 font-semibold hover:text-purple-900 transition"
+                className="flex items-center text-brand-700 font-semibold hover:text-purple-900 transition"
               >
                 Cart ({totalItems}) <ShoppingCart size={20} className="ml-2" />
               </button>
             </div>
 
-            {/* Sign Up Button (Prominent CTA) - Only show for non-authenticated users */}
             {!user.isAuthenticated && (
               <button
                 onClick={() => {
@@ -477,9 +448,313 @@ export default function Navbar() {
         </div>
       </nav>
 
-      <SearchDrawer isOpen={isSearchOpen} onClose={closeSearch} />
+      {/* ========== MOBILE NAVBAR (Top Bar) ========== */}
+      <nav
+        className={`lg:hidden fixed top-0 left-0 right-0 z-40 border-b border-gray-200 ${
+          isScrolled
+            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+            : "bg-white border-gray-100"
+        }`}
+      >
+        <div className="py-3 px-4 md:px-15 lg:px-20">
+          {/* Top Navbar Row */}
+          <div className="flex justify-between items-center h-14">
+            {/* Logo on left */}
+            <Link to="/" className="flex items-center flex-shrink-0">
+              <img
+                src={IshitaGalleryLogo}
+                alt="Ishita Gallery"
+                className="h-9 w-auto"
+              />
+            </Link>
 
-      {/* --- Cart Drawer Component (Always positioned outside the Navbar) --- */}
+            {/* Search and Auth on right (Medium devices and up) */}
+            <div className="hidden md:flex items-center gap-3">
+              {/* Search Icon (MD and up) */}
+              <button
+                className="text-gray-500 hover:text-purple-700 transition"
+                aria-label="Search"
+                onClick={openSearch}
+              >
+                <Search size={20} />
+              </button>
+
+              {/* Auth Button/Icon */}
+              {user.isAuthenticated ? (
+                <Link
+                  to="/profile"
+                  className="p-2 rounded-lg hover:bg-gray-100 transition"
+                  aria-label="Profile"
+                >
+                  <User size={20} className="text-brand-700" />
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    setAuthTab("login");
+                    setIsAuthOpen(true);
+                  }}
+                  className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
+                  aria-label="Sign In / Log In"
+                >
+                  Sign In/Log In
+                </button>
+              )}
+            </div>
+
+            {/* Auth Button/Icon on Small devices (SM only, not MD) */}
+            <div className="flex md:hidden items-center gap-2">
+              {user.isAuthenticated ? (
+                <Link
+                  to="/profile"
+                  className="p-2 rounded-lg hover:bg-gray-100 transition"
+                  aria-label="Profile"
+                >
+                  <User size={20} className="text-brand-700" />
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    setAuthTab("login");
+                    setIsAuthOpen(true);
+                  }}
+                  className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
+                  aria-label="Sign In / Log In"
+                >
+                  Sign Up/Log In
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Search Bar (Only on Small devices and home page) */}
+          {isHomePage && (
+            <div className="mt-3 md:hidden">
+              <button
+                onClick={openSearch}
+                className="w-full px-4 py-2 bg-gray-100 rounded-lg text-gray-600 flex items-center justify-between hover:bg-gray-200 transition"
+              >
+                <span className="text-sm">Search for a product</span>
+                <Search size={18} className="text-gray-500" />
+              </button>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      <div
+        className="md:hidden"
+        style={{ height: isHomePage ? "114px" : "85px" }}
+      />
+      <div
+        className="hidden md:block lg:hidden"
+        style={{ height: isHomePage ? "80px" : "85px" }}
+      />
+
+      {/* ========== MOBILE BOTTOM NAVBAR ========== */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200">
+        <div className="flex justify-around items-center h-16">
+          {/* Home */}
+          <Link
+            to="/"
+            className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+              location.pathname === "/"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-purple-700"
+            }`}
+            aria-label="Home"
+          >
+            <Home size={24} />
+            <span className="text-xs mt-1 font-medium">Home</span>
+          </Link>
+
+          {/* Profile */}
+          <Link
+            to="/profile"
+            className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+              location.pathname === "/profile"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-purple-700"
+            }`}
+            aria-label="Profile"
+          >
+            <User size={24} />
+            <span className="text-xs mt-1 font-medium">Profile</span>
+          </Link>
+
+          {/* Contact */}
+          <Link
+            to="/contact"
+            className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+              location.pathname === "/contact"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-purple-700"
+            }`}
+            aria-label="Contact"
+          >
+            <Phone size={24} />
+            <span className="text-xs mt-1 font-medium">Contact</span>
+          </Link>
+
+          {/* Cart */}
+          <button
+            onClick={toggleCart}
+            className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
+            aria-label={`Cart with ${totalItems} items`}
+          >
+            <div className="relative">
+              <ShoppingCart size={24} />
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
+                  {totalItems > 99 ? "99+" : totalItems}
+                </span>
+              )}
+            </div>
+            <span className="text-xs mt-1 font-medium">Cart</span>
+          </button>
+
+          {/* Menu */}
+          <button
+            onClick={toggleMenu}
+            className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+              isMenuOpen
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-purple-700"
+            }`}
+            aria-label="Menu"
+            aria-expanded={isMenuOpen}
+          >
+            <Menu size={24} />
+            <span className="text-xs mt-1 font-medium">Menu</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Drawer (Updated for mobile) */}
+      <div
+        className={`
+          lg:hidden fixed inset-0 bg-black/50 z-30 transition-opacity duration-300
+          ${isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"}
+        `}
+        onClick={toggleMenu}
+        aria-hidden={!isMenuOpen}
+      />
+
+      <div
+        className={`
+          lg:hidden fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-999
+          transition-transform duration-300 ease-in-out
+          flex flex-col overflow-y-auto mb-20
+          ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile menu"
+        // style={{ maxHeight: "calc(100vh - 64px)" }}
+      >
+        <div className="flex justify-between items-center p-5">
+          <h2 className="text-lg font-semibold text-gray-700">Menu</h2>
+          <button
+            onClick={toggleMenu}
+            className="p-2 rounded-full text-gray-500 hover:text-purple-700 hover:bg-brand-50 transition"
+            aria-label="Close menu"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="flex-1 px-4 py-4 space-y-1 overflow-y-auto border-y-2 border-brand-200">
+          {/* Products Section */}
+          <div className="border-b border-gray-100 pb-3 mb-3">
+            <button
+              onClick={toggleProductsDropdown}
+              className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-purple-700 px-3 py-2 rounded-lg transition flex justify-between items-center"
+            >
+              Products{" "}
+              <ChevronDown
+                size={18}
+                className={`transition-transform ${
+                  isProductsDropdownOpen ? "rotate-180" : "rotate-0"
+                }`}
+              />
+            </button>
+            {isProductsDropdownOpen && (
+              <div className="pl-6 pt-2 pb-2 space-y-2 bg-gray-50 rounded-lg mt-2">
+                {productLinks.map((pLink) =>
+                  pLink.path ? (
+                    <Link
+                      key={pLink.name}
+                      to={pLink.path}
+                      onClick={() => {
+                        toggleMenu();
+                        toggleProductsDropdown();
+                      }}
+                      className="block text-sm text-gray-600 hover:text-purple-700 py-1"
+                    >
+                      {pLink.name}
+                    </Link>
+                  ) : (
+                    <button
+                      key={pLink.name}
+                      onClick={() => {
+                        handleCategoryClick(pLink);
+                        toggleMenu();
+                      }}
+                      className="block w-full text-left text-sm text-gray-600 hover:text-purple-700 py-1"
+                    >
+                      {pLink.name}
+                    </button>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Other Navigation Links */}
+          {navLinks
+            .filter((l) => !l.isDropdown)
+            .map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                onClick={toggleMenu}
+                className="block text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-purple-700 px-3 py-2 rounded-lg transition"
+              >
+                {link.name}
+              </Link>
+            ))}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-4 shadow-inner mt-auto">
+          <div className="flex justify-between items-center mb-3">
+            <button
+              onClick={() => {
+                toggleMenu();
+                toggleCart();
+              }}
+              className="flex items-center text-brand-700 font-semibold hover:text-purple-900 transition text-sm"
+            >
+              View Cart ({totalItems})
+            </button>
+          </div>
+
+          {!user.isAuthenticated && (
+            <button
+              onClick={() => {
+                toggleMenu();
+                setAuthTab("signup");
+                setIsAuthOpen(true);
+              }}
+              className="w-full text-center px-4 py-3 text-sm font-bold text-white bg-brand-700 rounded-lg hover:bg-brand-800 transition"
+            >
+              Sign Up
+            </button>
+          )}
+        </div>
+      </div>
+
+      <SearchDrawer isOpen={isSearchOpen} onClose={closeSearch} />
       <CartDrawer isOpen={isCartOpen} onClose={toggleCart} />
       <AuthModal
         isOpen={isAuthOpen}

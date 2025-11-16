@@ -7,7 +7,6 @@ import {
 } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { Trash2, X, Minus, Plus } from "lucide-react";
-// Removed in-drawer payment modal; we navigate to /checkout instead
 import EmptyShoppingCart from "../assets/empty-shopping-cart.svg";
 
 /**
@@ -77,7 +76,7 @@ export default function Cart({ isDrawer = false, onClose }) {
       <div className={containerClasses}>
         {/* Full Page Header (Only displayed if NOT in drawer) */}
         {!isDrawer && (
-          <h2 className="text-4xl font-extrabold text-gray-900 mb-8 pb-2">
+          <h2 className="text-4xl text-center font-extrabold text-gray-900 py-2">
             Shopping Cart 🛒
           </h2>
         )}
@@ -110,7 +109,7 @@ export default function Cart({ isDrawer = false, onClose }) {
               className={`${
                 isDrawer
                   ? "flex-1 overflow-y-auto p-4"
-                  : "md:w-3/4 bg-white p-6 rounded-xl shadow-lg"
+                  : "md:w-3/4 bg-white pt-0 p-2 md:p-6 rounded-xl shadow-lg"
               } space-y-6`}
             >
               {items.map((it) => {
@@ -137,7 +136,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                           Material: {it.material || "-"} &nbsp; Size:{" "}
                           {it.size || "-"}
                         </div>
-                        <div className="text-purple-700 font-semibold">
+                        <div className="text-brand-700 font-semibold">
                           ₹{it.price}
                         </div>
                         <div className="flex gap-2 py-2">
@@ -173,7 +172,12 @@ export default function Cart({ isDrawer = false, onClose }) {
                             className="text-red-600 text-xs"
                             onClick={() => dispatch(removeFromCart(it.id))}
                           >
-                            Remove from cart
+                            <span className="hidden lg:block">
+                              Remove from cart
+                            </span>
+                            <span className="lg:hidden">
+                              <Trash2 size={20} className="text-red" />{" "}
+                            </span>
                           </button>
                         </div>
                         <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
@@ -194,12 +198,14 @@ export default function Cart({ isDrawer = false, onClose }) {
                   );
                 }
                 // Full page cart layout: match drawer design responsively
-                const lineWrap = wrapMap[it.id] ? WRAP_FEE_PER_UNIT * it.qty : 0;
+                const lineWrap = wrapMap[it.id]
+                  ? WRAP_FEE_PER_UNIT * it.qty
+                  : 0;
                 const lineTotal = it.price * it.qty + lineWrap;
                 return (
                   <div
                     key={it.id}
-                    className="py-4 flex items-start gap-4 text-sm border-b last:border-b-0"
+                    className="py-4 flex items-start gap-4 text-sm border border-gray-100 hover:shadow-lg rounded-lg p-2"
                   >
                     <img
                       src={it.image}
@@ -210,19 +216,24 @@ export default function Cart({ isDrawer = false, onClose }) {
                       <div className="font-medium text-gray-900 truncate">
                         {it.title}
                       </div>
-                      <div className="text-gray-500">
-                        Material: {it.material || "-"} &nbsp; Size: {it.size || "-"}
+                      <div className="text-gray-500 flex flex-col gap-1">
+                        <span>Material: {it.material || "-"} </span>
+                        <span> Size: {it.size || "-"}</span>
                       </div>
-                      <div className="text-purple-700 font-semibold">₹{it.price}</div>
+                      <div className="text-brand-700 font-semibold">
+                        ₹{it.price}
+                      </div>
 
-                      <div className="flex flex-wrap items-center gap-5 py-2">
+                      <div className="flex items-center gap-5 py-2">
                         <div className="flex items-center gap-2 border border-gray-200 rounded">
                           <button
                             type="button"
                             className="px-2"
                             onClick={() =>
                               it.qty > 1
-                                ? dispatch(updateQty({ id: it.id, qty: it.qty - 1 }))
+                                ? dispatch(
+                                    updateQty({ id: it.id, qty: it.qty - 1 })
+                                  )
                                 : dispatch(removeFromCart(it.id))
                             }
                           >
@@ -232,7 +243,11 @@ export default function Cart({ isDrawer = false, onClose }) {
                           <button
                             type="button"
                             className="px-2"
-                            onClick={() => dispatch(updateQty({ id: it.id, qty: it.qty + 1 }))}
+                            onClick={() =>
+                              dispatch(
+                                updateQty({ id: it.id, qty: it.qty + 1 })
+                              )
+                            }
                           >
                             +
                           </button>
@@ -243,12 +258,13 @@ export default function Cart({ isDrawer = false, onClose }) {
                           className="text-red-600 text-xs"
                           onClick={() => dispatch(removeFromCart(it.id))}
                         >
-                          Remove from cart
+                          <span className="hidden lg:block">
+                            Remove from cart
+                          </span>
+                          <span className="lg:hidden">
+                            <Trash2 size={20} className="text-red" />{" "}
+                          </span>
                         </button>
-
-                        <div className="ml-auto text-right text-gray-900 font-semibold">
-                          ₹{lineTotal}
-                        </div>
                       </div>
 
                       <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
@@ -256,7 +272,10 @@ export default function Cart({ isDrawer = false, onClose }) {
                           type="checkbox"
                           checked={!!wrapMap[it.id]}
                           onChange={(e) =>
-                            setWrapMap((prev) => ({ ...prev, [it.id]: e.target.checked }))
+                            setWrapMap((prev) => ({
+                              ...prev,
+                              [it.id]: e.target.checked,
+                            }))
                           }
                         />
                         Gift wrap this item (₹20 for wrapping)
@@ -285,7 +304,7 @@ export default function Cart({ isDrawer = false, onClose }) {
               <div className="bottom-0 bg-white py-4 px-4 border-t shadow-lg z-10">
                 <div className="flex justify-between items-center text-xl font-bold mb-4">
                   <span>Total:</span>
-                  <span className="text-purple-700">₹{grandTotal}</span>
+                  <span className="text-brand-700">₹{grandTotal}</span>
                 </div>
                 <button
                   type="button"
@@ -321,7 +340,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                   )}
                   <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
                     <span>Order Total</span>
-                    <span className="text-purple-700">₹{grandTotal}</span>
+                    <span className="text-brand-700">₹{grandTotal}</span>
                   </div>
                 </div>
                 {/* Checkout Button */}
@@ -340,8 +359,6 @@ export default function Cart({ isDrawer = false, onClose }) {
           </div>
         )}
       </div>
-
-      {/* No modal - we navigate to /checkout so the flow matches Buy Now */}
     </>
   );
 }

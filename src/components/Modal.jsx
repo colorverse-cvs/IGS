@@ -30,11 +30,11 @@ export default function Modal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-center p-5 border-b border-gray-100">
+        <div className="flex justify-center items-center p-5 border-b border-gray-100 relative">
           <h2 className="text-xl font-bold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50 transition"
+            className="absolute right-1 top-1 md:right-5 md:top-5 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50 transition"
             aria-label="Close modal"
           >
             <X size={24} />

@@ -2,6 +2,10 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProductCard from "../components/ProductCard";
+import {
+  PRODUCT_CAROUSEL_CONFIG,
+  getResponsiveSettings,
+} from "../config/carouselConfig";
 
 const CategoryPage = () => {
   const { categorySlug } = useParams();
@@ -18,7 +22,7 @@ const CategoryPage = () => {
     (product) => product.category === categoryName
   );
 
-  // Responsive carousel settings
+  // Responsive carousel settings from centralized config
   const [viewportWidth, setViewportWidth] = React.useState(
     typeof window !== "undefined" ? window.innerWidth : 1200
   );
@@ -28,15 +32,21 @@ const CategoryPage = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const isLg = viewportWidth >= 1024; // Tailwind lg breakpoint
-  const itemsPerView = isLg ? 4 : 2; // 2 cards visible on mobile/tablet
-  const widthPercent = isLg ? 25 : 50; // exact 2-up on sm/md
-  const carouselActive = isLg ? filteredProducts.length > 4 : true;
-  const stepSize = viewportWidth < 768 ? 1 : itemsPerView; // mobile step 1, others step per view
+  // Use centralized config for responsive settings
+  const responsiveSettings = React.useMemo(
+    () => getResponsiveSettings(viewportWidth, PRODUCT_CAROUSEL_CONFIG),
+    [viewportWidth]
+  );
+
+  const itemsPerView = responsiveSettings.itemsPerView;
+  const widthPercent = 100 / itemsPerView;
+  const isLg = viewportWidth >= 1024;
+  const carouselActive = isLg ? filteredProducts.length > itemsPerView : true;
+  const stepSize = responsiveSettings.step; // From config
   const maxIndex = Math.max(0, filteredProducts.length - itemsPerView);
   const [firstVisibleIndex, setFirstVisibleIndex] = React.useState(0);
 
-  // autoplay
+  // Autoplay using centralized config
   React.useEffect(() => {
     if (!carouselActive || filteredProducts.length <= itemsPerView) return;
     const id = setInterval(() => {
@@ -44,7 +54,7 @@ const CategoryPage = () => {
         const next = idx + stepSize;
         return next > maxIndex ? 0 : next;
       });
-    }, 3000);
+    }, PRODUCT_CAROUSEL_CONFIG.autoplayMs);
     return () => clearInterval(id);
   }, [
     carouselActive,
@@ -54,7 +64,7 @@ const CategoryPage = () => {
     maxIndex,
   ]);
 
-  // drag to swipe
+  // Drag to swipe
   const dragStateRef = React.useRef({ dragging: false, startX: 0, moved: 0 });
   const onPointerDown = (e) => {
     dragStateRef.current = {
@@ -88,6 +98,19 @@ const CategoryPage = () => {
     }
   };
 
+  // Navigation handlers
+  const goPrev = () => {
+    setFirstVisibleIndex((idx) =>
+      idx - stepSize < 0 ? maxIndex : idx - stepSize
+    );
+  };
+
+  const goNext = () => {
+    setFirstVisibleIndex((idx) =>
+      idx + stepSize > maxIndex ? 0 : idx + stepSize
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">
@@ -101,7 +124,28 @@ const CategoryPage = () => {
           ))}
         </div>
       ) : (
-        <div className="relative">
+        <div className="relative group">
+          {/* Prev/Next Buttons (from centralized config - showPrevNext: true) */}
+          {PRODUCT_CAROUSEL_CONFIG.showPrevNext &&
+            filteredProducts.length > itemsPerView && (
+              <>
+                <button
+                  onClick={goPrev}
+                  className="absolute -left-5 md:left-0 top-1/2 -translate-y-1/2 z-20 bg-brand-700 text-white p-2 rounded-full hover:bg-brand-800 transition opacity-0 group-hover:opacity-100 md:opacity-100"
+                  aria-label="Previous products"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={goNext}
+                  className="absolute -right-5 md:right-0 top-1/2 -translate-y-1/2 z-20 bg-brand-700 text-white p-2 rounded-full hover:bg-brand-800 transition opacity-0 group-hover:opacity-100 md:opacity-100"
+                  aria-label="Next products"
+                >
+                  →
+                </button>
+              </>
+            )}
+
           <div
             className="overflow-hidden select-none p-2"
             onMouseDown={onPointerDown}
@@ -114,7 +158,9 @@ const CategoryPage = () => {
           >
             <div
               className="flex transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${widthPercent * firstVisibleIndex}%)` }}
+              style={{
+                transform: `translateX(-${widthPercent * firstVisibleIndex}%)`,
+              }}
             >
               {filteredProducts.map((product) => (
                 <div
@@ -131,34 +177,6 @@ const CategoryPage = () => {
               ))}
             </div>
           </div>
-          {filteredProducts.length > itemsPerView && (
-            <>
-              <button
-                type="button"
-                aria-label="Previous"
-                onClick={() =>
-                  setFirstVisibleIndex((idx) =>
-                    idx - stepSize < 0 ? maxIndex : idx - stepSize
-                  )
-                }
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-purple-500 hover:bg-gray-100"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                aria-label="Next"
-                onClick={() =>
-                  setFirstVisibleIndex((idx) =>
-                    idx + stepSize > maxIndex ? 0 : idx + stepSize
-                  )
-                }
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-purple-500 hover:bg-gray-100"
-              >
-                →
-              </button>
-            </>
-          )}
         </div>
       )}
 

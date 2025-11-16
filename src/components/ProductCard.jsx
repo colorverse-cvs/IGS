@@ -78,8 +78,8 @@ const ProductCard = ({ product, onOpenProduct }) => {
               px-2 
               py-1 
               rounded-md 
-              bg-brand-100 
-              text-purple-700 
+              bg-brand-50 
+              text-brand-500 
               border-2 
               border-brand-500
               whitespace-nowrap
@@ -123,15 +123,13 @@ const ProductCard = ({ product, onOpenProduct }) => {
 
         {/* Price Row */}
         <div className="flex flex-col md:flex-row items-baseline space-x-2 mb-2">
-          <span className="text-lg font-extrabold text-purple-700">
+          <span className="text-lg font-extrabold text-brand-700">
             ₹{price}
           </span>
           <span className="text-xs line-through text-gray-500">
             MRP: ₹{mrp}
           </span>
-          <span className="text-xs font-medium text-purple-600">
-            {discount}
-          </span>
+          <span className="text-xs font-medium text-brand-600">{discount}</span>
         </div>
 
         {/* Rating and Add to Cart */}

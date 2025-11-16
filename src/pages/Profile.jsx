@@ -8,7 +8,7 @@ import {
 } from "../features/user/userSlice";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
-import Breadcrumb from "../components/Breadcrumb.jsx";
+// import Breadcrumb from "../components/Breadcrumb.jsx";
 import { ChevronDown } from "lucide-react";
 
 export default function Profile() {
@@ -207,19 +207,17 @@ export default function Profile() {
     );
   };
 
-  
-
   return (
-    <div className="mx-auto py-6 px-4 md:px-15 lg:px-20">
-      <div className="py-1">
+    <div className="mx-auto py-6 px-4 md:px-15 lg:px-20 md:pb-6 pb-28">
+      {/* <div className="py-1">
         <Breadcrumb items={[{ label: "Home", link: "/" }, { label: "Profile" }]} />
-      </div>
-      {/* Tabs */}
-      <div className="flex gap-6 text-sm mb-6">
+      </div> */}
+      {/* Tabs - Desktop View */}
+      <div className="hidden md:flex gap-6 text-sm mb-6">
         <button
-          className={`pb-2 ${
+          className={`${
             tab === "profile"
-              ? "border-b-2 border-brand-700 text-purple-700"
+              ? "border-b-2 border-brand-700 text-brand-700"
               : "text-gray-600"
           }`}
           onClick={() => setTab("profile")}
@@ -227,9 +225,9 @@ export default function Profile() {
           Your Profile
         </button>
         <button
-          className={`pb-2 ${
+          className={`${
             tab === "orders"
-              ? "border-b-2 border-brand-700 text-purple-700"
+              ? "border-b-2 border-brand-700 text-brand-700"
               : "text-gray-600"
           }`}
           onClick={() => setTab("orders")}
@@ -237,9 +235,9 @@ export default function Profile() {
           Recent Orders
         </button>
         <button
-          className={`pb-2 ${
+          className={`${
             tab === "addresses"
-              ? "border-b-2 border-brand-700 text-purple-700"
+              ? "border-b-2 border-brand-700 text-brand-700"
               : "text-gray-600"
           }`}
           onClick={() => setTab("addresses")}
@@ -247,23 +245,66 @@ export default function Profile() {
           Saved Addresses
         </button>
         <button
-          className={`pb-2 ${
+          className={`${
             tab === "payments"
-              ? "border-b-2 border-brand-700 text-purple-700"
+              ? "border-b-2 border-brand-700 text-brand-700"
               : "text-gray-600"
           }`}
           onClick={() => setTab("payments")}
         >
-          Payment options
+          Payment Options
         </button>
       </div>
 
+      {/* Tabs - Mobile View (Sticky Bottom) */}
+      <div className="md:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 flex gap-2 px-2 py-2 z-40 overflow-x-auto">
+        <button
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${
+            tab === "profile"
+              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+              : "bg-white text-gray-600 border border-gray-300"
+          }`}
+          onClick={() => setTab("profile")}
+        >
+          Profile
+        </button>
+        <button
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${
+            tab === "orders"
+              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+              : "bg-white text-gray-600 border border-gray-300"
+          }`}
+          onClick={() => setTab("orders")}
+        >
+          Orders
+        </button>
+        <button
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${
+            tab === "addresses"
+              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+              : "bg-white text-gray-600 border border-gray-300"
+          }`}
+          onClick={() => setTab("addresses")}
+        >
+          Saved Addresses
+        </button>
+        <button
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${
+            tab === "payments"
+              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+              : "bg-white text-gray-600 border border-gray-300"
+          }`}
+          onClick={() => setTab("payments")}
+        >
+          Payment Options
+        </button>
+      </div>
       {tab === "profile" && (
         <div className="bg-white py-4 max-w-5xl">
-          <h2 className="text-lg font-semibold mb-4">Profile</h2>
+          <p className="text-2xl font-bold mb-4">Profile</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm mb-1">Name *</label>
+              <label className="text-gray-500 block text-sm mb-1">Name *</label>
               <input
                 className={`w-full border rounded px-3 py-2 ${
                   profileErrors.name ? "border-red-500" : "border-gray-200"
@@ -281,7 +322,9 @@ export default function Profile() {
               )}
             </div>
             <div>
-              <label className="block text-sm mb-1">Mobile Number *</label>
+              <label className="text-gray-500 block text-sm mb-1">
+                Mobile Number *
+              </label>
               <input
                 className={`w-full border rounded px-3 py-2 ${
                   profileErrors.mobile ? "border-red-500" : "border-gray-200"
@@ -302,7 +345,7 @@ export default function Profile() {
               )}
             </div>
             <div>
-              <label className="block text-sm mb-1">Email</label>
+              <label className="text-gray-500 block text-sm mb-1">Email</label>
               <input
                 className={`w-full border rounded px-3 py-2 ${
                   profileErrors.email ? "border-red-500" : "border-gray-200"
@@ -320,7 +363,9 @@ export default function Profile() {
               )}
             </div>
             <div>
-              <label className="block text-sm mb-1">Date of Birth</label>
+              <label className="text-gray-500 block text-sm mb-1">
+                Date of Birth
+              </label>
               <input
                 className="w-full border rounded px-3 py-2 border-gray-200 bg-gray-50 cursor-not-allowed"
                 value={dob}
@@ -331,7 +376,7 @@ export default function Profile() {
               />
             </div>
             <div>
-              <label className="block text-sm mb-1">Gender</label>
+              <label className="text-gray-500 block text-sm mb-1">Gender</label>
               <select
                 className="w-full border rounded px-3 py-2 border-gray-200 bg-gray-50 cursor-not-allowed"
                 value={gender}
@@ -346,7 +391,7 @@ export default function Profile() {
           </div>
           <button
             onClick={() => setIsProfileModalOpen(true)}
-            className="mt-4 px-4 py-2 bg-brand-700 text-white rounded"
+            className="w-full md:w-auto mt-4 px-4 py-2 bg-brand-700 text-white rounded-md"
           >
             Edit Profile
           </button>
@@ -367,7 +412,9 @@ export default function Profile() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-1">Name *</label>
+                  <label className="text-gray-500 block text-sm mb-1">
+                    Name *
+                  </label>
                   <input
                     className={`w-full border rounded px-3 py-2 ${
                       profileErrors.name ? "border-red-500" : "border-gray-200"
@@ -378,19 +425,27 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Mobile Number *</label>
+                  <label className="text-gray-500 block text-sm mb-1">
+                    Mobile Number *
+                  </label>
                   <input
                     className={`w-full border rounded px-3 py-2 ${
-                      profileErrors.mobile ? "border-red-500" : "border-gray-200"
+                      profileErrors.mobile
+                        ? "border-red-500"
+                        : "border-gray-200"
                     }`}
                     value={mobile}
-                    onChange={(e) => setMobile(onlyDigits(e.target.value).slice(0, 10))}
+                    onChange={(e) =>
+                      setMobile(onlyDigits(e.target.value).slice(0, 10))
+                    }
                     placeholder="0000000000"
                     inputMode="numeric"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Email</label>
+                  <label className="text-gray-500 block text-sm mb-1">
+                    Email
+                  </label>
                   <input
                     className={`w-full border rounded px-3 py-2 ${
                       profileErrors.email ? "border-red-500" : "border-gray-200"
@@ -401,7 +456,9 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Date of Birth</label>
+                  <label className="text-gray-500 block text-sm mb-1">
+                    Date of Birth
+                  </label>
                   <input
                     className="w-full border rounded px-3 py-2 border-gray-200"
                     value={dob}
@@ -410,7 +467,9 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Gender</label>
+                  <label className="text-gray-500 block text-sm mb-1">
+                    Gender
+                  </label>
                   <select
                     className="w-full border rounded px-3 py-2 border-gray-200"
                     value={gender}
@@ -430,7 +489,10 @@ export default function Profile() {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 bg-brand-700 text-white rounded">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-brand-700 text-white rounded"
+                >
                   Save changes
                 </button>
               </div>
@@ -441,7 +503,7 @@ export default function Profile() {
 
       {tab === "orders" && (
         <div className="space-y-6">
-          <h2 className="text-lg font-semibold">Recent orders</h2>
+          <p className="text-2xl font-bold mb-4">Recent orders</p>
           {orders.map((order) => (
             <div key={order.id} className="border rounded-lg overflow-hidden">
               <div className="grid grid-cols-12 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-700">
@@ -469,7 +531,7 @@ export default function Profile() {
                         Material: {it.material || "-"} &nbsp; Size:{" "}
                         {it.size || "-"}
                       </div>
-                      <div className="text-purple-700 font-semibold">
+                      <div className="text-brand-700 font-semibold">
                         ₹{it.price}
                       </div>
                     </div>
@@ -497,7 +559,7 @@ export default function Profile() {
 
       {tab === "addresses" && (
         <div className="max-w-4xl">
-          <h2 className="text-lg font-semibold mb-4">Saved Addresses</h2>
+          <p className="text-2xl font-bold mb-4">Saved Addresses</p>
           <div className="space-y-4">
             {addresses.map((addr) => (
               <div
@@ -520,7 +582,7 @@ export default function Profile() {
                         </span>
                       )}
                       {addr.isDefault && (
-                        <span className="ml-2 text-xs bg-brand-50 px-2 py-0.5 rounded border border-purple-800 text-purple-900 font-extrabold ">
+                        <span className="ml-2 text-xs bg-brand-50 px-2 py-0.5 rounded border border-brand-800 text-brand-900 font-extrabold ">
                           Default address
                         </span>
                       )}
@@ -536,7 +598,7 @@ export default function Profile() {
                     )}
                     <div className="mt-2 flex gap-3">
                       <button
-                        className="text-xs text-purple-700"
+                        className="text-xs text-brand-700"
                         onClick={() => {
                           setEditAddress(addr);
                           setIsAddressModalOpen(true);
@@ -545,7 +607,7 @@ export default function Profile() {
                         Edit
                       </button>
                       <button
-                        className="text-xs text-purple-700"
+                        className="text-xs text-brand-700"
                         onClick={() => dispatch(removeAddress(addr.id))}
                       >
                         Remove
@@ -593,7 +655,7 @@ export default function Profile() {
 
       {tab === "payments" && (
         <div className="max-w-4xl">
-          <h2 className="text-lg font-semibold mb-4">Payment Options</h2>
+          <p className="text-2xl font-bold mb-4">Payment Options</p>
           <div className="space-y-3">
             {cards.map((c) => {
               const isOpen = openCardId === c.id;
@@ -601,7 +663,10 @@ export default function Profile() {
                 addresses.find((a) => a.isDefault) || addresses[0] || null;
               return (
                 <div key={c.id} className="border-y border-gray-300">
-                  <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => setOpenCardId(isOpen ? null : c.id)}>
+                  <div
+                    className="p-4 flex items-center justify-between cursor-pointer"
+                    onClick={() => setOpenCardId(isOpen ? null : c.id)}
+                  >
                     <div className="text-sm flex items-center gap-2">
                       <BrandBadge brand={c.brand} />
                       <div>
@@ -609,7 +674,9 @@ export default function Profile() {
                         <div className="text-gray-600">{c.label}</div>
                       </div>
                       {billingCard?.id === c.id && (
-                        <span className="ml-2 px-2 py-1 text-xs rounded border-2 border-purple-300 bg-brand-50 text-purple-700 font-bold">Billing card</span>
+                        <span className="ml-2 px-2 py-1 text-xs rounded border-2 border-brand-300 bg-brand-50 text-brand-700 font-bold">
+                          Billing card
+                        </span>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -644,7 +711,12 @@ export default function Profile() {
                       >
                         Delete Card
                       </button>
-                      <ChevronDown size={18} className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"}`} />
+                      <ChevronDown
+                        size={18}
+                        className={`transition-transform ${
+                          isOpen ? "rotate-180" : "rotate-0"
+                        }`}
+                      />
                     </div>
                   </div>
                   <AccordionBody isOpen={isOpen}>
@@ -654,20 +726,28 @@ export default function Profile() {
                         <div>
                           {defaultAddr.name}
                           {defaultAddr.tag && (
-                            <span className="ml-2 text-xs bg-gray-100 px-2 py-0.5 rounded border border-gray-200">{defaultAddr.tag}</span>
+                            <span className="ml-2 text-xs bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
+                              {defaultAddr.tag}
+                            </span>
                           )}
                         </div>
                         <div>Delivery address: {defaultAddr.addressLine}</div>
                         <div>Mobile number: {defaultAddr.mobile}</div>
-                        {defaultAddr.email && <div>Email: {defaultAddr.email}</div>}
+                        {defaultAddr.email && (
+                          <div>Email: {defaultAddr.email}</div>
+                        )}
                       </div>
                     ) : (
-                      <div className="text-gray-500">No address saved. Add one in Saved Addresses.</div>
+                      <div className="text-gray-500">
+                        No address saved. Add one in Saved Addresses.
+                      </div>
                     )}
                     {billingCard?.id !== c.id && (
                       <button
                         className="mt-2 px-3 py-1 border border-gray-300 text-gray-700 rounded text-sm"
-                        onClick={() => dispatch(updateProfile({ defaultCardId: c.id }))}
+                        onClick={() =>
+                          dispatch(updateProfile({ defaultCardId: c.id }))
+                        }
                       >
                         Set as Billing card
                       </button>
@@ -676,7 +756,9 @@ export default function Profile() {
                 </div>
               );
             })}
-            {cards.length === 0 && <div className="text-gray-500">No saved cards.</div>}
+            {cards.length === 0 && (
+              <div className="text-gray-500">No saved cards.</div>
+            )}
           </div>
           {/* Removed global billing summary in favor of per-card accordion details */}
 
@@ -706,7 +788,9 @@ export default function Profile() {
               className="space-y-3"
             >
               <div>
-                <label className="block text-sm mb-1">Name on card</label>
+                <label className="text-gray-500 block text-sm mb-1">
+                  Name on card
+                </label>
                 <input
                   className={`w-full border rounded px-3 py-2 border-gray-300`}
                   value={cardName}
@@ -716,11 +800,15 @@ export default function Profile() {
                 {cardErrors.name ? (
                   <p className="text-xs text-red-600 mt-1">{cardErrors.name}</p>
                 ) : (
-                  <p className="text-xs text-gray-400 mt-1">Name on card is required</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Name on card is required
+                  </p>
                 )}
               </div>
               <div>
-                <label className="block text-sm mb-1">Card number</label>
+                <label className="text-gray-500 block text-sm mb-1">
+                  Card number
+                </label>
                 <input
                   className={`w-full border rounded px-3 py-2 border-gray-300`}
                   value={cardNumber}
@@ -730,17 +818,27 @@ export default function Profile() {
                     setCardNumber(grouped);
                   }}
                   inputMode="numeric"
-                  placeholder={editingCard ? "(leave blank to keep current)" : "1234 5678 9012 3456"}
+                  placeholder={
+                    editingCard
+                      ? "(leave blank to keep current)"
+                      : "1234 5678 9012 3456"
+                  }
                 />
                 {cardErrors.number ? (
-                  <p className="text-xs text-red-600 mt-1">{cardErrors.number}</p>
+                  <p className="text-xs text-red-600 mt-1">
+                    {cardErrors.number}
+                  </p>
                 ) : (
-                  <p className="text-xs text-gray-400 mt-1">Card number must be 16 digits</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Card number must be 16 digits
+                  </p>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm mb-1">Expiry (MM/YY)</label>
+                  <label className="text-gray-500 block text-sm mb-1">
+                    Expiry (MM/YY)
+                  </label>
                   <input
                     className={`w-full border rounded px-3 py-2 border-gray-300`}
                     value={cardExpiry}
@@ -753,13 +851,19 @@ export default function Profile() {
                     placeholder="MM/YY"
                   />
                   {cardErrors.expiry ? (
-                    <p className="text-xs text-red-600 mt-1">{cardErrors.expiry}</p>
+                    <p className="text-xs text-red-600 mt-1">
+                      {cardErrors.expiry}
+                    </p>
                   ) : (
-                    <p className="text-xs text-gray-400 mt-1">Enter valid MM/YY</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Enter valid MM/YY
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">CVV</label>
+                  <label className="text-gray-500 block text-sm mb-1">
+                    CVV
+                  </label>
                   <input
                     className={`w-full border rounded px-3 py-2 border-gray-300`}
                     value={cardCvv}
@@ -767,12 +871,24 @@ export default function Profile() {
                       setCardCvv(onlyDigitsCard(e.target.value).slice(0, 4))
                     }
                     inputMode="numeric"
-                    placeholder={editingCard ? "(optional)" : cardBrand === "amex" ? "4 digits" : "3 digits"}
+                    placeholder={
+                      editingCard
+                        ? "(optional)"
+                        : cardBrand === "amex"
+                        ? "4 digits"
+                        : "3 digits"
+                    }
                   />
                   {cardErrors.cvv ? (
-                    <p className="text-xs text-red-600 mt-1">{cardErrors.cvv}</p>
+                    <p className="text-xs text-red-600 mt-1">
+                      {cardErrors.cvv}
+                    </p>
                   ) : (
-                    <p className="text-xs text-gray-400 mt-1">{cardBrand === "amex" ? "CVV must be 4 digits" : "CVV must be 3 digits"}</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {cardBrand === "amex"
+                        ? "CVV must be 4 digits"
+                        : "CVV must be 3 digits"}
+                    </p>
                   )}
                 </div>
               </div>
