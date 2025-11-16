@@ -75,10 +75,12 @@ export default function AddressForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
       <div>
-        <label className="block text-sm font-medium mb-1">Name *</label>
+        <label className="block text-sm font-medium mb-1 text-gray-500">
+          Name *
+        </label>
         <input
           type="text"
-          className={`w-full border rounded px-3 py-2 ${
+          className={`w-full border rounded px-3 py-2 border-gray-200 ${
             errors.name ? "border-red-500" : ""
           }`}
           placeholder="John Doe"
@@ -91,10 +93,12 @@ export default function AddressForm({
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Email ID</label>
+        <label className="block text-sm font-medium mb-1 text-gray-500">
+          Email ID
+        </label>
         <input
           type="email"
-          className={`w-full border rounded px-3 py-2 ${
+          className={`w-full border rounded px-3 py-2 border-gray-200 ${
             errors.email ? "border-red-500" : ""
           }`}
           placeholder="demo@gmail.com"
@@ -107,12 +111,12 @@ export default function AddressForm({
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label className="block text-sm font-medium mb-1 text-gray-500">
           Mobile Number *
         </label>
         <input
           type="tel"
-          className={`w-full border rounded px-3 py-2 ${
+          className={`w-full border rounded px-3 py-2 border-gray-200 ${
             errors.mobile ? "border-red-500" : ""
           }`}
           placeholder="Enter 10 digits"
@@ -126,44 +130,46 @@ export default function AddressForm({
         )}
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label className="block text-sm font-medium mb-1 text-gray-500">
           Flat, House no., Building, Company, Apartment
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 border-gray-200"
           value={flat}
           onChange={(e) => setFlat(e.target.value)}
         />
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label className="block text-sm font-medium mb-1 text-gray-500">
           Area, Street, Sector, Village
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 border-gray-200"
           value={area}
           onChange={(e) => setArea(e.target.value)}
         />
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">
+        <label className="block text-sm font-medium mb-1 text-gray-500">
           Near by Landmark
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 border-gray-200"
           placeholder="Eg: Near Famous chowk"
           value={landmark}
           onChange={(e) => setLandmark(e.target.value)}
         />
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Pincode *</label>
+        <label className="block text-sm font-medium mb-1 text-gray-500">
+          Pincode *
+        </label>
         <input
           type="text"
-          className={`w-full border rounded px-3 py-2 ${
+          className={`w-full border rounded px-3 py-2 border-gray-200 ${
             errors.pincode ? "border-red-500" : ""
           }`}
           placeholder="6 digits [0-9]"
@@ -177,18 +183,22 @@ export default function AddressForm({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium mb-1">City</label>
+          <label className="block text-sm font-medium mb-1 text-gray-500">
+            City
+          </label>
           <input
             type="text"
-            className="w-full border rounded px-3 py-2"
+            className="w-full border rounded px-3 py-2 border-gray-200"
             value={city}
             onChange={(e) => setCity(e.target.value)}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">State *</label>
+          <label className="block text-sm font-medium mb-1 text-gray-500">
+            State *
+          </label>
           <select
-            className={`w-full border rounded px-3 py-2 ${
+            className={`w-full border rounded px-3 py-2 border-gray-200 ${
               errors.state ? "border-red-500" : ""
             }`}
             value={state}
@@ -208,9 +218,11 @@ export default function AddressForm({
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Alias</label>
+        <label className="block text-sm font-medium mb-1 text-gray-500">
+          Alias
+        </label>
         <select
-          className="w-full border rounded px-3 py-2"
+          className="w-full border rounded px-3 py-2 border-gray-200"
           value={alias}
           onChange={(e) => setAlias(e.target.value)}
         >
@@ -230,7 +242,7 @@ export default function AddressForm({
         Make this my default address
       </label>
 
-      <div className="flex justify-end gap-3 pt-2">
+      <div className="flex justify-between gap-3 pt-2">
         <button
           type="button"
           onClick={onCancel}
@@ -240,7 +252,7 @@ export default function AddressForm({
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-brand-700 text-white rounded"
+          className="px-2 md:px-4 py-2 bg-brand-700 text-white rounded"
         >
           {submitLabel}
         </button>

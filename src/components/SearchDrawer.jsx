@@ -34,7 +34,8 @@ export default function SearchDrawer({ isOpen, onClose }) {
         (p.categoryName || "").toLowerCase().includes(q) ||
         priceStr.includes(q) ||
         ratingStr.includes(q) ||
-        (!Number.isNaN(qNum) && ((p.price || 0) === qNum || (p.rating || 0) === qNum))
+        (!Number.isNaN(qNum) &&
+          ((p.price || 0) === qNum || (p.rating || 0) === qNum))
       );
     });
   }, [query, allProducts]);
@@ -85,7 +86,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Explore collection"
-              className="w-full border border-gray-300 rounded-lg pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-0 focus:border-purple-500"
+              className="w-full border border-gray-300 rounded-lg pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-0 focus:border-brand-500"
             />
             <button
               onClick={onClose}
@@ -108,19 +109,33 @@ export default function SearchDrawer({ isOpen, onClose }) {
             <ul className="space-y-2">
               {results.slice(0, 30).map((p) => (
                 <li key={p.id}>
-                  <button onClick={() => handleClick(p)} className="w-full text-left">
+                  <button
+                    onClick={() => handleClick(p)}
+                    className="w-full text-left"
+                  >
                     <div className="border border-gray-100 hover:shadow-lg rounded-lg p-2 flex items-start gap-3">
-                      <img src={p.imageURL} alt={p.name} className="w-14 h-14 rounded object-cover flex-shrink-0" />
+                      <img
+                        src={p.imageURL}
+                        alt={p.name}
+                        className="w-14 h-14 rounded object-cover flex-shrink-0"
+                      />
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm font-semibold text-gray-900 truncate">{p.name}</div>
+                        <div className="text-sm font-semibold text-gray-900 truncate">
+                          {p.name}
+                        </div>
                         <div className="text-xs text-gray-500 truncate">
-                          {p.categoryName} • {p.material || ""} {p.size ? `• ${p.size}` : ""}
+                          {p.categoryName} • {p.material || ""}{" "}
+                          {p.size ? `• ${p.size}` : ""}
                         </div>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-sm font-semibold text-gray-900">₹{p.price}</span>
+                          <span className="text-sm font-semibold text-gray-900">
+                            ₹{p.price}
+                          </span>
                           <span className="flex items-center text-yellow-500 text-xs">
                             <Star size={12} className="fill-current" />
-                            <span className="ml-1 text-gray-600">{p.rating}</span>
+                            <span className="ml-1 text-gray-600">
+                              {p.rating}
+                            </span>
                           </span>
                         </div>
                       </div>

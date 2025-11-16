@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import categoriesData from "../data/categories.json";
-// import Breadcrumb from "../components/Breadcrumb.jsx";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import { User } from "lucide-react";
 
@@ -38,6 +37,28 @@ export default function FilterPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState("1");
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const [isItemsPerPageDropdownOpen, setIsItemsPerPageDropdownOpen] =
+    useState(false);
+
+  // Sort options with labels
+  const sortOptions = [
+    { value: "popular", label: "Popular" },
+    { value: "price-low", label: "Price: Low to High" },
+    { value: "price-high", label: "Price: High to Low" },
+    { value: "rating", label: "Rating" },
+  ];
+
+  const currentSortLabel =
+    sortOptions.find((opt) => opt.value === sortBy)?.label || "Popular";
+
+  // Items per page options
+  const itemsPerPageOptions = [
+    { value: 4, label: "4" },
+    { value: 8, label: "8" },
+    { value: 12, label: "12" },
+    { value: 16, label: "16" },
+  ];
 
   // Initialize filters from URL params
   useEffect(() => {
@@ -258,14 +279,47 @@ export default function FilterPage() {
     totalPages,
   } = getPaginatedProducts();
 
-  // const breadcrumbItems = [{ label: "Home", link: "/" }, { label: "Products" }];
+  // Close sort dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isSortDropdownOpen) {
+        const dropdown = event.target.closest(".sort-dropdown-container");
+        if (!dropdown) {
+          setIsSortDropdownOpen(false);
+        }
+      }
+    };
 
-  // Handle profile icon click
-  const handleProfileClick = () => {
-    if (user.isAuthenticated) {
-      navigate("/profile");
+    if (isSortDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-  };
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSortDropdownOpen]);
+
+  // Close items per page dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isItemsPerPageDropdownOpen) {
+        const dropdown = event.target.closest(
+          ".items-per-page-dropdown-container"
+        );
+        if (!dropdown) {
+          setIsItemsPerPageDropdownOpen(false);
+        }
+      }
+    };
+
+    if (isItemsPerPageDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isItemsPerPageDropdownOpen]);
 
   // Lock body scroll when filter drawer is open (mobile)
   useEffect(() => {
@@ -279,34 +333,26 @@ export default function FilterPage() {
     };
   }, [isFilterDrawerOpen]);
 
+  const handleSortSelect = (value) => {
+    setSortBy(value);
+    setCurrentPage(1);
+    setIsSortDropdownOpen(false);
+  };
+
+  const handleItemsPerPageSelect = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+    setIsItemsPerPageDropdownOpen(false);
+  };
+
   return (
     <div className="bg-white">
       {/* Mobile Header - Only show on mobile */}
       <div className="lg:hidden">
-        {/* Top Bar with Logo and Profile */}
-        {/* <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <Link to="/" className="flex items-center">
-            <img
-              src={IshitaGalleryLogo}
-              alt="Ishita Gallery"
-              className="h-12 w-auto"
-            />
-          </Link>
-          {user.isAuthenticated && (
-            <button
-              onClick={handleProfileClick}
-              className="p-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 transition"
-              aria-label="Profile"
-            >
-              <User size={20} className="text-gray-700" />
-            </button>
-          )}
-        </div> */}
-
         {/* Search Bar */}
         <div className="flex items-center justify-between px-4 gap-2">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             className="p-1 text-gray-600 hover:text-gray-900 w-[10%] md:w-[5%]"
             aria-label="Back"
           >
@@ -331,22 +377,42 @@ export default function FilterPage() {
         {/* Sort and Filter Buttons */}
         <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between gap-3 w-full">
           <div className="flex items-center gap-2 flex-1 w-[60%] lg:w-full">
-            <span className="text-sm text-gray-700 whitespace-nowrap w-[30%] md:w-[15%] lg:w-full">
+            <span className="text-sm text-gray-700 whitespace-nowrap w-[30%] md:w-[15%] lg:w-auto">
               Sort By:
             </span>
-            <select
-              value={sortBy}
-              onChange={(e) => {
-                setSortBy(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="flex-1 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent w-[50%] md:w-[60%] lg:w-full"
-            >
-              <option value="popular">Popular</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Rating</option>
-            </select>
+            <div className="relative sort-dropdown-container flex-1">
+              <button
+                onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                className="flex items-center justify-between w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition text-left"
+              >
+                <span>{currentSortLabel}</span>
+                <ChevronDown
+                  size={16}
+                  className={`ml-2 transition-transform ${
+                    isSortDropdownOpen ? "rotate-180" : "rotate-0"
+                  }`}
+                />
+              </button>
+              {isSortDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-40">
+                  <div className="py-1" role="menu" aria-orientation="vertical">
+                    {sortOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => handleSortSelect(option.value)}
+                        className={`block w-full text-left px-4 py-2 text-sm transition ${
+                          sortBy === option.value
+                            ? "bg-purple-50 text-brand-700 font-medium"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           <button
             onClick={() => setIsFilterDrawerOpen(true)}
@@ -358,48 +424,101 @@ export default function FilterPage() {
         </div>
       </div>
 
-      {/* Desktop Breadcrumb - Only show on desktop */}
-      {/* <div className="hidden lg:block py-1 px-4 md:px-15 lg:px-20">
-        <Breadcrumb items={breadcrumbItems} />
-      </div> */}
       {/* Header Controls - Desktop Only */}
       <div className="hidden lg:block bg-brand-25 rounded-lg shadow-sm p-6 sticky top-0 z-1">
-        <div className="flex lg:flex-row lg:items-center lg:justify-end gap-4">
+        <div className="flex lg:flex-row lg:items-center lg:justify-between gap-4">
+          <button
+            onClick={() => navigate("/")}
+            className="p-1 text-gray-600 hover:text-gray-900 w-[10%] md:w-[5%]"
+            aria-label="Back"
+          >
+            <ArrowLeft size={20} />
+          </button>
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Items per page */}
             <div className="flex items-center gap-2">
               <label className="text-sm text-gray-600">Items per page:</label>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(parseInt(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent p-1 focus-visible:outline-0"
-              >
-                <option value={4}>4</option>
-                <option value={8}>8</option>
-                <option value={12}>12</option>
-                <option value={16}>16</option>
-              </select>
+              <div className="relative items-per-page-dropdown-container">
+                <button
+                  onClick={() =>
+                    setIsItemsPerPageDropdownOpen(!isItemsPerPageDropdownOpen)
+                  }
+                  className="flex items-center justify-between px-2 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition min-w-[80px]"
+                >
+                  <span>{itemsPerPage}</span>
+                  <ChevronDown
+                    size={16}
+                    className={`ml-2 transition-transform ${
+                      isItemsPerPageDropdownOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  />
+                </button>
+                {isItemsPerPageDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-20 rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-40">
+                    <div
+                      className="py-1"
+                      role="menu"
+                      aria-orientation="vertical"
+                    >
+                      {itemsPerPageOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleItemsPerPageSelect(option.value)}
+                          className={`block w-full text-left px-4 py-2 text-sm transition ${
+                            itemsPerPage === option.value
+                              ? "bg-purple-50 text-brand-700 font-medium"
+                              : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Sort by */}
             <div className="flex items-center gap-2">
               <label className="text-sm text-gray-600">Sort By:</label>
-              <select
-                value={sortBy}
-                onChange={(e) => {
-                  setSortBy(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent p-1 focus-visible:outline-0"
-              >
-                <option value="popular">Popular</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Rating</option>
-              </select>
+              <div className="relative sort-dropdown-container">
+                <button
+                  onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                  className="flex items-center justify-between px-2 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition min-w-[160px]"
+                >
+                  <span>{currentSortLabel}</span>
+                  <ChevronDown
+                    size={16}
+                    className={`ml-2 transition-transform ${
+                      isSortDropdownOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  />
+                </button>
+                {isSortDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-40">
+                    <div
+                      className="py-1"
+                      role="menu"
+                      aria-orientation="vertical"
+                    >
+                      {sortOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => handleSortSelect(option.value)}
+                          className={`block w-full text-left px-4 py-2 text-sm transition ${
+                            sortBy === option.value
+                              ? "bg-purple-50 text-brand-700 font-medium"
+                              : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Search */}
@@ -412,7 +531,7 @@ export default function FilterPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent p-1 focus-visible:outline-0"
+                className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent px-2 py-1 focus-visible:outline-0"
               />
               <Search
                 size={16}
@@ -488,7 +607,7 @@ export default function FilterPage() {
               </p>
               <button
                 onClick={handleResetFilters}
-                className="mt-4 text-purple-600 hover:text-purple-700 font-medium"
+                className="mt-4 text-brand-600 hover:text-purple-700 font-medium"
               >
                 Clear all filters
               </button>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 
 /**
@@ -33,11 +33,25 @@ export default function FilterSidebar({
     }));
   };
 
+  const sidebarRef = useRef(null);
+
   const handleFilterChange = (filterType, value) => {
+    // Preserve sidebar scroll position across parent updates which may re-render
+    const prev = sidebarRef.current ? sidebarRef.current.scrollTop : 0;
+    // If user selected custom pricing, ensure the price section is expanded immediately
+    if (filterType === "priceRange" && value === "custom") {
+      setExpandedSections((prev) => ({ ...prev, price: true }));
+    }
     onFiltersChange({
       ...filters,
       [filterType]: value,
     });
+    // restore after next paint(s)
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        if (sidebarRef.current) sidebarRef.current.scrollTop = prev;
+      })
+    );
   };
 
   const handleMultiSelectChange = (filterType, value) => {
@@ -51,10 +65,16 @@ export default function FilterSidebar({
       : [...currentValues, value];
 
     // If newValues is empty, keep it as an empty array (meaning "no specific selection").
+    const prev = sidebarRef.current ? sidebarRef.current.scrollTop : 0;
     onFiltersChange({
       ...filters,
       [filterType]: newValues,
     });
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        if (sidebarRef.current) sidebarRef.current.scrollTop = prev;
+      })
+    );
   };
 
   // Which thumb is currently active (being dragged or focused) - helps with z-index so
@@ -86,7 +106,7 @@ export default function FilterSidebar({
         value={value}
         checked={checked}
         onChange={(e) => onChange(e.target.value)}
-        className="w-4 h-4 mr-3 text-purple-600 focus:ring-2 focus:ring-purple-300 focus:ring-offset-0"
+        className="mr-3"
       />
       <span className="text-base text-gray-900">{label}</span>
     </label>
@@ -99,7 +119,7 @@ export default function FilterSidebar({
         value={value}
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mr-2 text-purple-600 focus:ring-brand-500"
+        className="mr-3"
       />
       <span className="text-sm text-gray-700">{label}</span>
     </label>
@@ -107,14 +127,82 @@ export default function FilterSidebar({
 
   return (
     <div
+      ref={sidebarRef}
       className={`${
         isMobile
           ? "p-4"
           : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88vh]"
       } overflow-y-auto`}
     >
-      {/* Inline styles for the custom dual-range slider */}
+      {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}
       <style>{`
+        /* Custom checkbox styling */
+        input[type="checkbox"] {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          width: 18px;
+          height: 18px;
+          border: 2px solid #d1d5db;
+          border-radius: 3px;
+          background-color: white;
+          cursor: pointer;
+          position: relative;
+          flex-shrink: 0;
+        }
+        input[type="checkbox"]:checked {
+          background-color: white;
+          border-color: #9333ea;
+        }
+        input[type="checkbox"]:checked::after {
+          content: "";
+          position: absolute;
+          left: 50%;
+          top: 44%;
+          transform: translate(-50%, -50%) rotate(45deg);
+          width: 5px;
+          height: 10px;
+          border: solid white;
+          border-width: 0 2px 2px 0;
+          border-color: #9333ea;
+        }
+        input[type="checkbox"]:hover {
+          border-color: #9333ea;
+        }
+
+        /* Custom radio button styling */
+        input[type="radio"] {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          width: 18px;
+          height: 18px;
+          border: 2px solid #d1d5db;
+          border-radius: 50%;
+          background-color: white;
+          cursor: pointer;
+          position: relative;
+          flex-shrink: 0;
+        }
+        input[type="radio"]:checked {
+          border-color: #9333ea;
+        }
+        input[type="radio"]:checked::after {
+          content: "";
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: #9333ea;
+        }
+        input[type="radio"]:hover {
+          border-color: #9333ea;
+        }
+
+        /* Price range slider styles */
         .price-range-track {
           height: 4px;
           width: 100%;
@@ -126,7 +214,7 @@ export default function FilterSidebar({
         }
         .price-range-progress {
           height: 100%;
-          background: #7c3aed;
+          background: #9333ea;
           position: absolute;
           border-radius: 4px;
         }
@@ -148,15 +236,23 @@ export default function FilterSidebar({
         .price-range-input::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           background: white;
-          border: 2px solid #7c3aed;
+          border: 2px solid #9333ea;
           border-radius: 50%;
-          margin-top: -8px;
+          margin-top: -7px;
           cursor: pointer;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.15);
           position: relative;
+          z-index: 3;
+        }
+        .price-range-input::-webkit-slider-thumb:hover {
+          border-color: #7e22ce;
+          box-shadow: 0 2px 6px rgba(147, 51, 234, 0.3);
+        }
+        .price-range-input::-webkit-slider-thumb:active {
+          transform: scale(1.1);
         }
         .price-range-input::-moz-range-track {
           height: 4px;
@@ -165,13 +261,17 @@ export default function FilterSidebar({
           cursor: pointer;
         }
         .price-range-input::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           background: white;
-          border: 2px solid #7c3aed;
+          border: 2px solid #9333ea;
           border-radius: 50%;
           cursor: pointer;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .price-range-input::-moz-range-thumb:hover {
+          border-color: #7e22ce;
+          box-shadow: 0 2px 6px rgba(147, 51, 234, 0.3);
         }
         .price-range-input:focus {
           outline: none;
@@ -182,17 +282,28 @@ export default function FilterSidebar({
         .price-range-input.max {
           z-index: 2;
         }
-        .price-range-input:focus {
-          outline: none;
+        .price-range-input:focus::-webkit-slider-thumb {
+          outline: 2px solid #c084fc;
+          outline-offset: 2px;
         }
         .range-slider {
           position: relative;
           height: 40px;
           width: 100%;
+          margin: 12px 0;
         }
         .range-slider[data-disabled="true"] {
           opacity: 0.4;
           pointer-events: none;
+        }
+        .range-slider[data-disabled="true"] .price-range-progress {
+          background: #d1d5db;
+        }
+        .range-slider[data-disabled="true"] .price-range-input::-webkit-slider-thumb {
+          border-color: #d1d5db;
+        }
+        .range-slider[data-disabled="true"] .price-range-input::-moz-range-thumb {
+          border-color: #d1d5db;
         }
       `}</style>
       {!isMobile && (
@@ -203,20 +314,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onResetFilters}
-            className="text-sm text-purple-600 hover:text-purple-700 flex items-center"
-          >
-            <X size={14} className="mr-1" />
-            Reset filters
-          </button>
-        </div>
-      )}
-
-      {isMobile && (
-        <div className="mb-4">
-          <button
-            type="button"
-            onClick={onResetFilters}
-            className="text-sm text-purple-600 hover:text-purple-700 flex items-center"
+            className="text-sm text-brand-600 hover:text-purple-700 flex items-center"
           >
             <X size={14} className="mr-1" />
             Reset filters
@@ -359,53 +457,79 @@ export default function FilterSidebar({
           value="custom"
           label="Custom pricing"
           checked={filters.priceRange === "custom"}
-          onChange={(value) => handleFilterChange("priceRange", value)}
+          onChange={(value) => {
+            handleFilterChange("priceRange", value);
+            // Initialize min/max prices if not set when custom pricing is selected
+            // if (value === "custom") {
+            //   if (!filters.minPrice && filters.minPrice !== 0) {
+            //     handleFilterChange("minPrice", 0);
+            //   }
+            //   if (!filters.maxPrice && filters.maxPrice !== 4000) {
+            //     handleFilterChange("maxPrice", 4000);
+            //   }
+            // }
+          }}
         />
 
-        <div className="mt-3 space-y-3">
-          {/* Dual-handle Price Range Slider */}
-          <div className="space-y-2">
-            {filters.priceRange === "custom" && (
-              <div className="flex justify-between text-sm text-gray-600 mb-4">
-                <span>₹0</span>
-                <span>₹4,000+</span>
-              </div>
-            )}
-
-            <div
-              className="range-slider"
-              data-disabled={filters.priceRange !== "custom"}
-            >
+        {filters.priceRange === "custom" && (
+          <div className="mt-3 space-y-4">
+            {/* Current Selected Values (below slider) */}
+            <div className="flex justify-between text-xs text-gray-600 px-1 m-0">
+              <span>
+                ₹
+                {filters.minPrice !== undefined && filters.minPrice !== ""
+                  ? filters.minPrice
+                  : 0}
+              </span>
+              <span>
+                ₹
+                {filters.maxPrice !== undefined && filters.maxPrice !== ""
+                  ? filters.maxPrice
+                  : 4000}
+              </span>
+            </div>
+            {/* Dual-handle Price Range Slider */}
+            <div className="range-slider !m-0" data-disabled={false}>
               {(() => {
                 const min = 0;
                 const max = 4000;
                 const step = 100;
-                const curMin = Number(filters.minPrice) || 0;
-                const curMax = Number(filters.maxPrice) || 4000;
-                const minPercent = (curMin / max) * 100;
-                const maxPercent = (curMax / max) * 100;
+                const curMin =
+                  filters.minPrice !== undefined && filters.minPrice !== ""
+                    ? Number(filters.minPrice)
+                    : 0;
+                const curMax =
+                  filters.maxPrice !== undefined && filters.maxPrice !== ""
+                    ? Number(filters.maxPrice)
+                    : 4000;
+                const minPercent = Math.max(
+                  0,
+                  Math.min(100, (curMin / max) * 100)
+                );
+                const maxPercent = Math.max(
+                  0,
+                  Math.min(100, (curMax / max) * 100)
+                );
 
                 const handleMinChange = (e) => {
-                  if (filters.priceRange !== "custom") return;
                   const value = Number(e.target.value);
-                  // Ensure min price doesn't exceed max price - step
-                  const newMin = Math.min(
-                    value,
-                    (Number(filters.maxPrice) || max) - step
-                  );
+                  const currentMax =
+                    filters.maxPrice !== undefined && filters.maxPrice !== ""
+                      ? Number(filters.maxPrice)
+                      : max;
+                  const newMin = Math.min(value, currentMax - step);
                   if (newMin >= 0 && newMin <= max) {
                     handleFilterChange("minPrice", newMin);
                   }
                 };
 
                 const handleMaxChange = (e) => {
-                  if (filters.priceRange !== "custom") return;
                   const value = Number(e.target.value);
-                  // Ensure max price doesn't go below min price + step
-                  const newMax = Math.max(
-                    value,
-                    (Number(filters.minPrice) || min) + step
-                  );
+                  const currentMin =
+                    filters.minPrice !== undefined && filters.minPrice !== ""
+                      ? Number(filters.minPrice)
+                      : min;
+                  const newMax = Math.max(value, currentMin + step);
                   if (newMax >= 0 && newMax <= max) {
                     handleFilterChange("maxPrice", newMax);
                   }
@@ -431,7 +555,6 @@ export default function FilterSidebar({
                       value={curMin}
                       onChange={handleMinChange}
                       className="price-range-input min"
-                      disabled={filters.priceRange !== "custom"}
                       onMouseDown={() => setActiveThumb("min")}
                       onTouchStart={() => setActiveThumb("min")}
                       onFocus={() => setActiveThumb("min")}
@@ -449,7 +572,6 @@ export default function FilterSidebar({
                       value={curMax}
                       onChange={handleMaxChange}
                       className="price-range-input max"
-                      disabled={filters.priceRange !== "custom"}
                       onMouseDown={() => setActiveThumb("max")}
                       onTouchStart={() => setActiveThumb("max")}
                       onFocus={() => setActiveThumb("max")}
@@ -461,16 +583,14 @@ export default function FilterSidebar({
                   </>
                 );
               })()}
-
-              <div className="flex justify-between text-xs text-gray-600 mt-2">
-                <span>₹{filters.minPrice || 0}</span>
-                <span>₹{filters.maxPrice || 4000}</span>
-              </div>
             </div>
 
-            {/* Manual Input Fields - Only when custom pricing is selected */}
-            {filters.priceRange === "custom" && (
-              <div className="flex items-center gap-3 mt-4">
+            {/* Manual Input Fields */}
+            <div className="flex items-center gap-3 pt-2">
+              <div className="flex-1">
+                <label className="block text-xs text-gray-600 mb-1">
+                  Min price
+                </label>
                 <input
                   type="number"
                   placeholder="Min price"
@@ -480,11 +600,16 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("minPrice", v);
                   }}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:border-transparent"
                   min="0"
                   max="4000"
                   step="100"
                 />
+              </div>
+              <div className="flex-1">
+                <label className="block text-xs text-gray-600 mb-1">
+                  Max price
+                </label>
                 <input
                   type="number"
                   placeholder="Max price"
@@ -494,15 +619,15 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("maxPrice", v);
                   }}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:border-transparent"
                   min="0"
                   max="4000"
                   step="100"
                 />
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
       </FilterSection>
 
       {/* Availability */}
@@ -581,8 +706,17 @@ export default function FilterSidebar({
       </FilterSection>
 
       {/* Mobile "Show Results" Button */}
+
       {isMobile && (
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 mt-4 -mx-4">
+        <div className="sticky bottom-0 bg-white p-4 mt-4 mx-4 flex">
+          <button
+            type="button"
+            onClick={onResetFilters}
+            className="text-sm text-brand-600 hover:text-purple-700 flex items-center"
+          >
+            <X size={14} className="mr-1" />
+            Reset filters
+          </button>
           <button
             type="button"
             onClick={onApplyFilters}

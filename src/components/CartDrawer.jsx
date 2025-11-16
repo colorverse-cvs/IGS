@@ -42,7 +42,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
         aria-label="Shopping Cart"
       >
         {/* Drawer Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+        <div className="flex items-center justify-between p-4 lg:p-6 border-b border-gray-100">
           <h2 className="text-2xl font-bold text-gray-900">
             Your Shopping Cart {/* {itemCount === 0 ? "" : itemCount} */}
           </h2>
