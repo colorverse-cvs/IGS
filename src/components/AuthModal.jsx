@@ -137,9 +137,11 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     return Object.keys(e).length === 0;
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Require valid email/mobile and strong-ish password (min 8)
+    setLoginError("");
+
+    // Frontend validation
     if (
       (!emailRegex.test(loginEmail) && !mobileRegex.test(loginEmail)) ||
       loginPassword.length < 8
@@ -147,28 +149,75 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       setLoginError("Enter valid email/mobile and password (min 8 chars)");
       return;
     }
-    dispatch(
-      login({
-        email: emailRegex.test(loginEmail) ? loginEmail : "",
-        mobile: mobileRegex.test(loginEmail) ? loginEmail : "",
-        name: "User",
-      })
-    );
-    resetForms();
-    onClose?.();
+
+    try {
+      const res = await fetch("http://localhost:3000/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailRegex.test(loginEmail) ? loginEmail : undefined,
+          mobile: mobileRegex.test(loginEmail) ? loginEmail : undefined,
+          password: loginPassword,
+          role: "customer",
+        }),
+      });
+
+      const data = await res.json();
+      console.log("Data", data);
+
+      if (!res.ok) {
+        setLoginError(data.message || "Login failed");
+        return;
+      }
+
+      // Save token (important!)
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      // Update Redux store
+      dispatch(
+        login({
+          email: data.user?.email || loginEmail,
+          name: data.user?.name || "User",
+          mobile: data.user?.mobile || "",
+          token: data.token,
+        })
+      );
+
+      resetForms();
+      onClose?.();
+    } catch (error) {
+      setLoginError("Network error. Please try again.");
+    }
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+
     if (!validateSignup()) return;
-    dispatch(signup({ name, email, mobile }));
-    resetForms();
-    onClose?.();
-    fetch("/api/http://localhost:3000/api/v1/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, name }),
-    });
+
+    try {
+      const res = await fetch("http://localhost:3000/api/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          firstName: name.split(" ")[0],
+          lastName: name.split(" ")[1] || "",
+          password,
+          role: "customer",
+        }),
+      });
+
+      const data = await res.json();
+      console.log("REGISTER SUCCESS:", data);
+
+      resetForms();
+      onClose?.();
+    } catch (err) {
+      console.error("REGISTER ERROR:", err);
+    }
   };
 
   const isLoginValid = React.useMemo(() => {
@@ -648,3 +697,27 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     </Modal>
   );
 }
+
+
+  // console.log("Data", data);
+
+  // const handleLogin = (e) => {
+  //   e.preventDefault();
+  //   // Require valid email/mobile and strong-ish password (min 8)
+  //   if (
+  //     (!emailRegex.test(loginEmail) && !mobileRegex.test(loginEmail)) ||
+  //     loginPassword.length < 8
+  //   ) {
+  //     setLoginError("Enter valid email/mobile and password (min 8 chars)");
+  //     return;
+  //   }
+  //   dispatch(
+  //     login({
+  //       email: emailRegex.test(loginEmail) ? loginEmail : "",
+  //       mobile: mobileRegex.test(loginEmail) ? loginEmail : "",
+  //       name: "User",
+  //     })
+  //   );
+  //   resetForms();
+  //   onClose?.();
+  // };
