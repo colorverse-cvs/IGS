@@ -697,27 +697,3 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     </Modal>
   );
 }
-
-
-  // console.log("Data", data);
-
-  // const handleLogin = (e) => {
-  //   e.preventDefault();
-  //   // Require valid email/mobile and strong-ish password (min 8)
-  //   if (
-  //     (!emailRegex.test(loginEmail) && !mobileRegex.test(loginEmail)) ||
-  //     loginPassword.length < 8
-  //   ) {
-  //     setLoginError("Enter valid email/mobile and password (min 8 chars)");
-  //     return;
-  //   }
-  //   dispatch(
-  //     login({
-  //       email: emailRegex.test(loginEmail) ? loginEmail : "",
-  //       mobile: mobileRegex.test(loginEmail) ? loginEmail : "",
-  //       name: "User",
-  //     })
-  //   );
-  //   resetForms();
-  //   onClose?.();
-  // };

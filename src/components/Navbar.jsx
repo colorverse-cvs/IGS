@@ -184,6 +184,42 @@ export default function Navbar() {
     navigate(`/filter?${params.toString()}`);
   };
 
+  const handleLogout = async () => {
+    try {
+      const data = JSON.parse(localStorage.getItem("igs_user"));
+      console.log("full data", data);
+
+      const userId = data?.profile?.id;
+      console.log("userId", userId);
+
+      if (!userId) {
+        console.error("User ID not found in profile");
+        return;
+      }
+
+      const res = await fetch("http://localhost:3000/api/v1/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userId,
+        }),
+      });
+
+      const response = await res.json();
+      console.log("LOGOUT SUCCESS:", response);
+
+      // ✅ Clear correct storage key 
+      localStorage.removeItem("igs_user");
+      localStorage.removeItem("token"); // if exists
+
+      // ✅ Redirect
+      window.location.href = "/login";
+
+    } catch (err) {
+      console.error("LOGOUT ERROR:", err);
+    }
+  };
+
   return (
     <>
       {/* ========== DESKTOP NAVBAR (Hidden on mobile) ========== */}
@@ -467,6 +503,9 @@ export default function Navbar() {
                 className="h-9 w-auto"
               />
             </Link>
+            <button onClick={handleLogout}>
+              Log out
+            </button>
 
             {/* Search and Auth on right (Medium devices and up) */}
             <div className="hidden md:flex items-center gap-3">
