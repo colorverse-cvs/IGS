@@ -90,7 +90,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                 : "py-8 bg-white rounded-xl text-center justify-items-center"
             }`}
           >
-            <img src={EmptyShoppingCart} alt="" />
+            <img src={EmptyShoppingCart} className="w-[70%]" alt="" />
             <p className="text-xl text-gray-600 mb-4">
               Your cart seems kind empty.
             </p>
@@ -139,7 +139,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                         <div className="text-brand-700 font-semibold">
                           ₹{it.price}
                         </div>
-                        <div className="flex gap-2 py-2">
+                        <div className="flex gap-6 lg:gap-4 py-2">
                           <div className="flex items-center gap-2 border border-gray-200 rounded">
                             <button
                               type="button"

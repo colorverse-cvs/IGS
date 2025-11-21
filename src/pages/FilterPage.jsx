@@ -16,6 +16,30 @@ import categoriesData from "../data/categories.json";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import { User } from "lucide-react";
 
+/**
+ * FilterPage Component - Product catalog with advanced filtering and sorting
+ * 
+ * Features:
+ * - Filter by: category, material, size, price range, in-stock status, discount
+ * - Sort by: popular, price (low-high, high-low), rating
+ * - Pagination with customizable items per page (4, 8, 12, 16)
+ * - Search within filtered results
+ * - Mobile: Filter drawer (toggles via hamburger icon)
+ * - Desktop: Filter sidebar always visible
+ * - URL params sync for bookmarkable filter states
+ * 
+ * How it works:
+ * - Builds full product list from categories.json
+ * - Applies filters to product list
+ * - Sorts products based on selected sort option
+ * - Paginates results and displays current page
+ * - Syncs all states to URL search params for shareable links
+ * 
+ * For beginners:
+ * - useSearchParams() reads/writes URL query parameters
+ * - Filters update via setFilters() which triggers recalculation
+ * - URL sync allows users to share filtered product lists
+ */
 export default function FilterPage() {
   const navigate = useNavigate();
   const user = useSelector((s) => s.user);

@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SlideshowStripe from "../components/SlideshowStripe.jsx";
 import carouselData from "../data/carousel.json";
 import Clippathgroup from "../assets/clip-path-group.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import CollectionPage from "./CollectionPage.jsx";
 import ExploreCollections from "./ExploreCollections.jsx";
 import CustomizationWorksPage from "./CustomizationWorksPage.jsx";
@@ -17,6 +17,25 @@ import testimonials from "../data/testimonials.json";
  */
 export default function HomePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // When there's a hash in the URL (e.g. /#section-<id>), scroll to the section
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.replace("#", "");
+    // small delay to ensure elements are rendered
+    const t = setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        const nav = document.querySelector("nav");
+        const offset = nav && nav.offsetHeight ? nav.offsetHeight : 80;
+        const top =
+          el.getBoundingClientRect().top + window.scrollY - offset - 12;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    }, 60);
+    return () => clearTimeout(t);
+  }, [location]);
 
   const breadcrumbItems = [{ label: "Home" }];
 

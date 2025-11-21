@@ -7,12 +7,37 @@ import facebookButton from "../assets/facebook_buttons.png";
 import appleButton from "../assets/apple_buttons.png";
 import { Eye, EyeOff } from "lucide-react";
 
+/**
+ * AuthModal Component - User login and signup modal
+ * 
+ * Props:
+ * - isOpen: boolean - whether modal is visible
+ * - onClose: function - callback to close the modal
+ * - initialTab: string - which tab to show on open ('login' or 'signup')
+ * 
+ * Features:
+ * - Two tabs: Login and Sign Up
+ * - Email/password and mobile number validation
+ * - Social login buttons (Google, Facebook, Apple) - UI only
+ * - Password visibility toggle
+ * - Forgot password form (basic UI)
+ * - Form validation with error messages
+ * - Saves user to Redux store and localStorage
+ * 
+ * For beginners:
+ * - Validates email format and 10-digit mobile numbers
+ * - dispatch(login()) and dispatch(signup()) save user to Redux state
+ * - Modal wraps the entire auth form interface
+ */
+
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileRegex = /^\d{10}$/;
 
 export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const dispatch = useDispatch();
   const [tab, setTab] = React.useState("login"); // 'login' | 'signup'
+  
+  // Switch to requested tab when modal opens
   React.useEffect(() => {
     if (isOpen) setTab(initialTab);
   }, [initialTab, isOpen]);
@@ -29,13 +54,13 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     };
   }, [isOpen]);
 
-  // Login form
+  // Login form state
   const [loginEmail, setLoginEmail] = React.useState("");
   const [loginPassword, setLoginPassword] = React.useState("");
   const [loginError, setLoginError] = React.useState("");
   const [showLoginPassword, setShowLoginPassword] = React.useState(false);
 
-  // Signup form
+  // Signup form state
   const [name, setName] = React.useState("");
   const [mobile, setMobile] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -44,6 +69,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [errors, setErrors] = React.useState({});
   const [showSignupPassword, setShowSignupPassword] = React.useState(false);
   const [showSignupConfirm, setShowSignupConfirm] = React.useState(false);
+  
+  // Password reset form state
   const [resetOpen, setResetOpen] = React.useState(false);
   const [resetEmail, setResetEmail] = React.useState("");
   const [resetStatus, setResetStatus] = React.useState("");
@@ -494,7 +521,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             {/* Email Field */}
             <div>
               <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Email/Mobile Number <span className="text-red-500">*</span>
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition ${

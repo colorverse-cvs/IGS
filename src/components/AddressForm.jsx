@@ -1,6 +1,28 @@
 import React, { useState } from "react";
 import indianStates from "../data/indianStates.json";
+import Dropdown from "./Dropdown";
 
+/**
+ * AddressForm Component - Delivery address input form
+ * 
+ * Props:
+ * - onSubmit: function(addressObject) - called with complete form data
+ * - onCancel: function() - called when user clicks cancel
+ * - initial: object (optional) - pre-fill form with existing address data
+ * - submitLabel: string (default: "Use this address") - button label
+ * 
+ * Features:
+ * - Full address form with Indian states dropdown
+ * - Validates mobile (10 digits), email, pincode (6 digits)
+ * - Address aliases (Home, Work, Other) for saving multiple addresses
+ * - Set as default address option
+ * - Displays validation errors inline
+ * 
+ * For beginners:
+ * - Uses indianStates.json for state dropdown options
+ * - onlyDigits() helper removes non-numeric characters from input
+ * - Form validation runs before calling onSubmit
+ */
 export default function AddressForm({
   onSubmit,
   onCancel,
@@ -16,6 +38,8 @@ export default function AddressForm({
   const [pincode, setPincode] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
+  
+  // Address type aliases
   const DEFAULT_ALIASES = ["Home", "Work", "Other"];
   const aliasOptions = React.useMemo(() => {
     const existing = initial?.tag;
@@ -27,8 +51,10 @@ export default function AddressForm({
   const [makeDefault, setMakeDefault] = useState(initial?.isDefault || false);
   const [errors, setErrors] = useState({});
 
+  // Remove all non-digit characters
   const onlyDigits = (value) => value.replace(/\D/g, "");
 
+  // Handle form submission with validation
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = {};
@@ -197,21 +223,13 @@ export default function AddressForm({
           <label className="block text-sm font-medium mb-1 text-gray-500">
             State *
           </label>
-          <select
-            className={`w-full border rounded px-3 py-2 border-gray-200 ${
-              errors.state ? "border-red-500" : ""
-            }`}
+          <Dropdown
+            options={indianStates}
             value={state}
-            onChange={(e) => setState(e.target.value)}
-            required
-          >
-            <option value="">Select your state</option>
-            {indianStates.map((st) => (
-              <option key={st} value={st}>
-                {st}
-              </option>
-            ))}
-          </select>
+            onChange={(v) => setState(v)}
+            placeholder="Select your state"
+            className={`${errors.state ? "ring-2 ring-red-400" : ""}`}
+          />
           {errors.state && (
             <p className="mt-1 text-xs text-red-600">{errors.state}</p>
           )}
@@ -221,17 +239,12 @@ export default function AddressForm({
         <label className="block text-sm font-medium mb-1 text-gray-500">
           Alias
         </label>
-        <select
-          className="w-full border rounded px-3 py-2 border-gray-200"
+        <Dropdown
+          options={aliasOptions}
           value={alias}
-          onChange={(e) => setAlias(e.target.value)}
-        >
-          {aliasOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
+          onChange={(v) => setAlias(v)}
+          placeholder="Alias"
+        />
       </div>
       <label className="flex items-center gap-2 text-sm">
         <input

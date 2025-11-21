@@ -112,8 +112,8 @@ export default function ProductSection({
       "Chhatrapati Shivaji Maharaj Statues": "shivaji",
       "Mavale Statues": "mavale",
       "God Statues": "god-statues",
-      "Motivational Statues": "motivational",
       "Home Decor": "home-decor",
+      "Motivational Statues": "motivational",
     };
     return categoryMap[title] || categoryId;
   };
