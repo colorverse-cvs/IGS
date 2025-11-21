@@ -76,29 +76,38 @@ export default function Dropdown({
     // Calculate space available
     const spaceBelow = viewport - buttonRect.bottom;
     const spaceAbove = buttonRect.top;
+    const panelHeight = panelRect.height;
 
-    // Determine if panel should open upward or downward
-    const openUpward =
-      spaceBelow < panelRect.height + gap && spaceAbove > spaceBelow;
+    // Always prefer opening below, only open above if not enough space
+    let openUpward = false;
+    if (spaceBelow < panelHeight + gap && spaceAbove > panelHeight + gap) {
+      openUpward = true;
+    }
 
     // Calculate position
-    // Determine desired width: don't exceed viewport minus small margin
     const desiredWidth = Math.min(
       panelRect.width,
       Math.max(120, viewportWidth - 16)
     );
 
-    // Compute left aligned value based on `align`, then clamp horizontally
     let left =
       align === "right" ? buttonRect.right - desiredWidth : buttonRect.left;
-    const minLeft = 8; // 8px margin from screen edge
+    const minLeft = 8;
     const maxLeft = Math.max(minLeft, viewportWidth - desiredWidth - 8);
     if (left < minLeft) left = minLeft;
     if (left > maxLeft) left = maxLeft;
 
-    const top = openUpward
-      ? buttonRect.top - panelRect.height - gap
-      : buttonRect.bottom + gap;
+    let top;
+    if (openUpward) {
+      top = buttonRect.top - panelHeight - gap;
+      if (top < 8) top = 8; // Clamp to top of viewport
+    } else {
+      top = buttonRect.bottom + gap;
+      if (top + panelHeight > viewport - 8) {
+        top = viewport - panelHeight - 8; // Clamp to bottom of viewport
+        if (top < buttonRect.bottom + gap) top = buttonRect.bottom + gap; // Don't overlap button
+      }
+    }
 
     setPanelSize({ width: desiredWidth });
     setPanelPosition({
@@ -107,23 +116,6 @@ export default function Dropdown({
       left: `${left}px`,
     });
   }, [open, align]);
-
-  // Prevent body overflow when dropdown is open
-  useEffect(() => {
-    if (open) {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.overflow = "hidden";
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-    };
-  }, [open]);
 
   // Click outside to close
   useEffect(() => {
@@ -233,18 +225,50 @@ export default function Dropdown({
         />
       )}
 
-      {/* Dropdown Panel - Fixed positioning to avoid scrollbars */}
+      {/* Dropdown Panel - Use absolute for form mode, fixed for navigation mode */}
       {open && (
         <div
           ref={panelRef}
-          className="fixed rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-50"
-          style={{
-            top: panelPosition.top,
-            left: panelPosition.left,
-            width: panelSize.width ? `${panelSize.width}px` : undefined,
-            maxWidth: "calc(100vw - 16px)",
-            pointerEvents: "auto",
-          }}
+          className={`${
+            isFormMode ? "absolute" : "fixed"
+          } rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-50`}
+          style={(() => {
+            if (!isFormMode) {
+              return {
+                top: panelPosition.top,
+                left: panelPosition.left,
+                width: panelSize.width ? `${panelSize.width}px` : undefined,
+                maxWidth: "calc(100vw - 16px)",
+                pointerEvents: "auto",
+              };
+            }
+            // Form mode: open above if not enough space below
+            if (buttonRef.current && panelRef.current) {
+              const inputRect = buttonRef.current.getBoundingClientRect();
+              const panelHeight = panelRef.current.offsetHeight || 200;
+              const viewportHeight = window.innerHeight;
+              const spaceBelow = viewportHeight - inputRect.bottom;
+              const spaceAbove = inputRect.top;
+              // Prefer below, but open above if not enough space below and more space above
+              if (spaceBelow < panelHeight && spaceAbove > spaceBelow) {
+                return {
+                  bottom: `100%`,
+                  left: 0,
+                  width: "100%",
+                  marginBottom: 4,
+                  pointerEvents: "auto",
+                };
+              }
+            }
+            // Default: open below
+            return {
+              top: "100%",
+              left: 0,
+              width: "100%",
+              marginTop: 4,
+              pointerEvents: "auto",
+            };
+          })()}
           role="menu"
         >
           {/* Form Mode: List of options */}
@@ -295,7 +319,21 @@ export default function Dropdown({
           )}
 
           {/* Navigation Mode: Custom children */}
-          {!isFormMode && children && <div className="py-1">{children}</div>}
+          {!isFormMode && children && (
+            <div
+              className="py-1"
+              onClick={(e) => {
+                // Prevent clicks inside the panel from closing the dropdown
+                e.stopPropagation();
+              }}
+              onMouseDown={(e) => {
+                // Prevent mousedown from triggering click-outside handler
+                e.stopPropagation();
+              }}
+            >
+              {children}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -67,22 +67,68 @@ export default function Navbar() {
   // Build product navigation links: "All Products" (filter page) + category anchors (home scrolling)
   const productLinks = useMemo(() => {
     const allProducts = [
-      { name: "All Products", id: "all-products", path: "/filter" },
+      {
+        name: "All Products",
+        id: "all-products",
+        path: "/filter",
+        isSection: false,
+      },
     ];
     const sections = categoriesData.sections.map((section) => ({
       name: section.title,
       id: section.id,
       path: `/#section-${section.id}`,
+      isSection: true,
+      sectionId: section.id,
     }));
     return [...allProducts, ...sections];
   }, []);
 
+  // Handle product link click: navigate to home first if section link, then scroll
+  const handleProductLinkClick = (pLink) => {
+    setIsProductsDropdownOpen(false);
+    setIsMobileProductsDropdownOpen(false);
+    setIsMenuOpen(false);
+
+    if (pLink.isSection) {
+      // Navigate to home page with hash - HomePage useEffect will handle scrolling
+      const hash = `#section-${pLink.sectionId}`;
+      if (location.pathname !== "/") {
+        // Navigate to home with hash
+        navigate(`/${hash}`);
+      } else {
+        // Already on home page, update hash to trigger scroll
+        window.location.hash = hash;
+        // Also trigger scroll manually in case hash change doesn't trigger useEffect
+        setTimeout(() => {
+          const sectionId = `section-${pLink.sectionId}`;
+          const el = document.getElementById(sectionId);
+          if (el) {
+            const nav = document.querySelector("nav");
+            const offset = nav && nav.offsetHeight ? nav.offsetHeight : 80;
+            const top =
+              el.getBoundingClientRect().top + window.scrollY - offset - 12;
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+        }, 100);
+      }
+    } else {
+      // Regular navigation for "All Products"
+      navigate(pLink.path);
+    }
+  };
+
   // Build profile navigation links for dropdowns
   const profileLinks = useMemo(
     () => [
-      { to: "/profile", label: "Your Account" },
-      { to: "/profile?tab=orders", label: "Your Orders" },
-      { to: "/cart", label: "Saved Items" },
+      { to: "/profile", label: "Your Account", path: "/profile" },
+      {
+        to: "/profile?tab=orders",
+        label: "Your Orders",
+        path: "/profile",
+        search: "?tab=orders",
+      },
+      { to: "/cart", label: "Saved Items", path: "/cart" },
     ],
     []
   );
@@ -239,14 +285,14 @@ export default function Navbar() {
                       )}
                     >
                       {productLinks.map((pLink) => (
-                        <Link
+                        <button
                           key={pLink.id}
-                          to={pLink.path}
-                          onClick={() => setIsProductsDropdownOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
+                          type="button"
+                          onClick={() => handleProductLinkClick(pLink)}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
                         >
                           {pLink.name}
-                        </Link>
+                        </button>
                       ))}
                     </Dropdown>
                   </div>
@@ -307,19 +353,39 @@ export default function Navbar() {
                     </button>
                   )}
                 >
+                  {/* Profile dropdown links as buttons */}
                   {profileLinks.map((item, idx, arr) => (
-                    <Link
+                    <button
                       key={item.to}
-                      to={item.to}
-                      onClick={() => setIsProfileDropdownOpen(false)}
-                      className={`block px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsProfileDropdownOpen(false);
+                        // Navigate with proper path and search params
+                        if (item.search) {
+                          navigate({
+                            pathname: item.path,
+                            search: item.search,
+                          });
+                        } else {
+                          navigate(item.path || item.to);
+                        }
+                      }}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
                       } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
                       {item.label}
-                    </Link>
+                    </button>
                   ))}
+                  {/* Sign out button at the bottom */}
                   <button
+                    type="button"
                     onClick={() => {
                       dispatch(logout());
                       setIsProfileDropdownOpen(false);
@@ -415,16 +481,33 @@ export default function Navbar() {
                   )}
                 >
                   {profileLinks.map((item, idx, arr) => (
-                    <Link
+                    <button
                       key={item.to}
-                      to={item.to}
-                      onClick={() => setIsProfileDropdownOpen(false)}
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsProfileDropdownOpen(false);
+                        // Navigate with proper path and search params
+                        if (item.search) {
+                          navigate({
+                            pathname: item.path,
+                            search: item.search,
+                          });
+                        } else {
+                          navigate(item.path || item.to);
+                        }
+                      }}
                       className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
                       } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
                       {item.label}
-                    </Link>
+                    </button>
                   ))}
                   <button
                     onClick={() => {
@@ -480,9 +563,23 @@ export default function Navbar() {
                     <button
                       key={item.to}
                       type="button"
-                      onClick={() => {
-                        navigate(item.to);
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         setIsProfileDropdownOpen(false);
+                        // Navigate with proper path and search params
+                        if (item.search) {
+                          navigate({
+                            pathname: item.path,
+                            search: item.search,
+                          });
+                        } else {
+                          navigate(item.path || item.to);
+                        }
                       }}
                       className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
@@ -691,17 +788,14 @@ export default function Navbar() {
             {isMobileProductsDropdownOpen && (
               <div className="pl-6 pt-2 pb-2 space-y-2 bg-gray-50 rounded-lg mt-2">
                 {productLinks.map((pLink) => (
-                  <Link
+                  <button
                     key={pLink.id}
-                    to={pLink.path}
-                    onClick={() => {
-                      setIsMobileProductsDropdownOpen(false);
-                      setIsMenuOpen(false);
-                    }}
-                    className="block text-sm text-gray-600 hover:text-purple-700 py-1"
+                    type="button"
+                    onClick={() => handleProductLinkClick(pLink)}
+                    className="block w-full text-left text-sm text-gray-600 hover:text-purple-700 py-1"
                   >
                     {pLink.name}
-                  </Link>
+                  </button>
                 ))}
               </div>
             )}
