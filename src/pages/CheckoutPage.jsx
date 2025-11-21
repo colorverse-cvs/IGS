@@ -6,13 +6,43 @@ import {
   updateQty,
   removeFromCart,
 } from "../features/cart/cartSlice";
-// No sample addresses fallback; unauthenticated users add addresses fresh
 import { addOrUpdateAddress } from "../features/user/userSlice";
 import { addOrder } from "../features/orders/ordersSlice";
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
+import Dropdown from "../components/Dropdown";
 import Breadcrumb from "../components/Breadcrumb.jsx";
+
+/**
+ * CheckoutPage Component - Multi-step checkout flow
+ * 
+ * Features:
+ * - Review cart items with quantity controls
+ * - Manage delivery addresses (add, edit, select default)
+ * - Gift wrap option (₹20 per unit)
+ * - Multiple payment methods (Cards, UPI, Wallets, Net Banking)
+ * - Order summary with itemized costs
+ * - Mock payment processing (creates order without real payment)
+ * 
+ * Steps:
+ * 1. Cart Review: Adjust quantities, apply gift wrap
+ * 2. Address: Select or add delivery address
+ * 3. Payment: Choose payment method and process order
+ * 4. Confirmation: Redirects to OrderPlaced page
+ * 
+ * For beginners:
+ * - useSelector() gets cart items and user from Redux
+ * - dispatch() saves addresses and orders to Redux state
+ * - useState() manages UI state (modals, forms, tabs)
+ * - Orders are saved to localStorage via Redux middleware
+ * 
+ * Payment Methods UI:
+ * - Card icons (Visa, Mastercard, RuPay)
+ * - UPI options (Google Pay, PhonePe)
+ * - Net Banking (6 major Indian banks)
+ * - Wallets, Buy Later options
+ */
 
 /**
  * Payment Method Icons
@@ -646,22 +676,23 @@ export default function CheckoutPage() {
                 <div className="mb-4">
                   <div className="text-sm font-semibold mb-2">Netbanking</div>
                   <div className="flex items-center gap-2">
-                    <select
-                      className="border border-gray-200 rounded px-2 py-1 text-sm"
+                    <Dropdown
+                      options={[
+                        { value: "", label: "Select your bank" },
+                        { value: "SBI", label: "SBI" },
+                        { value: "HDFC", label: "HDFC" },
+                        { value: "ICICI", label: "ICICI" },
+                        { value: "AXIS", label: "AXIS" },
+                        { value: "KOTAK", label: "KOTAK" },
+                      ]}
                       value={selectedBank}
-                      onChange={(e) => {
-                        setSelectedBank(e.target.value);
+                      onChange={(v) => {
+                        setSelectedBank(v);
                         setPaymentType("netbanking");
                         keepScroll();
                       }}
-                    >
-                      <option value="">Select your bank</option>
-                      <option value="SBI">SBI</option>
-                      <option value="HDFC">HDFC</option>
-                      <option value="ICICI">ICICI</option>
-                      <option value="AXIS">AXIS</option>
-                      <option value="KOTAK">KOTAK</option>
-                    </select>
+                      placeholder="Select your bank"
+                    />
                     {selectedBank && (
                       <Logo
                         name={selectedBank.toLowerCase()}

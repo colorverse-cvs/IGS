@@ -7,93 +7,87 @@ import {
   X,
   Search,
   ChevronDown,
-  Star,
   User,
   Home,
   Phone,
+  LogOut,
 } from "lucide-react";
-import CartDrawer from "./CartDrawer"; // Make sure this path is correct
+import CartDrawer from "./CartDrawer";
 import SearchDrawer from "./SearchDrawer.jsx";
 import AuthModal from "./AuthModal";
+import Dropdown from "./Dropdown";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import categoriesData from "../data/categories.json";
+import { logout } from "../features/user/userSlice";
 
+/**
+ * Navbar Component - Main navigation header for the application
+ *
+ * Features:
+ * - Desktop navbar with product dropdown menu
+ * - Mobile-responsive bottom navigation bar
+ * - Mobile menu drawer with expandable products section
+ * - Shopping cart integration with item count badge
+ * - User profile dropdown for authenticated users
+ * - Search functionality across products
+ * - Smooth scrolling to featured collection sections on home page
+ * - Sticky header with glass effect on scroll
+ */
 export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // State management
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState("login");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false);
+  const [isMobileProductsDropdownOpen, setIsMobileProductsDropdownOpen] =
+    useState(false);
 
+  // Check if user is on home page for conditional rendering
   const isHomePage = location.pathname === "/";
 
-  const navbarClasses = `fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full ${
-    isScrolled ? "bg-white/95 backdrop-blur-sm shadow-md" : "bg-white"
-  }`;
-
-  // Redux: Get the total number of items in the cart
+  // Redux selectors: Get cart items and user data
   const totalItems = useSelector((s) =>
     s.cart.items.reduce((sum, item) => sum + item.qty, 0)
   );
   const user = useSelector((s) => s.user);
 
+  // Toggle handlers for drawer and menu states
   const toggleCart = () => setIsCartOpen(!isCartOpen);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const toggleProductsDropdown = () =>
-    setIsProductsDropdownOpen(!isProductsDropdownOpen);
 
-  // Auto-open login after 5s on first load if not authenticated
-  useEffect(() => {
-    if (!user.isAuthenticated) {
-      const alreadyPrompted = sessionStorage.getItem("igs_auth_prompted");
-      if (alreadyPrompted) return;
-      const t = setTimeout(() => {
-        setIsAuthOpen(true);
-        sessionStorage.setItem("igs_auth_prompted", "1");
-      }, 5000);
-      return () => clearTimeout(t);
-    }
-  }, [user.isAuthenticated]);
+  // Build product navigation links: "All Products" (filter page) + category anchors (home scrolling)
+  const productLinks = useMemo(() => {
+    const allProducts = [
+      { name: "All Products", id: "all-products", path: "/filter" },
+    ];
+    const sections = categoriesData.sections.map((section) => ({
+      name: section.title,
+      id: section.id,
+      path: `/#section-${section.id}`,
+    }));
+    return [...allProducts, ...sections];
+  }, []);
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Products", isDropdown: true },
-    { name: "Customization", path: "/customization" },
-    { name: "About", path: "/about" },
-    { name: "Blog", path: "/blog" },
-    { name: "Contact", path: "/contact" },
-  ];
+  // Build profile navigation links for dropdowns
+  const profileLinks = useMemo(
+    () => [
+      { to: "/profile", label: "Your Account" },
+      { to: "/profile?tab=orders", label: "Your Orders" },
+      { to: "/cart", label: "Saved Items" },
+    ],
+    []
+  );
 
-  const productLinks = [
-    { name: "All Products", path: "/filter" },
-    { name: "Chhatrapati Shivaji Maharaj Statues", scrollTo: "shivaji" },
-    { name: "Mavale Statues", scrollTo: "mavale" },
-    { name: "God Statues", scrollTo: "god-statues" },
-    { name: "Home Decor", scrollTo: "home-decor" },
-    { name: "Motivational Statues", scrollTo: "motivational" },
-  ];
-
-  const handleCategoryClick = (link) => {
-    if (link.scrollTo) {
-      // Scroll to section on home page
-      const element = document.getElementById(`section-${link.scrollTo}`);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else {
-        // If not on home page, navigate to home and then scroll
-        window.location.href = `/#section-${link.scrollTo}`;
-      }
-    }
-    toggleProductsDropdown();
-  };
-
-  // Build a searchable list of products from categories.json
+  // Build searchable product list for search functionality
   const allProducts = useMemo(() => {
     const arr = [];
     categoriesData.sections.forEach((section) =>
@@ -108,8 +102,10 @@ export default function Navbar() {
     return arr;
   }, []);
 
+  // Convert text to URL-friendly slug format
   const toSlug = (val) => (val || "").toLowerCase().replace(/\s+/g, "-");
 
+  // Filter products based on search query (name, material, size, price, rating, category)
   const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return [];
@@ -130,63 +126,77 @@ export default function Navbar() {
     });
   }, [searchQuery, allProducts]);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isProductsDropdownOpen) {
-        const dropdown = event.target.closest(".products-dropdown-container");
-        if (!dropdown) {
-          setIsProductsDropdownOpen(false);
-        }
-      }
-    };
+  // Main navigation menu items
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Products", isDropdown: true },
+    { name: "Customization", path: "/customization" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+  ];
 
-    if (isProductsDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+  // Auto-open login modal on first visit (after 5 seconds) if user is not authenticated
+  useEffect(() => {
+    if (!user.isAuthenticated) {
+      const alreadyPrompted = sessionStorage.getItem("igs_auth_prompted");
+      if (alreadyPrompted) return; // Don't show again if user already saw it
+      const timer = setTimeout(() => {
+        setIsAuthOpen(true);
+        sessionStorage.setItem("igs_auth_prompted", "1");
+      }, 5000);
+      return () => clearTimeout(timer);
     }
+  }, [user.isAuthenticated]);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isProductsDropdownOpen]);
-
-  // Sticky glass effect on scroll
+  // Scroll page to top smoothly when navigating to a new route
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll);
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location.pathname]);
+
+  // Add glass blur effect to navbar when user scrolls down the page
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Call once on mount to set initial state
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Prevent background scroll when mobile menu open
+  // Prevent body scroll when mobile menu is open (lock background scrolling)
   useEffect(() => {
     if (isMenuOpen) {
-      const prev = document.body.style.overflow;
+      const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
-        document.body.style.overflow = prev;
+        document.body.style.overflow = originalOverflow;
       };
     }
   }, [isMenuOpen]);
 
+  // Open search drawer
   const openSearch = () => setIsSearchOpen(true);
+
+  // Close search drawer and clear search query
   const closeSearch = () => {
     setIsSearchOpen(false);
     setSearchQuery("");
   };
 
-  const handleSearchResultClick = (p) => {
+  // Navigate to filter page with selected product filters (category, material, size)
+  const handleSearchResultClick = (product) => {
     const params = new URLSearchParams();
-    params.set("category", p.categoryId || toSlug(p.categoryName));
-    if (p.material) params.set("material", (p.material || "").toLowerCase());
-    if (p.size) params.set("size", p.size);
+    params.set("category", product.categoryId || toSlug(product.categoryName));
+    if (product.material)
+      params.set("material", (product.material || "").toLowerCase());
+    if (product.size) params.set("size", product.size);
     closeSearch();
     navigate(`/filter?${params.toString()}`);
   };
 
   return (
     <>
-      {/* ========== DESKTOP NAVBAR (Hidden on mobile) ========== */}
+      {/* DESKTOP NAVBAR - Visible only on large screens (lg+)
+          Shows: Logo, navigation links, product dropdown, search, auth buttons, cart icon
+          Features: Sticky positioning with glass blur effect on scroll */}
       <nav
         className={`hidden lg:block sticky top-0 z-30 border-b transition-colors ${
           isScrolled
@@ -208,59 +218,37 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex lg:items-center">
+            <div className="hidden lg:flex lg:items-center lg:gap-1">
               {navLinks.map((link) =>
                 link.isDropdown ? (
-                  <div
-                    key={link.name}
-                    className="relative products-dropdown-container"
-                  >
-                    <button
-                      onClick={toggleProductsDropdown}
-                      className="text-gray-700 hover:text-purple-700 lg:px-3 lg:py-3 text-sm font-medium flex items-center transition"
+                  <div key={link.name} className="relative">
+                    <Dropdown
+                      isOpen={isProductsDropdownOpen}
+                      onToggle={setIsProductsDropdownOpen}
+                      align="left"
+                      trigger={(isOpen) => (
+                        <button className="text-gray-700 hover:text-purple-700 lg:px-3 lg:py-3 text-sm font-medium transition flex items-center gap-1">
+                          {link.name}
+                          <ChevronDown
+                            size={16}
+                            className={`transition-transform ${
+                              isOpen ? "rotate-180" : "rotate-0"
+                            }`}
+                          />
+                        </button>
+                      )}
                     >
-                      Products{" "}
-                      <ChevronDown
-                        size={16}
-                        className={`ml-1 transition-transform ${
-                          isProductsDropdownOpen ? "rotate-180" : "rotate-0"
-                        }`}
-                      />
-                    </button>
-
-                    {isProductsDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-40">
-                        <div
-                          className="py-1"
-                          role="menu"
-                          aria-orientation="vertical"
-                          aria-labelledby="products-menu-button"
+                      {productLinks.map((pLink) => (
+                        <Link
+                          key={pLink.id}
+                          to={pLink.path}
+                          onClick={() => setIsProductsDropdownOpen(false)}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
                         >
-                          {productLinks.map((pLink) =>
-                            pLink.path ? (
-                              <Link
-                                key={pLink.name}
-                                to={pLink.path}
-                                onClick={() => {
-                                  toggleProductsDropdown();
-                                }}
-                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              >
-                                {pLink.name}
-                              </Link>
-                            ) : (
-                              <button
-                                key={pLink.name}
-                                onClick={() => handleCategoryClick(pLink)}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              >
-                                {pLink.name}
-                              </button>
-                            )
-                          )}
-                        </div>
-                      </div>
-                    )}
+                          {pLink.name}
+                        </Link>
+                      ))}
+                    </Dropdown>
                   </div>
                 ) : (
                   <Link
@@ -298,157 +286,81 @@ export default function Navbar() {
               </button>
 
               {user.isAuthenticated ? (
-                <Link
-                  to="/profile"
-                  className="p-2 rounded-lg hover:bg-gray-50 transition"
-                  aria-label="Profile"
-                >
-                  <User size={20} className="text-gray-700" />
-                </Link>
-              ) : (
-                <button
-                  onClick={() => {
-                    setAuthTab("login");
-                    setIsAuthOpen(true);
-                  }}
-                  className="px-5 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
-                  aria-label="Sign In / Log In"
-                >
-                  Sign In/Log In
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop Menu Drawer */}
-        <div
-          className={`
-            fixed inset-0 bg-black/50 z-20 transition-opacity duration-300
-            ${isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"}
-          `}
-          onClick={toggleMenu}
-          aria-hidden={!isMenuOpen}
-        />
-
-        <div
-          className={`
-            fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-999 
-            transition-transform duration-300 ease-in-out
-            flex flex-col overflow-y-auto
-            ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}
-          `}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Main navigation"
-        >
-          <div className="flex justify-between items-center p-5 border-b border-brand-100">
-            <Link to="/" onClick={toggleMenu} className="flex items-center">
-              <img
-                src={IshitaGalleryLogo}
-                alt="Ishita Gallery"
-                className="h-10 w-auto"
-              />
-            </Link>
-            <button
-              onClick={toggleMenu}
-              className="p-2 rounded-full text-gray-500 hover:text-purple-700 hover:bg-brand-50 transition"
-              aria-label="Close menu"
-            >
-              <X size={24} />
-            </button>
-          </div>
-
-          <div className="flex-1 px-4 py-4 space-y-1">
-            <div className="border-b border-gray-100 pb-2 mb-2">
-              <button
-                onClick={toggleProductsDropdown}
-                className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-purple-700 px-3 py-2 rounded-lg transition flex justify-between items-center"
-              >
-                Products{" "}
-                <ChevronDown
-                  size={18}
-                  className={`transition-transform ${
-                    isProductsDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                />
-              </button>
-              {isProductsDropdownOpen && (
-                <div className="pl-6 pt-1 pb-1 space-y-1 bg-gray-50 rounded-b-lg">
-                  {productLinks.map((pLink) =>
-                    pLink.path ? (
-                      <Link
-                        key={pLink.name}
-                        to={pLink.path}
-                        onClick={() => {
-                          toggleMenu();
-                          toggleProductsDropdown();
-                        }}
-                        className="block text-base text-gray-600 hover:text-purple-700 py-1"
-                      >
-                        {pLink.name}
-                      </Link>
-                    ) : (
-                      <button
-                        key={pLink.name}
-                        onClick={() => {
-                          handleCategoryClick(pLink);
-                          toggleMenu();
-                        }}
-                        className="block w-full text-left text-base text-gray-600 hover:text-purple-700 py-1"
-                      >
-                        {pLink.name}
-                      </button>
-                    )
+                <Dropdown
+                  isOpen={isProfileDropdownOpen}
+                  onToggle={setIsProfileDropdownOpen}
+                  align="right"
+                  trigger={(isOpen) => (
+                    <button className="flex items-center gap-2 px-3 py-2 transition">
+                      <span className="flex flex-col items-start text-gray-700">
+                        <span className="text-xs font-medium">Hey,</span>
+                        <span className="flex items-center gap-1 !text-sm !font-semibold">
+                          {user.profile.name}
+                          <ChevronDown
+                            size={16}
+                            className={`transition-transform ${
+                              isOpen ? "rotate-180" : "rotate-0"
+                            }`}
+                          />
+                        </span>
+                      </span>
+                    </button>
                   )}
+                >
+                  {profileLinks.map((item, idx, arr) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className={`block px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                        idx === 0 ? "first:rounded-t-lg" : ""
+                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  <button
+                    onClick={() => {
+                      dispatch(logout());
+                      setIsProfileDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
+                  >
+                    <LogOut size={16} />
+                    Sign out
+                  </button>
+                </Dropdown>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setAuthTab("login");
+                      setIsAuthOpen(true);
+                    }}
+                    className="px-4 py-2 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium"
+                    aria-label="Log In"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthTab("signup");
+                      setIsAuthOpen(true);
+                    }}
+                    className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 transition text-sm font-medium"
+                    aria-label="Sign Up"
+                  >
+                    Sign Up
+                  </button>
                 </div>
               )}
             </div>
-
-            {navLinks
-              .filter((l) => !l.isDropdown)
-              .map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={toggleMenu}
-                  className="block text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-purple-700 px-3 py-2 rounded-lg transition"
-                >
-                  {link.name}
-                </Link>
-              ))}
-          </div>
-
-          <div className="p-4 border-t shadow-inner">
-            <div className="flex justify-between items-center mb-3">
-              <button
-                onClick={() => {
-                  toggleMenu();
-                  toggleCart();
-                }}
-                className="flex items-center text-brand-700 font-semibold hover:text-purple-900 transition"
-              >
-                Cart ({totalItems}) <ShoppingCart size={20} className="ml-2" />
-              </button>
-            </div>
-
-            {!user.isAuthenticated && (
-              <button
-                onClick={() => {
-                  toggleMenu();
-                  setAuthTab("signup");
-                  setIsAuthOpen(true);
-                }}
-                className="w-full text-center inline-block px-4 py-3 text-sm font-bold text-white bg-brand-700 rounded-lg hover:bg-brand-800 transition shadow-md"
-              >
-                Sign Up
-              </button>
-            )}
           </div>
         </div>
       </nav>
-
-      {/* ========== MOBILE NAVBAR (Top Bar) ========== */}
+      {/* MOBILE NAVBAR - Fixed top navigation bar for small/medium screens (md and below)
+          Shows: Logo on left, search and auth on right (on md+), responsive bottom search
+          Features: Sticky positioning with blur effect on scroll */}
       <nav
         className={`lg:hidden fixed top-0 left-0 right-0 z-40 border-b border-gray-200 ${
           isScrolled
@@ -481,48 +393,138 @@ export default function Navbar() {
 
               {/* Auth Button/Icon */}
               {user.isAuthenticated ? (
-                <Link
-                  to="/profile"
-                  className="p-2 rounded-lg hover:bg-gray-100 transition"
-                  aria-label="Profile"
+                <Dropdown
+                  isOpen={isProfileDropdownOpen}
+                  onToggle={setIsProfileDropdownOpen}
+                  align="right"
+                  trigger={(isOpen) => (
+                    <button className="flex items-center gap-2 px-3 py-2 transition">
+                      <span className="flex flex-col items-start text-gray-700">
+                        <span className="text-xs font-medium">Hey,</span>
+                        <span className="flex items-center gap-1 !text-sm !font-semibold">
+                          {user.profile.name}
+                          <ChevronDown
+                            size={16}
+                            className={`transition-transform ${
+                              isOpen ? "rotate-180" : "rotate-0"
+                            }`}
+                          />
+                        </span>
+                      </span>
+                    </button>
+                  )}
                 >
-                  <User size={20} className="text-brand-700" />
-                </Link>
+                  {profileLinks.map((item, idx, arr) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                        idx === 0 ? "first:rounded-t-lg" : ""
+                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  <button
+                    onClick={() => {
+                      dispatch(logout());
+                      setIsProfileDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
+                  >
+                    <LogOut size={16} />
+                    Sign out
+                  </button>
+                </Dropdown>
               ) : (
-                <button
-                  onClick={() => {
-                    setAuthTab("login");
-                    setIsAuthOpen(true);
-                  }}
-                  className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
-                  aria-label="Sign In / Log In"
-                >
-                  Sign In/Log In
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setAuthTab("login");
+                      setIsAuthOpen(true);
+                    }}
+                    className="px-4 py-2 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium"
+                    aria-label="Log In"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthTab("signup");
+                      setIsAuthOpen(true);
+                    }}
+                    className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
+                    aria-label="Sign Up"
+                  >
+                    Sign Up
+                  </button>
+                </div>
               )}
             </div>
 
             {/* Auth Button/Icon on Small devices (SM only, not MD) */}
             <div className="flex md:hidden items-center gap-2">
               {user.isAuthenticated ? (
-                <Link
-                  to="/profile"
-                  className="p-2 rounded-lg hover:bg-gray-100 transition"
-                  aria-label="Profile"
+                <Dropdown
+                  isOpen={isProfileDropdownOpen}
+                  onToggle={setIsProfileDropdownOpen}
+                  align="right"
+                  trigger={(isOpen) => (
+                    <button className="p-2 rounded-lg hover:bg-gray-100 transition">
+                      <User size={20} className="text-brand-700" />
+                    </button>
+                  )}
                 >
-                  <User size={20} className="text-brand-700" />
-                </Link>
+                  {profileLinks.map((item, idx, arr) => (
+                    <button
+                      key={item.to}
+                      type="button"
+                      onClick={() => {
+                        navigate(item.to);
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                        idx === 0 ? "first:rounded-t-lg" : ""
+                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => {
+                      dispatch(logout());
+                      setIsProfileDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
+                  >
+                    <LogOut size={16} />
+                    Sign out
+                  </button>
+                </Dropdown>
               ) : (
-                <button
-                  onClick={() => {
-                    setAuthTab("login");
-                    setIsAuthOpen(true);
-                  }}
-                  className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
-                  aria-label="Sign In / Log In"
-                >
-                  Sign Up/Log In
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setAuthTab("login");
+                      setIsAuthOpen(true);
+                    }}
+                    className="px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-50 transition text-xs font-medium"
+                    aria-label="Log In"
+                  >
+                    Log In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthTab("signup");
+                      setIsAuthOpen(true);
+                    }}
+                    className="px-3 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-xs font-medium"
+                    aria-label="Sign Up"
+                  >
+                    Sign Up
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -551,7 +553,9 @@ export default function Navbar() {
         style={{ height: isHomePage ? "80px" : "85px" }}
       />
 
-      {/* ========== MOBILE BOTTOM NAVBAR ========== */}
+      {/* MOBILE BOTTOM NAVBAR - Fixed navigation at bottom of screen (mobile only, lg:hidden)
+          Shows: Home, Profile, Contact, Cart, Menu (5 main navigation options)
+          Features: Active state highlighting, cart badge with item count */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200">
         <div className="flex justify-around items-center h-16">
           {/* Home */}
@@ -630,7 +634,9 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu Drawer (Updated for mobile) */}
+      {/* MOBILE MENU DRAWER - Slide-out navigation panel (mobile only, triggered by Menu button)
+          Features: Products dropdown with separate state (isMobileProductsDropdownOpen),
+          Other navigation links, cart shortcut, sign up button for guests */}
       <div
         className={`
           lg:hidden fixed inset-0 bg-black/50 z-30 transition-opacity duration-300
@@ -650,7 +656,6 @@ export default function Navbar() {
         role="dialog"
         aria-modal="true"
         aria-label="Mobile menu"
-        // style={{ maxHeight: "calc(100vh - 64px)" }}
       >
         <div className="flex justify-between items-center p-5">
           <h2 className="text-lg font-semibold text-gray-700">Menu</h2>
@@ -664,48 +669,40 @@ export default function Navbar() {
         </div>
 
         <div className="flex-1 px-4 py-4 space-y-1 overflow-y-auto border-y-2 border-brand-200">
-          {/* Products Section */}
+          {/* Products Section - Mobile View Only
+              IMPORTANT: Uses separate state (isMobileProductsDropdownOpen) to avoid conflict
+              with desktop dropdown state (isProductsDropdownOpen). Links scroll to home anchors
+              (/#section-<id>) or redirect to /filter for "All Products" */}
           <div className="border-b border-gray-100 pb-3 mb-3">
             <button
-              onClick={toggleProductsDropdown}
+              onClick={() =>
+                setIsMobileProductsDropdownOpen(!isMobileProductsDropdownOpen)
+              }
               className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-purple-700 px-3 py-2 rounded-lg transition flex justify-between items-center"
             >
               Products{" "}
               <ChevronDown
                 size={18}
                 className={`transition-transform ${
-                  isProductsDropdownOpen ? "rotate-180" : "rotate-0"
+                  isMobileProductsDropdownOpen ? "rotate-180" : "rotate-0"
                 }`}
               />
             </button>
-            {isProductsDropdownOpen && (
+            {isMobileProductsDropdownOpen && (
               <div className="pl-6 pt-2 pb-2 space-y-2 bg-gray-50 rounded-lg mt-2">
-                {productLinks.map((pLink) =>
-                  pLink.path ? (
-                    <Link
-                      key={pLink.name}
-                      to={pLink.path}
-                      onClick={() => {
-                        toggleMenu();
-                        toggleProductsDropdown();
-                      }}
-                      className="block text-sm text-gray-600 hover:text-purple-700 py-1"
-                    >
-                      {pLink.name}
-                    </Link>
-                  ) : (
-                    <button
-                      key={pLink.name}
-                      onClick={() => {
-                        handleCategoryClick(pLink);
-                        toggleMenu();
-                      }}
-                      className="block w-full text-left text-sm text-gray-600 hover:text-purple-700 py-1"
-                    >
-                      {pLink.name}
-                    </button>
-                  )
-                )}
+                {productLinks.map((pLink) => (
+                  <Link
+                    key={pLink.id}
+                    to={pLink.path}
+                    onClick={() => {
+                      setIsMobileProductsDropdownOpen(false);
+                      setIsMenuOpen(false);
+                    }}
+                    className="block text-sm text-gray-600 hover:text-purple-700 py-1"
+                  >
+                    {pLink.name}
+                  </Link>
+                ))}
               </div>
             )}
           </div>

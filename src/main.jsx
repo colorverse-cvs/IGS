@@ -6,6 +6,21 @@ import App from "./App";
 import store from "./store/store";
 import "./index.css";
 
+/**
+ * Application Entry Point
+ * 
+ * This file Tailwind the React application with:
+ * - Redux store (for global state management)
+ * - React Router (for navigation between pages)
+ * - App component (the main application structure)
+ * 
+ * For beginners:
+ * - createRoot() initializes React and renders the app into the #root element in index.html
+ * - <Provider store={store}> makes Redux store available to all components
+ * - <BrowserRouter> enables React Router navigation
+ * - <React.StrictMode> helps identify potential issues in development
+ */
+
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>

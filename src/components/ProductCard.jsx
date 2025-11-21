@@ -6,8 +6,27 @@ import {
   updateQty,
   removeFromCart,
 } from "../features/cart/cartSlice";
-import { ShoppingCart, Star } from "lucide-react"; // Assuming lucide-react for icons
+import { ShoppingCart, Star } from "lucide-react";
 
+/**
+ * ProductCard Component - Individual product display card
+ * 
+ * Props:
+ * - product: object - product data including id, name, price, rating, imageURL, etc.
+ * - onOpenProduct: function (optional) - callback to open product in modal instead of navigating
+ * 
+ * Features:
+ * - Displays product image with featured/customizable badges
+ * - Shows price, rating, and review count
+ * - Add to cart button with quantity controls
+ * - Hover effects (scale up, shadow)
+ * - Handles both as a Link (navigates to product page) or as a button (opens modal)
+ * 
+ * For beginners:
+ * - Uses Redux dispatch to add/remove products from cart
+ * - Uses React Router Link for navigation to product details page
+ * - useSelectorgets current qty from Redux cart state
+ */
 const ProductCard = ({ product, onOpenProduct }) => {
   const dispatch = useDispatch();
   const {
@@ -25,10 +44,12 @@ const ProductCard = ({ product, onOpenProduct }) => {
     imageURL,
   } = product;
 
+  // Get quantity of this product currently in cart
   const qtyInCart = useSelector(
     (s) => s.cart.items.find((i) => i.id === id)?.qty || 0
   );
 
+  // Add product to cart with all its details
   const handleAddToCart = () => {
     dispatch(
       addToCart({
@@ -44,6 +65,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
     );
   };
 
+  // Card content - shared between Link and Button variants
   const content = (
     <div
       className="

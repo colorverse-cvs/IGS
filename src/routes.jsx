@@ -64,7 +64,6 @@ export default function RoutesMap() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/about" element={Placeholder("About Us")} />
       <Route path="/customization" element={Placeholder("Customization")} />
-      <Route path="/blog" element={Placeholder("Blog")} />
       <Route path="/faq" element={Placeholder("FAQ")} />
       <Route path="/contact" element={Placeholder("Contact")} />
     </Routes>
