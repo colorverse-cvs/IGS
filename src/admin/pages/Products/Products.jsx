@@ -78,8 +78,8 @@ export default function Products() {
     <>
       <div className="product-label-top-wrapper flex items-center justify-between mb-4 p-4">
         <div className="dashboard-label-wrapper">
-          <p className="text-sm">Products</p>
-          <p className="text-sm">Manage your gift shop inventory</p>
+          <p className="text-xl">Products</p>
+          <p className="text-md">Manage your gift shop inventory</p>
         </div>
         <button
           className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg"

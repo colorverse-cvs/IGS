@@ -10,9 +10,9 @@ export default function Dashboard() {
                 <div className="dashboard-content-wrapper__outer">
                     <div className="dashboard-content-wrapper__inner">
                         <div className="dashboard-content-wrapper__inner">
-                            <div className="dashboard-label-wrapper">
-                                <h3>Dashboard</h3>
-                                <p>Welcome back! Here's what's happening today.</p>
+                            <div className="dashboard-label-wrapper mb-4 px-2 py-3">
+                                <p className="text-xl">Dashboard</p>
+                                <p className="text-md">Welcome back! Here's what's happening today.</p>
                             </div>
                             <div className="dashboard-analysis-card-wrapper">
                                 <DashboardAnalysisCards />

@@ -55,9 +55,9 @@ export default function Inventory() {
 
   return (
     <>
-      <div className="dashboard-label-wrapper mb-6">
-        <p className="text-lg">Inventory</p>
-        <p className="text-sm">Manage product stock</p>
+      <div className="dashboard-label-wrapper mb-6 px-2">
+        <p className="text-xl">Inventory</p>
+        <p className="text-md">Manage product stock</p>
       </div>
 
       <div className="search-bar-wrapper bg-white p-4 rounded-md">

@@ -52,9 +52,9 @@ export default function Orders() {
 
   return (
     <>
-      <div className="dashboard-label-wrapper mb-6">
-        <p className="text-lg">Orders</p>
-        <p className="text-sm">Manage customer orders</p>
+      <div className="dashboard-label-wrapper mb-6 px-3">
+        <p className="text-xl">Orders</p>
+        <p className="text-md">Manage customer orders</p>
       </div>
 
       <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-md">
