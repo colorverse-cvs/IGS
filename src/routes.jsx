@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import CategoryPage from "./pages/CategoryPage";
 import FilterPage from "./pages/FilterPage";
 import ProductMoreInfoPage from "./pages/ProductMoreInfoPage";
+import AdminPanelMain from "./admin/MainPanel";
 
 /**
  * Routes Component - Application Routing Configuration
@@ -67,6 +68,7 @@ export default function RoutesMap() {
       <Route path="/blog" element={Placeholder("Blog")} />
       <Route path="/faq" element={Placeholder("FAQ")} />
       <Route path="/contact" element={Placeholder("Contact")} />
+      <Route path="/admin" element={<AdminPanelMain />} />
     </Routes>
   );
 }

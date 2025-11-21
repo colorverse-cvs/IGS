@@ -30,6 +30,7 @@ export default function Navbar() {
   const [authTab, setAuthTab] = useState("login");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
 
   const isHomePage = location.pathname === "/";
 
@@ -184,6 +185,11 @@ export default function Navbar() {
     navigate(`/filter?${params.toString()}`);
   };
 
+  const handleOpenAdminPanel = ()=>{
+    setIsAdminPanelOpen(prev => !prev)
+    navigate('/admin')
+  }
+
   return (
     <>
       {/* ========== DESKTOP NAVBAR (Hidden on mobile) ========== */}
@@ -316,7 +322,10 @@ export default function Navbar() {
                 >
                   Sign In/Log In
                 </button>
+
               )}
+            <button className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg"
+                    onClick={()=> handleOpenAdminPanel()}>Admin Panel</button>
             </div>
           </div>
         </div>
