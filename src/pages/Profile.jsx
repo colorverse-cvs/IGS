@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import {
   updateProfile,
   setDefaultAddress,
@@ -8,15 +9,48 @@ import {
 } from "../features/user/userSlice";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
-// import Breadcrumb from "../components/Breadcrumb.jsx";
+import Dropdown from "../components/Dropdown";
 import { ChevronDown } from "lucide-react";
 
+/**
+ * Profile Page Component - User account management
+ * 
+ * Features:
+ * - Profile Tab: Edit name, email, mobile, DOB, gender
+ * - Addresses Tab: Add, edit, delete, set default delivery addresses
+ * - Orders Tab: View order history with status and details
+ * - Payments Tab: Placeholder for payment methods (future feature)
+ * 
+ * How it works:
+ * - URL query param ?tab=name determines which section to show
+ * - Form validation before saving (email, mobile format)
+ * - All changes saved to Redux state which persists to localStorage
+ * - Orders loaded from Redux orders state
+ * 
+ * For beginners:
+ * - useSearchParams() reads URL query parameters
+ * - useState() manages local form state before saving
+ * - dispatch() saves changes to Redux which updates localStorage
+ * - Modal opens for editing individual addresses
+ */
 export default function Profile() {
   const user = useSelector((s) => s.user);
   const orders = useSelector((s) => s.orders?.orders || []);
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
 
-  const [tab, setTab] = React.useState("profile"); // 'profile' | 'orders' | 'addresses' | 'payments'
+  const initialTab = searchParams.get("tab") || "profile";
+  const [tab, setTab] = React.useState(initialTab); // 'profile' | 'orders' | 'addresses' | 'payments'
+
+  // Update tab when query params change
+  React.useEffect(() => {
+    setTab(initialTab);
+  }, [initialTab]);
+
+  // Scroll to top when tab changes
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [tab]);
 
   // Profile form state
   const [name, setName] = React.useState(user?.profile?.name || "");
@@ -377,16 +411,12 @@ export default function Profile() {
             </div>
             <div>
               <label className="text-gray-500 block text-sm mb-1">Gender</label>
-              <select
-                className="w-full border rounded px-3 py-2 border-gray-200 bg-gray-50 cursor-not-allowed"
+              <Dropdown
+                options={["Male", "Female", "Other"]}
                 value={gender}
-                onChange={(e) => setGender(e.target.value)}
+                onChange={(e) => setGender(e)}
                 disabled
-              >
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-              </select>
+              />
             </div>
           </div>
           <button
@@ -470,15 +500,11 @@ export default function Profile() {
                   <label className="text-gray-500 block text-sm mb-1">
                     Gender
                   </label>
-                  <select
-                    className="w-full border rounded px-3 py-2 border-gray-200"
+                  <Dropdown
+                    options={["Male", "Female", "Other"]}
                     value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                  >
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
-                  </select>
+                    onChange={(v) => setGender(v)}
+                  />
                 </div>
               </div>
               <div className="flex justify-end gap-3 pt-2">

@@ -53,9 +53,9 @@ export default function FooterPage() {
                 <li>
                   <Link to="/customization">Customization</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="/blog">Blog</Link>
-                </li>
+                </li> */}
                 <li>
                   <Link to="/faq">FAQ</Link>
                 </li>

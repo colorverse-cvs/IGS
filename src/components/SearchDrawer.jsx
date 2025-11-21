@@ -3,11 +3,29 @@ import { X, Search, Star } from "lucide-react";
 import categoriesData from "../data/categories.json";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * SearchDrawer Component - Slide-out search panel with live product filtering
+ * 
+ * Props:
+ * - isOpen: boolean - whether the drawer is visible
+ * - onClose: function - callback to close the drawer
+ * 
+ * Features:
+ * - Real-time search filtering across all products
+ * - Searches by: name, material, size, category, price, rating
+ * - Shows up to 30 most relevant results
+ * - Click on a result navigates to filter page with pre-applied filters
+ * - Prevents background scroll when drawer is open
+ * 
+ * For beginners:
+ * - Uses React.useMemo for performance optimization (doesn't recalculate unless query changes)
+ * - Shows product preview cards with image, name, category, price, and rating
+ */
 export default function SearchDrawer({ isOpen, onClose }) {
   const navigate = useNavigate();
   const [query, setQuery] = React.useState("");
 
-  // Build search index from categories.json
+  // Build searchable product index from all categories
   const allProducts = React.useMemo(() => {
     const arr = [];
     categoriesData.sections.forEach((section) =>
@@ -18,8 +36,10 @@ export default function SearchDrawer({ isOpen, onClose }) {
     return arr;
   }, []);
 
+  // Convert text to URL-friendly format for category slugs
   const toSlug = (val) => (val || "").toLowerCase().replace(/\s+/g, "-");
 
+  // Filter products based on search query across multiple fields
   const results = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
@@ -40,6 +60,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
     });
   }, [query, allProducts]);
 
+  // Navigate to filter page with selected product and its category pre-applied
   const handleClick = (p) => {
     const params = new URLSearchParams();
     params.set("category", p.categoryId || toSlug(p.categoryName));
@@ -62,6 +83,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
 
   return (
     <>
+      {/* Backdrop overlay - click to close */}
       <div
         className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
@@ -69,14 +91,17 @@ export default function SearchDrawer({ isOpen, onClose }) {
         onClick={onClose}
         aria-hidden={!isOpen}
       />
+      
+      {/* Drawer panel - slides in from right side */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-1/2 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
         aria-modal="true"
         aria-label="Search products"
       >
+        {/* Search input header */}
         <div className="p-4 border-b border-gray-300">
           <div className="relative flex items-center">
             <Search size={18} className="text-gray-400 absolute left-3" />
@@ -98,6 +123,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
           </div>
         </div>
 
+        {/* Search results list */}
         <div className="flex-1 overflow-y-auto p-3">
           {query.trim() === "" ? (
             <div className="text-sm text-gray-500 p-4">
@@ -107,12 +133,14 @@ export default function SearchDrawer({ isOpen, onClose }) {
             <div className="text-sm text-gray-500 p-4">No results found.</div>
           ) : (
             <ul className="space-y-2">
+              {/* Show first 30 results */}
               {results.slice(0, 30).map((p) => (
                 <li key={p.id}>
                   <button
                     onClick={() => handleClick(p)}
                     className="w-full text-left"
                   >
+                    {/* Product result card */}
                     <div className="border border-gray-100 hover:shadow-lg rounded-lg p-2 flex items-start gap-3">
                       <img
                         src={p.imageURL}

@@ -2,14 +2,30 @@ import React, { useState, useEffect } from "react";
 import { lockBodyScroll, unlockBodyScroll } from "../utils/bodyScrollLock";
 import { useSelector } from "react-redux";
 import { X } from "lucide-react";
-import Cart from "../pages/Cart.jsx"; // We'll rename your original Cart.jsx
+import Cart from "../pages/Cart.jsx";
 
-// This component simulates a right-side panel/drawer
+/**
+ * CartDrawer Component - Slide-out shopping cart panel
+ * 
+ * Props:
+ * - isOpen: boolean - whether the drawer is visible
+ * - onClose: function - callback to close the drawer
+ * 
+ * Features:
+ * - Renders the full Cart page inside a right-side slide-out panel
+ * - Locks body scroll when drawer is open (prevents background scrolling)
+ * - Supports nested modals (Payment Gateway modal can appear inside the drawer)
+ * - Click outside (backdrop) to close the drawer
+ * 
+ * For beginners:
+ * - This component wraps the Cart component in a modal drawer UI
+ * - The backdrop helps users understand they can click outside to close
+ */
 const CartDrawer = ({ isOpen, onClose }) => {
-  // Determine the number of items for the title
+  // Get number of items in cart for display
   const itemCount = useSelector((s) => s.cart.items.length);
 
-  // Lock scrolling when the drawer is open (shared util, supports nested modals)
+  // Lock body scroll when drawer is open to prevent background scrolling
   useEffect(() => {
     if (isOpen) lockBodyScroll();
     return () => {
@@ -19,7 +35,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* --- Backdrop / Overlay --- */}
+      {/* Backdrop overlay - click to close drawer */}
       <div
         className={`
                     fixed inset-0 bg-black/50 z-40 transition-opacity duration-300
@@ -29,10 +45,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
         aria-hidden={!isOpen}
       />
 
-      {/* --- Side Panel / Drawer --- */}
+      {/* Drawer panel - slides in from right */}
       <div
         className={`
-                    fixed top-0 right-0 h-full w-full sm:w-80 md:w-1/2 lg:w-80 
+                    fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 xl:w-90 
                     bg-white shadow-2xl z-50 transition-transform duration-500 ease-in-out
                     flex flex-col
                     ${isOpen ? "translate-x-0" : "translate-x-full"}
@@ -41,10 +57,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
         aria-modal="true"
         aria-label="Shopping Cart"
       >
-        {/* Drawer Header */}
+        {/* Drawer header with title and close button */}
         <div className="flex items-center justify-between p-4 lg:p-6 border-b border-gray-100">
           <h2 className="text-2xl font-bold text-gray-900">
-            Your Shopping Cart {/* {itemCount === 0 ? "" : itemCount} */}
+            Your Shopping Cart
           </h2>
           <button
             onClick={onClose}
@@ -55,9 +71,8 @@ const CartDrawer = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Cart Content (Scrollable) */}
+        {/* Cart content wrapper - makes Cart component scrollable inside drawer */}
         <div className="flex-1 flex justify-center items-center">
-          {/* Render the full Cart content inside the drawer */}
           <Cart isDrawer={true} onClose={onClose} />
         </div>
       </div>
