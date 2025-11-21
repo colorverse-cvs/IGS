@@ -23,7 +23,7 @@ export default function HomePage() {
   useEffect(() => {
     if (!location.hash) return;
     const id = location.hash.replace("#", "");
-    // small delay to ensure elements are rendered
+    // Longer delay to ensure elements are rendered after navigation
     const t = setTimeout(() => {
       const el = document.getElementById(id);
       if (el) {
@@ -33,7 +33,7 @@ export default function HomePage() {
           el.getBoundingClientRect().top + window.scrollY - offset - 12;
         window.scrollTo({ top, behavior: "smooth" });
       }
-    }, 60);
+    }, 150);
     return () => clearTimeout(t);
   }, [location]);
 

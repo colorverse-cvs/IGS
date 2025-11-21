@@ -6,7 +6,7 @@ import {
   clearCart,
 } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
-import { Trash2, X, Minus, Plus } from "lucide-react";
+import { Trash2, X, Minus, Plus, ShoppingCart } from "lucide-react";
 import EmptyShoppingCart from "../assets/empty-shopping-cart.svg";
 
 /**
@@ -90,7 +90,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                 : "py-8 bg-white rounded-xl text-center justify-items-center"
             }`}
           >
-            <img src={EmptyShoppingCart} className="w-[70%]" alt="" />
+            <img src={EmptyShoppingCart} className="w-[200px] lg:w-[300px]" alt="" />
             <p className="text-xl text-gray-600 mb-4">
               Your cart seems kind empty.
             </p>

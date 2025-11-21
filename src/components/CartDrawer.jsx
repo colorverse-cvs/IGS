@@ -48,7 +48,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
       {/* Drawer panel - slides in from right */}
       <div
         className={`
-                    fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 
+                    fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 xl:w-90 
                     bg-white shadow-2xl z-50 transition-transform duration-500 ease-in-out
                     flex flex-col
                     ${isOpen ? "translate-x-0" : "translate-x-full"}
