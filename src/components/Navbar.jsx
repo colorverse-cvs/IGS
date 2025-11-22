@@ -338,111 +338,6 @@ export default function Navbar() {
               </button>
 
               {user.isAuthenticated ? (
-                <Link
-                  to="/profile"
-                  className="p-2 rounded-lg hover:bg-gray-50 transition"
-                  aria-label="Profile"
-                >
-                  <User size={20} className="text-gray-700" />
-                </Link>
-              ) : (
-                <button
-                  onClick={() => {
-                    setAuthTab("login");
-                    setIsAuthOpen(true);
-                  }}
-                  className="px-5 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
-                  aria-label="Sign In / Log In"
-                >
-                  Sign In/Log In
-                </button>
-
-              )}
-            <button className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg"
-                    onClick={()=> handleOpenAdminPanel()}>Admin Panel</button>
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop Menu Drawer */}
-        <div
-          className={`
-            fixed inset-0 bg-black/50 z-20 transition-opacity duration-300
-            ${isMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"}
-          `}
-          onClick={toggleMenu}
-          aria-hidden={!isMenuOpen}
-        />
-
-        <div
-          className={`
-            fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-999 
-            transition-transform duration-300 ease-in-out
-            flex flex-col overflow-y-auto
-            ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}
-          `}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Main navigation"
-        >
-          <div className="flex justify-between items-center p-5 border-b border-brand-100">
-            <Link to="/" onClick={toggleMenu} className="flex items-center">
-              <img
-                src={IshitaGalleryLogo}
-                alt="Ishita Gallery"
-                className="h-10 w-auto"
-              />
-            </Link>
-            <button
-              onClick={toggleMenu}
-              className="p-2 rounded-full text-gray-500 hover:text-purple-700 hover:bg-brand-50 transition"
-              aria-label="Close menu"
-            >
-              <X size={24} />
-            </button>
-          </div>
-
-          <div className="flex-1 px-4 py-4 space-y-1">
-            <div className="border-b border-gray-100 pb-2 mb-2">
-              <button
-                onClick={toggleProductsDropdown}
-                className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-purple-700 px-3 py-2 rounded-lg transition flex justify-between items-center"
-              >
-                Products{" "}
-                <ChevronDown
-                  size={18}
-                  className={`transition-transform ${
-                    isProductsDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
-                />
-              </button>
-              {isProductsDropdownOpen && (
-                <div className="pl-6 pt-1 pb-1 space-y-1 bg-gray-50 rounded-b-lg">
-                  {productLinks.map((pLink) =>
-                    pLink.path ? (
-                      <Link
-                        key={pLink.name}
-                        to={pLink.path}
-                        onClick={() => {
-                          toggleMenu();
-                          toggleProductsDropdown();
-                        }}
-                        className="block text-base text-gray-600 hover:text-purple-700 py-1"
-                      >
-                        {pLink.name}
-                      </Link>
-                    ) : (
-                      <button
-                        key={pLink.name}
-                        onClick={() => {
-                          handleCategoryClick(pLink);
-                          toggleMenu();
-                        }}
-                        className="block w-full text-left text-base text-gray-600 hover:text-purple-700 py-1"
-                      >
-                        {pLink.name}
-                      </button>
-                    )
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
                   onToggle={setIsProfileDropdownOpen}
@@ -532,6 +427,7 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+            <button onClick={handleOpenAdminPanel}>ADMIN PANEL</button>
           </div>
         </div>
       </nav>

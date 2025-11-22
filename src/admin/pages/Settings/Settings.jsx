@@ -117,6 +117,99 @@ export default function Settings() {
           </div>
         </div>
       </div>
+
+      <div className="space-y-6 bg-white p-4 rounded-md">
+        <p className="mb-2 text-lg">Delivery Settings</p>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+           Delivery Charge (Local)
+          </label>
+          <input
+            type="text"
+            placeholder="50"
+            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+           Free Delivery Above (₹)
+          </label>
+          <input
+            type="text"
+            placeholder="500"
+            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-6 bg-white p-4 rounded-md my-4">
+        <p className="text-lg mb-2">Payment Methods</p>
+
+        <div>
+          <div className="mb-4">
+            <input type="checkbox" id="Cash on Delivery (COD)" name="Cash on Delivery (COD)" value="Cash on Delivery (COD)" />
+            <label  for="Cash on Delivery (COD)"> Cash on Delivery (COD)</label><br></br>
+          </div>
+
+          <div className="mb-4">
+            <input type="checkbox" id="UPI / PhonePe / Google Pay" name="UPI / PhonePe / Google Pay" value="UPI / PhonePe / Google Pay" />
+            <label  for="UPI / PhonePe / Google Pay"> UPI / PhonePe / Google Pay</label><br></br>
+          </div>
+
+          <div className="mb-4">
+            <input type="checkbox" id="Razorpay (Cards, Net Banking)" name="Razorpay (Cards, Net Banking)" value="Razorpay (Cards, Net Banking)" />
+            <label  for="Razorpay (Cards, Net Banking)"> Razorpay (Cards, Net Banking)</label><br></br>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+          UPI ID
+          </label>
+          <input
+            type="text"
+            placeholder="yourshop@paytm"
+            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+      </div>
+
+      <div className="space-y-6 bg-white p-4 rounded-md">
+        <p className="mb-2 text-lg">Change Admin Password</p>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+           Current Password
+          </label>
+          <input
+            type="text"
+            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+           New Password
+          </label>
+          <input
+            type="text"
+            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+           Confirm New Password
+          </label>
+          <input
+            type="text"
+            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+      </div>
     </>
   );
 }
