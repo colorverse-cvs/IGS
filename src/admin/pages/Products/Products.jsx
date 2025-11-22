@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { MdEditNote } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+
 
 import AddProductModal from "./components/AddProductModal";
 import EditProductModal from "./components/EditProductModal";
@@ -153,16 +156,16 @@ export default function Products() {
 
               <div className="flex items-center gap-3">
                 <button
-                  className="flex items-center gap-2 border px-3 py-1.5 cursor-pointer rounded-md hover:bg-gray-50"
+                  className="flex items-center gap-2 border px-3 py-1 cursor-pointer rounded-md hover:bg-gray-50"
                   onClick={() => setOpenEditProductModal(true)}
                 >
-                  ✏️ Edit
+                  <MdEditNote/> Edit
                 </button>
                 <button
                   className="text-red-600 hover:bg-red-50 p-2 rounded-md cursor-pointer"
                   onClick={() => setOpenDeleteProductModal(true)}
                 >
-                  🗑️
+                  <MdDelete className="text-red-500" />
                 </button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { FaEye, FaEnvelope } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 
 function formatHeading(key) {
   return key
@@ -44,16 +44,10 @@ export default function CustomerDetailTable({ data }) {
 
               {/* ✅ Actions Column */}
               <td className="px-4 py-3">
-                <div className="flex justify-center gap-4 text-gray-600">
-                  <button className="hover:text-purple-600 transition">
-                    <FaEye />
+                  <button className="hover:text-purple-600 transition flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50 cursor-pointer">
+                    <FaEye /> view
                   </button>
-                  <button className="hover:text-purple-600 transition">
-                    <FaEnvelope />
-                  </button>
-                </div>
               </td>
-
             </tr>
           ))}
         </tbody>

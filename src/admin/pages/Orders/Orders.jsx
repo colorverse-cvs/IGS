@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { FaRegEye } from "react-icons/fa";
+import { AiFillPrinter } from "react-icons/ai";
 
 import Dropdown from "../../../components/Dropdown";
 import ViewCurrentOrder from "./components/ViewCurrentOrder";
@@ -25,7 +27,7 @@ const orders = [
     amount: "₹450",
     date: "Nov 18, 2025",
     address : "456, Indiranagar, Bangalore - 560038"
-  },
+  }
 ];
 
 const orderStatusValue = [
@@ -135,11 +137,15 @@ export default function Orders() {
                 <p className="font-semibold">{order.amount}</p>
                 <p className="font-semibold">{order.date}</p>
                 <div className="flex items-center gap-2">
-                  <button className="flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50"
+                  <button className="flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50 cursor-pointer"
                           onClick={() => handleOpenViewOrderModal(order)}>
-                    View
+                   <FaRegEye/> View
                   </button>
-                  <button className="text-sm hover:underline">Print</button>
+                  <button className="flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50 cursor-pointer"
+                          onClick={() => handleOpenViewOrderModal(order)}>
+                   <AiFillPrinter/> Print
+                  </button>
+                  {/* <button className="text-sm hover:underline cursor-pointer">Print</button> */}
                 </div>
               </div>
             </div>
