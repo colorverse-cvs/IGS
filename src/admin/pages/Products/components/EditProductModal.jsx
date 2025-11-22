@@ -1,9 +1,20 @@
 import { X, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 
+import Dropdown from "../../../../../src/components/Dropdown";
+
 export default function EditProductModal({ onClose }) {
     const fileInputRef = useRef(null);
     const [preview, setPreview] = useState(null);
+    const [prodCategory, setProdCategory] = useState("");
+
+    const productCategory = [
+      "Soft Toys",
+      "Home Decor",
+      "Cards",
+      "Personalized",
+      "Hampers"
+    ]
 
     const openFileDialog = () => {
         fileInputRef.current.click();
@@ -75,23 +86,18 @@ export default function EditProductModal({ onClose }) {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-500">
                     Category *
-                </label>
-
-                <select
-                    defaultValue=""
-                    className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
-                >
-                    <option value="" disabled hidden>
-                    Select Category
-                    </option>
-                    <option value="Soft Toys">Soft Toys</option>
-                    <option value="Home Decor">Home Decor</option>
-                    <option value="Cards">Cards</option>
-                    <option value="Personalized">Personalized</option>
-                    <option value="Hampers">Hampers</option>
-                </select>
+                  </label>
+                  <Dropdown
+                    className="cursor-pointer"
+                    options={productCategory}
+                    value={prodCategory}
+                    onChange={(val) => setProdCategory(val)}
+                    placeholder="Select Category"
+                  />
+                </div>
             </div>
           </div>
 

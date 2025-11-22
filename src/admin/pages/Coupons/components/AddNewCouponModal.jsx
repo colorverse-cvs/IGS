@@ -1,5 +1,14 @@
 import { X } from "lucide-react";
+import { useState } from "react";
+
+import Dropdown from "../../../../components/Dropdown";
+
+const selectCategoryValue = [
+  "Percentage",
+  "Fixed"
+]
 export default function AddNewCouponModal({ onClose }) {
+  const [categoryValue, setcategoryValue] = useState("Percentage");
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -31,16 +40,13 @@ export default function AddNewCouponModal({ onClose }) {
                     Discount Type
                 </label>
 
-                <select
-                    defaultValue=""
-                    className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
-                >
-                    <option value="" disabled hidden>
-                    Select Category *
-                    </option>
-                    <option value="Percentage">Percentage</option>
-                    <option value="Fixed">Fixed</option>
-                </select>
+                <Dropdown
+                  className="cursor-pointer"
+                  options={selectCategoryValue}
+                  value={categoryValue}
+                  onChange={(val) => setcategoryValue(val)}
+                  placeholder="Select Status"
+                />
             </div>
           </div>
 

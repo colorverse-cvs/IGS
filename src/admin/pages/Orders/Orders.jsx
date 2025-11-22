@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import Dropdown from "../../../components/Dropdown";
+
 const orders = [
   {
     id: "ORD-1247",
@@ -23,12 +25,20 @@ const orders = [
   },
 ];
 
+const orderStatusValue = [
+  "All Orders",
+  "Pending",
+  "Packed",
+  "Shipped",
+  "Delivered",
+  "Cancelled"
+]
+
 export default function Orders() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All Orders");
   const [filteredOrders, setFilteredOrders] = useState(orders);
 
-  // ✅ Debounced Search + Filter
   useEffect(() => {
     const timer = setTimeout(() => {
       let result = orders.filter((order) => {
@@ -37,9 +47,10 @@ export default function Orders() {
           order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
           order.items.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const statusMatch = statusFilter
-          ? order.status.toLowerCase().includes(statusFilter.toLowerCase())
-          : true;
+        const statusMatch =
+          statusFilter === "All Orders"
+            ? true
+            : order.status.toLowerCase().includes(statusFilter.toLowerCase());
 
         return textMatch && statusMatch;
       });
@@ -73,18 +84,13 @@ export default function Orders() {
           </div>
 
           <div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full border border-gray-100 rounded-lg px-2 py-3.5 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-700"
-            >
-              <option value="">All Orders</option>
-              <option value="Pending">Pending</option>
-              <option value="Packed">Packed</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
+              <Dropdown
+                className="md: w-[140px] cursor-pointer"
+                options={orderStatusValue}
+                value={statusFilter}
+                onChange={(val) => setStatusFilter(val || "All Orders")}
+                placeholder="Select Status"
+              />
           </div>
         </div>
 
