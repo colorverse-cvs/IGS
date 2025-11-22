@@ -9,11 +9,11 @@ export default function AdminPanelMain() {
   
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar activePage={activePage} setActivePage={setActivePage} />
+      <Sidebar setActivePage={setActivePage} activePage={activePage} />
 
       <div className="flex flex-col flex-1">
         <Topbar />
-        <PageContent  activePage={activePage} />
+        <PageContent setActivePage={setActivePage}  activePage={activePage} />
       </div>
     </div>
   );

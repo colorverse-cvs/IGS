@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 import Dropdown from "../../../components/Dropdown";
+import ViewCurrentOrder from "./components/ViewCurrentOrder";
 
 const orders = [
   {
@@ -12,6 +13,7 @@ const orders = [
     items: "Teddy Bear(small), Greeting Card",
     amount: "₹850",
     date: "Nov 18, 2025",
+    address : "456, Indiranagar, Bangalore - 560038"
   },
   {
     id: "ORD-1246",
@@ -22,6 +24,7 @@ const orders = [
     items: "Photo Frame",
     amount: "₹450",
     date: "Nov 18, 2025",
+    address : "456, Indiranagar, Bangalore - 560038"
   },
 ];
 
@@ -38,6 +41,9 @@ export default function Orders() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Orders");
   const [filteredOrders, setFilteredOrders] = useState(orders);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isOpenViewOrderModal, setIsOpenViewOrderModal] = useState(false);
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -60,6 +66,11 @@ export default function Orders() {
 
     return () => clearTimeout(timer);
   }, [searchTerm, statusFilter]);
+
+  function handleOpenViewOrderModal(order) {
+    setSelectedOrder(order);
+    setIsOpenViewOrderModal(true);
+  }
 
   return (
     <>
@@ -124,7 +135,8 @@ export default function Orders() {
                 <p className="font-semibold">{order.amount}</p>
                 <p className="font-semibold">{order.date}</p>
                 <div className="flex items-center gap-2">
-                  <button className="flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50">
+                  <button className="flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50"
+                          onClick={() => handleOpenViewOrderModal(order)}>
                     View
                   </button>
                   <button className="text-sm hover:underline">Print</button>
@@ -133,6 +145,12 @@ export default function Orders() {
             </div>
           ))}
         </div>
+          {isOpenViewOrderModal && selectedOrder && (
+            <ViewCurrentOrder
+              currentOrder={selectedOrder}
+              onClose={() => setIsOpenViewOrderModal(false)}
+            />
+          )}
       </div>
     </>
   );

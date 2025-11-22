@@ -1,4 +1,4 @@
-export default function Sidebar({ activePage, setActivePage }) {
+export default function Sidebar({ setActivePage, activePage }) {
   const menuItems = [
     "Dashboard",
     "Products",

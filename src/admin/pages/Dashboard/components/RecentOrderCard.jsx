@@ -1,3 +1,4 @@
+
 const orders = [
   {
     id: "ORD-1247",
@@ -33,13 +34,19 @@ const orders = [
   },
 ];
 
-export default function RecentOrderCard() {
+export default function RecentOrderCard({setActivePage}) {
+
+  const handleViewAllClick = () => {
+     setActivePage("Orders");
+  };
+
   return (
     <div className="bg-white rounded-xl shadow p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <p className="text-lg font-semibold">Recent Orders</p>
-        <button className="text-purple-600 font-medium hover:underline">
+        <button className="text-purple-600 font-medium hover:underline cursor-pointer"
+                onClick={handleViewAllClick}>
           View All
         </button>
       </div>
