@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 
-export default function Topbar() {
+export default function Topbar({ setActivePage }) {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -21,9 +21,12 @@ export default function Topbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ✅ Close when selecting option
+  const handleMyAccountClick = () => {
+    setActivePage("Settings");
+    setIsPopupVisible(false);
+  };
+
   const handleOptionClick = (action) => {
-    console.log(action); // you can route / logout here
     setIsPopupVisible(false);
   };
 
@@ -47,7 +50,7 @@ export default function Topbar() {
           className="absolute top-16 right-8 w-40 rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 p-1 space-y-1 z-50"
         >
           <button
-            onClick={() => handleOptionClick("account")}
+            onClick={() => handleMyAccountClick()}
             className="block w-full text-left px-3 py-2 rounded hover:bg-gray-50 cursor-pointer"
           >
             My Account

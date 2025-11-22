@@ -1,213 +1,228 @@
 import { useRef, useState } from "react";
-import { Upload } from "lucide-react";
+import { Upload, Eye, EyeOff } from "lucide-react";
 
 export default function Settings() {
   const fileInputRef = useRef(null);
   const [preview, setPreview] = useState(null);
 
-  const openFileDialog = () => {
-    fileInputRef.current.click();
-  };
+  const [formData, setFormData] = useState({
+    shopName: "",
+    contact: "",
+    email: "",
+    address: ""
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  });
+
+  const openFileDialog = () => fileInputRef.current.click();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+    if (file) setPreview(URL.createObjectURL(file));
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "shopName" && !/^[a-zA-Z\s]*$/.test(value)) return;
+    if (name === "contact" && !/^[0-9]*$/.test(value)) return;
+
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handlePasswordChange = (e) => {
+    setPasswordData({
+      ...passwordData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+  const phoneValid = formData.contact.length === 10;
+
+  const isShopFormValid =
+    formData.shopName &&
+    phoneValid &&
+    emailValid &&
+    formData.address &&
+    preview;
+
+  const passwordMatch =
+    passwordData.newPassword === passwordData.confirmPassword;
+
+  const isPasswordValid =
+    passwordData.currentPassword &&
+    passwordData.newPassword.length >= 6 &&
+    passwordMatch;
 
   return (
     <>
-      <div className="mb-6 px-2 flex justify-between items-center">
-        <div>
-          <p className="text-xl">Settings</p>
-          <p className="text-md">Manage your shop settings</p>
-        </div>
-      </div>
+      {/* SHOP SETTINGS */}
+      <div className="space-y-6 bg-white p-4 rounded-md shadow">
+        <p className="text-lg font-semibold">Shop Information</p>
 
-      <div className="space-y-6 bg-white p-4 rounded-md">
-        <p className="mb-2 text-lg">Shop Information</p>
-
-        {/* Shop Name */}
+        {/* SHOP NAME */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Shop Name
-          </label>
+          <label>Shop Name</label>
           <input
             type="text"
-            placeholder="The Gift Shop"
-            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            name="shopName"
+            value={formData.shopName}
+            onChange={handleChange}
+            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
           />
+          {!formData.shopName && (
+            <p className="text-red-500 text-sm">Shop name is required</p>
+          )}
         </div>
 
-        {/* Contact & Email Side by Side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* CONTACT & EMAIL */}
+        <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Contact Number
-            </label>
+            <label>Contact Number</label>
             <input
-              type="number"
-              placeholder="9876543210"
-              className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              type="text"
+              name="contact"
+              maxLength={10}
+              value={formData.contact}
+              onChange={handleChange}
+              className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
             />
+            {!phoneValid && formData.contact && (
+              <p className="text-red-500 text-sm">
+                Enter valid 10 digit number
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              E-mail
-            </label>
+            <label>Email</label>
             <input
               type="email"
-              placeholder="shop@email.com"
-              className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
             />
+            {!emailValid && formData.email && (
+              <p className="text-red-500 text-sm">
+                Invalid email format
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Address Textarea */}
+        {/* ADDRESS */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Address
-          </label>
+          <label>Address</label>
           <textarea
+            name="address"
             rows="3"
-            placeholder="Enter full shop address"
-            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+            value={formData.address}
+            onChange={handleChange}
+            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
           />
+          {!formData.address && (
+            <p className="text-red-500 text-sm">Address is required</p>
+          )}
         </div>
 
-        {/* Shop Logo */}
+        {/* LOGO */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Shop Logo
-          </label>
-
-          <div className="flex items-center gap-6">
+          <label>Shop Logo</label>
+          <div className="flex items-center gap-4 mt-2">
             <input
               type="file"
-              accept="image/*"
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
             />
-
             <div
               onClick={openFileDialog}
-              className={`w-24 h-24 border-2 rounded-xl flex items-center justify-center text-gray-400 cursor-pointer transition
-              ${
-                preview
-                  ? "border-none"
-                  : "border-dashed hover:border-purple-500"
-              }`}
+              className="w-24 h-24 border-2 border-gray-100 border-dashed flex items-center justify-center rounded-xl cursor-pointer"
             >
               {preview ? (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-full object-cover rounded-xl"
-                />
+                <img src={preview} className="w-full h-full object-cover rounded-xl" />
               ) : (
                 <Upload />
               )}
             </div>
           </div>
+          {!preview && (
+            <p className="text-red-500 text-sm">Logo is required</p>
+          )}
         </div>
+
+        <button
+          disabled={!isShopFormValid}
+          className={`px-5 py-2 rounded-lg text-white
+          ${isShopFormValid ? "bg-purple-700" : "bg-gray-400 cursor-not-allowed"}`}
+        >
+          Save Shop Settings
+        </button>
       </div>
 
-      {/* <div className="space-y-6 bg-white p-4 rounded-md">
-        <p className="mb-2 text-lg">Delivery Settings</p>
+      {/* PASSWORD SECTION */}
+      <div className="space-y-5 bg-white p-4 rounded-md shadow mt-6">
+        <p className="text-lg font-semibold">Change Admin Password</p>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-           Delivery Charge (Local)
-          </label>
-          <input
-            type="text"
-            placeholder="50"
-            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-           Free Delivery Above (₹)
-          </label>
-          <input
-            type="text"
-            placeholder="500"
-            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div>
-      </div> */}
-
-      {/* <div className="space-y-6 bg-white p-4 rounded-md my-4">
-        <p className="text-lg mb-2">Payment Methods</p>
-
-        <div>
-          <div className="mb-4">
-            <input type="checkbox" id="Cash on Delivery (COD)" name="Cash on Delivery (COD)" value="Cash on Delivery (COD)" />
-            <label  for="Cash on Delivery (COD)"> Cash on Delivery (COD)</label><br></br>
+        {/* PASSWORD FIELD COMPONENT */}
+        {[
+          { key: "currentPassword", label: "Current Password", show: "current" },
+          { key: "newPassword", label: "New Password", show: "new" },
+          { key: "confirmPassword", label: "Confirm Password", show: "confirm" }
+        ].map((item) => (
+          <div key={item.key} className="relative">
+            <label>{item.label}</label>
+            <input
+              type={showPassword[item.show] ? "text" : "password"}
+              name={item.key}
+              value={passwordData[item.key]}
+              onChange={handlePasswordChange}
+              className="w-full border border-gray-100 rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-purple-500 outline-none"
+            />
+            <span
+              onClick={() =>
+                setShowPassword({
+                  ...showPassword,
+                  [item.show]: !showPassword[item.show]
+                })
+              }
+              className="absolute right-3 top-8 cursor-pointer text-gray-500"
+            >
+              {showPassword[item.show] ? <EyeOff size={18} /> : <Eye size={18} />}
+            </span>
           </div>
+        ))}
 
-          <div className="mb-4">
-            <input type="checkbox" id="UPI / PhonePe / Google Pay" name="UPI / PhonePe / Google Pay" value="UPI / PhonePe / Google Pay" />
-            <label  for="UPI / PhonePe / Google Pay"> UPI / PhonePe / Google Pay</label><br></br>
-          </div>
+        {passwordData.newPassword && passwordData.newPassword.length < 6 && (
+          <p className="text-red-500 text-sm">
+            Password must be at least 6 characters
+          </p>
+        )}
 
-          <div className="mb-4">
-            <input type="checkbox" id="Razorpay (Cards, Net Banking)" name="Razorpay (Cards, Net Banking)" value="Razorpay (Cards, Net Banking)" />
-            <label  for="Razorpay (Cards, Net Banking)"> Razorpay (Cards, Net Banking)</label><br></br>
-          </div>
-        </div>
+        {passwordData.confirmPassword && !passwordMatch && (
+          <p className="text-red-500 text-sm">
+            Passwords do not match
+          </p>
+        )}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-          UPI ID
-          </label>
-          <input
-            type="text"
-            placeholder="yourshop@paytm"
-            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div>
-
-      </div> */}
-
-      <div className="space-y-6 bg-white p-4 rounded-md my-4">
-        <p className="mb-2 text-lg">Change Admin Password</p>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-           Current Password
-          </label>
-          <input
-            type="text"
-            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-           New Password
-          </label>
-          <input
-            type="text"
-            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-           Confirm New Password
-          </label>
-          <input
-            type="text"
-            className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div>
-        <button className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg">
-          Save Changes
+        <button
+          disabled={!isPasswordValid}
+          className={`px-5 py-2 rounded-lg text-white
+          ${isPasswordValid ? "bg-purple-700" : "bg-gray-400 cursor-not-allowed"}`}
+        >
+          Update Password
         </button>
       </div>
     </>

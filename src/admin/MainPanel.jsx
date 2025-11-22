@@ -12,7 +12,7 @@ export default function AdminPanelMain() {
       <Sidebar setActivePage={setActivePage} activePage={activePage} />
 
       <div className="flex flex-col flex-1">
-        <Topbar />
+        <Topbar setActivePage={setActivePage} />
         <PageContent setActivePage={setActivePage}  activePage={activePage} />
       </div>
     </div>
