@@ -45,6 +45,7 @@ const customerData = [
     totalOrders: 19,
     totalSpent: 12000,
     Status: "Inactive",
+    joinDate: "Feb 2024"
   }
 ];
 

@@ -1,3 +1,5 @@
+import { FaEye, FaEnvelope } from "react-icons/fa";
+
 function formatHeading(key) {
   return key
     .replace(/([A-Z])/g, " $1")
@@ -25,6 +27,9 @@ export default function CustomerDetailTable({ data }) {
                 {formatHeading(key)}
               </th>
             ))}
+             <th className="px-4 py-3 font-semibold text-gray-700 text-center">
+              Actions
+            </th>
           </tr>
         </thead>
 
@@ -36,6 +41,19 @@ export default function CustomerDetailTable({ data }) {
                   {customer[key]}
                 </td>
               ))}
+
+              {/* ✅ Actions Column */}
+              <td className="px-4 py-3">
+                <div className="flex justify-center gap-4 text-gray-600">
+                  <button className="hover:text-purple-600 transition">
+                    <FaEye />
+                  </button>
+                  <button className="hover:text-purple-600 transition">
+                    <FaEnvelope />
+                  </button>
+                </div>
+              </td>
+
             </tr>
           ))}
         </tbody>

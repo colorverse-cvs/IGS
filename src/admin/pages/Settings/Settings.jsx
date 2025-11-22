@@ -23,9 +23,6 @@ export default function Settings() {
           <p className="text-xl">Settings</p>
           <p className="text-md">Manage your shop settings</p>
         </div>
-        <button className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg">
-          Save Changes
-        </button>
       </div>
 
       <div className="space-y-6 bg-white p-4 rounded-md">
@@ -118,7 +115,7 @@ export default function Settings() {
         </div>
       </div>
 
-      <div className="space-y-6 bg-white p-4 rounded-md">
+      {/* <div className="space-y-6 bg-white p-4 rounded-md">
         <p className="mb-2 text-lg">Delivery Settings</p>
 
         <div>
@@ -142,9 +139,9 @@ export default function Settings() {
             className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
-      </div>
+      </div> */}
 
-      <div className="space-y-6 bg-white p-4 rounded-md my-4">
+      {/* <div className="space-y-6 bg-white p-4 rounded-md my-4">
         <p className="text-lg mb-2">Payment Methods</p>
 
         <div>
@@ -175,9 +172,9 @@ export default function Settings() {
           />
         </div>
 
-      </div>
+      </div> */}
 
-      <div className="space-y-6 bg-white p-4 rounded-md">
+      <div className="space-y-6 bg-white p-4 rounded-md my-4">
         <p className="mb-2 text-lg">Change Admin Password</p>
 
         <div>
@@ -209,6 +206,9 @@ export default function Settings() {
             className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
         </div>
+        <button className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg">
+          Save Changes
+        </button>
       </div>
     </>
   );

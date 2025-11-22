@@ -6,7 +6,7 @@ export default function Sidebar({ setActivePage, activePage }) {
     "Inventory",
     "Customers",
     "Payments",
-    "Coupons",
+    // "Coupons",
     "Settings",
   ];
 

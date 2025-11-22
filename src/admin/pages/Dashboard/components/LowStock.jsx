@@ -9,7 +9,7 @@ const lowStockDetails = [
     label : "Greeting Cards - Birthday",
     leftItemCount : "Only 8 left"
   },
-   {
+  {
     id: "3",
     label : "Gift Wrapping Paper",
     leftItemCount : "Only 4 left"
@@ -18,13 +18,11 @@ const lowStockDetails = [
 
 export default function LowStockCard() {
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      {/* Header */}
+    <div className="bg-white rounded-xl shadow p-6 md:max-h-[290px] overflow-auto">
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm">Low stock alert</p>
       </div>
 
-      {/* Orders List */}
       <div className="space-y-4">
         {lowStockDetails.map((order) => (
           <div

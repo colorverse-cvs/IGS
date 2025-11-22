@@ -25,33 +25,33 @@ export default function Inventory() {
     return () => clearTimeout(debounceTimer);
   }, [searchTerm, productList]);  // 👈 important
 
-  const increaseStock = (id) => {
-    setProductList((prev) =>
-      prev.map((product) =>
-        product.id === id
-          ? {
-              ...product,
-              stock: product.stock + 1,
-              lowStock: product.stock + 1 <= 5,
-            }
-          : product
-      )
-    );
-  };
+  // const increaseStock = (id) => {
+  //   setProductList((prev) =>
+  //     prev.map((product) =>
+  //       product.id === id
+  //         ? {
+  //             ...product,
+  //             stock: product.stock + 1,
+  //             lowStock: product.stock + 1 <= 5,
+  //           }
+  //         : product
+  //     )
+  //   );
+  // };
 
-  const decreaseStock = (id) => {
-    setProductList((prev) =>
-      prev.map((product) =>
-        product.id === id
-          ? {
-              ...product,
-              stock: product.stock > 0 ? product.stock - 1 : 0,
-              lowStock: product.stock - 1 <= 5,
-            }
-          : product
-      )
-    );
-  };
+  // const decreaseStock = (id) => {
+  //   setProductList((prev) =>
+  //     prev.map((product) =>
+  //       product.id === id
+  //         ? {
+  //             ...product,
+  //             stock: product.stock > 0 ? product.stock - 1 : 0,
+  //             lowStock: product.stock - 1 <= 5,
+  //           }
+  //         : product
+  //     )
+  //   );
+  // };
 
   return (
     <>
@@ -98,7 +98,7 @@ export default function Inventory() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-evenly gap-2">
+              {/* <div className="flex items-center justify-evenly gap-2">
                 <button
                   onClick={() => decreaseStock(product.id)}
                   className="py-1 px-3 cursor-pointer bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100"
@@ -114,7 +114,7 @@ export default function Inventory() {
                 >
                   +
                 </button>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>

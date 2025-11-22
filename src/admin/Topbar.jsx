@@ -1,18 +1,66 @@
-export default function Topbar() {
-  return (
-    <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-      <input
-        className="border border-gray-100 rounded-lg px-3 py-2 w-75 focus:outline-none focus:ring focus:ring-purple-300"
-        type="text"
-        placeholder="Search..."
-      />
+import { useState, useRef, useEffect } from "react";
+import { MdExpandMore, MdExpandLess } from "react-icons/md";
 
-      <div className="flex items-center gap-4">
-        <span className="text-gray-600 font-medium">Admin</span>
+export default function Topbar() {
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const handleDropdownClick = () => {
+    setIsPopupVisible(prev => !prev);
+  };
+
+  // ✅ Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsPopupVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ✅ Close when selecting option
+  const handleOptionClick = (action) => {
+    console.log(action); // you can route / logout here
+    setIsPopupVisible(false);
+  };
+
+  return (
+    <div className="h-16 bg-white border-b border-gray-200 flex justify-end px-8 relative">
+      <div 
+        className="flex items-center gap-4 cursor-pointer select-none"
+        onClick={handleDropdownClick}
+      >
         <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">
-          A
+          IG
         </div>
+
+        <span className="text-gray-600 font-medium">Ishita Gallery</span>
+        {isPopupVisible ? <MdExpandLess /> : <MdExpandMore />}
       </div>
+
+      {isPopupVisible && (
+        <div
+          ref={dropdownRef}
+          className="absolute top-16 right-8 w-40 rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 p-1 space-y-1 z-50"
+        >
+          <button
+            onClick={() => handleOptionClick("account")}
+            className="block w-full text-left px-3 py-2 rounded hover:bg-gray-50 cursor-pointer"
+          >
+            My Account
+          </button>
+
+          <button
+            onClick={() => handleOptionClick("logout")}
+            className="block w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-50 cursor-pointer"
+          >
+            Logout
+          </button>
+        </div>
+      )}
     </div>
   );
 }
