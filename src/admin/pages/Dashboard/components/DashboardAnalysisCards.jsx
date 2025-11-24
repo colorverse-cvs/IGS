@@ -50,7 +50,7 @@ function AnalysisCard({ title, value, sub, icon: Icon, iconColor, subColor }) {
 
 export default function DashboardAnalysisCards() {
   return (
-    <div className="dashboard-analysis-card-wrapper grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="dashboard-analysis-card-wrapper grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
       {cardsData.map((card, index) => (
         <AnalysisCard key={index} {...card} />
       ))}

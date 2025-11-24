@@ -46,7 +46,6 @@ export default function Orders() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOpenViewOrderModal, setIsOpenViewOrderModal] = useState(false);
 
-
   useEffect(() => {
     const timer = setTimeout(() => {
       let result = orders.filter((order) => {
@@ -82,7 +81,8 @@ export default function Orders() {
       </div>
 
       <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-md">
-        <div className="search-bar-wrapper flex justify-between gap-4">
+        {/* SEARCH + FILTER */}
+        <div className="search-bar-wrapper flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <input
               type="text"
@@ -96,17 +96,16 @@ export default function Orders() {
             </span>
           </div>
 
-          <div>
-              <Dropdown
-                className="md: w-[140px] cursor-pointer"
-                options={orderStatusValue}
-                value={statusFilter}
-                onChange={(val) => setStatusFilter(val || "All Orders")}
-                placeholder="Select Status"
-              />
-          </div>
+          <Dropdown
+            className="w-full md:w-[180px]"
+            options={orderStatusValue}
+            value={statusFilter}
+            onChange={(val) => setStatusFilter(val || "All Orders")}
+            placeholder="Select Status"
+          />
         </div>
 
+        {/* ORDER LIST */}
         <div className="space-y-4">
           {filteredOrders.length === 0 && (
             <p className="text-sm text-gray-500 text-center">No orders found</p>
@@ -115,49 +114,64 @@ export default function Orders() {
           {filteredOrders.map((order) => (
             <div
               key={order.id}
-              className="border border-gray-100 rounded-lg p-4 flex justify-between items-center"
+              className="border border-gray-100 rounded-xl p-4 bg-white shadow-sm"
             >
-              <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                  <span className="font-semibold text-sm">{order.id}</span>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${order.statusColor}`}
-                  >
-                    {order.status}
-                  </span>
+              {/* TOP ROW */}
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-sm">{order.id}</span>
+                    <span className={`text-xs px-2 py-1 rounded-full ${order.statusColor}`}>
+                      {order.status}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-gray-700 font-medium">
+                    {order.customer}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {order.mobileNumber}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {order.items}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-700">{order.customer}</p>
-                <p className="text-sm text-gray-700">
-                  {order.mobileNumber}
-                </p>
-                <p className="text-xs text-gray-500">{order.items}</p>
+
+                {/* AMOUNT + DATE */}
+                <div className="text-right">
+                  <p className="font-semibold text-sm">{order.amount}</p>
+                  <p className="text-xs text-gray-500">{order.date}</p>
+                </div>
               </div>
 
-              <div className="text-right space-y-2">
-                <p className="font-semibold">{order.amount}</p>
-                <p className="font-semibold">{order.date}</p>
-                <div className="flex items-center gap-2">
-                  <button className="flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50 cursor-pointer"
-                          onClick={() => handleOpenViewOrderModal(order)}>
-                   <FaRegEye/> View
-                  </button>
-                  <button className="flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50 cursor-pointer"
-                          onClick={() => handleOpenViewOrderModal(order)}>
-                   <AiFillPrinter/> Print
-                  </button>
-                  {/* <button className="text-sm hover:underline cursor-pointer">Print</button> */}
-                </div>
+              {/* ACTION BUTTONS - STACKED ON MOBILE */}
+              <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
+                <button
+                  className="flex items-center justify-center gap-2 border border-gray-100 px-3 py-2 rounded-md text-sm hover:bg-gray-50"
+                  onClick={() => handleOpenViewOrderModal(order)}
+                >
+                  <FaRegEye /> View
+                </button>
+
+                <button
+                  className="flex items-center justify-center gap-2 border border-gray-100 px-3 py-2 rounded-md text-sm hover:bg-gray-50"
+                >
+                  <AiFillPrinter /> Print
+                </button>
               </div>
             </div>
           ))}
         </div>
-          {isOpenViewOrderModal && selectedOrder && (
-            <ViewCurrentOrder
-              currentOrder={selectedOrder}
-              onClose={() => setIsOpenViewOrderModal(false)}
-            />
-          )}
+
+        {isOpenViewOrderModal && selectedOrder && (
+          <ViewCurrentOrder
+            currentOrder={selectedOrder}
+            onClose={() => setIsOpenViewOrderModal(false)}
+          />
+        )}
       </div>
     </>
   );
 }
+
+

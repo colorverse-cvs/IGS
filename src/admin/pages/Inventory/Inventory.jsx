@@ -13,7 +13,6 @@ export default function Inventory() {
   const [productList, setProductList] = useState(products);
   const [filteredProducts, setFilteredProducts] = useState(products);
 
-  // ✅ Debounced Search - NOW uses productList
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       const filtered = productList.filter((product) =>
@@ -23,35 +22,7 @@ export default function Inventory() {
     }, 100);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, productList]);  // 👈 important
-
-  // const increaseStock = (id) => {
-  //   setProductList((prev) =>
-  //     prev.map((product) =>
-  //       product.id === id
-  //         ? {
-  //             ...product,
-  //             stock: product.stock + 1,
-  //             lowStock: product.stock + 1 <= 5,
-  //           }
-  //         : product
-  //     )
-  //   );
-  // };
-
-  // const decreaseStock = (id) => {
-  //   setProductList((prev) =>
-  //     prev.map((product) =>
-  //       product.id === id
-  //         ? {
-  //             ...product,
-  //             stock: product.stock > 0 ? product.stock - 1 : 0,
-  //             lowStock: product.stock - 1 <= 5,
-  //           }
-  //         : product
-  //     )
-  //   );
-  // };
+  }, [searchTerm, productList]);
 
   return (
     <>
@@ -61,7 +32,7 @@ export default function Inventory() {
       </div>
 
       <div className="search-bar-wrapper bg-white p-4 rounded-md">
-        <div className="relative flex-1 mb-8">
+        <div className="relative mb-6">
           <input
             type="text"
             placeholder="Search products..."
@@ -82,39 +53,30 @@ export default function Inventory() {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="border border-gray-100 hover:border-violet-500 rounded-xl p-4 flex justify-between items-center bg-white shadow-sm"
+              className="border border-gray-100 hover:border-violet-500 rounded-xl p-4 bg-white shadow-sm"
             >
-              <div>
-                <p className="text-sm">{product.name}</p>
-                <div className="text-sm mt-1 flex gap-2 items-center">
-                  <span className="text-gray-500 text-xs">
-                    Stock: {product.stock}
-                  </span>
-                  {product.lowStock && (
-                    <span className="text-orange-600 text-xs px-2 py-1 rounded-full">
-                      Low Stock alert
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                
+                {/* PRODUCT INFO */}
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    {product.name}
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-2 mt-1 text-xs">
+                    <span className="text-gray-500">
+                      Stock: {product.stock}
                     </span>
-                  )}
+
+                    {product.lowStock && (
+                      <span className="text-orange-600 bg-orange-50 px-2 py-1 rounded-full font-medium">
+                        Low Stock Alert
+                      </span>
+                    )}
+                  </div>
                 </div>
+
               </div>
-
-              {/* <div className="flex items-center justify-evenly gap-2">
-                <button
-                  onClick={() => decreaseStock(product.id)}
-                  className="py-1 px-3 cursor-pointer bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100"
-                >
-                  -
-                </button>
-
-                <p className="count mx-2 font-medium">{product.stock}</p>
-
-                <button
-                  onClick={() => increaseStock(product.id)}
-                  className="py-1 px-3 cursor-pointer bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100"
-                >
-                  +
-                </button>
-              </div> */}
             </div>
           ))}
         </div>
@@ -122,3 +84,4 @@ export default function Inventory() {
     </>
   );
 }
+

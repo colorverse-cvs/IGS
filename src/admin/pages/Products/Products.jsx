@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { MdEditNote } from "react-icons/md";
-import { MdDelete } from "react-icons/md";
-
+import { MdEditNote, MdDelete } from "react-icons/md";
 
 import AddProductModal from "./components/AddProductModal";
 import EditProductModal from "./components/EditProductModal";
@@ -37,24 +35,6 @@ const products = [
     image: "https://via.placeholder.com/80",
     lowStock: true,
   },
-  {
-    id: 4,
-    name: "Photo Frame - Wooden",
-    category: "Home Decor",
-    price: "₹450",
-    stock: 25,
-    image: "https://via.placeholder.com/80",
-    lowStock: true,
-  },
-  {
-    id: 5,
-    name: "Photo Frame - Wooden",
-    category: "Home Decor",
-    price: "₹450",
-    stock: 25,
-    image: "https://via.placeholder.com/80",
-    lowStock: false,
-  },
 ];
 
 export default function Products() {
@@ -65,7 +45,6 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products);
 
-  // ✅ Debounced search - 100ms
   useEffect(() => {
     const timer = setTimeout(() => {
       const result = products.filter((product) =>
@@ -79,10 +58,13 @@ export default function Products() {
 
   return (
     <>
-      <div className="product-label-top-wrapper flex items-center justify-between mb-4 p-4">
+      {/* HEADER */}
+      <div className="product-label-top-wrapper flex flex-col sm:flex-row sm:items-center justify-between mb-4 p-4 gap-3">
         <div className="dashboard-label-wrapper">
-          <p className="text-xl">Products</p>
-          <p className="text-md">Manage your gift shop inventory</p>
+          <p className="text-xl font-semibold">Products</p>
+          <p className="text-sm text-gray-500">
+            Manage your gift shop inventory
+          </p>
         </div>
         <button
           className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg"
@@ -93,6 +75,7 @@ export default function Products() {
       </div>
 
       <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-md">
+        {/* SEARCH */}
         <div className="search-bar-wrapper">
           <div className="relative">
             <input
@@ -110,41 +93,49 @@ export default function Products() {
 
         <div className="space-y-4">
           {filteredProducts.length === 0 && (
-            <p className="text-sm text-gray-500 text-center">No products found</p>
+            <p className="text-sm text-gray-500 text-center">
+              No products found
+            </p>
           )}
 
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="border border-gray-100 hover:border-violet-500 rounded-xl p-4 flex justify-between items-center bg-white shadow-sm"
+              className="border border-gray-100 hover:border-violet-500 rounded-xl p-4 bg-white shadow-sm
+                         flex flex-col md:flex-row md:justify-between md:items-center"
             >
-              <div className="flex gap-4">
+              {/* LEFT CONTENT */}
+              <div className="flex gap-3">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-20 h-20 rounded-lg object-cover"
+                  className="w-16 h-16 rounded-lg object-cover"
                 />
 
-                <div>
-                  <div className="flex items-center gap-3">
-                    <p className="font-semibold">{product.name}</p>
+                <div className="flex-1">
+                  <div className="flex items-start gap-2">
+                    <p className="font-semibold text-sm leading-tight">
+                      {product.name}
+                    </p>
 
                     {product.lowStock && (
-                      <span className="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full">
+                      <span className="bg-orange-100 text-orange-600 text-[10px] px-2 py-0.5 rounded-full">
                         Low Stock
                       </span>
                     )}
                   </div>
 
-                  <p className="text-sm text-gray-500">{product.category}</p>
+                  <p className="text-xs text-gray-500">
+                    {product.category}
+                  </p>
 
-                  <div className="text-sm mt-1 flex gap-2 items-center">
+                  <div className="flex items-center gap-2 mt-1">
                     {product.oldPrice && (
-                      <span className="line-through text-gray-400">
+                      <span className="line-through text-gray-400 text-xs">
                         {product.oldPrice}
                       </span>
                     )}
-                    <span className="text-green-600 font-semibold">
+                    <span className="text-green-600 font-semibold text-sm">
                       {product.price}
                     </span>
                     <span className="text-gray-500 text-xs">
@@ -154,13 +145,16 @@ export default function Products() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* ACTIONS */}
+              <div className="mt-3 flex gap-2 md:mt-0 md:flex-row md:items-center">
                 <button
-                  className="flex items-center gap-2 border px-3 py-1 cursor-pointer rounded-md hover:bg-gray-50"
+                  className="flex items-center justify-center gap-2 border px-3 py-2 rounded-md hover:bg-gray-50
+                             w-full md:w-auto"
                   onClick={() => setOpenEditProductModal(true)}
                 >
-                  <MdEditNote/> Edit
+                  <MdEditNote /> Edit
                 </button>
+
                 <button
                   className="text-red-600 hover:bg-red-50 p-2 rounded-md cursor-pointer"
                   onClick={() => setOpenDeleteProductModal(true)}
@@ -173,6 +167,7 @@ export default function Products() {
         </div>
       </div>
 
+      {/* MODALS */}
       {openAddProductModal && (
         <AddProductModal onClose={() => setAddProductModal(false)} />
       )}
@@ -182,8 +177,11 @@ export default function Products() {
       )}
 
       {openDeleteProductModal && (
-        <DeleteProductConfirmationModal onClose={() => setOpenDeleteProductModal(false)} />
+        <DeleteProductConfirmationModal
+          onClose={() => setOpenDeleteProductModal(false)}
+        />
       )}
     </>
   );
 }
+
