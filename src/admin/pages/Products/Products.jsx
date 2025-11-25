@@ -45,6 +45,9 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState(products);
 
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       const result = products.filter((product) =>
@@ -55,6 +58,30 @@ export default function Products() {
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  //Get product API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/v1/products");
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        setAllProducts(result.data); 
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) return <div className="text-md text-center">Loading products...</div>;
 
   return (
     <>
