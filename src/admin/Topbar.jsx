@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 export default function Topbar({ setActivePage }) {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleDropdownClick = () => {
     setIsPopupVisible(prev => !prev);
@@ -26,8 +28,10 @@ export default function Topbar({ setActivePage }) {
     setIsPopupVisible(false);
   };
 
-  const handleOptionClick = (action) => {
+  const handleLogout = (action) => {
     setIsPopupVisible(false);
+      // Navigate to home
+    navigate("/");
   };
 
   return (
@@ -57,7 +61,7 @@ export default function Topbar({ setActivePage }) {
           </button>
 
           <button
-            onClick={() => handleOptionClick("logout")}
+            onClick={() => handleLogout("logout")}
             className="block w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-50 cursor-pointer"
           >
             Logout

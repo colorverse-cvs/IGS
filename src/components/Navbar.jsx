@@ -19,6 +19,7 @@ import Dropdown from "./Dropdown";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import categoriesData from "../data/categories.json";
 import { logout } from "../features/user/userSlice";
+import { useAdminPanel } from "../contexts/AdminPanelContext";
 
 /**
  * Navbar Component - Main navigation header for the application
@@ -38,6 +39,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Global admin panel state from context
+  const { isAdminPanelOpen, setIsAdminPanelOpen } = useAdminPanel();
+
   // State management
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -46,7 +50,6 @@ export default function Navbar() {
   const [authTab, setAuthTab] = useState("login");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false);
   const [isMobileProductsDropdownOpen, setIsMobileProductsDropdownOpen] =
@@ -239,10 +242,15 @@ export default function Navbar() {
     navigate(`/filter?${params.toString()}`);
   };
 
-  const handleOpenAdminPanel = ()=>{
-    setIsAdminPanelOpen(prev => !prev)
-    navigate('/admin')
-  }
+  const handleOpenAdminPanel = () => {
+    setIsAdminPanelOpen((prev) => !prev);
+    navigate("/admin");
+  };
+
+  // Sync admin panel state with route
+  useEffect(() => {
+    setIsAdminPanelOpen(location.pathname === "/admin");
+  }, [location.pathname, setIsAdminPanelOpen]);
 
   return (
     <>
@@ -256,7 +264,7 @@ export default function Navbar() {
             : "bg-white border-gray-100"
         }`}
       >
-        <div className="mx-auto px-4 md:px-15 lg:px-20 max-w-7xl lg:max-w-full">
+        <div className={`mx-auto px-4 md:px-15 lg:px-20 max-w-7xl lg:max-w-full ${isAdminPanelOpen ? 'hidden' : ''}`}>
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
@@ -660,6 +668,7 @@ export default function Navbar() {
       {/* MOBILE BOTTOM NAVBAR - Fixed navigation at bottom of screen (mobile only, lg:hidden)
           Shows: Home, Profile, Contact, Cart, Menu (5 main navigation options)
           Features: Active state highlighting, cart badge with item count */}
+      {!isAdminPanelOpen && (
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200">
         <div className="flex justify-around items-center h-16">
           {/* Home */}
@@ -737,6 +746,7 @@ export default function Navbar() {
           </button>
         </div>
       </nav>
+      )}
 
       {/* MOBILE MENU DRAWER - Slide-out navigation panel (mobile only, triggered by Menu button)
           Features: Products dropdown with separate state (isMobileProductsDropdownOpen),
