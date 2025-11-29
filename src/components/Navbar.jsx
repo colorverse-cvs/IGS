@@ -450,7 +450,7 @@ export default function Navbar() {
             : "bg-white border-gray-100"
         }`}
       >
-        <div className="py-3 px-4 md:px-15 lg:px-20">
+        <div className={`py-3 px-4 md:px-15 lg:px-20 ${isAdminPanelOpen ? 'hidden' : ''}`}>
           {/* Top Navbar Row */}
           <div className="flex justify-between items-center h-14">
             {/* Logo on left */}
@@ -663,7 +663,9 @@ export default function Navbar() {
       />
       <div
         className="hidden md:block lg:hidden"
-        style={{ height: isHomePage ? "80px" : "85px" }}
+        style={{
+          height: isAdminPanelOpen ? "unset" : isHomePage ? "80px" : "85px",
+        }}
       />
 
       {/* MOBILE BOTTOM NAVBAR - Fixed navigation at bottom of screen (mobile only, lg:hidden)
