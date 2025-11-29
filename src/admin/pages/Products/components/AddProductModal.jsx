@@ -12,21 +12,39 @@ export default function AddProductModal({ onClose }) {
     name: "",
     price: "",
     discountPrice: "",
-    stock: ""
+    stock: "",
   });
 
-  const productCategory = [
+   const productCategory = [
     "Soft Toys",
     "Home Decor",
     "Cards",
     "Personalized",
-    "Hampers"
+    "Hampers",
   ];
+
+  const categoryMap = {
+    "Soft Toys": "692ad270ae20bcad4fbe3a59",
+    "Home Decor": "692ad288ae20bcad4fbe3a5b",
+    Cards: "692adab9ae20bcad4fbe3aa1",
+    Personalized: "692adae3ae20bcad4fbe3aa3",
+    Hampers: "692adaecae20bcad4fbe3aa5",
+  };
+
+  const generateSKU = (productName) => {
+    const prefix = productName
+      ? productName.substring(0, 2).toUpperCase()
+      : "PR";
+
+    const uniqueNumber = Math.floor(10000 + Math.random() * 90000); // 5 digit
+    return `${prefix}-${uniqueNumber}`;
+  };
 
   const allowOnlyNumbers = (value) => value.replace(/[^0-9]/g, "");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     if (["price", "discountPrice", "stock"].includes(name)) {
       setFormData({ ...formData, [name]: allowOnlyNumbers(value) });
     } else {
@@ -41,26 +59,26 @@ export default function AddProductModal({ onClose }) {
     if (file) setPreview(URL.createObjectURL(file));
   };
 
+
   const handleAddNewProduct = async () => {
     try {
+      const selectedCategoryId = categoryMap[prodCategory];
+      const sku = generateSKU(formData.name);
+
+      const formDataToSend = new FormData();
+      formDataToSend.append("images", fileInputRef.current.files[0]);
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("description", "Product description here");
+      formDataToSend.append("price", Number(formData.price));
+      formDataToSend.append("discount", Number(formData.discountPrice || 0));
+      formDataToSend.append("quantity", Number(formData.stock));
+      formDataToSend.append("categoryId", selectedCategoryId);
+      formDataToSend.append("sku", sku);
+      formDataToSend.append("tags", JSON.stringify([]));
+
       const response = await fetch("http://localhost:3000/api/v1/products", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          description: "Ergonomic wireless mouse",
-          price: Number(formData.price),
-          sku: "WM-12345",
-          quantity: Number(formData.stock),
-          categoryId: "6925df66617fc8e7b0ddd573",
-          images: [{
-            url : "https://pikaso.cdnpk.net/private/production/1837955319/upload.png",
-            alt: formData.name
-          }],
-          tags: []
-        })
+        body: formDataToSend,
       });
 
       const data = await response.json();
@@ -71,6 +89,7 @@ export default function AddProductModal({ onClose }) {
       }
 
       console.log("✅ Product created:", data);
+      onClose();
 
     } catch (error) {
       console.error("Request failed:", error);
@@ -90,9 +109,7 @@ export default function AddProductModal({ onClose }) {
 
         {/* HEADER */}
         <div className="flex items-center justify-between mb-4">
-          <p className="text-base font-semibold text-gray-800">
-            Add New Product
-          </p>
+          <p className="text-base font-semibold text-gray-800">Add New Product</p>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
             <X />
           </button>
@@ -100,7 +117,7 @@ export default function AddProductModal({ onClose }) {
 
         <div className="space-y-5">
 
-          {/* IMAGE SECTION - MOBILE STYLE */}
+          {/* IMAGE UPLOAD */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Product Image
@@ -121,7 +138,11 @@ export default function AddProductModal({ onClose }) {
                 ${preview ? "border-none" : "border-dashed border-gray-200"}`}
               >
                 {preview ? (
-                  <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-xl" />
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded-xl"
+                  />
                 ) : (
                   <Upload className="text-gray-400" />
                 )}
@@ -165,7 +186,7 @@ export default function AddProductModal({ onClose }) {
             />
           </div>
 
-          {/* PRICE + DISCOUNT - 2 COL */}
+          {/* PRICE + DISCOUNT + STOCK */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div>
               <label className="block text-sm mb-1 font-medium text-gray-700">
@@ -195,7 +216,6 @@ export default function AddProductModal({ onClose }) {
               />
             </div>
 
-            {/* DESKTOP ONLY THIRD COLUMN */}
             <div className="hidden md:block">
               <label className="block text-sm mb-1 font-medium text-gray-700">
                 Stock Qty *
@@ -205,13 +225,12 @@ export default function AddProductModal({ onClose }) {
                 name="stock"
                 value={formData.stock}
                 onChange={handleChange}
-                placeholder="2"
+                placeholder="10"
                 className="w-full border border-gray-200 rounded-lg px-3 py-2"
               />
             </div>
           </div>
 
-          {/* STOCK - MOBILE FULL */}
           <div className="md:hidden">
             <label className="block text-sm mb-1 font-medium text-gray-700">
               Stock Qty *
@@ -225,10 +244,9 @@ export default function AddProductModal({ onClose }) {
               className="w-full border border-gray-200 rounded-lg px-3 py-2"
             />
           </div>
-
         </div>
 
-        {/* BUTTONS - MOBILE STACK */}
+        {/* BUTTONS */}
         <div className="mt-6 flex flex-col gap-3 md:flex-row md:justify-end md:gap-4">
           <button
             onClick={onClose}
@@ -240,17 +258,17 @@ export default function AddProductModal({ onClose }) {
           <button
             disabled={!isFormValid}
             className={`w-full md:w-auto px-5 py-2 rounded-lg text-white
-              ${isFormValid
-                ? "bg-purple-600 hover:bg-purple-700"
-                : "bg-gray-300 cursor-not-allowed"}`}
-                onClick={()=> handleAddNewProduct()}
+              ${
+                isFormValid
+                  ? "bg-purple-600 hover:bg-purple-700"
+                  : "bg-gray-300 cursor-not-allowed"
+              }`}
+            onClick={handleAddNewProduct}
           >
             Add Product
           </button>
         </div>
-
       </div>
     </div>
   );
 }
-
