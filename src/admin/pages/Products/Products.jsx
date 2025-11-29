@@ -42,15 +42,14 @@ export default function Products() {
   }, []);
 
 
-  // SEARCH by name or description
+  // SEARCH by name 
   useEffect(() => {
     const timer = setTimeout(() => {
       const result = allProducts.filter((product) => {
         const name = product.name?.toLowerCase() || "";
-        const desc = product.description?.toLowerCase() || "";
         const searchLower = searchTerm.toLowerCase();
 
-        return name.includes(searchLower) || desc.includes(searchLower);
+        return name.includes(searchLower);
       });
 
       setFilteredProducts(result);
