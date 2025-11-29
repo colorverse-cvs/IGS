@@ -125,7 +125,7 @@ export default function Products() {
                       )}
                     </div>
 
-                    <p className="text-xs text-gray-500">{product.category || "Uncategorized"}</p>
+                    <p className="text-xs text-gray-500">{product.category.name || "Uncategorized"}</p>
 
                     <div className="flex items-center gap-2 mt-1">
                       {product.listPrice && (

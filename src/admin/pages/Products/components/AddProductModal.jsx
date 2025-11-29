@@ -1,5 +1,5 @@
 import { X, Upload } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Dropdown from "../../../../../src/components/Dropdown";
 
 export default function AddProductModal({ onClose }) {
@@ -7,6 +7,7 @@ export default function AddProductModal({ onClose }) {
 
   const [preview, setPreview] = useState(null);
   const [prodCategory, setProdCategory] = useState("");
+  const [categories, setCategories] = useState([]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -15,31 +16,43 @@ export default function AddProductModal({ onClose }) {
     stock: "",
   });
 
-   const productCategory = [
-    "Soft Toys",
-    "Home Decor",
-    "Cards",
-    "Personalized",
-    "Hampers",
-  ];
+  // -------------------------------
+  //  FETCH PRODUCT CATEGORIES
+  // -------------------------------
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("http://localhost:3000/api/v1/products/categories");
+        const data = await res.json();
+        console.log("data ", data);
+        
+        if (res.ok && Array.isArray(data?.data)) {
+          setCategories(data.data); // [{_id,name}, ...]
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
 
-  const categoryMap = {
-    "Soft Toys": "692ad270ae20bcad4fbe3a59",
-    "Home Decor": "692ad288ae20bcad4fbe3a5b",
-    Cards: "692adab9ae20bcad4fbe3aa1",
-    Personalized: "692adae3ae20bcad4fbe3aa3",
-    Hampers: "692adaecae20bcad4fbe3aa5",
-  };
+    fetchCategories();
+  }, []);
 
+  // -------------------------------
+  //  SKU GENERATOR (Always Unique)
+  // -------------------------------
   const generateSKU = (productName) => {
     const prefix = productName
-      ? productName.substring(0, 2).toUpperCase()
-      : "PR";
+      ? productName.substring(0, 3).toUpperCase()
+      : "PRD";
 
-    const uniqueNumber = Math.floor(10000 + Math.random() * 90000); // 5 digit
+    const uniqueNumber = Date.now().toString().slice(-6); // last 6 digits of timestamp
+
     return `${prefix}-${uniqueNumber}`;
   };
 
+  // -------------------------------
+  // Numeric-only validator
+  // -------------------------------
   const allowOnlyNumbers = (value) => value.replace(/[^0-9]/g, "");
 
   const handleChange = (e) => {
@@ -52,54 +65,77 @@ export default function AddProductModal({ onClose }) {
     }
   };
 
-  const openFileDialog = () => fileInputRef.current.click();
+  // -------------------------------
+  // Image Upload
+  // -------------------------------
+  const openFileDialog = () => fileInputRef.current?.click();
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (file) setPreview(URL.createObjectURL(file));
   };
 
+  // -------------------------------
+  // SUBMIT NEW PRODUCT
+  // -------------------------------
+ const handleAddNewProduct = async () => {
+  try {
+    const selectedCategory = categories.find(
+      (c) => c.name.trim() === prodCategory.trim()
+    );
 
-  const handleAddNewProduct = async () => {
-    try {
-      const selectedCategoryId = categoryMap[prodCategory];
-      const sku = generateSKU(formData.name);
-
-      const formDataToSend = new FormData();
-      formDataToSend.append("images", fileInputRef.current.files[0]);
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("description", "Product description here");
-      formDataToSend.append("price", Number(formData.price));
-      formDataToSend.append("discount", Number(formData.discountPrice || 0));
-      formDataToSend.append("quantity", Number(formData.stock));
-      formDataToSend.append("categoryId", selectedCategoryId);
-      formDataToSend.append("sku", sku);
-      formDataToSend.append("tags", JSON.stringify([]));
-
-      const response = await fetch("http://localhost:3000/api/v1/products", {
-        method: "POST",
-        body: formDataToSend,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error("Backend rejected:", data);
-        return;
-      }
-
-      console.log("✅ Product created:", data);
-      onClose();
-
-    } catch (error) {
-      console.error("Request failed:", error);
+    if (!selectedCategory) {
+      alert("Please select a valid category.");
+      return;
     }
-  };
 
+    const sku = generateSKU(formData.name);
+
+    const formDataToSend = new FormData();
+
+    const imageFile = fileInputRef.current?.files?.[0];
+    if (imageFile) formDataToSend.append("images", imageFile);
+
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("description", "Product description...");
+    formDataToSend.append("price", Number(formData.price));
+    formDataToSend.append("discount", Number(formData.discountPrice || 0));
+    formDataToSend.append("quantity", Number(formData.stock));
+    formDataToSend.append("stock", Number(formData.stock));
+
+    // ✅ FIXED → use selectedCategory
+    formDataToSend.append("categoryId", selectedCategory._id);
+
+    formDataToSend.append("sku", sku);
+    formDataToSend.append("tags", JSON.stringify([]));
+
+    const response = await fetch("http://localhost:3000/api/v1/products", {
+      method: "POST",
+      body: formDataToSend,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Backend rejected:", data);
+      return;
+    }
+
+    console.log("✅ Product created:", data);
+    onClose();
+  } catch (error) {
+    console.error("Request failed:", error);
+  }
+};
+
+
+  // -------------------------------
+  // FORM VALIDATION
+  // -------------------------------
   const isFormValid =
     preview &&
     formData.name.trim() !== "" &&
-    prodCategory !== "" &&
+    prodCategory.trim() !== "" &&
     formData.price !== "" &&
     formData.stock !== "";
 
@@ -134,8 +170,9 @@ export default function AddProductModal({ onClose }) {
             <div className="flex items-center gap-4">
               <div
                 onClick={openFileDialog}
-                className={`w-20 h-20 border-2 rounded-xl flex items-center justify-center cursor-pointer
-                ${preview ? "border-none" : "border-dashed border-gray-200"}`}
+                className={`w-20 h-20 border-2 rounded-xl flex items-center justify-center cursor-pointer ${
+                  preview ? "border-none" : "border-dashed border-gray-200"
+                }`}
               >
                 {preview ? (
                   <img
@@ -173,15 +210,16 @@ export default function AddProductModal({ onClose }) {
             />
           </div>
 
-          {/* CATEGORY */}
+          {/* CATEGORY DROPDOWN */}
           <div>
             <label className="block text-sm mb-1 font-medium text-gray-700">
               Category *
             </label>
+
             <Dropdown
-              options={productCategory}
+              options={categories.map((c) => c.name)}
               value={prodCategory}
-              onChange={(val) => setProdCategory(val)}
+              onChange={setProdCategory}
               placeholder="Select Category"
             />
           </div>
@@ -231,6 +269,7 @@ export default function AddProductModal({ onClose }) {
             </div>
           </div>
 
+          {/* Stock mobile view */}
           <div className="md:hidden">
             <label className="block text-sm mb-1 font-medium text-gray-700">
               Stock Qty *
@@ -257,17 +296,17 @@ export default function AddProductModal({ onClose }) {
 
           <button
             disabled={!isFormValid}
-            className={`w-full md:w-auto px-5 py-2 rounded-lg text-white
-              ${
-                isFormValid
-                  ? "bg-purple-600 hover:bg-purple-700"
-                  : "bg-gray-300 cursor-not-allowed"
-              }`}
+            className={`w-full md:w-auto px-5 py-2 rounded-lg text-white ${
+              isFormValid
+                ? "bg-purple-600 hover:bg-purple-700"
+                : "bg-gray-300 cursor-not-allowed"
+            }`}
             onClick={handleAddNewProduct}
           >
             Add Product
           </button>
         </div>
+
       </div>
     </div>
   );
