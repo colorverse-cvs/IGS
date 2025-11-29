@@ -11,7 +11,7 @@ import Settings from "./pages/Settings/Settings";
 
 export default function PageContent({ setActivePage, activePage }) {
   return (
-    <div className="p-6 overflow-auto h-full">
+    <div className="p-6 overflow-auto h-full hide-scrollbar">
       {activePage === "Dashboard" && <Dashboard setActivePage={setActivePage} />}
       {activePage === "Products" && <Products />}
       {activePage === "Orders" && <Orders />}

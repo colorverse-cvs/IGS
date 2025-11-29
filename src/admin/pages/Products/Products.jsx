@@ -35,6 +35,36 @@ const products = [
     image: "https://via.placeholder.com/80",
     lowStock: true,
   },
+  {
+    id: 4,
+    name: "Panda - Small",
+    category: "Soft Toys",
+    oldPrice: "₹350",
+    price: "₹299",
+    stock: 2,
+    image: "https://via.placeholder.com/80",
+    lowStock: true,
+  },
+  {
+    id: 5,
+    name: "Panda - Small",
+    category: "Soft Toys",
+    oldPrice: "₹350",
+    price: "₹299",
+    stock: 2,
+    image: "https://via.placeholder.com/80",
+    lowStock: true,
+  },
+  {
+    id: 6,
+    name: "Panda - Small",
+    category: "Soft Toys",
+    oldPrice: "₹350",
+    price: "₹299",
+    stock: 2,
+    image: "https://via.placeholder.com/80",
+    lowStock: true,
+  },
 ];
 
 export default function Products() {

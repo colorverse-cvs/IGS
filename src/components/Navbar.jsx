@@ -417,7 +417,7 @@ export default function Navbar() {
                       setAuthTab("login");
                       setIsAuthOpen(true);
                     }}
-                    className="px-4 py-2 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium"
+                    className="px-4 py-2 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium hover:cursor-pointer"
                     aria-label="Log In"
                   >
                     Log In
@@ -427,7 +427,7 @@ export default function Navbar() {
                       setAuthTab("signup");
                       setIsAuthOpen(true);
                     }}
-                    className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 transition text-sm font-medium"
+                    className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 transition text-sm font-medium cursor-pointer"
                     aria-label="Sign Up"
                   >
                     Sign Up
@@ -435,7 +435,8 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            <button onClick={handleOpenAdminPanel}>ADMIN PANEL</button>
+            <button className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 transition text-sm font-medium cursor-pointer"
+                    onClick={handleOpenAdminPanel}>ADMIN PANEL</button>
           </div>
         </div>
       </nav>
