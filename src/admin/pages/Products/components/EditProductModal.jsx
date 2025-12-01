@@ -274,7 +274,7 @@ export default function EditProductModal({
 
           {/* NUMERIC */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {renderInput("Price", "price")}
+            {renderInput("Price (₹)", "price")}
             {renderInput("Discount (%)", "discountPrice")}
             {renderInput("Stock", "stock")}
             {renderInput("Height (cm)", "height")}

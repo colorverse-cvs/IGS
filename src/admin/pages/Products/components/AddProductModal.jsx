@@ -185,7 +185,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
           {/* Image */}
           <div>
-            <label className="text-sm mb-2 block">Product Image *</label>
+            <label className="text-sm mb-2 block">Product Image</label>
             <input type="file" ref={fileInputRef} onChange={handleFileChange} hidden />
             <div
               onClick={openFileDialog}
@@ -202,7 +202,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             {errors.image && <ErrorText text={errors.image} />}
           </div>
 
-          <Input required label="Product Name *" name="name" value={formData.name} onChange={handleChange} error={errors.name} />
+          <Input required label="Product Name" name="name" value={formData.name} onChange={handleChange} error={errors.name} />
 
           <Input label="Description" name="description" value={formData.description} onChange={handleChange} />
 
@@ -215,7 +215,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             <div>
-              <label className="text-sm mb-1 block">Category *</label>
+              <label className="text-sm mb-1 block">Category</label>
               <Dropdown
                 options={categories.map((c) => c.name)}
                 value={prodCategory}
@@ -247,9 +247,9 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Input required label="Price *" name="price" value={formData.price} onChange={handleChange} error={errors.price} />
+            <Input required label="Price (₹)" name="price" value={formData.price} onChange={handleChange} error={errors.price} />
             <Input label="Discount (%)" name="discount" value={formData.discount} onChange={handleChange} />
-            <Input required label="Stock *" name="stock" value={formData.stock} onChange={handleChange} error={errors.stock} />
+            <Input required label="Stock" name="stock" value={formData.stock} onChange={handleChange} error={errors.stock} />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
