@@ -13,7 +13,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   const materialType = useMemo(
     () => [
       { type: "Marble", subType: "Hand-carved" },
-      { type: "Resin", subType: "High-Density" },
+      { type: "Resin", subType: "High-Density" }
     ],
     []
   );
@@ -23,7 +23,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       { type: "Small", subType: "Under 6 in" },
       { type: "Medium", subType: "6 in - 10 in" },
       { type: "Large", subType: "10 in - 15 in" },
-      { type: "Extra Large", subType: "Above 15 in" },
+      { type: "Extra Large", subType: "Above 15 in" }
     ],
     []
   );
@@ -36,13 +36,16 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     discount: "",
     stock: "",
     finish: "",
-    height: "",
-    width: "",
     weight: "",
     primaryMaterial: "",
-    materialType: "",
-    materialCategory: "",
     size: "",
+    attributes: {
+      materialType: ""
+    },
+    dimensions: {
+      height: "",
+      width: ""
+    }
   });
 
   /* ----------------------------------------------------
@@ -60,25 +63,42 @@ export default function AddProductModal({ onClose, onProductAdded }) {
         console.error("Failed to fetch categories:", err);
       }
     }
+
     fetchCategories();
   }, []);
 
-  const generateSKU = (name) => {
-    const prefix = name ? name.substring(0, 3).toUpperCase() : "PRD";
-    const code = Date.now().toString().slice(-6);
-    return `${prefix}-${code}`;
-  };
-
   const allowOnlyNumbers = (value) => value.replace(/[^0-9]/g, "");
 
+  /* ----------------------------------------------------
+      CHANGE HANDLERS
+  ---------------------------------------------------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const numericFields = ["price", "discount", "stock", "height", "width", "weight"];
+    const numericFields = [
+      "price",
+      "discount",
+      "stock",
+      "weight",
+      "height",
+      "width"
+    ];
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: numericFields.includes(name) ? allowOnlyNumbers(value) : value,
-    }));
+    if (name === "height" || name === "width") {
+      setFormData((prev) => ({
+        ...prev,
+        dimensions: {
+          ...prev.dimensions,
+          [name]: allowOnlyNumbers(value)
+        }
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: numericFields.includes(name)
+          ? allowOnlyNumbers(value)
+          : value
+      }));
+    }
 
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -118,58 +138,82 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     formData.stock;
 
   /* ----------------------------------------------------
+      SKU GENERATOR
+  ---------------------------------------------------- */
+  const generateSKU = (name) => {
+    const prefix = name ? name.substring(0, 3).toUpperCase() : "PRD";
+    const code = Date.now().toString().slice(-6);
+    return `${prefix}-${code}`;
+  };
+
+  /* ----------------------------------------------------
       SUBMIT
   ---------------------------------------------------- */
   const handleAddNewProduct = async () => {
-    const valid = validateForm();
-    if (!valid) return;
+    if (!validateForm()) return;
 
     try {
       const selectedCategory = categories.find((c) => c.name === prodCategory);
       if (!selectedCategory) return;
 
       const sku = generateSKU(formData.name);
-
-      const formDataToSend = new FormData();
       const imageFile = fileInputRef.current?.files?.[0];
 
-      if (imageFile) formDataToSend.append("images", imageFile);
+      const formDataToSend = new FormData();
 
-      Object.keys(formData).forEach((key) => {
-        formDataToSend.append(key, formData[key]);
-      });
+      if (imageFile) {
+        formDataToSend.append("images", imageFile);
+      }
+
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("origin", formData.origin);
+      formDataToSend.append("finish", formData.finish);
+      formDataToSend.append("primaryMaterial", formData.primaryMaterial);
 
       formDataToSend.append("price", Number(formData.price));
-      formDataToSend.append("discount", Number(formData.discount));
-      formDataToSend.append("quantity", Number(formData.stock));
+      formDataToSend.append("discount", Number(formData.discount || 0));
       formDataToSend.append("stock", Number(formData.stock));
+      formDataToSend.append("weight", Number(formData.weight || 0));
+
+      formDataToSend.append("size", formData.size);
+      formDataToSend.append(
+        "attributes",
+        JSON.stringify(formData.attributes)
+      );
+
+      formDataToSend.append(
+        "dimensions",
+        JSON.stringify(formData.dimensions)
+      );
+
       formDataToSend.append("categoryId", selectedCategory._id);
       formDataToSend.append("sku", sku);
       formDataToSend.append("tags", JSON.stringify([]));
 
-      console.log("✅ Final FormData");
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, ":", value);
+      console.log("✅ Final Data:");
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0], pair[1]);
       }
 
-      // const response = await fetch("http://localhost:3000/api/v1/products", {
+      // const res = await fetch("http://localhost:3000/api/v1/products", {
       //   method: "POST",
-      //   body: formDataToSend,
+      //   body: formDataToSend
       // });
 
-      // const data = await response.json();
-      // if (!response.ok) {
-      //   console.error("Backend error:", data);
-      //   return;
-      // }
+      // const data = await res.json();
+      // if (!res.ok) throw new Error(data.message);
 
       onProductAdded?.();
       onClose();
-    } catch (err) {
-      console.error("Request failed:", err);
+    } catch (error) {
+      console.error("Submit failed:", error);
     }
   };
 
+  /* ----------------------------------------------------
+      UI
+  ---------------------------------------------------- */
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50">
       <div className="bg-white w-full md:w-[800px] rounded-t-2xl md:rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
@@ -194,7 +238,10 @@ export default function AddProductModal({ onClose, onProductAdded }) {
               }`}
             >
               {preview ? (
-                <img src={preview} className="w-full h-full rounded-xl object-cover" />
+                <img
+                  src={preview}
+                  className="w-full h-full rounded-xl object-cover"
+                />
               ) : (
                 <Upload />
               )}
@@ -224,25 +271,29 @@ export default function AddProductModal({ onClose, onProductAdded }) {
                   setErrors((prev) => ({ ...prev, category: "" }));
                 }}
                 placeholder="Select Category"
-                key="category"
               />
               {errors.category && <ErrorText text={errors.category} />}
             </div>
 
             <DropdownField
-              key="materialType"
               label="Material Type"
               options={materialType.map((m) => `${m.type} - ${m.subType}`)}
-              value={formData.materialType}
-              onChange={(val) => setFormData({ ...formData, materialType: val })}
+              value={formData.attributes.materialType}
+              onChange={(val) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  attributes: { ...prev.attributes, materialType: val }
+                }))
+              }
             />
 
             <DropdownField
-              key="size"
               label="Size"
               options={sizeOptions.map((s) => `${s.type} - ${s.subType}`)}
               value={formData.size}
-              onChange={(val) => setFormData({ ...formData, size: val })}
+              onChange={(val) =>
+                setFormData((prev) => ({ ...prev, size: val }))
+              }
             />
           </div>
 
@@ -253,16 +304,17 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Input label="Height (cm)" name="height" value={formData.height} onChange={handleChange} />
-            <Input label="Width (cm)" name="width" value={formData.width} onChange={handleChange} />
+            <Input label="Height (cm)" name="height" value={formData.dimensions.height} onChange={handleChange} />
+            <Input label="Width (cm)" name="width" value={formData.dimensions.width} onChange={handleChange} />
             <Input label="Weight (gm)" name="weight" value={formData.weight} onChange={handleChange} />
           </div>
-
         </div>
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200 flex justify-end gap-3">
-          <button onClick={onClose} className="px-5 py-2 border rounded-lg">Cancel</button>
+          <button onClick={onClose} className="px-5 py-2 border rounded-lg">
+            Cancel
+          </button>
 
           <button
             disabled={!isFormValid}
@@ -274,7 +326,6 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             Add Product
           </button>
         </div>
-
       </div>
     </div>
   );
@@ -288,7 +339,9 @@ function Input({ label, error, ...props }) {
       <input
         {...props}
         className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${
-          error ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-violet-500"
+          error
+            ? "border-red-500 focus:ring-red-400"
+            : "border-gray-300 focus:ring-violet-500"
         }`}
       />
       {error && <ErrorText text={error} />}
@@ -300,7 +353,12 @@ function DropdownField({ label, options, value, onChange }) {
   return (
     <div>
       <label className="text-sm mb-1 block">{label}</label>
-      <Dropdown options={options} value={value} onChange={onChange} placeholder={`Select ${label}`} />
+      <Dropdown
+        options={options}
+        value={value}
+        onChange={onChange}
+        placeholder={`Select ${label}`}
+      />
     </div>
   );
 }

@@ -8,13 +8,13 @@ const REQUIRED_FIELDS = [
   "primaryMaterial",
   "finish",
   "origin",
-  "materialType",
   "size",
   "price",
   "stock",
-  "height",
-  "width",
   "weight",
+  "dimensions.height",
+  "dimensions.width",
+  "attributes.materialType",
 ];
 
 export default function EditProductModal({
@@ -47,19 +47,29 @@ export default function EditProductModal({
   ];
 
   const [formData, setFormData] = useState({
-    name: existingProduct.name || "",
-    description: existingProduct.description || "",
-    primaryMaterial: existingProduct.primaryMaterial || "",
-    finish: existingProduct.finish || "",
-    origin: existingProduct.origin || "",
-    materialType: existingProduct.materialType || "",
-    size: existingProduct.size || "",
-    price: existingProduct.price || "",
-    discountPrice: existingProduct.discount || "",
-    stock: existingProduct.stock || "",
-    height: existingProduct.height || "",
-    width: existingProduct.width || "",
-    weight: existingProduct.weight || "",
+    name: existingProduct?.name || "",
+    description: existingProduct?.description || "",
+    primaryMaterial: existingProduct?.primaryMaterial || "",
+    finish: existingProduct?.finish || "",
+    origin: existingProduct?.origin || "",
+    size: existingProduct?.size || "",
+    price: existingProduct?.price || "",
+    discountPrice: existingProduct?.discount || "",
+    stock: existingProduct?.stock || "",
+    weight: existingProduct?.weight || "",
+
+    // ✅ NESTED STRUCTURES
+    dimensions: {
+      height: existingProduct?.dimensions?.height || "",
+      width: existingProduct?.dimensions?.width || "",
+    },
+
+    attributes: {
+      materialType:
+        existingProduct?.attributes?.materialType ||
+        existingProduct?.materialType ||
+        "",
+    },
   });
 
   const allowOnlyNumbers = (value) => value.replace(/[^0-9]/g, "");
@@ -71,8 +81,6 @@ export default function EditProductModal({
       "price",
       "discountPrice",
       "stock",
-      "height",
-      "width",
       "weight",
     ];
 
@@ -84,19 +92,43 @@ export default function EditProductModal({
     }));
   };
 
-  // ✅ Validation system with memo (prevents re-renders)
+  const handleDimensionChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      dimensions: {
+        ...prev.dimensions,
+        [name]: allowOnlyNumbers(value),
+      },
+    }));
+  };
+
+  // ✅ Validation
   const errors = useMemo(() => {
     const newErrors = {};
 
-    REQUIRED_FIELDS.forEach((field) => {
-      if (!formData[field]?.toString().trim()) {
-        newErrors[field] = `This field is required`;
-      }
-    });
+    if (!formData.name.trim()) newErrors.name = "Required";
+    if (!formData.description.trim()) newErrors.description = "Required";
+    if (!formData.primaryMaterial.trim())
+      newErrors.primaryMaterial = "Required";
+    if (!formData.finish.trim()) newErrors.finish = "Required";
+    if (!formData.origin.trim()) newErrors.origin = "Required";
+    if (!formData.size.trim()) newErrors.size = "Required";
+    if (!formData.price) newErrors.price = "Required";
+    if (!formData.stock) newErrors.stock = "Required";
+    if (!formData.weight) newErrors.weight = "Required";
 
-    if (!prodCategory) {
-      newErrors.category = "Category is required";
-    }
+    if (!formData.dimensions.height)
+      newErrors.height = "Height required";
+
+    if (!formData.dimensions.width)
+      newErrors.width = "Width required";
+
+    if (!formData.attributes.materialType)
+      newErrors.materialType = "Required";
+
+    if (!prodCategory) newErrors.category = "Required";
 
     return newErrors;
   }, [formData, prodCategory]);
@@ -107,9 +139,7 @@ export default function EditProductModal({
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+    if (file) setPreview(URL.createObjectURL(file));
   };
 
   // FETCH CATEGORIES
@@ -146,27 +176,41 @@ export default function EditProductModal({
       const imageFile = fileInputRef.current?.files?.[0];
       if (imageFile) form.append("images", imageFile);
 
-      Object.keys(formData).forEach((key) => {
-        if (["price", "discountPrice", "stock"].includes(key)) {
-          form.append(
-            key === "discountPrice" ? "discount" : key,
-            Number(formData[key])
-          );
-        } else {
-          form.append(key, formData[key]);
-        }
-      });
+      // ✅ ROOT FIELDS
+      form.append("name", formData.name);
+      form.append("description", formData.description);
+      form.append("primaryMaterial", formData.primaryMaterial);
+      form.append("finish", formData.finish);
+      form.append("origin", formData.origin);
+      form.append("size", formData.size);
+      form.append("price", Number(formData.price));
+      form.append("discount", Number(formData.discountPrice || 0));
+      form.append("stock", Number(formData.stock));
+      form.append("weight", Number(formData.weight));
 
-      form.append("categoryId", selectedCategory._id);
+      // ✅ DIMENSIONS
+      form.append("dimensions[height]", Number(formData.dimensions.height));
+      form.append("dimensions[width]", Number(formData.dimensions.width));
 
-      const response = await fetch(
-        `http://localhost:3000/api/v1/products/${existingProduct._id}`,
-        { method: "PATCH", body: form }
+      // ✅ ATTRIBUTES
+      form.append(
+        "attributes[materialType]",
+        formData.attributes.materialType
       );
 
-      if (!response.ok) return;
+      form.append("categoryId", selectedCategory._id);
+      console.log("✅ Final Data:");
+      for (let pair of form.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+      // const response = await fetch(
+      //   `http://localhost:3000/api/v1/products/${existingProduct._id}`,
+      //   { method: "PATCH", body: form }
+      // );
 
-      onUpdated?.();
+      // if (!response.ok) return;
+
+      // onUpdated?.();
       onClose();
     } catch (error) {
       console.error("Update error:", error);
@@ -175,17 +219,15 @@ export default function EditProductModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50">
-
       <div className="bg-white w-full md:w-[850px] rounded-t-2xl md:rounded-2xl shadow-xl">
-
-        {/* HEADER (STATIC) */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b">
           <p className="text-base font-semibold">Edit Product</p>
-          <button onClick={onClose}><X /></button>
+          <button onClick={onClose}>
+            <X />
+          </button>
         </div>
 
-        {/* ✅ SCROLLABLE FORM */}
-        <div className="max-h-[70vh] overflow-y-auto hide-scrollbar px-6 py-5 space-y-5">
+        <div className="max-h-[70vh] overflow-y-auto px-6 py-5 space-y-5">
 
           {/* IMAGE */}
           <div>
@@ -195,7 +237,6 @@ export default function EditProductModal({
 
             <input
               type="file"
-              accept="image/*"
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
@@ -205,9 +246,7 @@ export default function EditProductModal({
               <div
                 onClick={openFileDialog}
                 className={`w-20 h-20 border-2 rounded-xl flex items-center justify-center cursor-pointer ${
-                  preview
-                    ? "border-none"
-                    : "border-dashed border-gray-300"
+                  preview ? "border-none" : "border-dashed"
                 }`}
               >
                 {preview ? (
@@ -234,14 +273,12 @@ export default function EditProductModal({
             </div>
           </div>
 
-          {/* INPUT FIELDS */}
           {renderInput("Product Name", "name")}
           {renderInput("Description", "description")}
           {renderInput("Primary Material", "primaryMaterial")}
           {renderInput("Finish", "finish")}
           {renderInput("Origin", "origin")}
 
-          {/* CATEGORY + TYPE + SIZE */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <DropdownField
               label="Category"
@@ -254,9 +291,15 @@ export default function EditProductModal({
             <DropdownField
               label="Material Type"
               options={materialType.map((m) => `${m.type} - ${m.subType}`)}
-              value={formData.materialType}
+              value={formData.attributes.materialType}
               onChange={(val) =>
-                setFormData((prev) => ({ ...prev, materialType: val }))
+                setFormData((prev) => ({
+                  ...prev,
+                  attributes: {
+                    ...prev.attributes,
+                    materialType: val,
+                  },
+                }))
               }
               error={errors.materialType}
             />
@@ -272,20 +315,33 @@ export default function EditProductModal({
             />
           </div>
 
-          {/* NUMERIC */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {renderInput("Price (₹)", "price")}
             {renderInput("Discount (%)", "discountPrice")}
             {renderInput("Stock", "stock")}
-            {renderInput("Height (cm)", "height")}
-            {renderInput("Width (cm)", "width")}
+
+            <Input
+              label="Height (cm)"
+              name="height"
+              value={formData.dimensions.height}
+              onChange={handleDimensionChange}
+              error={errors.height}
+            />
+
+            <Input
+              label="Width (cm)"
+              name="width"
+              value={formData.dimensions.width}
+              onChange={handleDimensionChange}
+              error={errors.width}
+            />
+
             {renderInput("Weight (gm)", "weight")}
           </div>
         </div>
 
-        {/* FOOTER (STATIC) */}
-        <div className="flex justify-end gap-3 border-t border-gray-200 p-4">
-          <button className="px-5 py-2 border rounded-lg" onClick={onClose}>
+        <div className="flex justify-end gap-3 border-t p-4">
+          <button onClick={onClose} className="px-5 py-2 border rounded-lg">
             Cancel
           </button>
 
@@ -303,7 +359,6 @@ export default function EditProductModal({
     </div>
   );
 
-  // Helpers
   function renderInput(label, name) {
     return (
       <Input
@@ -318,38 +373,33 @@ export default function EditProductModal({
   }
 }
 
-/* ✅ REUSABLE INPUT */
+/* INPUT */
 function Input({ label, error, ...props }) {
   return (
     <div>
       <label className="text-sm mb-1 block">{label}</label>
-
       <input
         {...props}
-        className={`w-full border px-3 py-2 rounded-lg focus:outline-none 
-        focus:border-transparent focus:ring-2 focus:ring-violet-500
+        className={`w-full border px-3 py-2 rounded-lg 
         ${error ? "border-red-500" : "border-gray-300"}`}
       />
-
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>
   );
 }
 
-/* ✅ REUSABLE DROPDOWN */
+/* DROPDOWN */
 function DropdownField({ label, options, value, onChange, error }) {
   return (
     <div>
       <label className="text-sm mb-1 block">{label}</label>
-
       <Dropdown
         options={options}
         value={value}
         onChange={onChange}
         placeholder={`Select ${label}`}
       />
-
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>
   );
 }
