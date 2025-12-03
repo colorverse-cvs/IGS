@@ -185,13 +185,22 @@ export default function EditProductModal({
       form.append("dimensions[width]", Number(formData.dimensions.width));
 
       /* ✅ ATTRIBUTES */
-      form.append("attributes[material]", formData.attributes.material);
+      // form.append("attributes[material]", formData.attributes.material);
+      // form.append(
+      //   "attributes[primaryMaterial]",
+      //   formData.attributes.primaryMaterial
+      // );
+      // form.append("attributes[finish]", formData.attributes.finish);
+      // form.append("attributes[origin]", formData.attributes.origin);
       form.append(
-        "attributes[primaryMaterial]",
-        formData.attributes.primaryMaterial
+        "attributes",
+        JSON.stringify({
+          material: formData.attributes.material,
+          primaryMaterial: formData.attributes.primaryMaterial,
+          finish: formData.attributes.finish,
+          origin: formData.attributes.origin
+        })
       );
-      form.append("attributes[finish]", formData.attributes.finish);
-      form.append("attributes[origin]", formData.attributes.origin);
 
       form.append("categoryId", selected._id);
 
