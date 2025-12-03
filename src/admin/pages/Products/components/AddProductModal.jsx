@@ -31,31 +31,32 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    origin: "",
     price: "",
     discount: "",
     stock: "",
-    finish: "",
     weight: "",
-    primaryMaterial: "",
-    size: "",
-    attributes: {
-      materialType: ""
-    },
     dimensions: {
+      size: "",
       height: "",
       width: ""
+    },
+    attributes: {
+      primaryMaterial: "",
+      origin: "",
+      finish: "",
+      material: ""
     }
   });
 
-  /* ----------------------------------------------------
-      FETCH CATEGORIES
-  ---------------------------------------------------- */
+  /* ---------------- FETCH CATEGORIES ---------------- */
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch("http://localhost:3000/api/v1/products/categories");
+        const res = await fetch(
+          "http://localhost:3000/api/v1/products/categories"
+        );
         const data = await res.json();
+
         if (res.ok && Array.isArray(data?.data)) {
           setCategories(data.data);
         }
@@ -69,21 +70,14 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
   const allowOnlyNumbers = (value) => value.replace(/[^0-9]/g, "");
 
-  /* ----------------------------------------------------
-      CHANGE HANDLERS
-  ---------------------------------------------------- */
+  /* ---------------- CHANGE HANDLER ---------------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const numericFields = [
-      "price",
-      "discount",
-      "stock",
-      "weight",
-      "height",
-      "width"
-    ];
 
-    if (name === "height" || name === "width") {
+    const numericFields = ["price", "discount", "stock", "weight"];
+
+    // ✅ HANDLE DIMENSIONS
+    if (["height", "width"].includes(name)) {
       setFormData((prev) => ({
         ...prev,
         dimensions: {
@@ -91,7 +85,21 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           [name]: allowOnlyNumbers(value)
         }
       }));
-    } else {
+    }
+
+    // ✅ HANDLE ATTRIBUTES
+    else if (["primaryMaterial", "origin", "finish"].includes(name)) {
+      setFormData((prev) => ({
+        ...prev,
+        attributes: {
+          ...prev.attributes,
+          [name]: value
+        }
+      }));
+    }
+
+    // ✅ HANDLE NORMAL FIELDS
+    else {
       setFormData((prev) => ({
         ...prev,
         [name]: numericFields.includes(name)
@@ -113,9 +121,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     }
   };
 
-  /* ----------------------------------------------------
-      VALIDATION
-  ---------------------------------------------------- */
+  /* ---------------- VALIDATION ---------------- */
   const validateForm = () => {
     const newErrors = {};
 
@@ -137,23 +143,21 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     formData.price &&
     formData.stock;
 
-  /* ----------------------------------------------------
-      SKU GENERATOR
-  ---------------------------------------------------- */
+  /* ---------------- SKU GENERATOR ---------------- */
   const generateSKU = (name) => {
     const prefix = name ? name.substring(0, 3).toUpperCase() : "PRD";
     const code = Date.now().toString().slice(-6);
     return `${prefix}-${code}`;
   };
 
-  /* ----------------------------------------------------
-      SUBMIT
-  ---------------------------------------------------- */
+  /* ---------------- SUBMIT ---------------- */
   const handleAddNewProduct = async () => {
     if (!validateForm()) return;
 
     try {
-      const selectedCategory = categories.find((c) => c.name === prodCategory);
+      const selectedCategory = categories.find(
+        (c) => c.name === prodCategory
+      );
       if (!selectedCategory) return;
 
       const sku = generateSKU(formData.name);
@@ -167,42 +171,33 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
       formDataToSend.append("name", formData.name);
       formDataToSend.append("description", formData.description);
-      formDataToSend.append("origin", formData.origin);
-      formDataToSend.append("finish", formData.finish);
-      formDataToSend.append("primaryMaterial", formData.primaryMaterial);
 
       formDataToSend.append("price", Number(formData.price));
       formDataToSend.append("discount", Number(formData.discount || 0));
       formDataToSend.append("stock", Number(formData.stock));
       formDataToSend.append("weight", Number(formData.weight || 0));
 
-      formDataToSend.append("size", formData.size);
-      formDataToSend.append(
-        "attributes",
-        JSON.stringify(formData.attributes)
-      );
-
-      formDataToSend.append(
-        "dimensions",
-        JSON.stringify(formData.dimensions)
-      );
+      // ✅ Nested objects
+      formDataToSend.append("attributes", JSON.stringify(formData.attributes));
+      formDataToSend.append("dimensions", JSON.stringify(formData.dimensions));
 
       formDataToSend.append("categoryId", selectedCategory._id);
       formDataToSend.append("sku", sku);
       formDataToSend.append("tags", JSON.stringify([]));
 
-      console.log("✅ Final Data:");
+      console.log("✅ Final Data Sent:");
       for (let pair of formDataToSend.entries()) {
         console.log(pair[0], pair[1]);
       }
 
-      // const res = await fetch("http://localhost:3000/api/v1/products", {
-      //   method: "POST",
-      //   body: formDataToSend
-      // });
+      const res = await fetch("http://localhost:3000/api/v1/products", {
+        method: "POST",
+        body: formDataToSend
+      });
 
-      // const data = await res.json();
-      // if (!res.ok) throw new Error(data.message);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
 
       onProductAdded?.();
       onClose();
@@ -211,23 +206,21 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     }
   };
 
-  /* ----------------------------------------------------
-      UI
-  ---------------------------------------------------- */
+  /* ---------------- UI ---------------- */
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50">
       <div className="bg-white w-full md:w-[800px] rounded-t-2xl md:rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
 
-        {/* Header */}
+        {/* HEADER */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <p className="text-base font-semibold">Add New Product</p>
           <button onClick={onClose}><X /></button>
         </div>
 
-        {/* Body */}
+        {/* BODY */}
         <div className="p-6 overflow-y-auto space-y-5 max-h-[70vh]">
 
-          {/* Image */}
+          {/* IMAGE */}
           <div>
             <label className="text-sm mb-2 block">Product Image</label>
             <input type="file" ref={fileInputRef} onChange={handleFileChange} hidden />
@@ -250,17 +243,15 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           </div>
 
           <Input required label="Product Name" name="name" value={formData.name} onChange={handleChange} error={errors.name} />
-
           <Input label="Description" name="description" value={formData.description} onChange={handleChange} />
 
-          <Input label="Primary Material" name="primaryMaterial" value={formData.primaryMaterial} onChange={handleChange} />
+          {/* ✅ CORRECTED NESTED ATTRIBUTES */}
+          <Input label="Primary Material" name="primaryMaterial" value={formData.attributes.primaryMaterial} onChange={handleChange} />
+          <Input label="Finish" name="finish" value={formData.attributes.finish} onChange={handleChange} />
+          <Input label="Origin" name="origin" value={formData.attributes.origin} onChange={handleChange} />
 
-          <Input label="Finish" name="finish" value={formData.finish} onChange={handleChange} />
-
-          <Input label="Origin" name="origin" value={formData.origin} onChange={handleChange} />
-
+          {/* DROPDOWNS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
             <div>
               <label className="text-sm mb-1 block">Category</label>
               <Dropdown
@@ -278,11 +269,11 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             <DropdownField
               label="Material Type"
               options={materialType.map((m) => `${m.type} - ${m.subType}`)}
-              value={formData.attributes.materialType}
+              value={formData.attributes.material}
               onChange={(val) =>
                 setFormData((prev) => ({
                   ...prev,
-                  attributes: { ...prev.attributes, materialType: val }
+                  attributes: { ...prev.attributes, material: val }
                 }))
               }
             />
@@ -290,9 +281,12 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             <DropdownField
               label="Size"
               options={sizeOptions.map((s) => `${s.type} - ${s.subType}`)}
-              value={formData.size}
+              value={formData.dimensions.size}
               onChange={(val) =>
-                setFormData((prev) => ({ ...prev, size: val }))
+                setFormData((prev) => ({
+                  ...prev,
+                  dimensions: { ...prev.dimensions, size: val }
+                }))
               }
             />
           </div>
@@ -310,7 +304,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           </div>
         </div>
 
-        {/* Footer */}
+        {/* FOOTER */}
         <div className="p-4 border-t border-gray-200 flex justify-end gap-3">
           <button onClick={onClose} className="px-5 py-2 border rounded-lg">
             Cancel
@@ -331,7 +325,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   );
 }
 
-/* -------------- REUSABLE INPUT COMPONENT -------------- */
+/* ---- INPUT / DROPDOWN / ERROR ---- */
 function Input({ label, error, ...props }) {
   return (
     <div>

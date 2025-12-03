@@ -2,21 +2,6 @@ import { X, Upload } from "lucide-react";
 import { useRef, useState, useEffect, useMemo } from "react";
 import Dropdown from "../../../../../src/components/Dropdown";
 
-const REQUIRED_FIELDS = [
-  "name",
-  "description",
-  "primaryMaterial",
-  "finish",
-  "origin",
-  "size",
-  "price",
-  "stock",
-  "weight",
-  "dimensions.height",
-  "dimensions.width",
-  "attributes.materialType",
-];
-
 export default function EditProductModal({
   onClose,
   existingProduct = {},
@@ -46,43 +31,39 @@ export default function EditProductModal({
     { type: "Extra Large", subType: "Above 15 in" },
   ];
 
+  /* ✅ STATE */
   const [formData, setFormData] = useState({
     name: existingProduct?.name || "",
     description: existingProduct?.description || "",
-    primaryMaterial: existingProduct?.primaryMaterial || "",
-    finish: existingProduct?.finish || "",
-    origin: existingProduct?.origin || "",
-    size: existingProduct?.size || "",
     price: existingProduct?.price || "",
     discountPrice: existingProduct?.discount || "",
     stock: existingProduct?.stock || "",
     weight: existingProduct?.weight || "",
 
-    // ✅ NESTED STRUCTURES
     dimensions: {
+      size: existingProduct?.dimensions?.size || "",
       height: existingProduct?.dimensions?.height || "",
       width: existingProduct?.dimensions?.width || "",
     },
 
     attributes: {
-      materialType:
-        existingProduct?.attributes?.materialType ||
-        existingProduct?.materialType ||
+      primaryMaterial: existingProduct?.attributes?.primaryMaterial || "",
+      finish: existingProduct?.attributes?.finish || "",
+      origin: existingProduct?.attributes?.origin || "",
+      material:
+        existingProduct?.attributes?.material ||
+        existingProduct?.material ||
         "",
     },
   });
 
-  const allowOnlyNumbers = (value) => value.replace(/[^0-9]/g, "");
+  const allowOnlyNumbers = (val) => val.replace(/[^0-9.]/g, "");
 
+  /* ✅ HANDLERS */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    const numericFields = [
-      "price",
-      "discountPrice",
-      "stock",
-      "weight",
-    ];
+    const numericFields = ["price", "discountPrice", "stock", "weight"];
 
     setFormData((prev) => ({
       ...prev,
@@ -104,37 +85,49 @@ export default function EditProductModal({
     }));
   };
 
-  // ✅ Validation
+  const handleAttributeChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      attributes: {
+        ...prev.attributes,
+        [name]: value,
+      },
+    }));
+  };
+
+  /* ✅ VALIDATION */
   const errors = useMemo(() => {
-    const newErrors = {};
+    const e = {};
 
-    if (!formData.name.trim()) newErrors.name = "Required";
-    if (!formData.description.trim()) newErrors.description = "Required";
-    if (!formData.primaryMaterial.trim())
-      newErrors.primaryMaterial = "Required";
-    if (!formData.finish.trim()) newErrors.finish = "Required";
-    if (!formData.origin.trim()) newErrors.origin = "Required";
-    if (!formData.size.trim()) newErrors.size = "Required";
-    if (!formData.price) newErrors.price = "Required";
-    if (!formData.stock) newErrors.stock = "Required";
-    if (!formData.weight) newErrors.weight = "Required";
+    if (!formData.name.trim()) e.name = "Required";
+    if (!formData.description.trim()) e.description = "Required";
 
-    if (!formData.dimensions.height)
-      newErrors.height = "Height required";
+    if (!formData.price) e.price = "Required";
+    if (!formData.stock) e.stock = "Required";
+    if (!formData.weight) e.weight = "Required";
 
-    if (!formData.dimensions.width)
-      newErrors.width = "Width required";
+    if (!formData.dimensions.size) e.size = "Size required";
+    if (!formData.dimensions.height) e.height = "Height required";
+    if (!formData.dimensions.width) e.width = "Width required";
 
-    if (!formData.attributes.materialType)
-      newErrors.materialType = "Required";
+    if (!formData.attributes.primaryMaterial.trim())
+      e.primaryMaterial = "Required";
 
-    if (!prodCategory) newErrors.category = "Required";
+    if (!formData.attributes.finish.trim()) e.finish = "Required";
 
-    return newErrors;
+    if (!formData.attributes.origin.trim()) e.origin = "Required";
+
+    if (!formData.attributes.material) e.materialType = "Required";
+    if (!prodCategory) e.category = "Required";
+
+    return e;
   }, [formData, prodCategory]);
 
   const isFormValid = Object.keys(errors).length === 0;
 
+  /* IMAGE */
   const openFileDialog = () => fileInputRef.current?.click();
 
   const handleFileChange = (e) => {
@@ -142,7 +135,7 @@ export default function EditProductModal({
     if (file) setPreview(URL.createObjectURL(file));
   };
 
-  // FETCH CATEGORIES
+  /* ✅ FETCH CATEGORIES */
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -162,55 +155,60 @@ export default function EditProductModal({
     fetchCategories();
   }, []);
 
-  // UPDATE PRODUCT
+  /* ✅ UPDATE PRODUCT */
   const handleSaveChanges = async () => {
     try {
-      const selectedCategory = categories.find(
-        (c) => c.name === prodCategory
-      );
-
-      if (!selectedCategory) return;
+      const selected = categories.find((c) => c.name === prodCategory);
+      if (!selected) return;
 
       const form = new FormData();
 
       const imageFile = fileInputRef.current?.files?.[0];
       if (imageFile) form.append("images", imageFile);
 
-      // ✅ ROOT FIELDS
       form.append("name", formData.name);
       form.append("description", formData.description);
-      form.append("primaryMaterial", formData.primaryMaterial);
-      form.append("finish", formData.finish);
-      form.append("origin", formData.origin);
-      form.append("size", formData.size);
       form.append("price", Number(formData.price));
       form.append("discount", Number(formData.discountPrice || 0));
       form.append("stock", Number(formData.stock));
       form.append("weight", Number(formData.weight));
 
-      // ✅ DIMENSIONS
-      form.append("dimensions[height]", Number(formData.dimensions.height));
+      /* ✅ DIMENSIONS */
+      form.append(
+        "dimensions[size]",
+        formData.dimensions.size
+      );
+      form.append(
+        "dimensions[height]",
+        Number(formData.dimensions.height)
+      );
       form.append("dimensions[width]", Number(formData.dimensions.width));
 
-      // ✅ ATTRIBUTES
+      /* ✅ ATTRIBUTES */
+      form.append("attributes[material]", formData.attributes.material);
       form.append(
-        "attributes[materialType]",
-        formData.attributes.materialType
+        "attributes[primaryMaterial]",
+        formData.attributes.primaryMaterial
       );
+      form.append("attributes[finish]", formData.attributes.finish);
+      form.append("attributes[origin]", formData.attributes.origin);
 
-      form.append("categoryId", selectedCategory._id);
-      console.log("✅ Final Data:");
+      form.append("categoryId", selected._id);
+
+      console.log("----- FINAL FORM DATA -----");
       for (let pair of form.entries()) {
         console.log(pair[0], pair[1]);
       }
-      // const response = await fetch(
-      //   `http://localhost:3000/api/v1/products/${existingProduct._id}`,
-      //   { method: "PATCH", body: form }
-      // );
 
-      // if (!response.ok) return;
+      await fetch(
+        `http://localhost:3000/api/v1/products/${existingProduct._id}`,
+        {
+          method: "PATCH",
+          body: form,
+        }
+      );
 
-      // onUpdated?.();
+      onUpdated?.();
       onClose();
     } catch (error) {
       console.error("Update error:", error);
@@ -220,6 +218,8 @@ export default function EditProductModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50">
       <div className="bg-white w-full md:w-[850px] rounded-t-2xl md:rounded-2xl shadow-xl">
+        
+        {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <p className="text-base font-semibold">Edit Product</p>
           <button onClick={onClose}>
@@ -228,7 +228,7 @@ export default function EditProductModal({
         </div>
 
         <div className="max-h-[70vh] overflow-y-auto px-6 py-5 space-y-5">
-
+          
           {/* IMAGE */}
           <div>
             <label className="block mb-2 text-sm font-medium">
@@ -242,43 +242,55 @@ export default function EditProductModal({
               className="hidden"
             />
 
-            <div className="flex items-center gap-4">
-              <div
-                onClick={openFileDialog}
-                className={`w-20 h-20 border-2 rounded-xl flex items-center justify-center cursor-pointer ${
-                  preview ? "border-none" : "border-dashed"
-                }`}
-              >
-                {preview ? (
-                  <img
-                    src={
-                      preview.startsWith("blob:")
-                        ? preview
-                        : `http://localhost:3000${preview}`
-                    }
-                    className="w-full h-full rounded-xl object-cover"
-                  />
-                ) : (
-                  <Upload />
-                )}
-              </div>
-
-              <button
-                type="button"
-                onClick={openFileDialog}
-                className="border px-4 py-2 rounded-lg"
-              >
-                Change Image
-              </button>
+            <div
+              onClick={openFileDialog}
+              className="w-24 h-24 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer"
+            >
+              {preview ? (
+                <img
+                  src={
+                    preview.startsWith("blob:")
+                      ? preview
+                      : `http://localhost:3000${preview}`
+                  }
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              ) : (
+                <Upload />
+              )}
             </div>
           </div>
 
+          {/* INPUTS */}
           {renderInput("Product Name", "name")}
           {renderInput("Description", "description")}
-          {renderInput("Primary Material", "primaryMaterial")}
-          {renderInput("Finish", "finish")}
-          {renderInput("Origin", "origin")}
 
+          {/* ✅ ATTRIBUTES FIXED */}
+          <Input
+            label="Primary Material"
+            name="primaryMaterial"
+            value={formData.attributes.primaryMaterial}
+            onChange={handleAttributeChange}
+            error={errors.primaryMaterial}
+          />
+
+          <Input
+            label="Finish"
+            name="finish"
+            value={formData.attributes.finish}
+            onChange={handleAttributeChange}
+            error={errors.finish}
+          />
+
+          <Input
+            label="Origin"
+            name="origin"
+            value={formData.attributes.origin}
+            onChange={handleAttributeChange}
+            error={errors.origin}
+          />
+
+          {/* ✅ DROPDOWNS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <DropdownField
               label="Category"
@@ -290,15 +302,14 @@ export default function EditProductModal({
 
             <DropdownField
               label="Material Type"
-              options={materialType.map((m) => `${m.type} - ${m.subType}`)}
-              value={formData.attributes.materialType}
+              options={materialType.map(
+                (m) => `${m.type} - ${m.subType}`
+              )}
+              value={formData.attributes.material}
               onChange={(val) =>
                 setFormData((prev) => ({
                   ...prev,
-                  attributes: {
-                    ...prev.attributes,
-                    materialType: val,
-                  },
+                  attributes: { ...prev.attributes, material: val },
                 }))
               }
               error={errors.materialType}
@@ -306,18 +317,24 @@ export default function EditProductModal({
 
             <DropdownField
               label="Size"
-              options={sizeOptions.map((s) => `${s.type} - ${s.subType}`)}
-              value={formData.size}
+              options={sizeOptions.map(
+                (s) => `${s.type} - ${s.subType}`
+              )}
+              value={formData.dimensions.size}
               onChange={(val) =>
-                setFormData((prev) => ({ ...prev, size: val }))
+                setFormData((prev) => ({
+                  ...prev,
+                  dimensions: { ...prev.dimensions, size: val },
+                }))
               }
               error={errors.size}
             />
           </div>
 
+          {/* ✅ NUMBERS */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {renderInput("Price (₹)", "price")}
-            {renderInput("Discount (%)", "discountPrice")}
+            {renderInput("Price", "price")}
+            {renderInput("Discount", "discountPrice")}
             {renderInput("Stock", "stock")}
 
             <Input
@@ -336,10 +353,11 @@ export default function EditProductModal({
               error={errors.width}
             />
 
-            {renderInput("Weight (gm)", "weight")}
+            {renderInput("Weight", "weight")}
           </div>
         </div>
 
+        {/* FOOTER */}
         <div className="flex justify-end gap-3 border-t p-4">
           <button onClick={onClose} className="px-5 py-2 border rounded-lg">
             Cancel
@@ -362,7 +380,6 @@ export default function EditProductModal({
   function renderInput(label, name) {
     return (
       <Input
-        key={name}
         label={label}
         name={name}
         value={formData[name]}
@@ -380,8 +397,9 @@ function Input({ label, error, ...props }) {
       <label className="text-sm mb-1 block">{label}</label>
       <input
         {...props}
-        className={`w-full border px-3 py-2 rounded-lg 
-        ${error ? "border-red-500" : "border-gray-300"}`}
+        className={`w-full border px-3 py-2 rounded-lg ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
       />
       {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>
