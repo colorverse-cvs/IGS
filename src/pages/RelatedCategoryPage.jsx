@@ -135,7 +135,7 @@ export default function RelatedCategoryPage({ items = [] }) {
   };
 
   return (
-    <section className="py-12 px-4 md:px-15 lg:px-20">
+    <section className="py-12">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-gray-800 pb-10 text-center">
           Statues You Might Also Like

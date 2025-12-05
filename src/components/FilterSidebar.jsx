@@ -323,11 +323,11 @@ export default function FilterSidebar({
       )}
 
       {/* Theme/Category */}
-      <FilterSection title="Theme / Category" section="category">
+      <FilterSection title="Theme/Category" section="category">
         {/* Convert category filter to multi-select checkboxes. */}
         <CheckboxOption
           value="shivaji"
-          label="Chhatrapati Shivaji Maharaj Statues"
+          label="Chhatrapati Shivaji Maharaj"
           checked={
             Array.isArray(filters.category)
               ? filters.category.includes("shivaji")
@@ -337,7 +337,7 @@ export default function FilterSidebar({
         />
         <CheckboxOption
           value="mavale"
-          label="Mavale Statues"
+          label="Mavale"
           checked={
             Array.isArray(filters.category)
               ? filters.category.includes("mavale")
@@ -358,18 +358,6 @@ export default function FilterSidebar({
           }
         />
         <CheckboxOption
-          value="home-decor"
-          label="Home Decor"
-          checked={
-            Array.isArray(filters.category)
-              ? filters.category.includes("home-decor")
-              : filters.category === "home-decor"
-          }
-          onChange={(checked) =>
-            handleMultiSelectChange("category", "home-decor")
-          }
-        />
-        <CheckboxOption
           value="motivational"
           label="Motivational Statues"
           checked={
@@ -379,6 +367,18 @@ export default function FilterSidebar({
           }
           onChange={(checked) =>
             handleMultiSelectChange("category", "motivational")
+          }
+        />
+        <CheckboxOption
+          value="home-decor"
+          label="Home Decor"
+          checked={
+            Array.isArray(filters.category)
+              ? filters.category.includes("home-decor")
+              : filters.category === "home-decor"
+          }
+          onChange={(checked) =>
+            handleMultiSelectChange("category", "home-decor")
           }
         />
       </FilterSection>

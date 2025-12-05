@@ -2,8 +2,6 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import CollectionPage from "./pages/CollectionPage";
-import AboutPage from "./pages/AboutPage";
-import ContactPage from "./pages/ContactPage";
 import ProductInfoPage from "./pages/ProductInfoPage";
 import Cart from "./pages/Cart";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -64,10 +62,10 @@ export default function RoutesMap() {
       <Route path="/order-placed" element={<OrderPlacedPage />} />
       <Route path="/orders" element={<OrdersPage />} />
       <Route path="/profile" element={<Profile />} />
-      <Route path="/about" element={<AboutPage />} />
-      {/* <Route path="/customization" element={Placeholder("Customization")} /> */}
+      <Route path="/about" element={Placeholder("About Us")} />
+      <Route path="/customization" element={Placeholder("Customization")} />
       <Route path="/faq" element={Placeholder("FAQ")} />
-      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/contact" element={Placeholder("Contact")} />
     </Routes>
   );
 }

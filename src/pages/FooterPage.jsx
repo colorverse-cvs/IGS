@@ -43,16 +43,16 @@ export default function FooterPage() {
               </div>
             </div>
           </div>
-          <div className="w-full flex flex-row flex-wrap justify-starts xl:justify-end align-bottom gap-5">
-            <div className="w-[45%] lg:w-[25%]">
+          <div className="w-full flex flex-row flex-wrap justify-starts xl:justify-end align-bottom gap-5 md:gap-10">
+            <div>
               <div className="font-semibold text-lg mb-4">Company</div>
               <ul className="space-y-3 text-sm opacity-90">
                 <li>
                   <Link to="/about">About Us</Link>
                 </li>
-                {/* <li>
+                <li>
                   <Link to="/customization">Customization</Link>
-                </li> */}
+                </li>
                 {/* <li>
                   <Link to="/blog">Blog</Link>
                 </li> */}
@@ -64,39 +64,31 @@ export default function FooterPage() {
                 </li>
               </ul>
             </div>
-            <div className="w-[45%] lg:w-[25%]">
+            <div>
               <div className="font-semibold text-lg mb-4">Categories</div>
               <ul className="space-y-3 text-sm opacity-90">
                 <li>
-                  <Link to="/filter?category=shivaji">
-                  Chhatrapati Shivaji Maharaj Statues</Link>
-                </li>
-                <li>
-                  <Link to="/filter?category=mavale">
-                  Mavale Statues</Link>
-                </li>
-                <li>
                   <Link to="/filter?category=god-statues">God Statues</Link>
-                </li>
-                <li>
-                  <Link to="/filter?category=home-decor">Home Decor</Link>
                 </li>
                 <li>
                   <Link to="/filter?category=motivational">
                     Motivational Statues
                   </Link>
                 </li>
-                {/* <li>
+                <li>
                   <Link to="/filter?customizable=true">Custom Orders</Link>
-                </li> */}
-                {/* <li>
+                </li>
+                <li>
                   <Link to="/filter?category=motivational">
                     Corporate Gifts
                   </Link>
-                </li> */}
+                </li>
+                <li>
+                  <Link to="/filter?category=home-decor">Home Decor</Link>
+                </li>
               </ul>
             </div>
-            <div className="w-[45%] lg:w-[25%]">
+            <div>
               <div className="font-semibold text-lg mb-4">Support</div>
               <ul className="space-y-3 text-sm opacity-90">
                 <li>Privacy Policy</li>
