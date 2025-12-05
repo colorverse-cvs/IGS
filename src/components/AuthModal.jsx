@@ -1,82 +1,66 @@
 import React from "react";
 import Modal from "./Modal";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { login, signup } from "../features/user/userSlice";
 import googleButton from "../assets/google_buttons.png";
 import facebookButton from "../assets/facebook_buttons.png";
 import appleButton from "../assets/apple_buttons.png";
 import { Eye, EyeOff } from "lucide-react";
 
-/**
- * AuthModal Component - User login and signup modal
- * 
- * Props:
- * - isOpen: boolean - whether modal is visible
- * - onClose: function - callback to close the modal
- * - initialTab: string - which tab to show on open ('login' or 'signup')
- * 
- * Features:
- * - Two tabs: Login and Sign Up
- * - Email/password and mobile number validation
- * - Social login buttons (Google, Facebook, Apple) - UI only
- * - Password visibility toggle
- * - Forgot password form (basic UI)
- * - Form validation with error messages
- * - Saves user to Redux store and localStorage
- * 
- * For beginners:
- * - Validates email format and 10-digit mobile numbers
- * - dispatch(login()) and dispatch(signup()) save user to Redux state
- * - Modal wraps the entire auth form interface
- */
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileRegex = /^\d{10}$/;
+const strongPasswordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
 export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const dispatch = useDispatch();
-  const [tab, setTab] = React.useState("login"); // 'login' | 'signup'
-  
-  // Switch to requested tab when modal opens
+
+  const [tab, setTab] = React.useState(initialTab); // 'login' | 'signup'
   React.useEffect(() => {
     if (isOpen) setTab(initialTab);
   }, [initialTab, isOpen]);
 
-  // Prevent body scroll when modal is open
   React.useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
+    if (isOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "unset";
+    return () => (document.body.style.overflow = "unset");
   }, [isOpen]);
 
-  // Login form state
-  const [loginEmail, setLoginEmail] = React.useState("");
-  const [loginPassword, setLoginPassword] = React.useState("");
-  const [loginError, setLoginError] = React.useState("");
-  const [showLoginPassword, setShowLoginPassword] = React.useState(false);
 
-  // Signup form state
+  // Login
+  const [loginIdentifier, setLoginIdentifier] = React.useState("");
+  const [loginPassword, setLoginPassword] = React.useState("");
+  const [showLoginPassword, setShowLoginPassword] = React.useState(false);
+  const [loginError, setLoginError] = React.useState("");
+  const [loginLoading, setLoginLoading] = React.useState(false);
+
+  // Signup
   const [name, setName] = React.useState("");
   const [mobile, setMobile] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [errors, setErrors] = React.useState({});
   const [showSignupPassword, setShowSignupPassword] = React.useState(false);
   const [showSignupConfirm, setShowSignupConfirm] = React.useState(false);
-  
-  // Password reset form state
+  const [signupErrors, setSignupErrors] = React.useState({});
+  const [signupLoading, setSignupLoading] = React.useState(false);
+  const [apiMessage, setApiMessage] = React.useState(null);
+
+  // Reset
   const [resetOpen, setResetOpen] = React.useState(false);
   const [resetEmail, setResetEmail] = React.useState("");
   const [resetStatus, setResetStatus] = React.useState("");
+  const [resetLoading, setResetLoading] = React.useState(false);
 
-  const resetForms = () => {
-    setLoginEmail("");
+  // OAuth popup
+  const oauthWindowRef = React.useRef(null);
+  const oauthIntervalRef = React.useRef(null);
+
+  /* -------------------------
+     Helpers
+  ------------------------- */
+  const resetAllForms = () => {
+    setLoginIdentifier("");
     setLoginPassword("");
     setLoginError("");
     setName("");
@@ -84,27 +68,39 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     setEmail("");
     setPassword("");
     setConfirmPassword("");
-    setErrors({});
+    setSignupErrors({});
+    setApiMessage(null);
+    setResetEmail("");
+    setResetStatus("");
   };
 
-  // OAuth popup handling
-  const oauthWindowRef = React.useRef(null);
-  const oauthIntervalRef = React.useRef(null);
+  const validateSignupClient = () => {
+    const e = {};
+    if (!name.trim()) e.name = "Please enter your name";
+    if (!emailRegex.test(email)) e.email = "Enter a valid email";
+    if (!mobileRegex.test(mobile)) e.mobile = "Enter a 10-digit mobile number";
+    if (!strongPasswordRegex.test(password))
+      e.password = "Min 8 chars with letters and numbers";
+    if (password !== confirmPassword) e.confirmPassword = "Passwords do not match";
+    setSignupErrors(e);
+    return Object.keys(e).length === 0;
+  };
 
+  /* -------------------------
+     OAuth popup handling (UI only)
+  ------------------------- */
   const startOAuth = (provider) => {
-    // Open a centered popup for OAuth
     const width = 600;
-    const height = 700;
+    const height = 680;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2.5;
     const url = `/auth/${provider}`;
     oauthWindowRef.current = window.open(
       url,
       `oauth_${provider}`,
-      `toolbar=no, width=${width}, height=${height}, top=${top}, left=${left}`
+      `toolbar=no,width=${width},height=${height},top=${top},left=${left}`
     );
 
-    // Poll for closed window in case no postMessage is sent
     oauthIntervalRef.current = setInterval(() => {
       const w = oauthWindowRef.current;
       if (!w || w.closed) {
@@ -117,7 +113,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
   React.useEffect(() => {
     const handler = (e) => {
-      // Accept messages from same-origin (or adjust as needed)
       try {
         if (!e.data || typeof e.data !== "object") return;
         if (e.data.type === "oauth_success") {
@@ -128,16 +123,16 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
               login({
                 email: user.email || "",
                 name: user.name || user.fullName || "User",
+                mobile: user.mobile || "",
               })
             );
           }
-          // Close popup if still open
-          if (oauthWindowRef.current && !oauthWindowRef.current.closed) {
+          if (oauthWindowRef.current && !oauthWindowRef.current.closed)
             oauthWindowRef.current.close();
-          }
           clearInterval(oauthIntervalRef.current);
           oauthIntervalRef.current = null;
           oauthWindowRef.current = null;
+          resetAllForms();
           onClose?.();
         }
       } catch (err) {
@@ -148,74 +143,143 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     return () => window.removeEventListener("message", handler);
   }, [dispatch, onClose]);
 
-  // Accept any characters; require at least one letter and one number, length >= 8
-  const strongPassword = (p) => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(p);
-
-  const validateSignup = () => {
-    const e = {};
-    if (!name.trim()) e.name = "Name is required";
-    if (!mobileRegex.test(mobile)) e.mobile = "Mobile must be 10 digits";
-    if (!emailRegex.test(email)) e.email = "Enter a valid email";
-    if (!strongPassword(password))
-      e.password = "Min 8 chars with letters and numbers";
-    if (password !== confirmPassword)
-      e.confirmPassword = "Passwords do not match";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const handleLogin = (e) => {
+  /* -------------------------
+     Login handler (local stub)
+     (Replace with real API when available)
+  ------------------------- */
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Require valid email/mobile and strong-ish password (min 8)
-    if (
-      (!emailRegex.test(loginEmail) && !mobileRegex.test(loginEmail)) ||
-      loginPassword.length < 8
-    ) {
-      setLoginError("Enter valid email/mobile and password (min 8 chars)");
+    setLoginError("");
+    setApiMessage(null);
+
+    // VALIDATION
+    if (!emailRegex.test(loginIdentifier) && !mobileRegex.test(loginIdentifier)) {
+      setLoginError("Enter valid email or 10-digit mobile");
       return;
     }
-    dispatch(
-      login({
-        email: emailRegex.test(loginEmail) ? loginEmail : "",
-        mobile: mobileRegex.test(loginEmail) ? loginEmail : "",
-        name: "User",
-      })
-    );
-    resetForms();
-    onClose?.();
+    if (!loginPassword || loginPassword.length < 8) {
+      setLoginError("Password must be at least 8 characters");
+      return;
+    }
+
+    setLoginLoading(true);
+
+    try {
+      const payload = {
+        email: emailRegex.test(loginIdentifier) ? loginIdentifier : "",
+        password: loginPassword,
+        role: "customer",
+      };
+
+      const res = await fetch("http://localhost:3000/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      console.log("LOGIN API RESPONSE:", data);
+
+      if (!res.ok) {
+        setLoginError(data?.message || "Login failed");
+        return;
+      }
+
+      // SUCCESS — Save user and auth token
+      dispatch(
+        login({
+          email: data.user?.email,
+          name: data.user?.name,
+          token: data.token,
+        })
+      );
+
+      resetAllForms();
+      onClose?.();
+
+    } catch (err) {
+      console.error(err);
+      setLoginError("Something went wrong. Try again.");
+    } finally {
+      setLoginLoading(false);
+    }
   };
 
-  const handleSignup = (e) => {
+
+  /* -------------------------
+     Signup handler (sends full body)
+  ------------------------- */
+  const handleSignup = async (e) => {
     e.preventDefault();
-    if (!validateSignup()) return;
-    dispatch(signup({ name, email, mobile }));
-    resetForms();
-    onClose?.();
-    fetch("/api/http://localhost:3000/api/v1/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, name }),
-    });
+    setApiMessage(null);
+    if (!validateSignupClient()) return;
+
+    setSignupLoading(true);
+
+    // split name into first/last
+    const [firstName, ...rest] = name.trim().split(/\s+/);
+    const lastName = rest.join(" ");
+
+    const payload = {
+      email,
+      firstName: firstName || "",
+      lastName: lastName || "",
+      addresses: [
+        {
+          line1: "",
+          line2: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          country: "India",
+          phone: mobile,
+          isDefault: true,
+        },
+      ],
+      password,
+      role: "customer",
+      profile: [
+        {
+          avatarUrl: "",
+          displayName: name,
+          bio: "",
+        },
+      ],
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/api/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setApiMessage(json.message || "Signup failed. Please try again.");
+        setSignupLoading(false);
+        return;
+      }
+
+      // success
+      dispatch(signup({ name, email, mobile }));
+      setApiMessage("Account created successfully.");
+      resetAllForms();
+      onClose?.();
+    } catch (err) {
+      console.error("Signup error:", err);
+      setApiMessage("Network error. Please try again.");
+    } finally {
+      setSignupLoading(false);
+    }
   };
 
-  const isLoginValid = React.useMemo(() => {
-    return (
-      (emailRegex.test(loginEmail) || mobileRegex.test(loginEmail)) &&
-      loginPassword.length >= 8
-    );
-  }, [loginEmail, loginPassword]);
-
-  const isSignupValid = React.useMemo(() => {
-    return (
-      !!name &&
-      mobileRegex.test(mobile) &&
-      emailRegex.test(email) &&
-      strongPassword(password) &&
-      password === confirmPassword
-    );
-  }, [name, mobile, email, password, confirmPassword]);
-
-  // Password reset handler (opens small modal)
+  /* -------------------------
+     Password reset handler
+  ------------------------- */
   const handleResetSubmit = async (e) => {
     e?.preventDefault();
     setResetStatus("");
@@ -223,56 +287,105 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       setResetStatus("Enter a valid email or 10-digit mobile number");
       return;
     }
+
+    setResetLoading(true);
     try {
-      const res = await fetch("/api/v1/auth/reset", {
+      const res = await fetch("http://localhost:3000/api/v1/auth/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier: resetEmail }),
       });
-      if (res.ok) {
-        setResetStatus("If an account exists, a reset link has been sent.");
-      } else {
+      if (res.ok) setResetStatus("If an account exists, a reset link has been sent.");
+      else {
         const body = await res.json().catch(() => ({}));
         setResetStatus(body.message || "Unable to send reset link.");
       }
     } catch (err) {
-      setResetStatus("Network error. Please try again later.");
+      setResetStatus("Network error. Try again later.");
+    } finally {
+      setResetLoading(false);
     }
   };
 
+  /* -------------------------
+     Derived states
+  ------------------------- */
+  const isLoginValid =
+    (emailRegex.test(loginIdentifier) || mobileRegex.test(loginIdentifier)) &&
+    loginPassword.length >= 8;
+
+  const isSignupValid =
+    name.trim().length > 0 &&
+    emailRegex.test(email) &&
+    mobileRegex.test(mobile) &&
+    strongPasswordRegex.test(password) &&
+    password === confirmPassword;
+
+  /* -------------------------
+     Small presentational subcomponents
+  ------------------------- */
+
+  const OAuthButtons = () => (
+    <div className="flex justify-center gap-4 pb-4">
+      <button
+        type="button"
+        onClick={() => startOAuth("google")}
+        title="Continue with Google"
+        className="transform hover:scale-105 active:scale-95"
+      >
+        <img src={googleButton} alt="Google" className="h-12 w-12 object-contain" />
+      </button>
+      <button
+        type="button"
+        onClick={() => startOAuth("facebook")}
+        title="Continue with Facebook"
+        className="transform hover:scale-105 active:scale-95"
+      >
+        <img src={facebookButton} alt="Facebook" className="h-12 w-12 object-contain" />
+      </button>
+      <button
+        type="button"
+        onClick={() => startOAuth("apple")}
+        title="Continue with Apple"
+        className="transform hover:scale-105 active:scale-95"
+      >
+        <img src={appleButton} alt="Apple" className="h-12 w-12 object-contain" />
+      </button>
+    </div>
+  );
+
+  /* -------------------------
+     Render
+  ------------------------- */
   return (
     <Modal
       isOpen={isOpen}
       onClose={() => {
-        resetForms();
+        resetAllForms();
         onClose?.();
       }}
       title="Welcome to Ishita Gallery"
     >
-      <div className="px-4 sm:px-6">
+      <div className="max-w-md w-full px-6 py-5">
         {/* Tabs */}
         <div className="flex justify-center mb-6">
-          <div className="inline-flex bg-gray-100 rounded-full p-1 gap-1">
+          <div className="inline-flex bg-gray-100 rounded-full p-1 gap-2">
             <button
               type="button"
-              className={`px-6 py-2 text-sm font-medium rounded-full transition-all ${
-                tab === "login"
-                  ? "bg-white shadow-sm text-gray-900"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
               onClick={() => setTab("login")}
+              className={`px-5 py-2 text-sm font-medium rounded-full transition ${
+                tab === "login" ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900"
+              }`}
               aria-pressed={tab === "login"}
             >
               Log In
             </button>
             <button
               type="button"
-              className={`px-6 py-2 text-sm font-medium rounded-full transition-all ${
-                tab === "signup"
-                  ? "bg-white shadow-sm text-gray-900"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
               onClick={() => setTab("signup")}
+              className={`px-5 py-2 text-sm font-medium rounded-full transition ${
+                tab === "signup" ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900"
+              }`}
               aria-pressed={tab === "signup"}
             >
               Sign Up
@@ -280,398 +393,237 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           </div>
         </div>
 
-        {/* Login Form */}
-        {tab === "login" ? (
+        {/* Login */}
+        {tab === "login" && (
           <form onSubmit={handleLogin} className="space-y-5">
-            {/* Social Login Buttons */}
-            <div className="flex justify-center gap-4 pb-4">
-              <button
-                type="button"
-                onClick={() => startOAuth("google")}
-                className="transition-transform hover:scale-110 active:scale-95"
-                title="Login with Google"
-              >
-                <img
-                  src={googleButton}
-                  alt="Google"
-                  className="h-12 w-12 object-contain"
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => startOAuth("facebook")}
-                className="transition-transform hover:scale-110 active:scale-95"
-                title="Login with Facebook"
-              >
-                <img
-                  src={facebookButton}
-                  alt="Facebook"
-                  className="h-12 w-12 object-contain"
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => startOAuth("apple")}
-                className="transition-transform hover:scale-110 active:scale-95"
-                title="Login with Apple"
-              >
-                <img
-                  src={appleButton}
-                  alt="Apple"
-                  className="h-12 w-12 object-contain"
-                />
-              </button>
-            </div>
+            <OAuthButtons />
 
-            {/* Divider */}
             <div className="flex items-center gap-3">
-              <div className="flex-1 border-t border-gray-300"></div>
-              <span className="text-xs text-gray-600 font-medium whitespace-nowrap">
-                Or Login with
-              </span>
-              <div className="flex-1 border-t border-gray-300"></div>
+              <div className="flex-1 border-t border-gray-300" />
+              <span className="text-xs text-gray-500">Or login with</span>
+              <div className="flex-1 border-t border-gray-300" />
             </div>
 
-            {/* Email Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Email/Mobile Number <span className="text-red-500">*</span>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email or Mobile <span className="text-red-500">*</span>
               </label>
               <input
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                placeholder="john@gmail.com"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
+                type="text"
+                value={loginIdentifier}
+                onChange={(e) => setLoginIdentifier(e.target.value)}
+                placeholder="john@gmail.com or 9876543210"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                 autoComplete="username"
               />
             </div>
 
-            {/* Password Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <input
                   type={showLoginPassword ? "text" : "password"}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                  placeholder="••••••••"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowLoginPassword((s) => !s)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600"
-                  aria-label={
-                    showLoginPassword ? "Hide password" : "Show password"
-                  }
+                  aria-label={showLoginPassword ? "Hide password" : "Show password"}
                 >
                   {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
-            {/* Remember Me */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="remember-login"
-                className="w-4 h-4 text-brand-600 bg-white border-gray-300 rounded focus:ring-purple-500 cursor-pointer"
-              />
-              <label
-                htmlFor="remember-login"
-                className="text-sm text-gray-700 cursor-pointer"
-              >
+            {loginError && <p className="text-sm text-red-600">{loginError}</p>}
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-sm text-gray-700">
+                <input type="checkbox" className="w-4 h-4 border-gray-300 rounded" />
                 Remember me
               </label>
+
+              <button
+                type="button"
+                onClick={() => setResetOpen(true)}
+                className="text-sm text-purple-600 hover:underline"
+              >
+                Forgot password?
+              </button>
             </div>
 
-            {/* Error Message */}
-            {loginError && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                <p className="text-xs text-red-700">{loginError}</p>
-              </div>
-            )}
-
-            {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-all ${
-                isLoginValid
-                  ? "bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 cursor-pointer"
-                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
+              disabled={!isLoginValid || loginLoading}
+              className={`w-full py-3 rounded-lg text-sm font-semibold transition ${
+                isLoginValid && !loginLoading ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"
               }`}
-              disabled={!isLoginValid}
             >
-              Log In
+              {loginLoading ? "Logging in..." : "Log In"}
             </button>
-
-            {/* Forgot Password */}
-            <div className="text-center">
-              <p className="text-xs text-gray-600">
-                Forgot password?{" "}
-                <button
-                  type="button"
-                  onClick={() => setResetOpen(true)}
-                  className="text-brand-600 hover:text-purple-700 font-semibold hover:underline transition"
-                >
-                  Click here to reset
-                </button>
-              </p>
-            </div>
           </form>
-        ) : (
-          /* Sign Up Form */
+        )}
+
+        {/* Signup */}
+        {tab === "signup" && (
           <form onSubmit={handleSignup} className="space-y-5">
-            {/* Social Login Buttons */}
-            <div className="flex justify-center gap-4 pb-4">
-              <button
-                type="button"
-                onClick={() => startOAuth("google")}
-                className="transition-transform hover:scale-110 active:scale-95"
-                title="Sign up with Google"
-              >
-                <img
-                  src={googleButton}
-                  alt="Google"
-                  className="h-12 w-12 object-contain"
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => startOAuth("facebook")}
-                className="transition-transform hover:scale-110 active:scale-95"
-                title="Sign up with Facebook"
-              >
-                <img
-                  src={facebookButton}
-                  alt="Facebook"
-                  className="h-12 w-12 object-contain"
-                />
-              </button>
-              <button
-                type="button"
-                onClick={() => startOAuth("apple")}
-                className="transition-transform hover:scale-110 active:scale-95"
-                title="Sign up with Apple"
-              >
-                <img
-                  src={appleButton}
-                  alt="Apple"
-                  className="h-12 w-12 object-contain"
-                />
-              </button>
-            </div>
+            <OAuthButtons />
 
-            {/* Divider */}
             <div className="flex items-center gap-3">
-              <div className="flex-1 border-t border-gray-300"></div>
-              <span className="text-xs text-gray-600 font-medium whitespace-nowrap">
-                Or Sign up with
-              </span>
-              <div className="flex-1 border-t border-gray-300"></div>
+              <div className="flex-1 border-t border-gray-300" />
+              <span className="text-xs text-gray-500">Or sign up with</span>
+              <div className="flex-1 border-t border-gray-300" />
             </div>
 
-            {/* Name Field */}
+            {/* name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Name <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Name <span className="text-red-500">*</span></label>
               <input
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition ${
-                  errors.name
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300"
-                }`}
-                placeholder="John Doe"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                placeholder="John Doe"
+                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
+                  signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                }`}
               />
-              {errors.name && (
-                <p className="text-xs text-red-600 mt-1">{errors.name}</p>
-              )}
+              {signupErrors.name && <p className="text-xs text-red-600 mt-1">{signupErrors.name}</p>}
             </div>
 
-            {/* Mobile Field */}
+            {/* mobile */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Mobile Number <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mobile <span className="text-red-500">*</span></label>
               <input
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition ${
-                  errors.mobile
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300"
-                }`}
                 value={mobile}
-                onChange={(e) =>
-                  setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
-                }
-                placeholder="000 000 0000"
+                onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                placeholder="9876543210"
                 inputMode="numeric"
-                maxLength={10}
+                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
+                  signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                }`}
               />
-              {errors.mobile && (
-                <p className="text-xs text-red-600 mt-1">{errors.mobile}</p>
-              )}
+              {signupErrors.mobile && <p className="text-xs text-red-600 mt-1">{signupErrors.mobile}</p>}
             </div>
 
-            {/* Email Field */}
+            {/* email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Email <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email <span className="text-red-500">*</span></label>
               <input
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition ${
-                  errors.email
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300"
-                }`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="john@gmail.com"
-                autoComplete="email"
+                placeholder="john@example.com"
+                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
+                  signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                }`}
               />
-              {errors.email && (
-                <p className="text-xs text-red-600 mt-1">{errors.email}</p>
-              )}
+              {signupErrors.email && <p className="text-xs text-red-600 mt-1">{signupErrors.email}</p>}
             </div>
 
-            {/* Password Field */}
+            {/* password */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Password <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password <span className="text-red-500">*</span></label>
               <div className="relative">
                 <input
                   type={showSignupPassword ? "text" : "password"}
-                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition ${
-                    errors.password
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300"
-                  }`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min 8 chars, letters & numbers"
-                  autoComplete="new-password"
+                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
+                    signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                  }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowSignupPassword((s) => !s)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600"
-                  aria-label={
-                    showSignupPassword ? "Hide password" : "Show password"
-                  }
+                  aria-label={showSignupPassword ? "Hide password" : "Show password"}
                 >
-                  {showSignupPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
+                  {showSignupPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-xs text-red-600 mt-1">{errors.password}</p>
-              )}
+              {signupErrors.password && <p className="text-xs text-red-600 mt-1">{signupErrors.password}</p>}
             </div>
 
-            {/* Confirm Password Field */}
+            {/* confirm password */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                Confirm Password <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password <span className="text-red-500">*</span></label>
               <div className="relative">
                 <input
                   type={showSignupConfirm ? "text" : "password"}
-                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition ${
-                    errors.confirmPassword
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300"
-                  }`}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  autoComplete="new-password"
+                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
+                    signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                  }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowSignupConfirm((s) => !s)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600"
-                  aria-label={
-                    showSignupConfirm ? "Hide password" : "Show password"
-                  }
+                  aria-label={showSignupConfirm ? "Hide password" : "Show password"}
                 >
                   {showSignupConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {errors.confirmPassword && (
-                <p className="text-xs text-red-600 mt-1">
-                  {errors.confirmPassword}
-                </p>
-              )}
+              {signupErrors.confirmPassword && <p className="text-xs text-red-600 mt-1">{signupErrors.confirmPassword}</p>}
             </div>
 
-            {/* Submit Button */}
+            {/* api message */}
+            {apiMessage && <p className="text-sm text-center text-gray-700">{apiMessage}</p>}
+
             <button
               type="submit"
-              className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-all ${
-                isSignupValid
-                  ? "bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 cursor-pointer"
-                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
+              disabled={!isSignupValid || signupLoading}
+              className={`w-full py-3 rounded-lg text-sm font-semibold transition ${
+                isSignupValid && !signupLoading ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"
               }`}
-              disabled={!isSignupValid}
             >
-              Sign Up
+              {signupLoading ? "Creating account..." : "Create account"}
             </button>
           </form>
         )}
+
+        {/* Reset password modal (inline small modal) */}
+        <Modal
+          isOpen={resetOpen}
+          onClose={() => {
+            setResetOpen(false);
+            setResetEmail("");
+            setResetStatus("");
+          }}
+          title="Reset your password"
+        >
+          <form onSubmit={handleResetSubmit} className="space-y-4 px-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email or Mobile <span className="text-red-500">*</span></label>
+              <input
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="john@example.com or 9876543210"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+              />
+            </div>
+
+            {resetStatus && <p className="text-sm text-gray-700">{resetStatus}</p>}
+
+            <div className="flex gap-2">
+              <button type="submit" disabled={resetLoading} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">
+                {resetLoading ? "Sending..." : "Send reset link"}
+              </button>
+              <button type="button" onClick={() => { setResetOpen(false); setResetStatus(""); }} className="px-4 py-2 rounded border">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </Modal>
       </div>
-      {/* Password Reset Modal */}
-      <Modal
-        isOpen={resetOpen}
-        onClose={() => {
-          setResetOpen(false);
-          setResetStatus("");
-        }}
-        title="Reset your password"
-      >
-        <form onSubmit={handleResetSubmit} className="space-y-4 px-2">
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Email or Mobile <span className="text-red-500">*</span>
-            </label>
-            <input
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-              placeholder="john@gmail.com or 9876543210"
-              value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
-            />
-          </div>
-          {resetStatus && (
-            <div className="text-sm text-gray-700">{resetStatus}</div>
-          )}
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-            >
-              Send reset link
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setResetOpen(false);
-                setResetStatus("");
-              }}
-              className="px-4 py-2 rounded border"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </Modal>
     </Modal>
   );
 }
