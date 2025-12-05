@@ -5,7 +5,9 @@ import Dropdown from "../../../../../src/components/Dropdown";
 export default function AddProductModal({ onClose, onProductAdded }) {
   const fileInputRef = useRef(null);
 
-  const [preview, setPreview] = useState(null);
+  const [previews, setPreviews] = useState([]); // Preview URLs
+  const [files, setFiles] = useState([]); // Original image files
+
   const [categories, setCategories] = useState([]);
   const [prodCategory, setProdCategory] = useState("");
   const [errors, setErrors] = useState({});
@@ -52,9 +54,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch(
-          "http://localhost:3000/api/v1/products/categories"
-        );
+        const res = await fetch("http://localhost:3000/api/v1/products/categories");
         const data = await res.json();
 
         if (res.ok && Array.isArray(data?.data)) {
@@ -70,13 +70,12 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
   const allowOnlyNumbers = (value) => value.replace(/[^0-9]/g, "");
 
-  /* ---------------- CHANGE HANDLER ---------------- */
+  /* ---------------- FORM CHANGE HANDLER ---------------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     const numericFields = ["price", "discount", "stock", "weight"];
 
-    // ✅ HANDLE DIMENSIONS
     if (["height", "width"].includes(name)) {
       setFormData((prev) => ({
         ...prev,
@@ -85,10 +84,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           [name]: allowOnlyNumbers(value)
         }
       }));
-    }
-
-    // ✅ HANDLE ATTRIBUTES
-    else if (["primaryMaterial", "origin", "finish"].includes(name)) {
+    } else if (["primaryMaterial", "origin", "finish"].includes(name)) {
       setFormData((prev) => ({
         ...prev,
         attributes: {
@@ -96,36 +92,39 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           [name]: value
         }
       }));
-    }
-
-    // ✅ HANDLE NORMAL FIELDS
-    else {
+    } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: numericFields.includes(name)
-          ? allowOnlyNumbers(value)
-          : value
+        [name]: numericFields.includes(name) ? allowOnlyNumbers(value) : value
       }));
     }
 
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
+  /* ---------------- MULTIPLE IMAGE UPLOAD ---------------- */
   const openFileDialog = () => fileInputRef.current.click();
 
   const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-      setErrors((prev) => ({ ...prev, image: "" }));
-    }
+    const selectedFiles = Array.from(e.target.files);
+    const newPreviews = selectedFiles.map((file) => URL.createObjectURL(file));
+
+    setFiles((prev) => [...prev, ...selectedFiles]);
+    setPreviews((prev) => [...prev, ...newPreviews]);
+
+    setErrors((prev) => ({ ...prev, image: "" }));
+  };
+
+  const handleRemoveImage = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   /* ---------------- VALIDATION ---------------- */
   const validateForm = () => {
     const newErrors = {};
 
-    if (!preview) newErrors.image = "Product image is required";
+    if (files.length === 0) newErrors.image = "At least one product image is required";
     if (!formData.name.trim()) newErrors.name = "Product name is required";
     if (!prodCategory) newErrors.category = "Category is required";
     if (!formData.price) newErrors.price = "Price is required";
@@ -137,7 +136,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   };
 
   const isFormValid =
-    preview &&
+    files.length > 0 &&
     formData.name.trim() &&
     prodCategory &&
     formData.price &&
@@ -150,45 +149,34 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     return `${prefix}-${code}`;
   };
 
-  /* ---------------- SUBMIT ---------------- */
+  /* ---------------- SUBMIT HANDLER ---------------- */
   const handleAddNewProduct = async () => {
     if (!validateForm()) return;
 
     try {
-      const selectedCategory = categories.find(
-        (c) => c.name === prodCategory
-      );
+      const selectedCategory = categories.find((c) => c.name === prodCategory);
       if (!selectedCategory) return;
 
       const sku = generateSKU(formData.name);
-      const imageFile = fileInputRef.current?.files?.[0];
 
       const formDataToSend = new FormData();
 
-      if (imageFile) {
-        formDataToSend.append("images", imageFile);
-      }
+      // Append multiple images
+      files.forEach((file) => {
+        formDataToSend.append("images", file);
+      });
 
       formDataToSend.append("name", formData.name);
       formDataToSend.append("description", formData.description);
-
       formDataToSend.append("price", Number(formData.price));
       formDataToSend.append("discount", Number(formData.discount || 0));
       formDataToSend.append("stock", Number(formData.stock));
       formDataToSend.append("weight", Number(formData.weight || 0));
-
-      // ✅ Nested objects
       formDataToSend.append("attributes", JSON.stringify(formData.attributes));
       formDataToSend.append("dimensions", JSON.stringify(formData.dimensions));
-
       formDataToSend.append("categoryId", selectedCategory._id);
       formDataToSend.append("sku", sku);
       formDataToSend.append("tags", JSON.stringify([]));
-
-      console.log("✅ Final Data Sent:");
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0], pair[1]);
-      }
 
       const res = await fetch("http://localhost:3000/api/v1/products", {
         method: "POST",
@@ -196,7 +184,6 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       });
 
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message);
 
       onProductAdded?.();
@@ -220,32 +207,41 @@ export default function AddProductModal({ onClose, onProductAdded }) {
         {/* BODY */}
         <div className="p-6 overflow-y-auto space-y-5 max-h-[70vh]">
 
-          {/* IMAGE */}
+          {/* MULTIPLE IMAGES */}
           <div>
-            <label className="text-sm mb-2 block">Product Image</label>
-            <input type="file" ref={fileInputRef} onChange={handleFileChange} hidden />
+            <label className="text-sm mb-2 block">Product Images</label>
+
+            <input type="file" hidden ref={fileInputRef} multiple onChange={handleFileChange} />
+
+            {/* Upload Box */}
             <div
               onClick={openFileDialog}
-              className={`w-20 h-20 border-2 rounded-xl flex items-center justify-center cursor-pointer ${
-                preview ? "border-none" : "border-dashed border-gray-300"
-              }`}
+              className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer"
             >
-              {preview ? (
-                <img
-                  src={preview}
-                  className="w-full h-full rounded-xl object-cover"
-                />
-              ) : (
-                <Upload />
-              )}
+              <Upload />
             </div>
+
+            {/* Image Previews */}
+            <div className="grid grid-cols-4 gap-3 mt-3">
+              {previews.map((img, index) => (
+                <div key={index} className="relative w-20 h-20">
+                  <img src={img} className="w-full h-full object-cover rounded-xl" />
+                  <button
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
             {errors.image && <ErrorText text={errors.image} />}
           </div>
 
           <Input required label="Product Name" name="name" value={formData.name} onChange={handleChange} error={errors.name} />
           <Input label="Description" name="description" value={formData.description} onChange={handleChange} />
 
-          {/* ✅ CORRECTED NESTED ATTRIBUTES */}
           <Input label="Primary Material" name="primaryMaterial" value={formData.attributes.primaryMaterial} onChange={handleChange} />
           <Input label="Finish" name="finish" value={formData.attributes.finish} onChange={handleChange} />
           <Input label="Origin" name="origin" value={formData.attributes.origin} onChange={handleChange} />
@@ -306,9 +302,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
         {/* FOOTER */}
         <div className="p-4 border-t border-gray-200 flex justify-end gap-3">
-          <button onClick={onClose} className="px-5 py-2 border rounded-lg">
-            Cancel
-          </button>
+          <button onClick={onClose} className="px-5 py-2 border rounded-lg">Cancel</button>
 
           <button
             disabled={!isFormValid}
