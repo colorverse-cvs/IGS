@@ -1,12 +1,22 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchProducts } from "../features/products/productSlice";
 
 // Responsive 3-cards first row, 2-cards second row grid
 export default function CategoryMosaic() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { products: allProducts, status } = useSelector((state) => state.products);
   const [sections, setSections] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const didFetchRef = useRef(false);
+  const [categories, setCategories] = useState([]);
+  
+  // Fetch products if not already loaded
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, status]);
 
   // Map category names to slugs for navigation
   const getCategorySlug = (categoryName) => {
@@ -20,74 +30,53 @@ export default function CategoryMosaic() {
     return categoryMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, "-");
   };
 
-  // Fetch categories and products from API
+  // Fetch categories
   useEffect(() => {
-    const fetchData = async () => {
-      if (didFetchRef.current) return;
-      didFetchRef.current = true;
-
+    const fetchCategories = async () => {
       try {
-        setLoading(true);
-        // Fetch both categories and products in parallel
-        const [categoriesResponse, productsResponse] = await Promise.all([
-          fetch("http://localhost:3000/api/v1/products/categories"),
-          fetch("http://localhost:3000/api/v1/products")
-        ]);
-
-        if (!categoriesResponse.ok) throw new Error(`Categories Error: ${categoriesResponse.status}`);
-        if (!productsResponse.ok) throw new Error(`Products Error: ${productsResponse.status}`);
-
-        const categoriesResult = await categoriesResponse.json();
-        const productsResult = await productsResponse.json();
-
-        const categories = categoriesResult.data || [];
-        const products = productsResult.data || [];
-
-        // Group products by category and create sections
-        const sectionsArray = categories.map(category => {
-          // Find products in this category
-          const categoryProducts = products.filter(
-            product => product.category?._id === category._id || product.category?.name === category.name
-          );
-
-          // Get first product image for category card
-          let imageURL = "https://picsum.photos/300/300?random=1";
-          if (categoryProducts.length > 0) {
-            const firstProduct = categoryProducts[0];
-            if (firstProduct.images && firstProduct.images.length > 0) {
-              const firstImage = firstProduct.images[0];
-              if (typeof firstImage === 'string') {
-                imageURL = firstImage.startsWith('http') ? firstImage : `http://localhost:3000${firstImage}`;
-              } else if (firstImage && typeof firstImage === 'object' && firstImage.url) {
-                const url = firstImage.url;
-                imageURL = url.startsWith('http') ? url : `http://localhost:3000${url}`;
-              }
-            }
-          }
-
-          return {
-            id: getCategorySlug(category.name),
-            title: category.name,
-            subtitle: category.description || `Explore our collection of ${category.name.toLowerCase()}`,
-            imageURL: imageURL,
-            products: categoryProducts
-          };
-        });
-
-        setSections(sectionsArray);
+        const response = await fetch("http://localhost:3000/api/v1/products/categories");
+        if (!response.ok) throw new Error(`Categories Error: ${response.status}`);
+        const result = await response.json();
+        setCategories(result.data || []);
       } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch categories:", error);
       }
     };
-
-    fetchData();
+    fetchCategories();
   }, []);
+
+  // Group products by category and create sections when products and categories are loaded
+  useEffect(() => {
+    if (allProducts.length === 0 || categories.length === 0) return;
+
+    // Group products by category and create sections
+    const sectionsArray = categories.map(category => {
+      // Find products in this category (using transformed products from Redux)
+      const categoryProducts = allProducts.filter(
+        product => product.category === category.name || product.categoryName === category.name
+      );
+
+      // Get first product image for category card
+      let imageURL = "https://picsum.photos/300/300?random=1";
+      if (categoryProducts.length > 0) {
+        imageURL = categoryProducts[0].imageURL || imageURL;
+      }
+
+      return {
+        id: getCategorySlug(category.name),
+        title: category.name,
+        subtitle: category.description || `Explore our collection of ${category.name.toLowerCase()}`,
+        imageURL: imageURL,
+        products: categoryProducts
+      };
+    });
+
+    setSections(sectionsArray);
+  }, [allProducts, categories]);
 
   const goTo = (id) => navigate(`/filter?category=${id}`);
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <section>
         <div className="container mx-auto">

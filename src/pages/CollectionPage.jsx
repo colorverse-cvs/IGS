@@ -1,57 +1,64 @@
-import {React, useEffect, useRef, useState} from "react";
+import {React, useEffect, useState} from "react";
+import { useSelector, useDispatch } from "react-redux";
 import ProductSection from "../components/ProductSection.jsx";
-
+import { fetchProducts } from "../features/products/productSlice";
 
 export default function CollectionPage() {
+  const dispatch = useDispatch();
+  const { products: allProducts, status } = useSelector((state) => state.products);
   const [sections, setSections] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
   
-  const didFetchRef = useRef(false); // <<< prevents API double-call
-
-  // Map API product fields to expected format
-  const transformProduct = (apiProduct) => {
-    // Get first image URL or use placeholder - handle both string and object formats
-    let imageURL = "https://picsum.photos/300/300?random=1";
-    if (apiProduct.images && apiProduct.images.length > 0) {
-      const firstImage = apiProduct.images[0];
-      // If image is a string, use it directly
-      if (typeof firstImage === 'string') {
-        imageURL = firstImage.startsWith('http') ? firstImage : `http://localhost:3000${firstImage}`;
-      }
-      // If image is an object with url property, extract the URL
-      else if (firstImage && typeof firstImage === 'object' && firstImage.url) {
-        const url = firstImage.url;
-        imageURL = url.startsWith('http') ? url : `http://localhost:3000${url}`;
-      }
+  // Fetch products if not already loaded
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchProducts());
     }
-    
-    // Get discount percentage - use API discount field if available, otherwise calculate from listPrice and price
-    let discount = "0% Off";
-    if (apiProduct.discount && apiProduct.discount > 0) {
-      // Use discount percentage directly from API
-      discount = `${Math.round(apiProduct.discount)}% Off`;
-    } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
-      // Calculate discount from listPrice and price
-      discount = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
-    }
+  }, [dispatch, status]);
 
-    return {
-      id: apiProduct._id || apiProduct.id,
-      name: apiProduct.name,
-      price: apiProduct.price,
-      mrp: apiProduct.listPrice || apiProduct.price,
-      discount: discount,
-      rating: apiProduct.rating || 4.5,
-      reviews: apiProduct.reviews || 0,
-      isFeatured: apiProduct.isFeatured || false,
-      isCustomizable: apiProduct.isCustomizable || false,
-      imageURL: imageURL,
-      material: apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin",
-      size: apiProduct.dimensions?.size || "medium",
-      sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
-      category: apiProduct.category?.name || "Uncategorized",
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/v1/products/categories");
+        if (!response.ok) throw new Error(`Categories Error: ${response.status}`);
+        const result = await response.json();
+        setCategories(result.data || []);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
     };
-  };
+    fetchCategories();
+  }, []);
+
+  // Products are already transformed in Redux store, so we can use them directly
+  // But we need to group them by category
+  useEffect(() => {
+    if (allProducts.length === 0 || categories.length === 0) return;
+
+    // Group products by category
+    const productsByCategory = {};
+    allProducts.forEach(product => {
+      const categoryName = product.category || "Uncategorized";
+      if (!productsByCategory[categoryName]) {
+        productsByCategory[categoryName] = [];
+      }
+      productsByCategory[categoryName].push(product);
+    });
+
+    // Create sections array from grouped products
+    const sectionsArray = Object.keys(productsByCategory).map(categoryName => {
+      const metadata = getCategoryMetadata(categoryName, categories);
+      return {
+        id: metadata.id,
+        title: metadata.title,
+        subtitle: metadata.subtitle,
+        products: productsByCategory[categoryName]
+      };
+    });
+
+    setSections(sectionsArray);
+  }, [allProducts, categories]);
 
   // Get category metadata (title, subtitle) - fallback to category name if not available
   const getCategoryMetadata = (categoryName, categories) => {
@@ -95,63 +102,8 @@ export default function CollectionPage() {
     };
   };
 
-  // Fetch products and categories, then group by category
-  const fetchData = async () => {
-    try {
-      // Fetch both products and categories in parallel
-      const [productsResponse, categoriesResponse] = await Promise.all([
-        fetch("http://localhost:3000/api/v1/products"),
-        fetch("http://localhost:3000/api/v1/products/categories")
-      ]);
 
-      if (!productsResponse.ok) throw new Error(`Products Error: ${productsResponse.status}`);
-      if (!categoriesResponse.ok) throw new Error(`Categories Error: ${categoriesResponse.status}`);
-
-      const productsResult = await productsResponse.json();
-      const categoriesResult = await categoriesResponse.json();
-
-      const apiProducts = productsResult.data || [];
-      const categories = categoriesResult.data || [];
-
-      // Transform products to expected format
-      const transformedProducts = apiProducts.map(transformProduct);
-
-      // Group products by category
-      const productsByCategory = {};
-      transformedProducts.forEach(product => {
-        const categoryName = product.category || "Uncategorized";
-        if (!productsByCategory[categoryName]) {
-          productsByCategory[categoryName] = [];
-        }
-        productsByCategory[categoryName].push(product);
-      });
-
-      // Create sections array from grouped products
-      const sectionsArray = Object.keys(productsByCategory).map(categoryName => {
-        const metadata = getCategoryMetadata(categoryName, categories);
-        return {
-          id: metadata.id,
-          title: metadata.title,
-          subtitle: metadata.subtitle,
-          products: productsByCategory[categoryName]
-        };
-      });
-
-      setSections(sectionsArray);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (didFetchRef.current) return;
-    didFetchRef.current = true;
-    fetchData();
-  }, []);
-
-  if (loading) {
+  if (status === 'loading') {
     return (
       <div className="px-4 md:px-15 lg:px-20">
         <div className="container py-6 mx-auto">

@@ -1,15 +1,7 @@
 import React, { useState, useRef } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 
-/**
- * FilterSidebar component with collapsible filter sections
- * Props:
- * - filters: object with current filter values
- * - onFiltersChange: function to update filters
- * - onResetFilters: function to reset all filters
- * - isMobile: boolean - if true, renders in mobile drawer mode
- * - onApplyFilters: function - called when "Show Results" is clicked (mobile only)
- */
+
 export default function FilterSidebar({
   filters,
   onFiltersChange,

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchProducts } from "../features/products/productSlice";
 import FilterSidebar from "../components/FilterSidebar";
 import ProductCard from "../components/ProductCard";
 import {
@@ -15,30 +16,6 @@ import { Link } from "react-router-dom";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import { User } from "lucide-react";
 
-/**
- * FilterPage Component - Product catalog with advanced filtering and sorting
- * 
- * Features:
- * - Filter by: category, material, size, price range, in-stock status, discount
- * - Sort by: popular, price (low-high, high-low), rating
- * - Pagination with customizable items per page (4, 8, 12, 16)
- * - Search within filtered results
- * - Mobile: Filter drawer (toggles via hamburger icon)
- * - Desktop: Filter sidebar always visible
- * - URL params sync for bookmarkable filter states
- * 
- * How it works:
- * - Builds full product list from categories.json
- * - Applies filters to product list
- * - Sorts products based on selected sort option
- * - Paginates results and displays current page
- * - Syncs all states to URL search params for shareable links
- * 
- * For beginners:
- * - useSearchParams() reads/writes URL query parameters
- * - Filters update via setFilters() which triggers recalculation
- * - URL sync allows users to share filtered product lists
- */
 export default function FilterPage() {
   const navigate = useNavigate();
   const user = useSelector((s) => s.user);
@@ -63,9 +40,8 @@ export default function FilterPage() {
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [isItemsPerPageDropdownOpen, setIsItemsPerPageDropdownOpen] =
     useState(false);
-  const [allProducts, setAllProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const didFetchRef = useRef(false);
+  const dispatch = useDispatch();
+  const { products: allProducts, status } = useSelector((state) => state.products);
 
   // Sort options with labels
   const sortOptions = [
@@ -98,79 +74,12 @@ export default function FilterPage() {
     return categoryMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, "-");
   };
 
-  // Transform API product to expected format
-  const transformProduct = (apiProduct) => {
-    // Get first image URL
-    let imageURL = "https://picsum.photos/300/300?random=1";
-    if (apiProduct.images && apiProduct.images.length > 0) {
-      const firstImage = apiProduct.images[0];
-      if (typeof firstImage === 'string') {
-        imageURL = firstImage.startsWith('http') ? firstImage : `http://localhost:3000${firstImage}`;
-      } else if (firstImage && typeof firstImage === 'object' && firstImage.url) {
-        const url = firstImage.url;
-        imageURL = url.startsWith('http') ? url : `http://localhost:3000${url}`;
-      }
-    }
-
-    // Get discount percentage
-    let discount = "0% Off";
-    if (apiProduct.discount && apiProduct.discount > 0) {
-      discount = `${Math.round(apiProduct.discount)}% Off`;
-    } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
-      discount = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
-    }
-
-    // Get category info
-    const categoryName = apiProduct.category?.name || "Uncategorized";
-    const categorySlug = getCategorySlug(categoryName);
-
-    return {
-      id: apiProduct._id || apiProduct.id,
-      name: apiProduct.name,
-      price: apiProduct.price,
-      mrp: apiProduct.listPrice || apiProduct.price,
-      discount: discount,
-      rating: apiProduct.rating || 4.5,
-      reviews: apiProduct.reviews || 0,
-      isFeatured: apiProduct.isFeatured || false,
-      isCustomizable: apiProduct.isCustomizable || false,
-      imageURL: imageURL,
-      material: (apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin").toLowerCase(),
-      size: apiProduct.dimensions?.size || "medium",
-      sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
-      category: categoryName,
-      categoryId: categorySlug,
-      categoryName: categoryName,
-    };
-  };
-
-  // Fetch products from API
+  // Fetch products if not already loaded
   useEffect(() => {
-    const fetchProducts = async () => {
-      if (didFetchRef.current) return;
-      didFetchRef.current = true;
-
-      try {
-        setLoading(true);
-        const response = await fetch("http://localhost:3000/api/v1/products");
-        
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
-
-        const result = await response.json();
-        const apiProducts = result.data || [];
-        
-        // Transform products to expected format
-        const transformedProducts = apiProducts.map(transformProduct);
-        setAllProducts(transformedProducts);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+    if (status === 'idle') {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, status]);
 
   // Initialize filters from URL params
   useEffect(() => {
@@ -690,7 +599,7 @@ export default function FilterPage() {
 
         {/* Main Content */}
         <div className="flex-1 p-4 lg:p-6 h-[88vh] overflow-y-auto relative">
-          {loading ? (
+          {status === 'loading' ? (
             <div className="text-center py-12">
               <p className="text-gray-600">Loading products...</p>
             </div>
@@ -711,7 +620,7 @@ export default function FilterPage() {
           )}
 
           {/* No products message */}
-          {!loading && paginatedProducts.length === 0 && (
+          {status !== 'loading' && paginatedProducts.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">
                 No products found matching your criteria.
@@ -726,7 +635,7 @@ export default function FilterPage() {
           )}
 
           {/* Pagination */}
-          {!loading && totalPages > 1 && (
+          {status !== 'loading' && totalPages > 1 && (
             <div className="flex flex-col md:flex-row items-center gap-4  justify-between">
               <div className="lg:invisible hidden lg:block items-center gap-2 text-sm text-gray-700">
                 <span>Page</span>
