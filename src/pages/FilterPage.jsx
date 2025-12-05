@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import FilterSidebar from "../components/FilterSidebar";
@@ -12,7 +12,6 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import categoriesData from "../data/categories.json";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import { User } from "lucide-react";
 
@@ -64,6 +63,9 @@ export default function FilterPage() {
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [isItemsPerPageDropdownOpen, setIsItemsPerPageDropdownOpen] =
     useState(false);
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const didFetchRef = useRef(false);
 
   // Sort options with labels
   const sortOptions = [
@@ -83,6 +85,92 @@ export default function FilterPage() {
     { value: 12, label: "12" },
     { value: 16, label: "16" },
   ];
+
+  // Map category names to slugs for filtering
+  const getCategorySlug = (categoryName) => {
+    const categoryMap = {
+      "Chhatrapati Shivaji Maharaj Statues": "shivaji",
+      "Mavale Statues": "mavale",
+      "God Statues": "god-statues",
+      "Home Decor": "home-decor",
+      "Motivational Statues": "motivational",
+    };
+    return categoryMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, "-");
+  };
+
+  // Transform API product to expected format
+  const transformProduct = (apiProduct) => {
+    // Get first image URL
+    let imageURL = "https://picsum.photos/300/300?random=1";
+    if (apiProduct.images && apiProduct.images.length > 0) {
+      const firstImage = apiProduct.images[0];
+      if (typeof firstImage === 'string') {
+        imageURL = firstImage.startsWith('http') ? firstImage : `http://localhost:3000${firstImage}`;
+      } else if (firstImage && typeof firstImage === 'object' && firstImage.url) {
+        const url = firstImage.url;
+        imageURL = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+      }
+    }
+
+    // Get discount percentage
+    let discount = "0% Off";
+    if (apiProduct.discount && apiProduct.discount > 0) {
+      discount = `${Math.round(apiProduct.discount)}% Off`;
+    } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
+      discount = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+    }
+
+    // Get category info
+    const categoryName = apiProduct.category?.name || "Uncategorized";
+    const categorySlug = getCategorySlug(categoryName);
+
+    return {
+      id: apiProduct._id || apiProduct.id,
+      name: apiProduct.name,
+      price: apiProduct.price,
+      mrp: apiProduct.listPrice || apiProduct.price,
+      discount: discount,
+      rating: apiProduct.rating || 4.5,
+      reviews: apiProduct.reviews || 0,
+      isFeatured: apiProduct.isFeatured || false,
+      isCustomizable: apiProduct.isCustomizable || false,
+      imageURL: imageURL,
+      material: (apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin").toLowerCase(),
+      size: apiProduct.dimensions?.size || "medium",
+      sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
+      category: categoryName,
+      categoryId: categorySlug,
+      categoryName: categoryName,
+    };
+  };
+
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (didFetchRef.current) return;
+      didFetchRef.current = true;
+
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:3000/api/v1/products");
+        
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
+
+        const result = await response.json();
+        const apiProducts = result.data || [];
+        
+        // Transform products to expected format
+        const transformedProducts = apiProducts.map(transformProduct);
+        setAllProducts(transformedProducts);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Initialize filters from URL params
   useEffect(() => {
@@ -127,58 +215,41 @@ export default function FilterPage() {
     });
   }, [searchParams]);
 
-  // Build a unified list of products from categories and standalone list
+  // Get all products (from API)
   const getAllProducts = () => {
-    const allProducts = [];
-    categoriesData.sections.forEach((section) => {
-      section.products.forEach((product) => {
-        allProducts.push({
-          ...product,
-          categoryId: section.id,
-          categoryName: section.title,
-        });
-      });
-    });
-    return allProducts; // single source: categories.json
+    return allProducts;
   };
 
   // Filter products based on current filters
+  // All filters use AND logic - product must match ALL selected filters
+  // Within each filter type, multi-select uses OR logic (e.g., "marble" OR "resin")
   const getFilteredProducts = () => {
     let filtered = getAllProducts();
 
-    // Category filter
+    // Category filter - OR within category (shivaji OR mavale), AND with other filters
     if (filters.category) {
-      const categoryMap = {
-        shivaji: "shivaji",
-        mavale: "mavale",
-        "god-statues": "god-statues",
-        motivational: "motivational",
-        "home-decor": "home-decor",
-      };
-
       const selected = Array.isArray(filters.category)
         ? filters.category
         : [filters.category];
 
       filtered = filtered.filter((product) =>
-        selected.some(
-          (cat) =>
-            product.categoryId === categoryMap[cat] ||
-            product.category
-              .toLowerCase()
-              .includes((cat || "").replace("-", " "))
-        )
+        selected.some((cat) => {
+          // Match by categoryId (slug) or category name
+          const categorySlug = product.categoryId || getCategorySlug(product.category || "");
+          return categorySlug === cat || 
+                 (product.category || "").toLowerCase().includes((cat || "").replace("-", " "));
+        })
       );
     }
 
-    // Search query
+    // Search query - AND with other filters
     if (searchQuery) {
       filtered = filtered.filter((product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Material filter (supports multi-select)
+    // Material filter - OR within material (marble OR resin), AND with other filters
     if (filters.material) {
       const selected = Array.isArray(filters.material)
         ? filters.material
@@ -188,7 +259,7 @@ export default function FilterPage() {
       );
     }
 
-    // Size filter (supports multi-select)
+    // Size filter - OR within size (small OR medium), AND with other filters
     if (filters.size) {
       const selected = Array.isArray(filters.size)
         ? filters.size
@@ -196,7 +267,7 @@ export default function FilterPage() {
       filtered = filtered.filter((product) => selected.includes(product.size));
     }
 
-    // Price filter
+    // Price filter - AND with other filters
     if (filters.priceRange === "custom") {
       if (filters.minPrice) {
         filtered = filtered.filter(
@@ -210,21 +281,27 @@ export default function FilterPage() {
       }
     }
 
-    // Discount filter (supports multi-select thresholds)
+    // Discount filter - OR within discount (10% OR 20%), AND with other filters
+    // Shows only products with exact discount percentage match
     if (filters.discount) {
       const selected = Array.isArray(filters.discount)
         ? filters.discount
         : [filters.discount];
-      const mins = selected.map((s) => parseInt(s));
+      const discountValues = selected.map((s) => parseInt(s));
       filtered = filtered.filter((product) => {
         const discountMatch = (product.discount || "").match(/(\d+)%/);
         if (!discountMatch) return false;
-        const d = parseInt(discountMatch[1]);
-        return mins.some((min) => d >= min);
+        const productDiscount = parseInt(discountMatch[1]);
+        // Match exact discount percentage only
+        return discountValues.includes(productDiscount);
       });
     }
 
-    // In stock filter (placeholder for future stock data)
+    // In stock filter - AND with other filters
+    if (filters.inStockOnly) {
+      // Placeholder for future stock data - currently all products are considered in stock
+      // filtered = filtered.filter((product) => product.stock > 0);
+    }
 
     return filtered;
   };
@@ -263,8 +340,9 @@ export default function FilterPage() {
     setPageInput(String(currentPage));
   }, [currentPage]);
 
-  // Update filters state and URL params
+  // Update filters state and URL params - applies immediately on checkbox click
   const handleFiltersChange = (newFilters) => {
+    // Apply filters immediately
     setFilters(newFilters);
 
     // Update URL params from non-empty filter values
@@ -272,11 +350,12 @@ export default function FilterPage() {
     Object.entries(newFilters).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         if (value.length > 0) params.set(key, value.join(","));
-      } else if (value && value !== "all" && value !== "") {
+      } else if (value && value !== "all" && value !== "" && value !== false) {
         params.set(key, value);
       }
     });
     setSearchParams(params);
+    // Reset to first page when filters change
     setCurrentPage(1);
   };
 
@@ -611,20 +690,28 @@ export default function FilterPage() {
 
         {/* Main Content */}
         <div className="flex-1 p-4 lg:p-6 h-[88vh] overflow-y-auto relative">
-          {/* Mobile Results Count */}
-          <div className="text-center md:text-left text-sm text-gray-700 mb-4 px-2">
-            Displaying {paginatedProducts.length} out of {total} products
-          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600">Loading products...</p>
+            </div>
+          ) : (
+            <>
+              {/* Mobile Results Count */}
+              <div className="text-center md:text-left text-sm text-gray-700 mb-4 px-2">
+                Displaying {paginatedProducts.length} out of {total} products
+              </div>
 
-          {/* Products Grid - Responsive Design */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 mb-8">
-            {paginatedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+              {/* Products Grid - Responsive Design */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 mb-8">
+                {paginatedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* No products message */}
-          {paginatedProducts.length === 0 && (
+          {!loading && paginatedProducts.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">
                 No products found matching your criteria.
@@ -639,7 +726,7 @@ export default function FilterPage() {
           )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!loading && totalPages > 1 && (
             <div className="flex flex-col md:flex-row items-center gap-4  justify-between">
               <div className="lg:invisible hidden lg:block items-center gap-2 text-sm text-gray-700">
                 <span>Page</span>

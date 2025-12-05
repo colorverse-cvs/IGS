@@ -1,11 +1,103 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import categoriesData from "../data/categories.json";
 
 // Responsive 3-cards first row, 2-cards second row grid
 export default function CategoryMosaic() {
   const navigate = useNavigate();
-  const sections = categoriesData.sections || [];
+  const [sections, setSections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const didFetchRef = useRef(false);
+
+  // Map category names to slugs for navigation
+  const getCategorySlug = (categoryName) => {
+    const categoryMap = {
+      "Chhatrapati Shivaji Maharaj Statues": "shivaji",
+      "Mavale Statues": "mavale",
+      "God Statues": "god-statues",
+      "Home Decor": "home-decor",
+      "Motivational Statues": "motivational",
+    };
+    return categoryMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, "-");
+  };
+
+  // Fetch categories and products from API
+  useEffect(() => {
+    const fetchData = async () => {
+      if (didFetchRef.current) return;
+      didFetchRef.current = true;
+
+      try {
+        setLoading(true);
+        // Fetch both categories and products in parallel
+        const [categoriesResponse, productsResponse] = await Promise.all([
+          fetch("http://localhost:3000/api/v1/products/categories"),
+          fetch("http://localhost:3000/api/v1/products")
+        ]);
+
+        if (!categoriesResponse.ok) throw new Error(`Categories Error: ${categoriesResponse.status}`);
+        if (!productsResponse.ok) throw new Error(`Products Error: ${productsResponse.status}`);
+
+        const categoriesResult = await categoriesResponse.json();
+        const productsResult = await productsResponse.json();
+
+        const categories = categoriesResult.data || [];
+        const products = productsResult.data || [];
+
+        // Group products by category and create sections
+        const sectionsArray = categories.map(category => {
+          // Find products in this category
+          const categoryProducts = products.filter(
+            product => product.category?._id === category._id || product.category?.name === category.name
+          );
+
+          // Get first product image for category card
+          let imageURL = "https://picsum.photos/300/300?random=1";
+          if (categoryProducts.length > 0) {
+            const firstProduct = categoryProducts[0];
+            if (firstProduct.images && firstProduct.images.length > 0) {
+              const firstImage = firstProduct.images[0];
+              if (typeof firstImage === 'string') {
+                imageURL = firstImage.startsWith('http') ? firstImage : `http://localhost:3000${firstImage}`;
+              } else if (firstImage && typeof firstImage === 'object' && firstImage.url) {
+                const url = firstImage.url;
+                imageURL = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+              }
+            }
+          }
+
+          return {
+            id: getCategorySlug(category.name),
+            title: category.name,
+            subtitle: category.description || `Explore our collection of ${category.name.toLowerCase()}`,
+            imageURL: imageURL,
+            products: categoryProducts
+          };
+        });
+
+        setSections(sectionsArray);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const goTo = (id) => navigate(`/filter?category=${id}`);
+
+  if (loading) {
+    return (
+      <section>
+        <div className="container mx-auto">
+          <div className="text-center py-12">
+            <p className="text-gray-600">Loading collections...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // Build rows following pattern [3, 2, 3, 2, ...]
   const pattern = [3, 2];
@@ -20,10 +112,8 @@ export default function CategoryMosaic() {
     pIndex += 1;
   }
 
-  const goTo = (id) => navigate(`/filter?category=${id}`);
-
   const Card = ({ section, overlay = "top" }) => {
-    const img = section?.products?.[0]?.imageURL;
+    const img = section?.imageURL || "https://picsum.photos/300/300?random=1";
     const title = section?.title || "Collection";
     const subtitle = section?.subtitle || "";
     const posClass = overlay === "bottom" ? "bottom-3" : "top-3";
@@ -66,22 +156,30 @@ export default function CategoryMosaic() {
           </p>
         </div>
 
-        {/* First row: 3 cards with top, bottom, top overlays.
-            Middle card replaced with Mavale category (opens mavale filter). */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {row1[0] && <Card section={row1[0]} overlay="top" />}
-          {(() => {
-            const mavale = sections.find((s) => s.id === "mavale") || row1[1];
-            return mavale ? <Card section={mavale} overlay="bottom" /> : null;
-          })()}
-          {row1[2] && <Card section={row1[2]} overlay="top" />}
-        </div>
+        {sections.length === 0 ? (
+          <div className="text-center text-gray-500 py-8">
+            No collections available
+          </div>
+        ) : (
+          <>
+            {/* First row: 3 cards with top, bottom, top overlays.
+                Middle card replaced with Mavale category (opens mavale filter). */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {row1[0] && <Card section={row1[0]} overlay="top" />}
+              {(() => {
+                const mavale = sections.find((s) => s.id === "mavale") || row1[1];
+                return mavale ? <Card section={mavale} overlay="bottom" /> : null;
+              })()}
+              {row1[2] && <Card section={row1[2]} overlay="top" />}
+            </div>
 
-        {/* Second row: 2 cards, both top aligned */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          {row2[0] && <Card section={row2[0]} overlay="top" />}
-          {row2[1] && <Card section={row2[1]} overlay="top" />}
-        </div>
+            {/* Second row: 2 cards, both top aligned */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              {row2[0] && <Card section={row2[0]} overlay="top" />}
+              {row2[1] && <Card section={row2[1]} overlay="top" />}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
