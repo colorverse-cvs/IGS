@@ -294,3 +294,12 @@ h1 {
 .slider:disabled::-moz-range-track {
   background: #f3f4f6;
 }
+
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
