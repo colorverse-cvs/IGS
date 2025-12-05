@@ -1,58 +1,161 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
-import categoriesData from "../data/categories.json";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
-/**
- * ProductInfoPage Component
- * Displays detailed product information, images, pricing, customization options,
- * and allows users to add products to cart
- * Uses Redux Toolkit for cart state management
- */
+
 export default function ProductInfoPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedMaterial, setSelectedMaterial] = useState("marble");
   const [selectedSize, setSelectedSize] = useState("small");
   const [pincode, setPincode] = useState("");
   const [pincodeStatus, setPincodeStatus] = useState("idle");
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
+  const didFetchRef = useRef(false);
 
   // Scroll to top when component mounts or id changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
 
-  // Build a unified product list from categories (single source of truth)
-  const getAllProducts = () => {
-    const all = [];
-    categoriesData.sections.forEach((section) => {
-      section.products.forEach((p) => {
-        all.push({ ...p, categoryId: section.id, categoryName: section.title });
+  // Transform API product to expected format
+  const transformProduct = (apiProduct) => {
+    if (!apiProduct) return null;
+
+    // Get images - handle both string arrays and object arrays
+    let images = [];
+    if (apiProduct.images && apiProduct.images.length > 0) {
+      images = apiProduct.images.map((img) => {
+        // If image is a string, use it directly
+        if (typeof img === 'string') {
+          return img.startsWith('http') ? img : `http://localhost:3000${img}`;
+        }
+        // If image is an object with url property, extract the URL
+        if (img && typeof img === 'object' && img.url) {
+          const url = img.url;
+          return url.startsWith('http') ? url : `http://localhost:3000${url}`;
+        }
+        // Fallback
+        return img;
       });
-    });
-    return all;
+    } else {
+      images = ["https://picsum.photos/300/300?random=1"];
+    }
+
+    // Get discount percentage - use API discount field if available, otherwise calculate from listPrice and price
+    let discount = "0% Off";
+    if (apiProduct.discount && apiProduct.discount > 0) {
+      // Use discount percentage directly from API
+      discount = `${Math.round(apiProduct.discount)}% Off`;
+    } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
+      // Calculate discount from listPrice and price
+      discount = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+    }
+
+    // Get category slug
+    const categoryName = apiProduct.category?.name || "Uncategorized";
+    const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
+
+    return {
+      id: apiProduct._id || apiProduct.id,
+      name: apiProduct.name,
+      title: apiProduct.name,
+      price: apiProduct.price,
+      mrp: apiProduct.listPrice || apiProduct.price,
+      discount: discount,
+      rating: apiProduct.rating || 4.5,
+      reviews: apiProduct.reviews || 0,
+      isFeatured: apiProduct.isFeatured || false,
+      isCustomizable: apiProduct.isCustomizable || false,
+      imageURL: images[0] || "https://picsum.photos/300/300?random=1",
+      images: images,
+      material: apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin",
+      primaryMaterial: apiProduct.attributes?.primaryMaterial,
+      size: apiProduct.dimensions?.size || "medium",
+      sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
+      category: categoryName,
+      categoryId: categorySlug,
+      categoryName: categoryName,
+      weight: apiProduct.weight,
+      dimensions: apiProduct.dimensions?.sizeDescription,
+      finish: apiProduct.attributes?.finish,
+      origin: apiProduct.attributes?.origin,
+      description: apiProduct.description,
+    };
   };
 
-  const allProducts = getAllProducts();
-  const product = allProducts.find((p) => p.id === id);
-  const categorySlug =
-    product?.categoryId ||
-    (product?.category || "").toLowerCase().replace(/\s+/g, "-");
+  // Fetch product from API
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (didFetchRef.current) return;
+      didFetchRef.current = true;
+
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:3000/api/v1/products/${id}`);
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            setProduct(null);
+            setLoading(false);
+            return;
+          }
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        const transformedProduct = transformProduct(result.data);
+        setProduct(transformedProduct);
+        
+        // Set default material and size from product if available
+        if (transformedProduct?.material) {
+          setSelectedMaterial(transformedProduct.material.toLowerCase());
+        }
+        if (transformedProduct?.size) {
+          setSelectedSize(transformedProduct.size.toLowerCase());
+        }
+      } catch (error) {
+        console.error("Failed to fetch product:", error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+    // Reset fetch ref when id changes
+    return () => {
+      didFetchRef.current = false;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="text-center mt-10 text-gray-500">
+        <p>Loading product...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
       <div className="text-center mt-10 text-gray-500">Product not found.</div>
     );
   }
+
+  const categorySlug = product.categoryId || (product.category || "").toLowerCase().replace(/\s+/g, "-");
 
   const title = product.name || product.title || "Product";
   const imageSrc = product.imageURL || product.image;
@@ -179,7 +282,6 @@ export default function ProductInfoPage() {
     { label: "Origin", value: product.origin || aboutDefaults.origin || "—" },
   ];
 
-  const [quantity, setQuantity] = useState(1);
   const increment = () => setQuantity((q) => Math.min(99, q + 1));
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
@@ -346,19 +448,28 @@ export default function ProductInfoPage() {
                 </div>
 
                 {/* Pricing */}
-                <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-bold text-brand-700">
-                    ₹{product.price}
-                  </span>
-                  {mrp && (
-                    <span className="text-lg line-through text-gray-500">
-                      ₹{mrp}
+                <div className="flex flex-col gap-2">
+                  {/* Discounted Price (Current Price) */}
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-bold text-brand-700">
+                      ₹{product.price}
                     </span>
-                  )}
-                  {discount && (
-                    <span className="text-lg font-medium text-brand-600">
-                      {discount}
-                    </span>
+                    {discount && (
+                      <span className="text-lg font-medium text-brand-600">
+                        {discount}
+                      </span>
+                    )}
+                  </div>
+                  {/* Original Price (MRP) */}
+                  {mrp && mrp !== product.price && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg line-through text-gray-500">
+                        ₹{mrp}
+                      </span>
+                      <span className="text-sm text-gray-600">
+                        (You save ₹{mrp - product.price})
+                      </span>
+                    </div>
                   )}
                 </div>
 
