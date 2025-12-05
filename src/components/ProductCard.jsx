@@ -10,18 +10,18 @@ import { ShoppingCart, Star } from "lucide-react";
 
 /**
  * ProductCard Component - Individual product display card
- * 
+ *
  * Props:
  * - product: object - product data including id, name, price, rating, imageURL, etc.
  * - onOpenProduct: function (optional) - callback to open product in modal instead of navigating
- * 
+ *
  * Features:
  * - Displays product image with featured/customizable badges
  * - Shows price, rating, and review count
  * - Add to cart button with quantity controls
  * - Hover effects (scale up, shadow)
  * - Handles both as a Link (navigates to product page) or as a button (opens modal)
- * 
+ *
  * For beginners:
  * - Uses Redux dispatch to add/remove products from cart
  * - Uses React Router Link for navigation to product details page
@@ -69,7 +69,6 @@ const ProductCard = ({ product, onOpenProduct }) => {
   const content = (
     <div
       className="
-      bg-white 
       overflow-hidden 
       transition-all duration-200 ease-out
       flex flex-col
@@ -82,11 +81,11 @@ const ProductCard = ({ product, onOpenProduct }) => {
     "
     >
       {/* --- Image and Tag Section --- */}
-      <div className="relative h-40 md:h-60 w-full bg-gray-100 rounded-2xl overflow-hidden flex items-center justify-center border border-gray-200 transition-all duration-200 ease-out group-hover:shadow-lg group-hover:scale-102 group-hover:-translate-y-1">
+      <div className="relative h-40 md:h-60 w-full bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center border-1 border-gray-200 transition-all duration-200 ease-out  group-hover:-translate-y-1 group-hover:shadow-sm">
         <img
           src={imageURL}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-200 ease-out group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-200 ease-out"
         />
 
         {/* Tags at the top left */}
@@ -135,7 +134,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
       </div>
 
       {/* --- Product Details Section --- */}
-      <div className="py-4 md:p-4 flex-grow flex flex-col justify-between min-h-[140px] min-w-0">
+      <div className="px-2 md:px-4 py-4 flex-grow flex flex-col justify-between min-h-[140px] min-w-0">
         {/* Product Title - Fixed height to prevent layout shifts */}
         <div className="w-full">
           <div className="text-base font-extrabold text-gray-800 mb-2 overflow-hidden leading-5 truncate w-full">
