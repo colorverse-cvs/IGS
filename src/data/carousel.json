@@ -6,22 +6,22 @@
   "items": [
     {
       "id": "slide-1",
-      "title": "",
-      "description": "",
+      "title": "Timeless Figures",
+      "description": "Inspiring art to drive ambition and focus.",
       "price": 5000,
       "image": "/src/assets/art1.png"
     },
     {
       "id": "slide-2",
-      "title": "",
-      "description": "",
+      "title": "Visionary Art",
+      "description": "Boost creativity and focus.",
       "price": 4000,
       "image": "/src/assets/art2.png"
     },
     {
       "id": "slide-3",
-      "title": "",
-      "description": "",
+      "title": "Motivational Sculpture",
+      "description": "A piece to keep you inspired.",
       "price": 6000,
       "image": "/src/assets/art3.png"
     }
