@@ -1,4 +1,4 @@
-import React from "react";
+import {React, useEffect, useRef, useState} from "react";
 import categoriesData from "../data/categories.json";
 import ProductSection from "../components/ProductSection.jsx";
 
@@ -14,6 +14,35 @@ import ProductSection from "../components/ProductSection.jsx";
  * - ProductSection handles the carousel display of products
  */
 export default function CollectionPage() {
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  const didFetchRef = useRef(false); // <<< prevents API double-call
+    
+    // Get products only once
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/v1/products");
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
+  
+        const result = await response.json();
+        console.log(result.data);
+
+        setAllProducts(result.data);
+        console.log("allProducts ", allProducts)
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    useEffect(() => {
+      if (didFetchRef.current) return;
+      didFetchRef.current = true;
+      fetchProducts();
+    }, []);
+
   return (
     <div className="px-4 md:px-15 lg:px-20">
       <div className="container py-6 mx-auto">
