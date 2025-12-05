@@ -58,11 +58,11 @@ export default function HomePage() {
               <div className="flex flex-col md:flex-row flex-wrap gap-4 py-5">
                 <button
                   onClick={() => navigate("/filter")}
-                  className="bg-brand-900 text-white py-1 px-2 rounded-md font-medium hover:bg-brand-800 transition"
+                  className="bg-brand-900 text-white py-1 px-4 rounded-md font-medium hover:bg-brand-800 transition"
                 >
                   Explore Collection
                 </button>
-                <button className="border-2 border-brand-700 text-brand-700  py-1 px-1 rounded-md font-medium hover:bg-brand-50 transition">
+                <button className="border-2 border-brand-700 text-brand-700  py-1 px-4 rounded-md font-medium hover:bg-brand-50 transition">
                   Custom Order
                 </button>
               </div>
@@ -130,7 +130,9 @@ export default function HomePage() {
       </div>
 
       <CustomizationWorksPage />
+      <section className="bg-brand-50">
       <TestimonialsPage items={testimonials} />
+      </section>
     </>
   );
 }

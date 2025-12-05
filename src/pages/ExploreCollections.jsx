@@ -50,7 +50,7 @@ export default function ExploreCollections() {
     return (
       <button
         onClick={() => goToCategory(section?.id)}
-        className="group relative rounded-xl overflow-hidden aspect-[4/3]"
+        className="group relative rounded-xl overflow-hidden md:h-[50vh] lg:h-[50vh]"
       >
         <img
           src={img}
