@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BASE_URL } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchProducts } from "../features/products/productSlice";
@@ -10,7 +11,7 @@ export default function CategoryMosaic() {
   const { products: allProducts, status } = useSelector((state) => state.products);
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
-  
+
   // Fetch products if not already loaded
   useEffect(() => {
     if (status === 'idle') {
@@ -34,7 +35,7 @@ export default function CategoryMosaic() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/products/categories");
+        const response = await fetch(`${BASE_URL}/api/v1/products/categories`);
         if (!response.ok) throw new Error(`Categories Error: ${response.status}`);
         const result = await response.json();
         setCategories(result.data || []);

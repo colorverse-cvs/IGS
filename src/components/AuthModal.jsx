@@ -1,5 +1,6 @@
 import React from "react";
 import Modal from "./Modal";
+import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { login, signup } from "../features/user/userSlice";
 import googleButton from "../assets/google_buttons.png";
@@ -170,7 +171,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   //       role: "customer",
   //     };
 
-  //     const res = await fetch("http://localhost:3000/api/v1/auth/login", {
+  //     const res = await fetch(`${BASE_URL}/api/v1/auth/login`, {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",
@@ -281,7 +282,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/api/v1/auth/register", {
+      const res = await fetch(`${BASE_URL}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -321,7 +322,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
     setResetLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/v1/auth/reset", {
+      const res = await fetch(`${BASE_URL}/api/v1/auth/reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier: resetEmail }),
@@ -404,9 +405,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             <button
               type="button"
               onClick={() => setTab("login")}
-              className={`px-5 py-2 text-sm font-medium rounded-full transition ${
-                tab === "login" ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900"
-              }`}
+              className={`px-5 py-2 text-sm font-medium rounded-full transition ${tab === "login" ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900"
+                }`}
               aria-pressed={tab === "login"}
             >
               Log In
@@ -414,9 +414,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             <button
               type="button"
               onClick={() => setTab("signup")}
-              className={`px-5 py-2 text-sm font-medium rounded-full transition ${
-                tab === "signup" ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900"
-              }`}
+              className={`px-5 py-2 text-sm font-medium rounded-full transition ${tab === "signup" ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900"
+                }`}
               aria-pressed={tab === "signup"}
             >
               Sign Up
@@ -493,9 +492,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             <button
               type="submit"
               disabled={!isLoginValid || loginLoading}
-              className={`w-full py-3 rounded-lg text-sm font-semibold transition ${
-                isLoginValid && !loginLoading ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"
-              }`}
+              className={`w-full py-3 rounded-lg text-sm font-semibold transition ${isLoginValid && !loginLoading ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
             >
               {loginLoading ? "Logging in..." : "Log In"}
             </button>
@@ -520,9 +518,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
-                  signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                }`}
+                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                  }`}
               />
               {signupErrors.name && <p className="text-xs text-red-600 mt-1">{signupErrors.name}</p>}
             </div>
@@ -535,9 +532,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
                 placeholder="9876543210"
                 inputMode="numeric"
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
-                  signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                }`}
+                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                  }`}
               />
               {signupErrors.mobile && <p className="text-xs text-red-600 mt-1">{signupErrors.mobile}</p>}
             </div>
@@ -549,9 +545,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="john@example.com"
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
-                  signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                }`}
+                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                  }`}
               />
               {signupErrors.email && <p className="text-xs text-red-600 mt-1">{signupErrors.email}</p>}
             </div>
@@ -565,9 +560,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min 8 chars, letters & numbers"
-                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
-                    signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                  }`}
+                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                    }`}
                 />
                 <button
                   type="button"
@@ -590,9 +584,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${
-                    signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                  }`}
+                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                    }`}
                 />
                 <button
                   type="button"
@@ -612,9 +605,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             <button
               type="submit"
               disabled={!isSignupValid || signupLoading}
-              className={`w-full py-3 rounded-lg text-sm font-semibold transition ${
-                isSignupValid && !signupLoading ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"
-              }`}
+              className={`w-full py-3 rounded-lg text-sm font-semibold transition ${isSignupValid && !signupLoading ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
             >
               {signupLoading ? "Creating account..." : "Create account"}
             </button>

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { BASE_URL } from '../../utils/constants';
 
 
 // Map category names to slugs for filtering
@@ -20,10 +21,10 @@ const transformProduct = (apiProduct) => {
   if (apiProduct.images && apiProduct.images.length > 0) {
     const firstImage = apiProduct.images[0];
     if (typeof firstImage === 'string') {
-      imageURL = firstImage.startsWith('http') ? firstImage : `http://localhost:3000${firstImage}`;
+      imageURL = firstImage.startsWith('http') ? firstImage : `${BASE_URL}${firstImage}`;
     } else if (firstImage && typeof firstImage === 'object' && firstImage.url) {
       const url = firstImage.url;
-      imageURL = url.startsWith('http') ? url : `http://localhost:3000${url}`;
+      imageURL = url.startsWith('http') ? url : `${BASE_URL}${url}`;
     }
   }
 
@@ -63,13 +64,13 @@ const transformProduct = (apiProduct) => {
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
   async () => {
-    const response = await fetch("http://localhost:3000/api/v1/products");
+    const response = await fetch(`${BASE_URL}/api/v1/products`);
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
     const result = await response.json();
     const apiProducts = result.data || [];
-    
+
     // Transform products to expected format
     return apiProducts.map(transformProduct);
   }

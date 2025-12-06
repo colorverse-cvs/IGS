@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { BASE_URL } from "../utils/constants";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch } from "react-redux";
@@ -40,12 +41,12 @@ export default function ProductInfoPage() {
       images = apiProduct.images.map((img) => {
         // If image is a string, use it directly
         if (typeof img === 'string') {
-          return img.startsWith('http') ? img : `http://localhost:3000${img}`;
+          return img.startsWith('http') ? img : `${BASE_URL}${img}`;
         }
         // If image is an object with url property, extract the URL
         if (img && typeof img === 'object' && img.url) {
           const url = img.url;
-          return url.startsWith('http') ? url : `http://localhost:3000${url}`;
+          return url.startsWith('http') ? url : `${BASE_URL}${url}`;
         }
         // Fallback
         return img;
@@ -104,8 +105,8 @@ export default function ProductInfoPage() {
 
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:3000/api/v1/products/${id}`);
-        
+        const response = await fetch(`${BASE_URL}/api/v1/products/${id}`);
+
         if (!response.ok) {
           if (response.status === 404) {
             setProduct(null);
@@ -118,7 +119,7 @@ export default function ProductInfoPage() {
         const result = await response.json();
         const transformedProduct = transformProduct(result.data);
         setProduct(transformedProduct);
-        
+
         // Set default material and size from product if available
         if (transformedProduct?.material) {
           setSelectedMaterial(transformedProduct.material.toLowerCase());
@@ -171,10 +172,10 @@ export default function ProductInfoPage() {
     Array.isArray(product.images) && product.images.length
       ? product.images
       : [
-          imageSrc,
-          `https://picsum.photos/300/300?random=${product.id}-1`,
-          `https://picsum.photos/300/300?random=${product.id}-2`,
-        ];
+        imageSrc,
+        `https://picsum.photos/300/300?random=${product.id}-1`,
+        `https://picsum.photos/300/300?random=${product.id}-2`,
+      ];
 
   const currentImage = productImages[selectedImageIndex];
 
@@ -214,15 +215,15 @@ export default function ProductInfoPage() {
     Array.isArray(product.materials) && product.materials.length
       ? product.materials
       : [
-          { value: "marble", label: "Marble", description: "Hand-Carved" },
-          { value: "resin", label: "Resin", description: "High-Density" },
-        ]
+        { value: "marble", label: "Marble", description: "Hand-Carved" },
+        { value: "resin", label: "Resin", description: "High-Density" },
+      ]
   ).map((m) =>
     typeof m === "string"
       ? {
-          value: m.toLowerCase(),
-          label: m.charAt(0).toUpperCase() + m.slice(1),
-        }
+        value: m.toLowerCase(),
+        label: m.charAt(0).toUpperCase() + m.slice(1),
+      }
       : m
   );
 
@@ -231,15 +232,15 @@ export default function ProductInfoPage() {
     Array.isArray(product.sizes) && product.sizes.length
       ? product.sizes
       : [
-          { value: "small", label: "Small", description: "Under 6 in" },
-          { value: "medium", label: "Medium", description: "6 in - 10 in" },
-          { value: "large", label: "Large", description: "10 in - 15 in" },
-          {
-            value: "extra-large",
-            label: "Extra Large",
-            description: "Above 15 in",
-          },
-        ]
+        { value: "small", label: "Small", description: "Under 6 in" },
+        { value: "medium", label: "Medium", description: "6 in - 10 in" },
+        { value: "large", label: "Large", description: "10 in - 15 in" },
+        {
+          value: "extra-large",
+          label: "Extra Large",
+          description: "Above 15 in",
+        },
+      ]
   ).map((s) =>
     typeof s === "string"
       ? { value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }
@@ -371,11 +372,10 @@ export default function ProductInfoPage() {
                     <div
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
-                      className={`w-20 h-20 rounded-lg overflow-hidden border-1 cursor-pointer transition-all duration-200 ${
-                        index === selectedImageIndex
+                      className={`w-20 h-20 rounded-lg overflow-hidden border-1 cursor-pointer transition-all duration-200 ${index === selectedImageIndex
                           ? "border-2 border-brand-700 shadow-2xl shadow-purple-500"
                           : "border-gray-200"
-                      }`}
+                        }`}
                     >
                       <img
                         src={img}
@@ -564,11 +564,10 @@ export default function ProductInfoPage() {
                     {sizeOptions.map((option) => (
                       <label
                         key={option.value}
-                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${
-                          selectedSize === option.value
+                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${selectedSize === option.value
                             ? "shadow-lg"
                             : " border-gray-300"
-                        }`}
+                          }`}
                       >
                         <input
                           type="radio"
@@ -661,16 +660,14 @@ export default function ProductInfoPage() {
                     {aboutRows.map((row, i) => (
                       <div key={i} className="flex border-none">
                         <dt
-                          className={`py-2 px-4 text-sm text-gray-600 w-[30%] ${
-                            i === 0 ? "rounded-tl-lg" : ""
-                          }`}
+                          className={`py-2 px-4 text-sm text-gray-600 w-[30%] ${i === 0 ? "rounded-tl-lg" : ""
+                            }`}
                         >
                           {row.label}
                         </dt>
                         <dd
-                          className={`py-2 px-4 text-sm text-gray-900 w-[70%] ${
-                            i === 0 ? "rounded-tr-lg" : ""
-                          }`}
+                          className={`py-2 px-4 text-sm text-gray-900 w-[70%] ${i === 0 ? "rounded-tr-lg" : ""
+                            }`}
                         >
                           {row.value}
                         </dd>

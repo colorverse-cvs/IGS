@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BASE_URL } from "../utils/constants";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchProducts } from "../features/products/productSlice";
@@ -22,7 +23,7 @@ export default function ExploreCollections() {
   const { products: allProducts, status } = useSelector((state) => state.products);
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
-  
+
   // Fetch products if not already loaded
   useEffect(() => {
     if (status === 'idle') {
@@ -46,7 +47,7 @@ export default function ExploreCollections() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/products/categories");
+        const response = await fetch(`${BASE_URL}/api/v1/products/categories`);
         if (!response.ok) throw new Error(`Categories Error: ${response.status}`);
         const result = await response.json();
         setCategories(result.data || []);
@@ -109,7 +110,7 @@ export default function ExploreCollections() {
   const rows = [];
   let start = 0;
   let pIndex = 0;
-  
+
   while (start < sections.length && rows.length < 2) {
     const size = pattern[pIndex % pattern.length];
     rows.push(sections.slice(start, start + size));
@@ -126,7 +127,7 @@ export default function ExploreCollections() {
     const title = section?.title || "Collection";
     const subtitle = section?.subtitle || "";
     const posClass = overlay === "bottom" ? "bottom-3" : "bottom-3 md:top-3";
-    
+
     return (
       <button
         onClick={() => goToCategory(section?.id)}

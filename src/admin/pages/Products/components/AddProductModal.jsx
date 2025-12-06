@@ -1,5 +1,6 @@
 import { X, Upload } from "lucide-react";
 import { useRef, useState, useEffect, useMemo } from "react";
+import { BASE_URL } from "../../../../utils/constants";
 import Dropdown from "../../../../../src/components/Dropdown";
 
 export default function AddProductModal({ onClose, onProductAdded }) {
@@ -54,7 +55,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch("http://localhost:3000/api/v1/products/categories");
+        const res = await fetch(`${BASE_URL}/api/v1/products/categories`);
         const data = await res.json();
 
         if (res.ok && Array.isArray(data?.data)) {
@@ -178,7 +179,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       formDataToSend.append("sku", sku);
       formDataToSend.append("tags", JSON.stringify([]));
 
-      const res = await fetch("http://localhost:3000/api/v1/products", {
+      const res = await fetch(`${BASE_URL}/api/v1/products`, {
         method: "POST",
         body: formDataToSend
       });
@@ -307,9 +308,8 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           <button
             disabled={!isFormValid}
             onClick={handleAddNewProduct}
-            className={`px-5 py-2 rounded-lg text-white ${
-              isFormValid ? "bg-purple-600" : "bg-gray-300"
-            }`}
+            className={`px-5 py-2 rounded-lg text-white ${isFormValid ? "bg-purple-600" : "bg-gray-300"
+              }`}
           >
             Add Product
           </button>
@@ -326,11 +326,10 @@ function Input({ label, error, ...props }) {
       <label className="text-sm mb-1 block">{label}</label>
       <input
         {...props}
-        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${
-          error
+        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${error
             ? "border-red-500 focus:ring-red-400"
             : "border-gray-300 focus:ring-violet-500"
-        }`}
+          }`}
       />
       {error && <ErrorText text={error} />}
     </div>
