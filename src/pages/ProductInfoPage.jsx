@@ -93,7 +93,7 @@ export default function ProductInfoPage() {
       category: categoryName,
       categoryId: categorySlug,
       categoryName: categoryName,
-      weight: apiProduct.weight,
+      weight: apiProduct.weight ? `${apiProduct.weight} gm` : null,
       dimensions: apiProduct.dimensions?.sizeDescription || (
         apiProduct.dimensions?.height && apiProduct.dimensions?.width
           ? `H: ${apiProduct.dimensions.height} ${apiProduct.dimensions.unit || "cm"} x W: ${apiProduct.dimensions.width} ${apiProduct.dimensions.unit || "cm"}`

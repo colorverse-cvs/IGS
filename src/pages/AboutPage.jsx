@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RibbonImage from "../assets/Purple-Bow-Gift-Ribbon.png";
 import Rect16 from "../assets/Rectangle 16.png";
@@ -6,7 +6,8 @@ import Rect17 from "../assets/Rectangle 17.png";
 import Rect18 from "../assets/Rectangle 18.png";
 import LeftRings from "../assets/ring_vector1.png";
 import RightRings from "../assets/ring_vector2.png";
-import categoriesData from "../data/categories.json";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../features/products/productSlice";
 import CarouselRow from "../components/CarouselRow";
 import ProductCard from "../components/ProductCard";
 import testimonials from "../data/testimonials.json";
@@ -47,10 +48,18 @@ const artisans = [
 
 export default function AboutPage() {
   const navigate = useNavigate();
-  const shivajiSection = categoriesData.sections.find(
-    (section) => section.id === "shivaji"
-  );
-  const shivajiProducts = (shivajiSection?.products || []).slice(0, 4);
+  const dispatch = useDispatch();
+  const { products, status } = useSelector((state) => state.products);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchProducts());
+    }
+  }, [status, dispatch]);
+
+  const shivajiProducts = products.filter(
+    (product) => product.categoryId === "shivaji" || product.category?.toLowerCase().includes("shivaji")
+  ).slice(0, 4);
 
   return (
     <main className="bg-white">
