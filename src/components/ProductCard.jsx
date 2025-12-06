@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { getDiscountedPrice } from "../utils/helpers";
 import {
   addToCart,
   updateQty,
@@ -127,23 +128,26 @@ const ProductCard = ({ product, onOpenProduct }) => {
 
         {/* Price Row */}
         <div className="flex flex-col gap-1 mb-2">
-          {/* Discounted Price (with discount) */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-extrabold text-brand-700">
-              ₹{price}
+          {/* Main Price (Calculated) */}
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold text-brand-700">
+              ₹{getDiscountedPrice(mrp, discount)}
             </span>
+
+            {/* MRP Strikethrough */}
+            {mrp && (
+              <span className="text-sm text-gray-400 line-through">
+                MRP: ₹{mrp}
+              </span>
+            )}
+
+            {/* Discount Percentage */}
             {discount && discount !== "0% Off" && (
-              <span className="text-xs font-medium text-brand-600">{discount}</span>
+              <span className="text-xs font-semibold text-brand-600">
+                {discount}
+              </span>
             )}
           </div>
-          {/* Original Price (without discount) */}
-          {mrp && mrp !== price && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs line-through text-gray-500">
-                ₹{mrp}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Rating and Add to Cart */}
@@ -230,12 +234,15 @@ const ProductCard = ({ product, onOpenProduct }) => {
   }
   return (
     <Link
-      to={`/product/${id}`}
+      to={{
+        pathname: `/product/${id}`,
+        state: { product },
+      }}
       className="block w-full h-full"
       style={{ textDecoration: "none", color: "inherit" }}
       onClick={() => {
         // Debug: verify product ID is being passed
-        console.log("Navigating to product:", id);
+        console.log("Navigating to product:", product);
       }}
     >
       {content}

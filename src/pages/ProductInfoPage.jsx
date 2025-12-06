@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import { getDiscountedPrice } from "../utils/helpers";
 import { BASE_URL } from "../utils/constants";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
@@ -13,6 +14,7 @@ export default function ProductInfoPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -52,7 +54,9 @@ export default function ProductInfoPage() {
         return img;
       });
     } else {
-      images = ["https://picsum.photos/300/300?random=1"];
+      // If no images, use a single placeholder or keep empty depending on requirements.
+      // Keeping one placeholder if absolutely no images exist so layout doesn't break.
+      images = ["https://via.placeholder.com/300"];
     }
 
     // Get discount percentage - use API discount field if available, otherwise calculate from listPrice and price
@@ -80,7 +84,7 @@ export default function ProductInfoPage() {
       reviews: apiProduct.reviews || 0,
       isFeatured: apiProduct.isFeatured || false,
       isCustomizable: apiProduct.isCustomizable || false,
-      imageURL: images[0] || "https://picsum.photos/300/300?random=1",
+      imageURL: images[0] || "https://via.placeholder.com/300",
       images: images,
       material: apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin",
       primaryMaterial: apiProduct.attributes?.primaryMaterial,
@@ -90,7 +94,11 @@ export default function ProductInfoPage() {
       categoryId: categorySlug,
       categoryName: categoryName,
       weight: apiProduct.weight,
-      dimensions: apiProduct.dimensions?.sizeDescription,
+      dimensions: apiProduct.dimensions?.sizeDescription || (
+        apiProduct.dimensions?.height && apiProduct.dimensions?.width
+          ? `H: ${apiProduct.dimensions.height} ${apiProduct.dimensions.unit || "cm"} x W: ${apiProduct.dimensions.width} ${apiProduct.dimensions.unit || "cm"}`
+          : null
+      ),
       finish: apiProduct.attributes?.finish,
       origin: apiProduct.attributes?.origin,
       description: apiProduct.description,
@@ -169,13 +177,9 @@ export default function ProductInfoPage() {
 
   // Images: prefer product.images from JSON if present
   const productImages =
-    Array.isArray(product.images) && product.images.length
+    Array.isArray(product.images) && product.images.length > 0
       ? product.images
-      : [
-        imageSrc,
-        `https://picsum.photos/300/300?random=${product.id}-1`,
-        `https://picsum.photos/300/300?random=${product.id}-2`,
-      ];
+      : [product.imageURL];
 
   const currentImage = productImages[selectedImageIndex];
 
@@ -267,7 +271,7 @@ export default function ProductInfoPage() {
       label: "Dimensions",
       value:
         product.dimensions ||
-        aboutDefaults.dimensions ||
+        location.state?.product?.dimensions ||
         selectedSizeMeta?.description ||
         "—",
     },
@@ -373,8 +377,8 @@ export default function ProductInfoPage() {
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
                       className={`w-20 h-20 rounded-lg overflow-hidden border-1 cursor-pointer transition-all duration-200 ${index === selectedImageIndex
-                          ? "border-2 border-brand-700 shadow-2xl shadow-purple-500"
-                          : "border-gray-200"
+                        ? "border-2 border-brand-700 shadow-2xl shadow-purple-500"
+                        : "border-gray-200"
                         }`}
                     >
                       <img
@@ -449,28 +453,23 @@ export default function ProductInfoPage() {
 
                 {/* Pricing */}
                 <div className="flex flex-col gap-2">
-                  {/* Discounted Price (Current Price) */}
                   <div className="flex items-baseline gap-3">
                     <span className="text-3xl font-bold text-brand-700">
-                      ₹{product.price}
+                      ₹{getDiscountedPrice(mrp, discount)}
                     </span>
+
+                    {mrp && (
+                      <span className="text-lg text-gray-400 line-through">
+                        MRP: ₹{mrp}
+                      </span>
+                    )}
+
                     {discount && (
                       <span className="text-lg font-medium text-brand-600">
                         {discount}
                       </span>
                     )}
                   </div>
-                  {/* Original Price (MRP) */}
-                  {mrp && mrp !== product.price && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg line-through text-gray-500">
-                        ₹{mrp}
-                      </span>
-                      <span className="text-sm text-gray-600">
-                        (You save ₹{mrp - product.price})
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Purchase Stats */}
@@ -565,8 +564,8 @@ export default function ProductInfoPage() {
                       <label
                         key={option.value}
                         className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${selectedSize === option.value
-                            ? "shadow-lg"
-                            : " border-gray-300"
+                          ? "shadow-lg"
+                          : " border-gray-300"
                           }`}
                       >
                         <input
