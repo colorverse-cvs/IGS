@@ -6,6 +6,7 @@ import {
   addToCart,
   updateQty,
   removeFromCart,
+  addToCartAsync,
 } from "../features/cart/cartSlice";
 import { ShoppingCart, Star } from "lucide-react";
 
@@ -34,7 +35,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
   // Add product to cart with all its details
   const handleAddToCart = () => {
     dispatch(
-      addToCart({
+      addToCartAsync({
         id: id,
         title: name,
         price: price,
@@ -43,6 +44,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
         discount: discount,
         material: material,
         size: size,
+        qty: 1,
       })
     );
   };

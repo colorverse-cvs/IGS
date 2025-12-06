@@ -52,7 +52,7 @@ const transformProduct = (apiProduct) => {
     isCustomizable: apiProduct.isCustomizable || false,
     imageURL: imageURL,
     material: (apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin").toLowerCase(),
-    size: apiProduct.dimensions?.size || "medium",
+    size: apiProduct.dimensions?.sizeCategory || apiProduct.dimensions?.size || "medium",
     sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
     category: categoryName,
     categoryId: categorySlug,

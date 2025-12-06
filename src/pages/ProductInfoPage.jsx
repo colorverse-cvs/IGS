@@ -4,7 +4,7 @@ import { BASE_URL } from "../utils/constants";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../features/cart/cartSlice";
+import { addToCart, addToCartAsync } from "../features/cart/cartSlice";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
@@ -88,7 +88,7 @@ export default function ProductInfoPage() {
       images: images,
       material: apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin",
       primaryMaterial: apiProduct.attributes?.primaryMaterial,
-      size: apiProduct.dimensions?.size || "medium",
+      size: apiProduct.dimensions?.sizeCategory || apiProduct.dimensions?.size || "medium",
       sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
       category: categoryName,
       categoryId: categorySlug,
@@ -130,7 +130,9 @@ export default function ProductInfoPage() {
 
         // Set default material and size from product if available
         if (transformedProduct?.material) {
-          setSelectedMaterial(transformedProduct.material.toLowerCase());
+          // Normalize: "resin - high-density" -> "resin" to match option values
+          const normalized = transformedProduct.material.toLowerCase().split(' - ')[0].trim();
+          setSelectedMaterial(normalized);
         }
         if (transformedProduct?.size) {
           setSelectedSize(transformedProduct.size.toLowerCase());
@@ -226,7 +228,7 @@ export default function ProductInfoPage() {
     typeof m === "string"
       ? {
         value: m.toLowerCase(),
-        label: m.charAt(0).toUpperCase() + m.slice(1),
+        label: m.charAt(0).toUpperCase() + m.slice(1).toLowerCase(),
       }
       : m
   );
@@ -291,20 +293,19 @@ export default function ProductInfoPage() {
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i += 1) {
-      dispatch(
-        addToCart({
-          id: product.id,
-          title,
-          price: product.price,
-          image: imageSrc,
-          mrp: mrp,
-          discount,
-          material: selectedMaterial,
-          size: selectedSize,
-        })
-      );
-    }
+    dispatch(
+      addToCartAsync({
+        id: product.id,
+        title,
+        price: product.price,
+        image: imageSrc,
+        mrp,
+        discount,
+        material: selectedMaterial,
+        size: selectedSize,
+        qty: quantity,
+      })
+    );
   };
 
   const handleBuyNow = () => {
@@ -530,8 +531,7 @@ export default function ProductInfoPage() {
                     {materialOptions.map((option) => (
                       <label
                         key={option.value}
-                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500
- ${selectedMaterial === option.value ? "shadow-lg" : "border-gray-300"}`}
+                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${selectedMaterial === option.value ? "shadow-lg" : "border-gray-300"}`}
                       >
                         <input
                           type="radio"

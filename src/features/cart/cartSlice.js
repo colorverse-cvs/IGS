@@ -1,4 +1,41 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { BASE_URL } from '../../utils/constants';
+
+export const addToCartAsync = createAsyncThunk(
+  'cart/addToCartAsync',
+  async (productData, { dispatch, rejectWithValue }) => {
+    console.log("Adding to cart", productData);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BASE_URL}/api/v1/cart/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productId: productData.id,
+          quantity: productData.qty || 1,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add to cart');
+      }
+
+      const data = await response.json();
+
+      // Dispatch the local reducer to update UI immediately (optimistic or confirmed)
+      // We pass the full productData because the API might not return all details needed for the UI
+      dispatch(addToCart(productData));
+
+      return data;
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 /**
  * Cart Slice - Redux Toolkit State Management
@@ -39,7 +76,7 @@ const cartSlice = createSlice({
         state.items.push({ ...newItem, qty: 1 });
       }
     },
-    
+
     /**
      * Remove an item from the cart completely
      * Uses filter to create a new array without the item with matching id
@@ -48,7 +85,7 @@ const cartSlice = createSlice({
       const idToRemove = action.payload;
       state.items = state.items.filter(item => item.id !== idToRemove);
     },
-    
+
     /**
      * Update the quantity of a specific cart item
      * Ensures quantity is always at least 1 (can't go below 1)
@@ -60,7 +97,7 @@ const cartSlice = createSlice({
         itemToUpdate.qty = Math.max(1, qty);
       }
     },
-    
+
     /**
      * Clear all items from the cart
      * Used after successful order placement
