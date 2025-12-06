@@ -1,4 +1,5 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
+import { BASE_URL } from '../../utils/constants';
 
 /**
  * User Slice - Redux Toolkit State Management with localStorage Persistence
@@ -25,7 +26,13 @@ const loadState = () => {
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem('igs_user');
-    return raw ? JSON.parse(raw) : null;
+    const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (parsed) {
+      return { ...parsed, token, refreshToken };
+    }
+    return null;
   } catch (error) {
     console.error('Error loading user state from localStorage:', error);
     return null;
@@ -47,6 +54,8 @@ const saveState = (state) => {
 
 const initialState = loadState() || {
   isAuthenticated: false,
+  token: null,
+  refreshToken: null,
   profile: {
     id: null,
     name: '',
@@ -66,15 +75,23 @@ const userSlice = createSlice({
      * Saves to localStorage automatically
      */
     login(state, action) {
-      const { name, email, mobile } = action.payload || {};
+      const { name, email, mobile, token, refreshToken, id } = action.payload || {};
       state.isAuthenticated = true;
-      state.profile.id = state.profile.id || nanoid();
+      if (token) {
+        state.token = token;
+        localStorage.setItem('token', token);
+      }
+      if (refreshToken) {
+        state.refreshToken = refreshToken;
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+      state.profile.id = id || state.profile.id || nanoid();
       state.profile.name = name || state.profile.name || 'User';
       state.profile.email = email || state.profile.email || '';
       state.profile.mobile = mobile || state.profile.mobile || '';
       saveState(state);
     },
-    
+
     /**
      * Sign up a new user
      * Creates a new user profile with a unique ID
@@ -90,7 +107,7 @@ const userSlice = createSlice({
       state.profile.addresses = [];
       saveState(state);
     },
-    
+
     /**
      * Log out the current user
      * Resets authentication and profile data
@@ -98,10 +115,14 @@ const userSlice = createSlice({
      */
     logout(state) {
       state.isAuthenticated = false;
+      state.token = null;
+      state.refreshToken = null;
       state.profile = { id: null, name: '', email: '', mobile: '', addresses: [] };
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       saveState(state);
     },
-    
+
     /**
      * Add a new address or update an existing one
      * If address has no id, creates a new one with nanoid()
@@ -119,7 +140,7 @@ const userSlice = createSlice({
       else state.profile.addresses.push({ ...addr });
       saveState(state);
     },
-    
+
     /**
      * Set a specific address as the default address
      * Removes default flag from all other addresses
@@ -130,7 +151,7 @@ const userSlice = createSlice({
       state.profile.addresses = state.profile.addresses.map((a) => ({ ...a, isDefault: a.id === id }));
       saveState(state);
     },
-    
+
     /**
      * Remove an address from the user's profile
      * Saves to localStorage automatically
@@ -140,7 +161,7 @@ const userSlice = createSlice({
       state.profile.addresses = state.profile.addresses.filter((a) => a.id !== id);
       saveState(state);
     },
-    
+
     /**
      * Update user profile information
      * Merges new data with existing profile
@@ -154,4 +175,41 @@ const userSlice = createSlice({
 });
 
 export const { login, signup, logout, addOrUpdateAddress, setDefaultAddress, removeAddress, updateProfile } = userSlice.actions;
+
+/**
+ * Async Thunks
+ */
+export const logoutAsync = createAsyncThunk(
+  'user/logoutAsync',
+  async (_, { dispatch, getState }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
+      const refreshToken = state.user.refreshToken;
+      const userId = state.user.profile.id;
+
+      console.log('Logout initiated', { token, refreshToken, userId });
+
+      if (token && refreshToken && userId) {
+        console.log('Calling logout API...');
+        const response = await fetch(`${BASE_URL}/api/v1/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ userId, refreshToken })
+        });
+        console.log('Logout API response status:', response.status);
+      } else {
+        console.log('Skipping Logout API: Missing credentials');
+      }
+    } catch (error) {
+      console.error('Logout API failed:', error);
+    } finally {
+      dispatch(userSlice.actions.logout());
+    }
+  }
+);
+
 export default userSlice.reducer;

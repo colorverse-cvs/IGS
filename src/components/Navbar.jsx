@@ -18,7 +18,7 @@ import AuthModal from "./AuthModal";
 import Dropdown from "./Dropdown";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import categoriesData from "../data/categories.json";
-import { logout } from "../features/user/userSlice";
+import { logoutAsync } from "../features/user/userSlice";
 import { useAdminPanel } from "../contexts/AdminPanelContext";
 
 
@@ -247,8 +247,8 @@ export default function Navbar() {
           Features: Sticky positioning with glass blur effect on scroll */}
       <nav
         className={`hidden lg:block sticky top-0 z-30 border-b transition-colors ${isScrolled
-            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
-            : "bg-white border-gray-100"
+          ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+          : "bg-white border-gray-100"
           }`}
       >
         <div className={`mx-auto px-4 md:px-15 lg:px-20 max-w-7xl lg:max-w-full ${isAdminPanelOpen ? 'hidden' : ''}`}>
@@ -385,7 +385,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => {
-                      dispatch(logout());
+                      dispatch(logoutAsync());
                       setIsProfileDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
@@ -423,15 +423,16 @@ export default function Navbar() {
               onClick={handleOpenAdminPanel}>ADMIN PANEL</button>
           </div>
         </div>
-      </nav>
+      </nav >
       {/* MOBILE NAVBAR - Fixed top navigation bar for small/medium screens (md and below)
           Shows: Logo on left, search and auth on right (on md+), responsive bottom search
           Features: Sticky positioning with blur effect on scroll */}
-      <nav
+      < nav
         className={`lg:hidden fixed top-0 left-0 right-0 z-40 border-b border-gray-200 ${isScrolled
-            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
-            : "bg-white border-gray-100"
-          }`}
+          ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+          : "bg-white border-gray-100"
+          }`
+        }
       >
         <div className={`py-3 px-4 md:px-15 lg:px-20 ${isAdminPanelOpen ? 'hidden' : ''}`}>
           {/* Top Navbar Row */}
@@ -508,7 +509,7 @@ export default function Navbar() {
                   ))}
                   <button
                     onClick={() => {
-                      dispatch(logout());
+                      dispatch(logoutAsync());
                       setIsProfileDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
@@ -586,7 +587,7 @@ export default function Navbar() {
                   ))}
                   <button
                     onClick={() => {
-                      dispatch(logout());
+                      dispatch(logoutAsync());
                       setIsProfileDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
@@ -635,7 +636,7 @@ export default function Navbar() {
             </div>
           )}
         </div>
-      </nav>
+      </nav >
 
       <div
         className="md:hidden"
@@ -651,81 +652,83 @@ export default function Navbar() {
       {/* MOBILE BOTTOM NAVBAR - Fixed navigation at bottom of screen (mobile only, lg:hidden)
           Shows: Home, Profile, Contact, Cart, Menu (5 main navigation options)
           Features: Active state highlighting, cart badge with item count */}
-      {!isAdminPanelOpen && (
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200">
-          <div className="flex justify-around items-center h-16">
-            {/* Home */}
-            <Link
-              to="/"
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/"
+      {
+        !isAdminPanelOpen && (
+          <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200">
+            <div className="flex justify-around items-center h-16">
+              {/* Home */}
+              <Link
+                to="/"
+                className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/"
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
-                }`}
-              aria-label="Home"
-            >
-              <Home size={24} />
-              <span className="text-xs mt-1 font-medium">Home</span>
-            </Link>
+                  }`}
+                aria-label="Home"
+              >
+                <Home size={24} />
+                <span className="text-xs mt-1 font-medium">Home</span>
+              </Link>
 
-            {/* Profile */}
-            <Link
-              to="/profile"
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/profile"
+              {/* Profile */}
+              <Link
+                to="/profile"
+                className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/profile"
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
-                }`}
-              aria-label="Profile"
-            >
-              <User size={24} />
-              <span className="text-xs mt-1 font-medium">Profile</span>
-            </Link>
+                  }`}
+                aria-label="Profile"
+              >
+                <User size={24} />
+                <span className="text-xs mt-1 font-medium">Profile</span>
+              </Link>
 
-            {/* Contact */}
-            <Link
-              to="/contact"
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/contact"
+              {/* Contact */}
+              <Link
+                to="/contact"
+                className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/contact"
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
-                }`}
-              aria-label="Contact"
-            >
-              <Phone size={24} />
-              <span className="text-xs mt-1 font-medium">Contact</span>
-            </Link>
+                  }`}
+                aria-label="Contact"
+              >
+                <Phone size={24} />
+                <span className="text-xs mt-1 font-medium">Contact</span>
+              </Link>
 
-            {/* Cart */}
-            <button
-              onClick={toggleCart}
-              className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
-              aria-label={`Cart with ${totalItems} items`}
-            >
-              <div className="relative">
-                <ShoppingCart size={24} />
-                {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
-                    {totalItems > 99 ? "99+" : totalItems}
-                  </span>
-                )}
-              </div>
-              <span className="text-xs mt-1 font-medium">Cart</span>
-            </button>
+              {/* Cart */}
+              <button
+                onClick={toggleCart}
+                className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
+                aria-label={`Cart with ${totalItems} items`}
+              >
+                <div className="relative">
+                  <ShoppingCart size={24} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
+                      {totalItems > 99 ? "99+" : totalItems}
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs mt-1 font-medium">Cart</span>
+              </button>
 
-            {/* Menu */}
-            <button
-              onClick={toggleMenu}
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${isMenuOpen
+              {/* Menu */}
+              <button
+                onClick={toggleMenu}
+                className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${isMenuOpen
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
-                }`}
-              aria-label="Menu"
-              aria-expanded={isMenuOpen}
-            >
-              <Menu size={24} />
-              <span className="text-xs mt-1 font-medium">Menu</span>
-            </button>
-          </div>
-        </nav>
-      )}
+                  }`}
+                aria-label="Menu"
+                aria-expanded={isMenuOpen}
+              >
+                <Menu size={24} />
+                <span className="text-xs mt-1 font-medium">Menu</span>
+              </button>
+            </div>
+          </nav>
+        )
+      }
 
       {/* MOBILE MENU DRAWER - Slide-out navigation panel (mobile only, triggered by Menu button)
           Features: Products dropdown with separate state (isMobileProductsDropdownOpen),

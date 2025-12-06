@@ -8,6 +8,9 @@ import { addToCart, addToCartAsync } from "../features/cart/cartSlice";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
+import useAuth from "../hooks/useAuth";
+import AuthModal from "../components/AuthModal";
+import toast from "react-hot-toast";
 
 
 export default function ProductInfoPage() {
@@ -15,6 +18,7 @@ export default function ProductInfoPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,6 +29,7 @@ export default function ProductInfoPage() {
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const didFetchRef = useRef(false);
 
@@ -293,6 +298,11 @@ export default function ProductInfoPage() {
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login befor add product to cart");
+      setIsAuthModalOpen(true);
+      return;
+    }
     dispatch(
       addToCartAsync({
         id: product.id,
@@ -682,6 +692,11 @@ export default function ProductInfoPage() {
 
       {/* Additional sections below the main product details */}
       <ProductMoreInfoPage productId={product.id} />
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialTab="login"
+      />
     </>
   );
 }

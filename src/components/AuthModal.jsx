@@ -147,12 +147,75 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
   // Below is function for Login with API Call
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginError("");
+    setApiMessage(null);
+
+    const normalizedIdentifier = loginIdentifier.toLowerCase();
+
+    // VALIDATION
+    if (!emailRegex.test(normalizedIdentifier) && !mobileRegex.test(normalizedIdentifier)) {
+      setLoginError("Enter valid email or 10-digit mobile");
+      return;
+    }
+    if (!loginPassword || loginPassword.length < 8) {
+      setLoginError("Password must be at least 8 characters");
+      return;
+    }
+
+    setLoginLoading(true);
+
+    try {
+      const payload = {
+        email: emailRegex.test(normalizedIdentifier) ? normalizedIdentifier : "",
+        password: loginPassword,
+        role: "customer",
+      };
+
+      const res = await fetch(`${BASE_URL}/api/v1/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      console.log("LOGIN API RESPONSE:", data);
+
+      if (!res.ok) {
+        setLoginError(data?.message || "Login failed");
+        return;
+      }
+
+      // SUCCESS — Save user and auth token
+      dispatch(
+        login({
+          email: data.user?.email,
+          name: data.user?.name,
+          token: data.accessToken || data.token,
+          refreshToken: data.refreshToken,
+          id: data.user?.id || data.user?._id || data.id,
+        })
+      );
+
+      resetAllForms();
+      onClose?.();
+
+    } catch (err) {
+      console.error(err);
+      setLoginError("Something went wrong. Try again.");
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
   // const handleLogin = async (e) => {
   //   e.preventDefault();
   //   setLoginError("");
   //   setApiMessage(null);
 
-  //   // VALIDATION
   //   if (!emailRegex.test(loginIdentifier) && !mobileRegex.test(loginIdentifier)) {
   //     setLoginError("Enter valid email or 10-digit mobile");
   //     return;
@@ -163,82 +226,23 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   //   }
 
   //   setLoginLoading(true);
-
   //   try {
-  //     const payload = {
-  //       email: emailRegex.test(loginIdentifier) ? loginIdentifier : "",
-  //       password: loginPassword,
-  //       role: "customer",
-  //     };
-
-  //     const res = await fetch(`${BASE_URL}/api/v1/auth/login`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     const data = await res.json();
-  //     console.log("LOGIN API RESPONSE:", data);
-
-  //     if (!res.ok) {
-  //       setLoginError(data?.message || "Login failed");
-  //       return;
-  //     }
-
-  //     // SUCCESS — Save user and auth token
+  //     // If you have a real login API, call it here. For now we just dispatch.
   //     dispatch(
   //       login({
-  //         email: data.user?.email,
-  //         name: data.user?.name,
-  //         token: data.token,
+  //         email: emailRegex.test(loginIdentifier) ? loginIdentifier : "",
+  //         mobile: mobileRegex.test(loginIdentifier) ? loginIdentifier : "",
+  //         name: "User",
   //       })
   //     );
-
   //     resetAllForms();
   //     onClose?.();
-
   //   } catch (err) {
-  //     console.error(err);
-  //     setLoginError("Something went wrong. Try again.");
+  //     setLoginError("Login failed. Please try again.");
   //   } finally {
   //     setLoginLoading(false);
   //   }
   // };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoginError("");
-    setApiMessage(null);
-
-    if (!emailRegex.test(loginIdentifier) && !mobileRegex.test(loginIdentifier)) {
-      setLoginError("Enter valid email or 10-digit mobile");
-      return;
-    }
-    if (!loginPassword || loginPassword.length < 8) {
-      setLoginError("Password must be at least 8 characters");
-      return;
-    }
-
-    setLoginLoading(true);
-    try {
-      // If you have a real login API, call it here. For now we just dispatch.
-      dispatch(
-        login({
-          email: emailRegex.test(loginIdentifier) ? loginIdentifier : "",
-          mobile: mobileRegex.test(loginIdentifier) ? loginIdentifier : "",
-          name: "User",
-        })
-      );
-      resetAllForms();
-      onClose?.();
-    } catch (err) {
-      setLoginError("Login failed. Please try again.");
-    } finally {
-      setLoginLoading(false);
-    }
-  };
 
   /* -------------------------
      Signup handler (sends full body)

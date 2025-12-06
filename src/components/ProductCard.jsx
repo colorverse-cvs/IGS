@@ -9,9 +9,14 @@ import {
   addToCartAsync,
 } from "../features/cart/cartSlice";
 import { ShoppingCart, Star } from "lucide-react";
+import useAuth from "../hooks/useAuth";
+import AuthModal from "./AuthModal";
+import toast from "react-hot-toast";
 
 const ProductCard = ({ product, onOpenProduct }) => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
   const {
     id,
     name,
@@ -34,6 +39,11 @@ const ProductCard = ({ product, onOpenProduct }) => {
 
   // Add product to cart with all its details
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error("You need to log in first to add this product to your cart.");
+      // setIsAuthModalOpen(true);
+      return;
+    }
     dispatch(
       addToCartAsync({
         id: id,
@@ -246,6 +256,12 @@ const ProductCard = ({ product, onOpenProduct }) => {
       }}
     >
       {content}
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialTab="login"
+      />
     </Link>
   );
 };
