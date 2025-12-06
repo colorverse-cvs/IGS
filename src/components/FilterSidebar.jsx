@@ -319,11 +319,11 @@ export default function FilterSidebar({
       )}
 
       {/* Theme/Category */}
-      <FilterSection title="Theme/Category" section="category">
+      <FilterSection title="Theme / Category" section="category">
         {/* Convert category filter to multi-select checkboxes. */}
         <CheckboxOption
           value="shivaji"
-          label="Chhatrapati Shivaji Maharaj"
+          label="Chhatrapati Shivaji Maharaj Statues"
           checked={
             Array.isArray(filters.category)
               ? filters.category.includes("shivaji")
@@ -333,7 +333,7 @@ export default function FilterSidebar({
         />
         <CheckboxOption
           value="mavale"
-          label="Mavale"
+          label="Mavale Statues"
           checked={
             Array.isArray(filters.category)
               ? filters.category.includes("mavale")
@@ -354,18 +354,6 @@ export default function FilterSidebar({
           }
         />
         <CheckboxOption
-          value="motivational"
-          label="Motivational Statues"
-          checked={
-            Array.isArray(filters.category)
-              ? filters.category.includes("motivational")
-              : filters.category === "motivational"
-          }
-          onChange={(checked) =>
-            handleMultiSelectChange("category", "motivational")
-          }
-        />
-        <CheckboxOption
           value="home-decor"
           label="Home Decor"
           checked={
@@ -375,6 +363,18 @@ export default function FilterSidebar({
           }
           onChange={(checked) =>
             handleMultiSelectChange("category", "home-decor")
+          }
+        />
+        <CheckboxOption
+          value="motivational"
+          label="Motivational Statues"
+          checked={
+            Array.isArray(filters.category)
+              ? filters.category.includes("motivational")
+              : filters.category === "motivational"
+          }
+          onChange={(checked) =>
+            handleMultiSelectChange("category", "motivational")
           }
         />
       </FilterSection>
