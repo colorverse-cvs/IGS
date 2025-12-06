@@ -1,15 +1,7 @@
 import React, { useState, useRef } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 
-/**
- * FilterSidebar component with collapsible filter sections
- * Props:
- * - filters: object with current filter values
- * - onFiltersChange: function to update filters
- * - onResetFilters: function to reset all filters
- * - isMobile: boolean - if true, renders in mobile drawer mode
- * - onApplyFilters: function - called when "Show Results" is clicked (mobile only)
- */
+
 export default function FilterSidebar({
   filters,
   onFiltersChange,
@@ -64,11 +56,15 @@ export default function FilterSidebar({
       ? currentValues.filter((v) => v !== value)
       : [...currentValues, value];
 
-    // If newValues is empty, keep it as an empty array (meaning "no specific selection").
+    // If newValues is empty, set to null (meaning "no filter applied")
+    // Otherwise, keep as array for multi-select
+    const filterValue = newValues.length > 0 ? newValues : null;
+    
     const prev = sidebarRef.current ? sidebarRef.current.scrollTop : 0;
+    // Apply filter immediately on click
     onFiltersChange({
       ...filters,
-      [filterType]: newValues,
+      [filterType]: filterValue,
     });
     requestAnimationFrame(() =>
       requestAnimationFrame(() => {

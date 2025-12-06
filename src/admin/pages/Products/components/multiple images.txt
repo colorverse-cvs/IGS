@@ -1,0 +1,17 @@
+multiple images
+Title
+description
+primary material
+finish
+origin
+category
+material type
+size
+price
+actual price -> save to database do not Show in UI
+discount percentage
+quantity (stock)
+weight
+weight
+dimension -> height/width/weight
+

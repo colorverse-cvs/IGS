@@ -4,15 +4,7 @@ import { ChevronRight } from "lucide-react";
 import CarouselRow from "./CarouselRow";
 import ProductCard from "./ProductCard";
 
-/**
- * Reusable ProductSection component for category sections
- * Props:
- * - title: string (section title)
- * - subtitle?: string (optional subtitle)
- * - products: array of product objects
- * - showViewMore?: boolean (show arrow link)
- * - maxItems?: number (limit displayed products)
- */
+
 export default function ProductSection({
   title,
   subtitle,

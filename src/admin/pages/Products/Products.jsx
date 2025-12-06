@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { BASE_URL } from "../../../utils/constants";
 import { MdEditNote, MdDelete } from "react-icons/md";
 
 import AddProductModal from "./components/AddProductModal";
@@ -22,7 +23,7 @@ export default function Products() {
   // Get products only once
   const fetchProducts = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/products");
+      const response = await fetch(`${BASE_URL}/api/v1/products`);
       if (!response.ok) throw new Error(`Error: ${response.status}`);
 
       const result = await response.json();
@@ -100,7 +101,7 @@ export default function Products() {
           {filteredProducts.map((product) => {
             const image =
               product.images?.[0]?.url
-                ? `http://localhost:3000${product.images[0].url}`
+                ? `${BASE_URL}${product.images[0].url}`
                 : "https://via.placeholder.com/80";
 
             const isLowStock = product.stock < 10; // <<< UPDATED
@@ -144,7 +145,7 @@ export default function Products() {
                     className="flex items-center justify-center gap-2 border px-3 py-2 rounded-md hover:bg-gray-50
                                w-full md:w-auto"
                     onClick={() => {
-                      setCurrentProduct(product);  
+                      setCurrentProduct(product);
                       setOpenEditProductModal(true);
                     }}
                   >
@@ -155,7 +156,8 @@ export default function Products() {
                     className="text-red-600 hover:bg-red-50 p-2 rounded-md cursor-pointer"
                     onClick={() => {
                       setCurrentProduct(product);
-                      setOpenDeleteProductModal(true)}}
+                      setOpenDeleteProductModal(true)
+                    }}
                   >
                     <MdDelete className="text-red-500" />
                   </button>
@@ -167,14 +169,14 @@ export default function Products() {
       </div>
 
       {/* MODALS */}
-      {openAddProductModal && 
-      (
-        <AddProductModal 
-          onClose={() => setAddProductModal(false)} 
-          onProductAdded={fetchProducts} 
-        />
-      )}
-      
+      {openAddProductModal &&
+        (
+          <AddProductModal
+            onClose={() => setAddProductModal(false)}
+            onProductAdded={fetchProducts}
+          />
+        )}
+
       {openEditProductModal && (
         <EditProductModal
           onClose={() => setOpenEditProductModal(false)}
@@ -182,7 +184,7 @@ export default function Products() {
           onUpdated={() => fetchProducts()}  // 👈 refresh products
         />
       )}
-      
+
       {openDeleteProductModal && (
         <DeleteProductConfirmationModal
           onClose={() => setOpenDeleteProductModal(false)}

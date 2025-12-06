@@ -1,58 +1,170 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { getDiscountedPrice } from "../utils/helpers";
+import { BASE_URL } from "../utils/constants";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
-import categoriesData from "../data/categories.json";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
-/**
- * ProductInfoPage Component
- * Displays detailed product information, images, pricing, customization options,
- * and allows users to add products to cart
- * Uses Redux Toolkit for cart state management
- */
+
 export default function ProductInfoPage() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedMaterial, setSelectedMaterial] = useState("marble");
   const [selectedSize, setSelectedSize] = useState("small");
   const [pincode, setPincode] = useState("");
   const [pincodeStatus, setPincodeStatus] = useState("idle");
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
+  const didFetchRef = useRef(false);
 
   // Scroll to top when component mounts or id changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
 
-  // Build a unified product list from categories (single source of truth)
-  const getAllProducts = () => {
-    const all = [];
-    categoriesData.sections.forEach((section) => {
-      section.products.forEach((p) => {
-        all.push({ ...p, categoryId: section.id, categoryName: section.title });
+  // Transform API product to expected format
+  const transformProduct = (apiProduct) => {
+    if (!apiProduct) return null;
+
+    // Get images - handle both string arrays and object arrays
+    let images = [];
+    if (apiProduct.images && apiProduct.images.length > 0) {
+      images = apiProduct.images.map((img) => {
+        // If image is a string, use it directly
+        if (typeof img === 'string') {
+          return img.startsWith('http') ? img : `${BASE_URL}${img}`;
+        }
+        // If image is an object with url property, extract the URL
+        if (img && typeof img === 'object' && img.url) {
+          const url = img.url;
+          return url.startsWith('http') ? url : `${BASE_URL}${url}`;
+        }
+        // Fallback
+        return img;
       });
-    });
-    return all;
+    } else {
+      // If no images, use a single placeholder or keep empty depending on requirements.
+      // Keeping one placeholder if absolutely no images exist so layout doesn't break.
+      images = ["https://via.placeholder.com/300"];
+    }
+
+    // Get discount percentage - use API discount field if available, otherwise calculate from listPrice and price
+    let discount = "0% Off";
+    if (apiProduct.discount && apiProduct.discount > 0) {
+      // Use discount percentage directly from API
+      discount = `${Math.round(apiProduct.discount)}% Off`;
+    } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
+      // Calculate discount from listPrice and price
+      discount = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+    }
+
+    // Get category slug
+    const categoryName = apiProduct.category?.name || "Uncategorized";
+    const categorySlug = categoryName.toLowerCase().replace(/\s+/g, "-");
+
+    return {
+      id: apiProduct._id || apiProduct.id,
+      name: apiProduct.name,
+      title: apiProduct.name,
+      price: apiProduct.price,
+      mrp: apiProduct.listPrice || apiProduct.price,
+      discount: discount,
+      rating: apiProduct.rating || 4.5,
+      reviews: apiProduct.reviews || 0,
+      isFeatured: apiProduct.isFeatured || false,
+      isCustomizable: apiProduct.isCustomizable || false,
+      imageURL: images[0] || "https://via.placeholder.com/300",
+      images: images,
+      material: apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin",
+      primaryMaterial: apiProduct.attributes?.primaryMaterial,
+      size: apiProduct.dimensions?.size || "medium",
+      sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
+      category: categoryName,
+      categoryId: categorySlug,
+      categoryName: categoryName,
+      weight: apiProduct.weight,
+      dimensions: apiProduct.dimensions?.sizeDescription || (
+        apiProduct.dimensions?.height && apiProduct.dimensions?.width
+          ? `H: ${apiProduct.dimensions.height} ${apiProduct.dimensions.unit || "cm"} x W: ${apiProduct.dimensions.width} ${apiProduct.dimensions.unit || "cm"}`
+          : null
+      ),
+      finish: apiProduct.attributes?.finish,
+      origin: apiProduct.attributes?.origin,
+      description: apiProduct.description,
+    };
   };
 
-  const allProducts = getAllProducts();
-  const product = allProducts.find((p) => p.id === id);
-  const categorySlug =
-    product?.categoryId ||
-    (product?.category || "").toLowerCase().replace(/\s+/g, "-");
+  // Fetch product from API
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (didFetchRef.current) return;
+      didFetchRef.current = true;
+
+      try {
+        setLoading(true);
+        const response = await fetch(`${BASE_URL}/api/v1/products/${id}`);
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            setProduct(null);
+            setLoading(false);
+            return;
+          }
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        const transformedProduct = transformProduct(result.data);
+        setProduct(transformedProduct);
+
+        // Set default material and size from product if available
+        if (transformedProduct?.material) {
+          setSelectedMaterial(transformedProduct.material.toLowerCase());
+        }
+        if (transformedProduct?.size) {
+          setSelectedSize(transformedProduct.size.toLowerCase());
+        }
+      } catch (error) {
+        console.error("Failed to fetch product:", error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+    // Reset fetch ref when id changes
+    return () => {
+      didFetchRef.current = false;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="text-center mt-10 text-gray-500">
+        <p>Loading product...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
       <div className="text-center mt-10 text-gray-500">Product not found.</div>
     );
   }
+
+  const categorySlug = product.categoryId || (product.category || "").toLowerCase().replace(/\s+/g, "-");
 
   const title = product.name || product.title || "Product";
   const imageSrc = product.imageURL || product.image;
@@ -65,13 +177,9 @@ export default function ProductInfoPage() {
 
   // Images: prefer product.images from JSON if present
   const productImages =
-    Array.isArray(product.images) && product.images.length
+    Array.isArray(product.images) && product.images.length > 0
       ? product.images
-      : [
-          imageSrc,
-          `https://picsum.photos/300/300?random=${product.id}-1`,
-          `https://picsum.photos/300/300?random=${product.id}-2`,
-        ];
+      : [product.imageURL];
 
   const currentImage = productImages[selectedImageIndex];
 
@@ -111,15 +219,15 @@ export default function ProductInfoPage() {
     Array.isArray(product.materials) && product.materials.length
       ? product.materials
       : [
-          { value: "marble", label: "Marble", description: "Hand-Carved" },
-          { value: "resin", label: "Resin", description: "High-Density" },
-        ]
+        { value: "marble", label: "Marble", description: "Hand-Carved" },
+        { value: "resin", label: "Resin", description: "High-Density" },
+      ]
   ).map((m) =>
     typeof m === "string"
       ? {
-          value: m.toLowerCase(),
-          label: m.charAt(0).toUpperCase() + m.slice(1),
-        }
+        value: m.toLowerCase(),
+        label: m.charAt(0).toUpperCase() + m.slice(1),
+      }
       : m
   );
 
@@ -128,15 +236,15 @@ export default function ProductInfoPage() {
     Array.isArray(product.sizes) && product.sizes.length
       ? product.sizes
       : [
-          { value: "small", label: "Small", description: "Under 6 in" },
-          { value: "medium", label: "Medium", description: "6 in - 10 in" },
-          { value: "large", label: "Large", description: "10 in - 15 in" },
-          {
-            value: "extra-large",
-            label: "Extra Large",
-            description: "Above 15 in",
-          },
-        ]
+        { value: "small", label: "Small", description: "Under 6 in" },
+        { value: "medium", label: "Medium", description: "6 in - 10 in" },
+        { value: "large", label: "Large", description: "10 in - 15 in" },
+        {
+          value: "extra-large",
+          label: "Extra Large",
+          description: "Above 15 in",
+        },
+      ]
   ).map((s) =>
     typeof s === "string"
       ? { value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }
@@ -163,7 +271,7 @@ export default function ProductInfoPage() {
       label: "Dimensions",
       value:
         product.dimensions ||
-        aboutDefaults.dimensions ||
+        location.state?.product?.dimensions ||
         selectedSizeMeta?.description ||
         "—",
     },
@@ -179,7 +287,6 @@ export default function ProductInfoPage() {
     { label: "Origin", value: product.origin || aboutDefaults.origin || "—" },
   ];
 
-  const [quantity, setQuantity] = useState(1);
   const increment = () => setQuantity((q) => Math.min(99, q + 1));
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
@@ -269,11 +376,10 @@ export default function ProductInfoPage() {
                     <div
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
-                      className={`w-20 h-20 rounded-lg overflow-hidden border-1 cursor-pointer transition-all duration-200 ${
-                        index === selectedImageIndex
-                          ? "border-2 border-brand-700 shadow-2xl shadow-purple-500"
-                          : "border-gray-200"
-                      }`}
+                      className={`w-20 h-20 rounded-lg overflow-hidden border-1 cursor-pointer transition-all duration-200 ${index === selectedImageIndex
+                        ? "border-2 border-brand-700 shadow-2xl shadow-purple-500"
+                        : "border-gray-200"
+                        }`}
                     >
                       <img
                         src={img}
@@ -346,20 +452,24 @@ export default function ProductInfoPage() {
                 </div>
 
                 {/* Pricing */}
-                <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-bold text-brand-700">
-                    ₹{product.price}
-                  </span>
-                  {mrp && (
-                    <span className="text-lg line-through text-gray-500">
-                      ₹{mrp}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-bold text-brand-700">
+                      ₹{getDiscountedPrice(mrp, discount)}
                     </span>
-                  )}
-                  {discount && (
-                    <span className="text-lg font-medium text-brand-600">
-                      {discount}
-                    </span>
-                  )}
+
+                    {mrp && (
+                      <span className="text-lg text-gray-400 line-through">
+                        MRP: ₹{mrp}
+                      </span>
+                    )}
+
+                    {discount && (
+                      <span className="text-lg font-medium text-brand-600">
+                        {discount}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Purchase Stats */}
@@ -453,11 +563,10 @@ export default function ProductInfoPage() {
                     {sizeOptions.map((option) => (
                       <label
                         key={option.value}
-                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${
-                          selectedSize === option.value
-                            ? "shadow-lg"
-                            : " border-gray-300"
-                        }`}
+                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${selectedSize === option.value
+                          ? "shadow-lg"
+                          : " border-gray-300"
+                          }`}
                       >
                         <input
                           type="radio"
@@ -550,16 +659,14 @@ export default function ProductInfoPage() {
                     {aboutRows.map((row, i) => (
                       <div key={i} className="flex border-none">
                         <dt
-                          className={`py-2 px-4 text-sm text-gray-600 w-[30%] ${
-                            i === 0 ? "rounded-tl-lg" : ""
-                          }`}
+                          className={`py-2 px-4 text-sm text-gray-600 w-[30%] ${i === 0 ? "rounded-tl-lg" : ""
+                            }`}
                         >
                           {row.label}
                         </dt>
                         <dd
-                          className={`py-2 px-4 text-sm text-gray-900 w-[70%] ${
-                            i === 0 ? "rounded-tr-lg" : ""
-                          }`}
+                          className={`py-2 px-4 text-sm text-gray-900 w-[70%] ${i === 0 ? "rounded-tr-lg" : ""
+                            }`}
                         >
                           {row.value}
                         </dd>
