@@ -1,34 +1,5 @@
-// export default function DeleteProductConfirmationModal({ onClose }) { 
-//     return(
-//         <>
-//         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-//             <div className="bg-white w-[500px] rounded-2xl shadow-xl p-6">
-      
-//                 <div className="flex flex-col gap-4 mb-6">
-//                     <p className="text-md">Delete Product</p>
-//                     <div className="">
-//                         <p className="text-md text-gray-700">Are you sure you want to delete Teddy Bear - Small?</p>
-//                         <p className="text-md text-gray-700">This action cannot be undone.</p>
-//                     </div>
-//                 </div>
 
-//                 <div className="flex justify-end gap-4 mt-8">
-//                     <button
-//                         onClick={onClose}
-//                         className="px-6 py-2 cursor-pointer border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
-//                     >
-//                         Cancel
-//                     </button>
-//                     <button className="px-6 py-2 cursor-pointer bg-red-600 text-white rounded-lg hover:bg-red-700">
-//                     Delete
-//                     </button>
-//                 </div>  
-//             </div>  
-//         </div>  
-//         </>
-//     )
-// }
-
+import { BASE_URL } from "../../../../utils/constants";
 
 export default function DeleteProductConfirmationModal({
   onClose,
@@ -37,10 +8,10 @@ export default function DeleteProductConfirmationModal({
 }) {
   const handleDelete = async () => {
     console.log("existingProduct", existingProduct);
-    
+
     try {
       const response = await fetch(
-        `http://localhost:3000/api/v1/products/${existingProduct._id}`,
+        `${BASE_URL}/api/v1/products/${existingProduct._id}`,
         {
           method: "DELETE"
         }

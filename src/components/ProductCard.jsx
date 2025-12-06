@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { getDiscountedPrice } from "../utils/helpers";
 import {
   addToCart,
   updateQty,
@@ -8,25 +9,7 @@ import {
 } from "../features/cart/cartSlice";
 import { ShoppingCart, Star } from "lucide-react";
 
-/**
- * ProductCard Component - Individual product display card
- * 
- * Props:
- * - product: object - product data including id, name, price, rating, imageURL, etc.
- * - onOpenProduct: function (optional) - callback to open product in modal instead of navigating
- * 
- * Features:
- * - Displays product image with featured/customizable badges
- * - Shows price, rating, and review count
- * - Add to cart button with quantity controls
- * - Hover effects (scale up, shadow)
- * - Handles both as a Link (navigates to product page) or as a button (opens modal)
- * 
- * For beginners:
- * - Uses Redux dispatch to add/remove products from cart
- * - Uses React Router Link for navigation to product details page
- * - useSelectorgets current qty from Redux cart state
- */
+
 const ProductCard = ({ product, onOpenProduct }) => {
   const dispatch = useDispatch();
   const {
@@ -144,14 +127,27 @@ const ProductCard = ({ product, onOpenProduct }) => {
         </div>
 
         {/* Price Row */}
-        <div className="flex flex-col md:flex-row items-baseline space-x-2 mb-2">
-          <span className="text-lg font-extrabold text-brand-700">
-            ₹{price}
-          </span>
-          <span className="text-xs line-through text-gray-500">
-            MRP: ₹{mrp}
-          </span>
-          <span className="text-xs font-medium text-brand-600">{discount}</span>
+        <div className="flex flex-col gap-1 mb-2">
+          {/* Main Price (Calculated) */}
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold text-brand-700">
+              ₹{getDiscountedPrice(mrp, discount)}
+            </span>
+
+            {/* MRP Strikethrough */}
+            {mrp && (
+              <span className="text-sm text-gray-400 line-through">
+                MRP: ₹{mrp}
+              </span>
+            )}
+
+            {/* Discount Percentage */}
+            {discount && discount !== "0% Off" && (
+              <span className="text-xs font-semibold text-brand-600">
+                {discount}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Rating and Add to Cart */}
@@ -238,9 +234,16 @@ const ProductCard = ({ product, onOpenProduct }) => {
   }
   return (
     <Link
-      to={`/product/${id}`}
+      to={{
+        pathname: `/product/${id}`,
+        state: { product },
+      }}
       className="block w-full h-full"
       style={{ textDecoration: "none", color: "inherit" }}
+      onClick={() => {
+        // Debug: verify product ID is being passed
+        console.log("Navigating to product:", product);
+      }}
     >
       {content}
     </Link>

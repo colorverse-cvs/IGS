@@ -3,15 +3,7 @@ import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import { ChevronRight } from "lucide-react";
 
-/**
- * Reusable ProductSection component for category sections
- * Props:
- * - title: string (section title)
- * - subtitle?: string (optional subtitle)
- * - products: array of product objects
- * - showViewMore?: boolean (show arrow link)
- * - maxItems?: number (limit displayed products)
- */
+
 export default function ProductSection({
   title,
   subtitle,
