@@ -39,7 +39,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     stock: "",
     weight: "",
     dimensions: {
-      size: "",
+      sizeCategory: "",
       height: "",
       width: ""
     },
@@ -277,12 +277,15 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
             <DropdownField
               label="Size"
-              options={sizeOptions.map((s) => `${s.type} - ${s.subType}`)}
-              value={formData.dimensions.size}
+              options={sizeOptions.map((s) => ({
+                label: `${s.type} - ${s.subType}`,
+                value: s.type.toLowerCase().replace(/\s+/g, "-"),
+              }))}
+              value={formData.dimensions.sizeCategory}
               onChange={(val) =>
                 setFormData((prev) => ({
                   ...prev,
-                  dimensions: { ...prev.dimensions, size: val }
+                  dimensions: { ...prev.dimensions, sizeCategory: val }
                 }))
               }
             />
@@ -327,8 +330,8 @@ function Input({ label, error, ...props }) {
       <input
         {...props}
         className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${error
-            ? "border-red-500 focus:ring-red-400"
-            : "border-gray-300 focus:ring-violet-500"
+          ? "border-red-500 focus:ring-red-400"
+          : "border-gray-300 focus:ring-violet-500"
           }`}
       />
       {error && <ErrorText text={error} />}

@@ -70,7 +70,7 @@ export default function EditProductModal({
     weight: existingProduct?.weight || "",
 
     dimensions: {
-      size: existingProduct?.dimensions?.size || "",
+      sizeCategory: existingProduct?.dimensions?.sizeCategory || existingProduct?.dimensions?.size || "",
       height: existingProduct?.dimensions?.height || "",
       width: existingProduct?.dimensions?.width || "",
     },
@@ -134,7 +134,7 @@ export default function EditProductModal({
     if (!formData.stock) e.stock = "Required";
     if (!formData.weight) e.weight = "Required";
 
-    if (!formData.dimensions.size) e.size = "Required";
+    if (!formData.dimensions.sizeCategory) e.size = "Required";
     if (!formData.dimensions.height) e.height = "Required";
     if (!formData.dimensions.width) e.width = "Required";
 
@@ -195,7 +195,7 @@ export default function EditProductModal({
       form.append("weight", Number(formData.weight));
 
       /* DIMENSIONS */
-      form.append("dimensions[size]", formData.dimensions.size);
+      form.append("dimensions[sizeCategory]", formData.dimensions.sizeCategory);
       form.append("dimensions[height]", Number(formData.dimensions.height));
       form.append("dimensions[width]", Number(formData.dimensions.width));
 
@@ -338,12 +338,15 @@ export default function EditProductModal({
 
             <DropdownField
               label="Size"
-              options={sizeOptions.map((s) => `${s.type} - ${s.subType}`)}
-              value={formData.dimensions.size}
+              options={sizeOptions.map((s) => ({
+                label: `${s.type} - ${s.subType}`,
+                value: s.type.toLowerCase().replace(/\s+/g, "-"),
+              }))}
+              value={formData.dimensions.sizeCategory}
               onChange={(val) =>
                 setFormData((prev) => ({
                   ...prev,
-                  dimensions: { ...prev.dimensions, size: val },
+                  dimensions: { ...prev.dimensions, sizeCategory: val },
                 }))
               }
               error={errors.size}
