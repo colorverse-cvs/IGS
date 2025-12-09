@@ -240,36 +240,45 @@ const ProductCard = ({ product, onOpenProduct }) => {
   );
   if (onOpenProduct) {
     return (
-      <button
-        type="button"
-        className="text-left w-full"
-        onClick={() => onOpenProduct(product)}
-      >
-        {content}
-      </button>
+      <>
+        <button
+          type="button"
+          className="text-left w-full"
+          onClick={() => onOpenProduct(product)}
+        >
+          {content}
+        </button>
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          initialTab="login"
+        />
+      </>
     );
   }
   return (
-    <Link
-      to={{
-        pathname: `/product/${id}`,
-        state: { product },
-      }}
-      className="block w-full h-full"
-      style={{ textDecoration: "none", color: "inherit" }}
-      onClick={() => {
-        // Debug: verify product ID is being passed
-        console.log("Navigating to product:", product);
-      }}
-    >
-      {content}
+    <>
+      <Link
+        to={{
+          pathname: `/product/${id}`,
+          state: { product },
+        }}
+        className="block w-full h-full"
+        style={{ textDecoration: "none", color: "inherit" }}
+        onClick={() => {
+          // Debug: verify product ID is being passed
+          console.log("Navigating to product:", product);
+        }}
+      >
+        {content}
+      </Link>
 
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         initialTab="login"
       />
-    </Link>
+    </>
   );
 };
 
