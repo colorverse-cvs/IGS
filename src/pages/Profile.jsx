@@ -533,7 +533,7 @@ export default function Profile() {
           <div className="space-y-4">
             {addresses.map((addr) => (
               <div
-                key={addr.id}
+                key={addr._id}
                 className="border-b border-gray-300 py-4 text-sm"
               >
                 <div className="flex items-start gap-3">

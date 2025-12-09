@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import indianStates from "../data/indianStates.json";
 import Dropdown from "./Dropdown";
+import CustomSearchDropdown from "./CustomSearchDropdown";
 
 /**
  * AddressForm Component - Delivery address input form
@@ -13,7 +14,7 @@ import Dropdown from "./Dropdown";
  * 
  * Features:
  * - Full address form with Indian states dropdown
- * - Validates mobile (10 digits), email, pincode (6 digits)
+ * - Validates mobile (10 digits) and pincode (6 digits)
  * - Address aliases (Home, Work, Other) for saving multiple addresses
  * - Set as default address option
  * - Displays validation errors inline
@@ -29,9 +30,7 @@ export default function AddressForm({
   initial,
   submitLabel = "Use this address",
 }) {
-  const [name, setName] = useState(initial?.name || "");
   const [mobile, setMobile] = useState(initial?.mobile || initial?.phone || "");
-  const [email, setEmail] = useState(initial?.email || "");
 
   // Initialize granular fields from API structure
   const [flat, setFlat] = useState(initial?.line1 || initial?.flat || "");
@@ -60,13 +59,10 @@ export default function AddressForm({
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = {};
-    if (!name.trim()) validationErrors.name = "Name is required";
 
     const mobileDigits = onlyDigits(mobile);
     if (mobileDigits.length !== 10)
       validationErrors.mobile = "Enter a valid 10-digit mobile number";
-    if (email && !/^\S+@\S+\.\S+$/.test(email))
-      validationErrors.email = "Enter a valid email address";
 
     if (!/^[0-9]{6}$/.test(pincode))
       validationErrors.pincode = "Pincode must be 6 digits";
@@ -90,11 +86,9 @@ export default function AddressForm({
 
     const newAddress = {
       id: initial?.id || `addr_${Date.now()}`,
-      name: name.trim(),
       tag: alias.trim() || "Home",
       addressLine,
       mobile: `+91 ${mobileDigits}`,
-      email: email.trim(),
       isDefault: makeDefault,
       // Granular fields for API
       line1: flat,
@@ -119,40 +113,6 @@ export default function AddressForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
-      {/* <div>
-        <label className="block text-sm font-medium mb-1 text-gray-500">
-          Name *
-        </label>
-        <input
-          type="text"
-          className={`w-full border rounded px-3 py-2 border-gray-200 ${errors.name ? "border-red-500" : ""
-            }`}
-          placeholder="John Doe"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        {errors.name && (
-          <p className="mt-1 text-xs text-red-600">{errors.name}</p>
-        )}
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-500">
-          Email ID
-        </label>
-        <input
-          type="email"
-          className={`w-full border rounded px-3 py-2 border-gray-200 ${errors.email ? "border-red-500" : ""
-            }`}
-          placeholder="demo@gmail.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-        />
-        {errors.email && (
-          <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-        )}
-      </div> */}
 
       <div>
         <label className="block text-sm font-medium mb-1 text-gray-500">
@@ -237,20 +197,33 @@ export default function AddressForm({
             type="text"
             className="w-full border rounded px-3 py-2 border-gray-200"
             value={city}
-            onChange={(e) => setCity(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+              setCity(value);
+            }}
           />
         </div>
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-500">
             State *
           </label>
-          <Dropdown
+          {/* <Dropdown
             options={indianStates}
             value={state}
             onChange={(v) => setState(v)}
             placeholder="Select your state"
             className={`${errors.state ? "ring-2 ring-red-400" : ""}`}
+          /> */}
+
+          <CustomSearchDropdown
+            options={indianStates}
+            value={state}
+            onChange={(v) => setState(v)}
+            placeholder="Select your state"
+            searchable
+            className={errors.state ? "ring-2 ring-red-400" : ""}
           />
+
           {errors.state && (
             <p className="mt-1 text-xs text-red-600">{errors.state}</p>
           )}
