@@ -144,6 +144,74 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     return () => window.removeEventListener("message", handler);
   }, [dispatch, onClose]);
 
+  /* -------------------------
+     Helper: normalize user object from API responses
+  ------------------------- */
+  const normalizeUserFromResponse = (payload = {}) => {
+    // 1. Locate the "User" object. It usually holds the email or id.
+    // Candidates in order of likelihood:
+    const candidates = [
+      payload.user,
+      payload.data?.user,
+      payload.data,
+      payload
+    ];
+
+    // Find the first candidate that has 'email' or '_id' or 'id'
+    const u = candidates.find(c => c && (c.email || c.id || c._id)) || {};
+
+    // 2. Locate the "Profile" object explicitly
+    let profile = null;
+    // Check key 'profile' in u
+    if (u.profile) {
+      if (Array.isArray(u.profile) && u.profile.length > 0) profile = u.profile[0];
+      else if (typeof u.profile === "object") {
+        // Check for "0" key (backend oddity)
+        if (u.profile["0"]) profile = u.profile["0"];
+        else profile = u.profile;
+      }
+    }
+
+    // 3. Extract fields with priority: Profile > User Object > Fallbacks
+    const mobile =
+      profile?.mobile ||
+      u.mobile ||
+      u.phone ||
+      u.phoneNumber ||
+      (u.phones && u.phones[0]?.number) || // Check phones array
+      "";
+
+    // Name Construction
+    let name = profile?.displayName;
+    if (!name) {
+      if (u.firstName) {
+        name = `${u.firstName} ${u.lastName || ""}`.trim();
+      } else if (u.name) {
+        name = u.name;
+      } else if (u.fullName) {
+        name = u.fullName;
+      }
+    }
+
+    const dob = profile?.dob || u.dob || "";
+    const gender = profile?.gender || u.gender || "Male";
+
+    // 4. Locate Token (could be at top level or inside data)
+    const token = payload.accessToken || payload.token || payload.data?.token || payload.data?.accessToken;
+    const refreshToken = payload.refreshToken || payload.data?.refreshToken;
+
+    return {
+      id: u.id || u._id || payload.id || null,
+      email: u.email || payload.email || "",
+      name: name || "User",
+      mobile,
+      dob,
+      gender,
+      token,
+      refreshToken,
+    };
+  };
+
 
   // Below is function for Login with API Call
 
@@ -190,13 +258,23 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       }
 
       // SUCCESS — Save user and auth token
+      const normalized = normalizeUserFromResponse(data);
+
+      if (normalized.token) {
+        localStorage.setItem("token", normalized.token);
+        if (normalized.refreshToken) localStorage.setItem("refreshToken", normalized.refreshToken);
+      }
+
       dispatch(
         login({
-          email: data.user?.email,
-          name: data.user?.name,
-          token: data.accessToken || data.token,
-          refreshToken: data.refreshToken,
-          id: data.user?.id || data.user?._id || data.id,
+          id: normalized.id,
+          email: normalized.email,
+          name: normalized.name,
+          mobile: normalized.mobile,
+          dob: normalized.dob,
+          gender: normalized.gender,
+          token: normalized.token,
+          refreshToken: normalized.refreshToken,
         })
       );
 

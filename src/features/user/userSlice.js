@@ -85,7 +85,9 @@ const userSlice = createSlice({
         state.refreshToken = refreshToken;
         localStorage.setItem('refreshToken', refreshToken);
       }
-      state.profile.id = id || state.profile.id || nanoid();
+      // Prefer payload ID (from API), then existing ID. Do not generate fake ID for auth'd user.
+      if (id) state.profile.id = id;
+
       state.profile.name = name || state.profile.name || 'User';
       state.profile.email = email || state.profile.email || '';
       state.profile.mobile = mobile || state.profile.mobile || '';
@@ -98,9 +100,10 @@ const userSlice = createSlice({
      * Saves to localStorage automatically
      */
     signup(state, action) {
-      const { name, email, mobile } = action.payload || {};
+      const { name, email, mobile, id } = action.payload || {};
       state.isAuthenticated = true;
-      state.profile.id = nanoid();
+      // Use ID from backend if available, otherwise fake it only if absolutely necessary (or leave null)
+      state.profile.id = id || nanoid();
       state.profile.name = name || 'User';
       state.profile.email = email || '';
       state.profile.mobile = mobile || '';
@@ -208,6 +211,155 @@ export const logoutAsync = createAsyncThunk(
       console.error('Logout API failed:', error);
     } finally {
       dispatch(userSlice.actions.logout());
+    }
+  }
+);
+
+export const fetchAddressesAsync = createAsyncThunk(
+  'user/fetchAddressesAsync',
+  async (userId, { dispatch, getState }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
+      if (!userId) return;
+
+      const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const json = await response.json();
+      if (response.ok) {
+        // Handle various response structures: array, {data: []}, {addresses: []}
+        const addresses = Array.isArray(json)
+          ? json
+          : (json.data || json.addresses || []);
+
+        dispatch(userSlice.actions.updateProfile({ addresses }));
+      }
+    } catch (err) {
+      console.error("Failed to fetch addresses", err);
+    }
+  }
+);
+
+export const addAddressAsync = createAsyncThunk(
+  'user/addAddressAsync',
+  async (addressData, { dispatch, getState }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
+      const userId = state.user.profile.id;
+      if (!token || !userId) return;
+
+      const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(addressData)
+      });
+
+      const json = await response.json();
+      if (response.ok) {
+        // Refresh addresses list
+        dispatch(fetchAddressesAsync(userId));
+      } else {
+        console.error("Failed to add address", json);
+      }
+    } catch (err) {
+      console.error("Error adding address", err);
+    }
+  }
+);
+
+export const updateAddressAsync = createAsyncThunk(
+  'user/updateAddressAsync',
+  async ({ addressId, addressData }, { dispatch, getState }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
+      const userId = state.user.profile.id;
+      if (!token || !userId || !addressId) return;
+
+      const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(addressData)
+      });
+
+      if (response.ok) {
+        // Refresh addresses list
+        dispatch(fetchAddressesAsync(userId));
+      } else {
+        const json = await response.json();
+        console.error("Failed to update address", json);
+      }
+    } catch (err) {
+      console.error("Error updating address", err);
+    }
+  }
+);
+
+export const removeAddressAsync = createAsyncThunk(
+  'user/removeAddressAsync',
+  async (addressId, { dispatch, getState }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
+      const userId = state.user.profile.id;
+      if (!token || !userId || !addressId) return;
+      console.log("Removing address", { token, userId, addressId });
+      const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        // Refresh addresses list
+        dispatch(fetchAddressesAsync(userId));
+      } else {
+        const json = await response.json();
+        console.error("Failed to remove address", json);
+      }
+    } catch (err) {
+      console.error("Error removing address", err);
+    }
+  }
+);
+
+export const setDefaultAddressAsync = createAsyncThunk(
+  'user/setDefaultAddressAsync',
+  async (addressId, { dispatch, getState }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
+      const userId = state.user.profile.id;
+      if (!token || !userId || !addressId) return;
+
+      const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ isDefault: true })
+      });
+
+      if (response.ok) {
+        // Refresh addresses list
+        dispatch(fetchAddressesAsync(userId));
+      } else {
+        const json = await response.json();
+        console.error("Failed to set default address", json);
+      }
+    } catch (err) {
+      console.error("Error setting default address", err);
     }
   }
 );
