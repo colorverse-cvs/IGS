@@ -458,7 +458,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 onClick={() => setTab("login")}
                 className={`pb-2 text-sm font-medium transition ${tab === "login"
                   ? "border-b-2 border-brand-600 text-brand-600 -mb-[2px]"
-                  : "text-gray-600 hover:text-gray-900"
+                  : "text-gray-600 hover:text-gray-900 cursor-pointer"
                   }`}
               >
                 Log In
@@ -466,7 +466,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
               <button
                 type="button"
                 onClick={() => setTab("signup")}
-                className={`pb-2 text-sm font-medium transition ${tab === "signup"
+                className={`cursor-pointer pb-2 text-sm font-medium transition ${tab === "signup"
                   ? "border-b-2 border-brand-600 text-brand-600 -mb-[2px]"
                   : "text-gray-600 hover:text-gray-900"
                   }`}
