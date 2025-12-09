@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getDiscountedPrice } from "../utils/helpers";
+import { getDiscountedPrice, validatePincode } from "../utils/helpers";
 import { BASE_URL } from "../utils/constants";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
@@ -110,6 +110,15 @@ export default function ProductInfoPage() {
     };
   };
 
+  const handlePincodeBlur = async () => {
+    const isValid = await validatePincode(pincode);
+    if (!isValid) {
+      setErrors({ ...errors, pincode: "Invalid Pincode" });
+    } else {
+      setErrors({ ...errors, pincode: "" });
+    }
+  };
+
   // Fetch product from API
   useEffect(() => {
     const fetchProduct = async () => {
@@ -190,32 +199,44 @@ export default function ProductInfoPage() {
 
   const currentImage = productImages[selectedImageIndex];
 
-  const handleCheckDelivery = () => {
+  const handleCheckDelivery = async () => {
     const pin = pincode.replace(/\D/g, "");
+
     if (pin.length !== 6) {
       setPincodeStatus("invalid");
       setDeliveryEstimate("");
       return;
     }
-    const prefix = parseInt(pin.slice(0, 2), 10);
-    const serviceable =
-      (prefix >= 40 && prefix <= 49) ||
-      (prefix >= 56 && prefix <= 59) ||
-      (prefix >= 60 && prefix <= 69);
-    if (!serviceable) {
+
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const data = await res.json();
+
+      if (!data || data[0].Status !== "Success") {
+        setPincodeStatus("no-service");
+        setDeliveryEstimate("");
+        return;
+      }
+
+      // Calculate delivery ETA
+      const eta = new Date();
+      eta.setDate(eta.getDate() + 5);
+
+      const formatted = eta.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "long",
+      });
+
+      setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
+      setPincodeStatus("ok");
+
+    } catch (error) {
+      console.error("Pincode check failed:", error);
       setPincodeStatus("no-service");
       setDeliveryEstimate("");
-      return;
     }
-    const eta = new Date();
-    eta.setDate(eta.getDate() + 7);
-    const formatted = eta.toLocaleDateString(undefined, {
-      day: "2-digit",
-      month: "long",
-    });
-    setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
-    setPincodeStatus("ok");
   };
+
 
   const handleThumbnailClick = (index) => {
     setSelectedImageIndex(index);
