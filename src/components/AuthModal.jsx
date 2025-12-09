@@ -6,8 +6,19 @@ import { login, signup } from "../features/user/userSlice";
 import googleButton from "../assets/google_buttons.png";
 import facebookButton from "../assets/facebook_buttons.png";
 import appleButton from "../assets/apple_buttons.png";
-import { Eye, EyeOff } from "lucide-react";
+import logo from "../assets/ishita-gallery-logo.jpg";
+import { Eye, EyeOff, X } from "lucide-react";
 
+
+// Import product images for gallery
+import art1 from "../assets/art1.png";
+import art2 from "../assets/art2.png";
+import art3 from "../assets/art3.png";
+import rect16 from "../assets/Rectangle 16.png";
+import rect17 from "../assets/Rectangle 17.png";
+import rect18 from "../assets/Rectangle 18.png";
+import rect33 from "../assets/Rectangle 33.png";
+import rect35 from "../assets/Rectangle 35.png";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileRegex = /^\d{10}$/;
@@ -148,8 +159,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
      Helper: normalize user object from API responses
   ------------------------- */
   const normalizeUserFromResponse = (payload = {}) => {
-    // 1. Locate the "User" object. It usually holds the email or id.
-    // Candidates in order of likelihood:
     const candidates = [
       payload.user,
       payload.data?.user,
@@ -157,31 +166,25 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       payload
     ];
 
-    // Find the first candidate that has 'email' or '_id' or 'id'
     const u = candidates.find(c => c && (c.email || c.id || c._id)) || {};
 
-    // 2. Locate the "Profile" object explicitly
     let profile = null;
-    // Check key 'profile' in u
     if (u.profile) {
       if (Array.isArray(u.profile) && u.profile.length > 0) profile = u.profile[0];
       else if (typeof u.profile === "object") {
-        // Check for "0" key (backend oddity)
         if (u.profile["0"]) profile = u.profile["0"];
         else profile = u.profile;
       }
     }
 
-    // 3. Extract fields with priority: Profile > User Object > Fallbacks
     const mobile =
       profile?.mobile ||
       u.mobile ||
       u.phone ||
       u.phoneNumber ||
-      (u.phones && u.phones[0]?.number) || // Check phones array
+      (u.phones && u.phones[0]?.number) ||
       "";
 
-    // Name Construction
     let name = profile?.displayName;
     if (!name) {
       if (u.firstName) {
@@ -196,7 +199,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     const dob = profile?.dob || u.dob || "";
     const gender = profile?.gender || u.gender || "Male";
 
-    // 4. Locate Token (could be at top level or inside data)
     const token = payload.accessToken || payload.token || payload.data?.token || payload.data?.accessToken;
     const refreshToken = payload.refreshToken || payload.data?.refreshToken;
 
@@ -213,8 +215,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   };
 
 
-  // Below is function for Login with API Call
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginError("");
@@ -222,7 +222,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
     const normalizedIdentifier = loginIdentifier.toLowerCase();
 
-    // VALIDATION
     if (!emailRegex.test(normalizedIdentifier) && !mobileRegex.test(normalizedIdentifier)) {
       setLoginError("Enter valid email or 10-digit mobile");
       return;
@@ -250,14 +249,12 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       });
 
       const data = await res.json();
-      console.log("LOGIN API RESPONSE:", data);
 
       if (!res.ok) {
         setLoginError(data?.message || "Login failed");
         return;
       }
 
-      // SUCCESS — Save user and auth token
       const normalized = normalizeUserFromResponse(data);
 
       if (normalized.token) {
@@ -289,42 +286,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     }
   };
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setLoginError("");
-  //   setApiMessage(null);
-
-  //   if (!emailRegex.test(loginIdentifier) && !mobileRegex.test(loginIdentifier)) {
-  //     setLoginError("Enter valid email or 10-digit mobile");
-  //     return;
-  //   }
-  //   if (!loginPassword || loginPassword.length < 8) {
-  //     setLoginError("Password must be at least 8 characters");
-  //     return;
-  //   }
-
-  //   setLoginLoading(true);
-  //   try {
-  //     // If you have a real login API, call it here. For now we just dispatch.
-  //     dispatch(
-  //       login({
-  //         email: emailRegex.test(loginIdentifier) ? loginIdentifier : "",
-  //         mobile: mobileRegex.test(loginIdentifier) ? loginIdentifier : "",
-  //         name: "User",
-  //       })
-  //     );
-  //     resetAllForms();
-  //     onClose?.();
-  //   } catch (err) {
-  //     setLoginError("Login failed. Please try again.");
-  //   } finally {
-  //     setLoginLoading(false);
-  //   }
-  // };
-
-  /* -------------------------
-     Signup handler (sends full body)
-  ------------------------- */
   const handleSignup = async (e) => {
     e.preventDefault();
     setApiMessage(null);
@@ -332,7 +293,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
     setSignupLoading(true);
 
-    // split name into first/last
     const [firstName, ...rest] = name.trim().split(/\s+/);
     const lastName = rest.join(" ");
 
@@ -378,7 +338,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         return;
       }
 
-      // success
       dispatch(signup({ name, email, mobile }));
       setApiMessage("Account created successfully.");
       resetAllForms();
@@ -391,9 +350,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     }
   };
 
-  /* -------------------------
-     Password reset handler
-  ------------------------- */
   const handleResetSubmit = async (e) => {
     e?.preventDefault();
     setResetStatus("");
@@ -421,9 +377,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     }
   };
 
-  /* -------------------------
-     Derived states
-  ------------------------- */
   const isLoginValid =
     (emailRegex.test(loginIdentifier) || mobileRegex.test(loginIdentifier)) &&
     loginPassword.length >= 8;
@@ -435,42 +388,35 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     strongPasswordRegex.test(password) &&
     password === confirmPassword;
 
-  /* -------------------------
-     Small presentational subcomponents
-  ------------------------- */
-
   const OAuthButtons = () => (
-    <div className="flex justify-center gap-4 pb-4">
+    <div className="flex justify-center gap-3">
       <button
         type="button"
         onClick={() => startOAuth("google")}
         title="Continue with Google"
-        className="transform hover:scale-105 active:scale-95"
+        className="transform hover:scale-105 active:scale-95 transition"
       >
-        <img src={googleButton} alt="Google" className="h-12 w-12 object-contain" />
+        <img src={googleButton} alt="Google" className="h-10 w-10 object-contain" />
       </button>
       <button
         type="button"
         onClick={() => startOAuth("facebook")}
         title="Continue with Facebook"
-        className="transform hover:scale-105 active:scale-95"
+        className="transform hover:scale-105 active:scale-95 transition"
       >
-        <img src={facebookButton} alt="Facebook" className="h-12 w-12 object-contain" />
+        <img src={facebookButton} alt="Facebook" className="h-10 w-10 object-contain" />
       </button>
       <button
         type="button"
         onClick={() => startOAuth("apple")}
         title="Continue with Apple"
-        className="transform hover:scale-105 active:scale-95"
+        className="transform hover:scale-105 active:scale-95 transition"
       >
-        <img src={appleButton} alt="Apple" className="h-12 w-12 object-contain" />
+        <img src={appleButton} alt="Apple" className="h-10 w-10 object-contain" />
       </button>
     </div>
   );
 
-  /* -------------------------
-     Render
-  ------------------------- */
   return (
     <Modal
       isOpen={isOpen}
@@ -478,257 +424,353 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         resetAllForms();
         onClose?.();
       }}
-      title="Welcome to Ishita Gallery"
+      showHeader={false}
+      className="max-w-5xl w-full m-4"
     >
-      <div className="max-w-md w-full px-6 py-5">
-        {/* Tabs */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex bg-gray-100 rounded-full p-1 gap-2">
-            <button
-              type="button"
-              onClick={() => setTab("login")}
-              className={`px-5 py-2 text-sm font-medium rounded-full transition ${tab === "login" ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900"
-                }`}
-              aria-pressed={tab === "login"}
-            >
-              Log In
-            </button>
-            <button
-              type="button"
-              onClick={() => setTab("signup")}
-              className={`px-5 py-2 text-sm font-medium rounded-full transition ${tab === "signup" ? "bg-white shadow-sm text-gray-900" : "text-gray-600 hover:text-gray-900"
-                }`}
-              aria-pressed={tab === "signup"}
-            >
-              Sign Up
-            </button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px] relative">
+        {/* Close Button - Top Right */}
+        <button
+          onClick={() => {
+            resetAllForms();
+            onClose?.();
+          }}
+          className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all"
+          aria-label="Close modal"
+        >
+          <X size={24} className="cursor-pointer" />
+        </button>
+
+        {/* Left Side - Form */}
+        <div className="p-8 lg:p-12 flex flex-col">
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <img src={logo} alt="Ishita Gallery" className="h-16 object-contain" />
           </div>
-        </div>
 
-        {/* Login */}
-        {tab === "login" && (
-          <form onSubmit={handleLogin} className="space-y-5">
-            <OAuthButtons />
+          {/* Welcome Text */}
+          <h2 className="text-2xl font-bold text-center mb-6">Welcome to Ishita Gallery</h2>
 
-            <div className="flex items-center gap-3">
-              <div className="flex-1 border-t border-gray-300" />
-              <span className="text-xs text-gray-500">Or login with</span>
-              <div className="flex-1 border-t border-gray-300" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email or Mobile <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={loginIdentifier}
-                onChange={(e) => setLoginIdentifier(e.target.value)}
-                placeholder="john@gmail.com or 9876543210"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
-                autoComplete="username"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type={showLoginPassword ? "text" : "password"}
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowLoginPassword((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600"
-                  aria-label={showLoginPassword ? "Hide password" : "Show password"}
-                >
-                  {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {loginError && <p className="text-sm text-red-600">{loginError}</p>}
-
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" className="w-4 h-4 border-gray-300 rounded" />
-                Remember me
-              </label>
-
+          {/* Tabs */}
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex border-b-2 border-gray-200 gap-8">
               <button
                 type="button"
-                onClick={() => setResetOpen(true)}
-                className="text-sm text-purple-600 hover:underline"
+                onClick={() => setTab("login")}
+                className={`pb-2 text-sm font-medium transition ${tab === "login"
+                  ? "border-b-2 border-brand-600 text-brand-600 -mb-[2px]"
+                  : "text-gray-600 hover:text-gray-900 cursor-pointer"
+                  }`}
               >
-                Forgot password?
+                Log In
+              </button>
+              <button
+                type="button"
+                onClick={() => setTab("signup")}
+                className={`cursor-pointer pb-2 text-sm font-medium transition ${tab === "signup"
+                  ? "border-b-2 border-brand-600 text-brand-600 -mb-[2px]"
+                  : "text-gray-600 hover:text-gray-900"
+                  }`}
+              >
+                Sign Up
               </button>
             </div>
+          </div>
 
-            <button
-              type="submit"
-              disabled={!isLoginValid || loginLoading}
-              className={`w-full py-3 rounded-lg text-sm font-semibold transition ${isLoginValid && !loginLoading ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-            >
-              {loginLoading ? "Logging in..." : "Log In"}
-            </button>
-          </form>
-        )}
-
-        {/* Signup */}
-        {tab === "signup" && (
-          <form onSubmit={handleSignup} className="space-y-5">
-            <OAuthButtons />
-
-            <div className="flex items-center gap-3">
-              <div className="flex-1 border-t border-gray-300" />
-              <span className="text-xs text-gray-500">Or sign up with</span>
-              <div className="flex-1 border-t border-gray-300" />
-            </div>
-
-            {/* name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Name <span className="text-red-500">*</span></label>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                  }`}
-              />
-              {signupErrors.name && <p className="text-xs text-red-600 mt-1">{signupErrors.name}</p>}
-            </div>
-
-            {/* mobile */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mobile <span className="text-red-500">*</span></label>
-              <input
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                placeholder="9876543210"
-                inputMode="numeric"
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                  }`}
-              />
-              {signupErrors.mobile && <p className="text-xs text-red-600 mt-1">{signupErrors.mobile}</p>}
-            </div>
-
-            {/* email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email <span className="text-red-500">*</span></label>
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="john@example.com"
-                className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                  }`}
-              />
-              {signupErrors.email && <p className="text-xs text-red-600 mt-1">{signupErrors.email}</p>}
-            </div>
-
-            {/* password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password <span className="text-red-500">*</span></label>
-              <div className="relative">
+          {/* Login Form */}
+          {tab === "login" && (
+            <form onSubmit={handleLogin} className="space-y-4 flex-1">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email/Mobile Number <span className="text-red-500">*</span>
+                </label>
                 <input
-                  type={showSignupPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min 8 chars, letters & numbers"
-                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                    }`}
+                  type="text"
+                  value={loginIdentifier}
+                  onChange={(e) => setLoginIdentifier(e.target.value)}
+                  placeholder="john@gmail.com"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+                  autoComplete="username"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  >
+                    {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {loginError && <p className="text-sm text-red-600">{loginError}</p>}
+
+              <div className="flex items-center justify-between text-sm">
+                <label className="flex items-center gap-2 text-gray-700">
+                  <input type="checkbox" className="w-4 h-4 rounded" />
+                  Remember me
+                </label>
                 <button
                   type="button"
-                  onClick={() => setShowSignupPassword((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600"
-                  aria-label={showSignupPassword ? "Hide password" : "Show password"}
+                  onClick={() => setResetOpen(true)}
+                  className="text-brand-600 hover:underline"
                 >
-                  {showSignupPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  Forgot password?
                 </button>
               </div>
-              {signupErrors.password && <p className="text-xs text-red-600 mt-1">{signupErrors.password}</p>}
-            </div>
 
-            {/* confirm password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password <span className="text-red-500">*</span></label>
-              <div className="relative">
-                <input
-                  type={showSignupConfirm ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className={`w-full border rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition ${signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                    }`}
-                />
+              <button
+                type="submit"
+                disabled={!isLoginValid || loginLoading}
+                className={`w-full py-2.5 rounded text-sm font-semibold transition ${isLoginValid && !loginLoading
+                  ? "bg-brand-600 text-white hover:bg-brand-700"
+                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  }`}
+              >
+                {loginLoading ? "Logging in..." : "Log In"}
+              </button>
+
+              <div className="flex items-center gap-3 my-4">
+                <div className="flex-1 border-t border-gray-300" />
+                <span className="text-xs text-gray-500">Or continue with</span>
+                <div className="flex-1 border-t border-gray-300" />
+              </div>
+
+              <OAuthButtons />
+
+              <div className="text-center">
                 <button
                   type="button"
-                  onClick={() => setShowSignupConfirm((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600"
-                  aria-label={showSignupConfirm ? "Hide password" : "Show password"}
+                  className="text-sm text-gray-600 hover:text-brand-600 transition"
                 >
-                  {showSignupConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  Continue as Guest
                 </button>
               </div>
-              {signupErrors.confirmPassword && <p className="text-xs text-red-600 mt-1">{signupErrors.confirmPassword}</p>}
-            </div>
+            </form>
+          )}
 
-            {/* api message */}
-            {apiMessage && <p className="text-sm text-center text-gray-700">{apiMessage}</p>}
+          {/* Signup Form */}
+          {tab === "signup" && (
+            <form onSubmit={handleSignup} className="space-y-4 flex-1 overflow-y-auto">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="John Doe"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                    }`}
+                />
+                {signupErrors.name && <p className="text-xs text-red-600 mt-1">{signupErrors.name}</p>}
+              </div>
 
-            <button
-              type="submit"
-              disabled={!isSignupValid || signupLoading}
-              className={`w-full py-3 rounded-lg text-sm font-semibold transition ${isSignupValid && !signupLoading ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-            >
-              {signupLoading ? "Creating account..." : "Create account"}
-            </button>
-          </form>
-        )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mobile <span className="text-red-500">*</span>
+                </label>
+                <input
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  placeholder="9876543210"
+                  inputMode="numeric"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                    }`}
+                />
+                {signupErrors.mobile && <p className="text-xs text-red-600 mt-1">{signupErrors.mobile}</p>}
+              </div>
 
-        {/* Reset password modal (inline small modal) */}
-        <Modal
-          isOpen={resetOpen}
-          onClose={() => {
-            setResetOpen(false);
-            setResetEmail("");
-            setResetStatus("");
-          }}
-          title="Reset your password"
-        >
-          <form onSubmit={handleResetSubmit} className="space-y-4 px-2">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email or Mobile <span className="text-red-500">*</span></label>
-              <input
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-                placeholder="john@example.com or 9876543210"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="john@example.com"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                    }`}
+                />
+                {signupErrors.email && <p className="text-xs text-red-600 mt-1">{signupErrors.email}</p>}
+              </div>
 
-            {resetStatus && <p className="text-sm text-gray-700">{resetStatus}</p>}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showSignupPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min 8 chars, letters & numbers"
+                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                      }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignupPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  >
+                    {showSignupPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {signupErrors.password && <p className="text-xs text-red-600 mt-1">{signupErrors.password}</p>}
+              </div>
 
-            <div className="flex gap-2">
-              <button type="submit" disabled={resetLoading} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">
-                {resetLoading ? "Sending..." : "Send reset link"}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={showSignupConfirm ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                      }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignupConfirm((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  >
+                    {showSignupConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {signupErrors.confirmPassword && <p className="text-xs text-red-600 mt-1">{signupErrors.confirmPassword}</p>}
+              </div>
+
+              {apiMessage && <p className="text-sm text-center text-gray-700">{apiMessage}</p>}
+
+              <button
+                type="submit"
+                disabled={!isSignupValid || signupLoading}
+                className={`w-full py-2.5 rounded text-sm font-semibold transition ${isSignupValid && !signupLoading
+                  ? "bg-brand-600 text-white hover:bg-brand-700"
+                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  }`}
+              >
+                {signupLoading ? "Creating account..." : "Create account"}
               </button>
-              <button type="button" onClick={() => { setResetOpen(false); setResetStatus(""); }} className="px-4 py-2 rounded border">
-                Cancel
-              </button>
+
+              <div className="flex items-center gap-3 my-4">
+                <div className="flex-1 border-t border-gray-300" />
+                <span className="text-xs text-gray-500">Or continue with</span>
+                <div className="flex-1 border-t border-gray-300" />
+              </div>
+
+              <OAuthButtons />
+            </form>
+          )}
+        </div>
+
+        {/* Right Side - Product Gallery */}
+        <div className="hidden lg:block bg-gradient-to-br from-purple-100 via-pink-50 to-orange-50 p-6 rounded-r-lg relative overflow-hidden">
+          <div className="grid grid-cols-3 gap-3 h-full">
+            {/* Column 1 */}
+            <div className="space-y-3">
+              <div className="bg-purple-200 rounded-lg overflow-hidden h-32">
+                <img src={rect33} alt="Product" className="w-full h-full object-cover" />
+              </div>
+              <div className="bg-gray-200 rounded-lg overflow-hidden h-48">
+                <img src={art1} alt="Product" className="w-full h-full object-cover" />
+              </div>
+              <div className="bg-purple-300 rounded-lg overflow-hidden h-32">
+                <img src={rect35} alt="Product" className="w-full h-full object-cover" />
+              </div>
             </div>
-          </form>
-        </Modal>
+
+            {/* Column 2 */}
+            <div className="space-y-3 pt-12">
+              <div className="bg-green-200 rounded-lg overflow-hidden h-40">
+                <img src={art2} alt="Product" className="w-full h-full object-cover" />
+              </div>
+              <div className="bg-gray-300 rounded-lg overflow-hidden h-32">
+                <img src={rect16} alt="Product" className="w-full h-full object-cover" />
+              </div>
+              <div className="bg-pink-200 rounded-lg overflow-hidden h-48">
+                <img src={rect17} alt="Product" className="w-full h-full object-cover" />
+              </div>
+            </div>
+
+            {/* Column 3 */}
+            <div className="space-y-3">
+              <div className="bg-blue-200 rounded-lg overflow-hidden h-40">
+                <img src={rect18} alt="Product" className="w-full h-full object-cover" />
+              </div>
+              <div className="bg-orange-200 rounded-lg overflow-hidden h-32">
+                <img src={art3} alt="Product" className="w-full h-full object-cover" />
+              </div>
+              <div className="bg-gray-400 rounded-lg overflow-hidden h-48">
+                <img src={rect33} alt="Product" className="w-full h-full object-cover grayscale" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Reset Password Modal */}
+      <Modal
+        isOpen={resetOpen}
+        onClose={() => {
+          setResetOpen(false);
+          setResetEmail("");
+          setResetStatus("");
+        }}
+        title="Reset your password"
+      >
+        <form onSubmit={handleResetSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email or Mobile <span className="text-red-500">*</span>
+            </label>
+            <input
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              placeholder="john@example.com or 9876543210"
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            />
+          </div>
+
+          {resetStatus && <p className="text-sm text-gray-700">{resetStatus}</p>}
+
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={resetLoading}
+              className="px-4 py-2 rounded bg-brand-600 text-white hover:bg-brand-700 disabled:bg-gray-300"
+            >
+              {resetLoading ? "Sending..." : "Send reset link"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setResetOpen(false);
+                setResetStatus("");
+              }}
+              className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </Modal>
     </Modal>
   );
 }
