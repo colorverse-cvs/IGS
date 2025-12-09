@@ -111,11 +111,30 @@ export default function AddressForm({
   };
 
   const handlePincodeBlur = async () => {
-    const isValid = await validatePincode(pincode);
-    if (!isValid) {
-      setErrors({ ...errors, pincode: "Invalid Pincode" });
-    } else {
+    if (pincode.length !== 6) {
+      setErrors({ ...errors, pincode: "Pincode must be 6 digits" });
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const data = await res.json();
+
+      if (!data || data[0].Status !== "Success") {
+        setErrors({ ...errors, pincode: "Invalid Pincode" });
+        return;
+      }
+
+      // Auto-fill city and state from API response
+      const postOffice = data[0].PostOffice[0];
+      setCity(postOffice.Block);
+      setState(postOffice.State);
+
+      // Clear pincode error if valid
       setErrors({ ...errors, pincode: "" });
+    } catch (error) {
+      console.error("Pincode validation failed:", error);
+      setErrors({ ...errors, pincode: "Invalid Pincode" });
     }
   };
 
