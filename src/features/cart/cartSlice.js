@@ -114,45 +114,48 @@ const cartSlice = createSlice({
   },
 });
 
+
 export const updateCartItemQuantityAsync = createAsyncThunk(
-  'cart/updateCartItemQuantityAsync',
+  "cart/updateCartItemQuantityAsync",
   async ({ productId, quantity }, { dispatch, getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
-      // Find the item in the cart to check for a specific cartItemId
-      const cartItem = state.cart.items.find(item => item.id === productId);
-      // Use cartItemId if available, otherwise fallback to productId (though productId likely fails based on 404)
-      const targetId = cartItem?.cartItemId || productId;
+      // Find cart item by productId
+      const cartItem = state.cart.items.find(i => i.id === productId);
 
-      console.log(`Updating cart item ${productId} (Target ID: ${targetId}) to qty ${quantity}`);
+      if (!cartItem?.cartItemId) {
+        throw new Error("Cart item ID not found");
+      }
+
+      const targetId = cartItem.cartItemId;
 
       const response = await fetch(`${BASE_URL}/api/v1/cart/update/${targetId}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ quantity }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update cart quantity');
+        const errorData = await response.json();
+        return rejectWithValue(errorData.message || "Update failed");
       }
 
       const data = await response.json();
 
-      // Update local state on success
       dispatch(updateQty({ id: productId, qty: quantity }));
 
       return data;
     } catch (error) {
-      console.error('Error updating cart quantity:', error);
       return rejectWithValue(error.message);
     }
   }
 );
+
 
 export const clearCartAsync = createAsyncThunk(
   'cart/clearCartAsync',
