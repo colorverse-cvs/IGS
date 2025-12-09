@@ -23,3 +23,17 @@ export const getDiscountedPrice = (price, discount) => {
 
     return originalPrice;
 };
+
+
+export const validatePincode = async (pin) => {
+    if (pin.length !== 6) return false;
+
+    try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+        const data = await res.json();
+
+        return data[0]?.Status === "Success";
+    } catch {
+        return false;
+    }
+};

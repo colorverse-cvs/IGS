@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import indianStates from "../data/indianStates.json";
 import Dropdown from "./Dropdown";
 import CustomSearchDropdown from "./CustomSearchDropdown";
-
+import { validatePincode } from "../utils/helpers";
 /**
  * AddressForm Component - Delivery address input form
  * 
@@ -110,6 +110,14 @@ export default function AddressForm({
     setMobile(val);
   };
 
+  const handlePincodeBlur = async () => {
+    const isValid = await validatePincode(pincode);
+    if (!isValid) {
+      setErrors({ ...errors, pincode: "Invalid Pincode" });
+    } else {
+      setErrors({ ...errors, pincode: "" });
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
@@ -182,6 +190,7 @@ export default function AddressForm({
           placeholder="6 digits [0-9]"
           value={pincode}
           onChange={(e) => setPincode(onlyDigits(e.target.value).slice(0, 6))}
+          onBlur={handlePincodeBlur}
           required
         />
         {errors.pincode && (
