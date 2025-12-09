@@ -388,34 +388,34 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     strongPasswordRegex.test(password) &&
     password === confirmPassword;
 
-  const OAuthButtons = () => (
-    <div className="flex justify-center gap-3">
-      <button
-        type="button"
-        onClick={() => startOAuth("google")}
-        title="Continue with Google"
-        className="transform hover:scale-105 active:scale-95 transition"
-      >
-        <img src={googleButton} alt="Google" className="h-10 w-10 object-contain" />
-      </button>
-      <button
-        type="button"
-        onClick={() => startOAuth("facebook")}
-        title="Continue with Facebook"
-        className="transform hover:scale-105 active:scale-95 transition"
-      >
-        <img src={facebookButton} alt="Facebook" className="h-10 w-10 object-contain" />
-      </button>
-      <button
-        type="button"
-        onClick={() => startOAuth("apple")}
-        title="Continue with Apple"
-        className="transform hover:scale-105 active:scale-95 transition"
-      >
-        <img src={appleButton} alt="Apple" className="h-10 w-10 object-contain" />
-      </button>
-    </div>
-  );
+  // const OAuthButtons = () => (
+  //   <div className="flex justify-center gap-3">
+  //     <button
+  //       type="button"
+  //       onClick={() => startOAuth("google")}
+  //       title="Continue with Google"
+  //       className="transform hover:scale-105 active:scale-95 transition"
+  //     >
+  //       <img src={googleButton} alt="Google" className="h-10 w-10 object-contain" />
+  //     </button>
+  //     <button
+  //       type="button"
+  //       onClick={() => startOAuth("facebook")}
+  //       title="Continue with Facebook"
+  //       className="transform hover:scale-105 active:scale-95 transition"
+  //     >
+  //       <img src={facebookButton} alt="Facebook" className="h-10 w-10 object-contain" />
+  //     </button>
+  //     <button
+  //       type="button"
+  //       onClick={() => startOAuth("apple")}
+  //       title="Continue with Apple"
+  //       className="transform hover:scale-105 active:scale-95 transition"
+  //     >
+  //       <img src={appleButton} alt="Apple" className="h-10 w-10 object-contain" />
+  //     </button>
+  //   </div>
+  // );
 
   return (
     <Modal
@@ -481,7 +481,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             <form onSubmit={handleLogin} className="space-y-4 flex-1">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email/Mobile Number <span className="text-red-500">*</span>
+                  Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -543,22 +543,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {loginLoading ? "Logging in..." : "Log In"}
               </button>
 
-              <div className="flex items-center gap-3 my-4">
+              {/* <div className="flex items-center gap-3 my-4">
                 <div className="flex-1 border-t border-gray-300" />
                 <span className="text-xs text-gray-500">Or continue with</span>
                 <div className="flex-1 border-t border-gray-300" />
-              </div>
+              </div> */}
 
-              <OAuthButtons />
+              {/* <OAuthButtons /> */}
 
-              <div className="text-center">
-                <button
-                  type="button"
-                  className="text-sm text-gray-600 hover:text-brand-600 transition"
-                >
-                  Continue as Guest
-                </button>
-              </div>
             </form>
           )}
 
@@ -572,7 +564,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="John Doe"
+                  placeholder="FirstName LastName"
                   className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
                     }`}
                 />
@@ -586,7 +578,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 <input
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="9876543210"
+                  placeholder=""
                   inputMode="numeric"
                   className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
                     }`}
@@ -601,7 +593,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="john@example.com"
+                  placeholder="sample@gmail.com"
                   className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
                     }`}
                 />
@@ -669,13 +661,13 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {signupLoading ? "Creating account..." : "Create account"}
               </button>
 
-              <div className="flex items-center gap-3 my-4">
+              {/* <div className="flex items-center gap-3 my-4">
                 <div className="flex-1 border-t border-gray-300" />
                 <span className="text-xs text-gray-500">Or continue with</span>
                 <div className="flex-1 border-t border-gray-300" />
               </div>
 
-              <OAuthButtons />
+              <OAuthButtons /> */}
             </form>
           )}
         </div>
