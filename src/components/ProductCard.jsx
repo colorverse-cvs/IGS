@@ -42,7 +42,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
     console.log("Adding to cart:", product);
     if (!isAuthenticated) {
       toast.error("You need to log in first to add this product to your cart.");
-      // setIsAuthModalOpen(true);
+      setIsAuthModalOpen(true);
       return;
     }
     dispatch(
