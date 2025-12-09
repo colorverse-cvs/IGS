@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getDiscountedPrice } from "../utils/helpers";
+import { getDiscountedPrice, validatePincode } from "../utils/helpers";
 import { BASE_URL } from "../utils/constants";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../features/cart/cartSlice";
+import { addToCart, addToCartAsync } from "../features/cart/cartSlice";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
+import useAuth from "../hooks/useAuth";
+import AuthModal from "../components/AuthModal";
+import toast from "react-hot-toast";
 
 
 export default function ProductInfoPage() {
@@ -15,6 +18,7 @@ export default function ProductInfoPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,6 +29,7 @@ export default function ProductInfoPage() {
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const didFetchRef = useRef(false);
 
@@ -88,12 +93,12 @@ export default function ProductInfoPage() {
       images: images,
       material: apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin",
       primaryMaterial: apiProduct.attributes?.primaryMaterial,
-      size: apiProduct.dimensions?.size || "medium",
+      size: apiProduct.dimensions?.sizeCategory || apiProduct.dimensions?.size || "medium",
       sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
       category: categoryName,
       categoryId: categorySlug,
       categoryName: categoryName,
-      weight: apiProduct.weight,
+      weight: apiProduct.weight ? `${apiProduct.weight} gm` : null,
       dimensions: apiProduct.dimensions?.sizeDescription || (
         apiProduct.dimensions?.height && apiProduct.dimensions?.width
           ? `H: ${apiProduct.dimensions.height} ${apiProduct.dimensions.unit || "cm"} x W: ${apiProduct.dimensions.width} ${apiProduct.dimensions.unit || "cm"}`
@@ -103,6 +108,15 @@ export default function ProductInfoPage() {
       origin: apiProduct.attributes?.origin,
       description: apiProduct.description,
     };
+  };
+
+  const handlePincodeBlur = async () => {
+    const isValid = await validatePincode(pincode);
+    if (!isValid) {
+      setErrors({ ...errors, pincode: "Invalid Pincode" });
+    } else {
+      setErrors({ ...errors, pincode: "" });
+    }
   };
 
   // Fetch product from API
@@ -130,7 +144,9 @@ export default function ProductInfoPage() {
 
         // Set default material and size from product if available
         if (transformedProduct?.material) {
-          setSelectedMaterial(transformedProduct.material.toLowerCase());
+          // Normalize: "resin - high-density" -> "resin" to match option values
+          const normalized = transformedProduct.material.toLowerCase().split(' - ')[0].trim();
+          setSelectedMaterial(normalized);
         }
         if (transformedProduct?.size) {
           setSelectedSize(transformedProduct.size.toLowerCase());
@@ -183,32 +199,44 @@ export default function ProductInfoPage() {
 
   const currentImage = productImages[selectedImageIndex];
 
-  const handleCheckDelivery = () => {
+  const handleCheckDelivery = async () => {
     const pin = pincode.replace(/\D/g, "");
+
     if (pin.length !== 6) {
       setPincodeStatus("invalid");
       setDeliveryEstimate("");
       return;
     }
-    const prefix = parseInt(pin.slice(0, 2), 10);
-    const serviceable =
-      (prefix >= 40 && prefix <= 49) ||
-      (prefix >= 56 && prefix <= 59) ||
-      (prefix >= 60 && prefix <= 69);
-    if (!serviceable) {
+
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const data = await res.json();
+
+      if (!data || data[0].Status !== "Success") {
+        setPincodeStatus("no-service");
+        setDeliveryEstimate("");
+        return;
+      }
+
+      // Calculate delivery ETA
+      const eta = new Date();
+      eta.setDate(eta.getDate() + 5);
+
+      const formatted = eta.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "long",
+      });
+
+      setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
+      setPincodeStatus("ok");
+
+    } catch (error) {
+      console.error("Pincode check failed:", error);
       setPincodeStatus("no-service");
       setDeliveryEstimate("");
-      return;
     }
-    const eta = new Date();
-    eta.setDate(eta.getDate() + 7);
-    const formatted = eta.toLocaleDateString(undefined, {
-      day: "2-digit",
-      month: "long",
-    });
-    setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
-    setPincodeStatus("ok");
   };
+
 
   const handleThumbnailClick = (index) => {
     setSelectedImageIndex(index);
@@ -226,7 +254,7 @@ export default function ProductInfoPage() {
     typeof m === "string"
       ? {
         value: m.toLowerCase(),
-        label: m.charAt(0).toUpperCase() + m.slice(1),
+        label: m.charAt(0).toUpperCase() + m.slice(1).toLowerCase(),
       }
       : m
   );
@@ -239,11 +267,7 @@ export default function ProductInfoPage() {
         { value: "small", label: "Small", description: "Under 6 in" },
         { value: "medium", label: "Medium", description: "6 in - 10 in" },
         { value: "large", label: "Large", description: "10 in - 15 in" },
-        {
-          value: "extra-large",
-          label: "Extra Large",
-          description: "Above 15 in",
-        },
+        { value: "x-large", label: "Extra Large", description: "Above 15 in" },
       ]
   ).map((s) =>
     typeof s === "string"
@@ -291,20 +315,24 @@ export default function ProductInfoPage() {
   const decrement = () => setQuantity((q) => Math.max(1, q - 1));
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i += 1) {
-      dispatch(
-        addToCart({
-          id: product.id,
-          title,
-          price: product.price,
-          image: imageSrc,
-          mrp: mrp,
-          discount,
-          material: selectedMaterial,
-          size: selectedSize,
-        })
-      );
+    if (!isAuthenticated) {
+      toast.error("Please login befor add product to cart");
+      setIsAuthModalOpen(true);
+      return;
     }
+    dispatch(
+      addToCartAsync({
+        id: product.id,
+        title,
+        price: product.price,
+        image: imageSrc,
+        mrp,
+        discount,
+        material: selectedMaterial,
+        size: selectedSize,
+        qty: quantity,
+      })
+    );
   };
 
   const handleBuyNow = () => {
@@ -530,8 +558,7 @@ export default function ProductInfoPage() {
                     {materialOptions.map((option) => (
                       <label
                         key={option.value}
-                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500
- ${selectedMaterial === option.value ? "shadow-lg" : "border-gray-300"}`}
+                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${selectedMaterial === option.value ? "shadow-lg" : "border-gray-300"}`}
                       >
                         <input
                           type="radio"
@@ -682,6 +709,11 @@ export default function ProductInfoPage() {
 
       {/* Additional sections below the main product details */}
       <ProductMoreInfoPage productId={product.id} />
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialTab="login"
+      />
     </>
   );
 }

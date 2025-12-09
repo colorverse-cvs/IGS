@@ -4,20 +4,7 @@ import {
   getResponsiveSettings,
 } from "../config/carouselConfig";
 
-/**
- * CarouselRow - Shared horizontal carousel for any card/list content.
- *
- * Props:
- * - items: array
- * - renderItem: (item, idx) => ReactNode (required)
- * - config: responsive config (defaults to CAROUSEL_DEFAULT_CONFIG)
- * - autoplay: boolean (default true)
- * - autoplayMs: number (overrides config.autoplayMs)
- * - showIndicators: boolean
- * - enableDrag: boolean
- * - className: string
- * - gapClass: string for child wrapper spacing
- */
+
 export default function CarouselRow({
   items = [],
   renderItem,
@@ -160,9 +147,8 @@ export default function CarouselRow({
               key={idx}
               type="button"
               onClick={() => setFirstVisibleIndex(idx * itemsPerView)}
-              className={`h-2 w-2 rounded-full transition-colors ${
-                idx === currentPage ? "bg-brand-700" : "bg-gray-300"
-              }`}
+              className={`h-2 w-2 rounded-full transition-colors ${idx === currentPage ? "bg-brand-700" : "bg-gray-300"
+                }`}
               aria-label={`Go to slide ${idx + 1}`}
             />
           ))}

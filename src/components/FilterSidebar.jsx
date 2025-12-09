@@ -59,7 +59,7 @@ export default function FilterSidebar({
     // If newValues is empty, set to null (meaning "no filter applied")
     // Otherwise, keep as array for multi-select
     const filterValue = newValues.length > 0 ? newValues : null;
-    
+
     const prev = sidebarRef.current ? sidebarRef.current.scrollTop : 0;
     // Apply filter immediately on click
     onFiltersChange({
@@ -124,11 +124,10 @@ export default function FilterSidebar({
   return (
     <div
       ref={sidebarRef}
-      className={`${
-        isMobile
-          ? "p-4"
-          : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88vh]"
-      } overflow-y-auto`}
+      className={`${isMobile
+        ? "p-4"
+        : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88vh]"
+        } overflow-y-auto`}
     >
       {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}
       <style>{`
@@ -302,6 +301,7 @@ export default function FilterSidebar({
           border-color: #d1d5db;
         }
       `}</style>
+
       {!isMobile && (
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold text-gray-900">
@@ -437,6 +437,16 @@ export default function FilterSidebar({
           }
           onChange={(checked) => handleMultiSelectChange("size", "large")}
         />
+        <CheckboxOption
+          value="x-large"
+          label="Extra Large (Above 15 in)"
+          checked={
+            Array.isArray(filters.size)
+              ? filters.size.includes("x-large")
+              : filters.size === "x-large"
+          }
+          onChange={(checked) => handleMultiSelectChange("size", "x-large")}
+        />
       </FilterSection>
 
       {/* Price Range */}
@@ -489,7 +499,7 @@ export default function FilterSidebar({
               {(() => {
                 const min = 0;
                 const max = 4000;
-                const step = 100;
+                const step = 50;
                 const curMin =
                   filters.minPrice !== undefined && filters.minPrice !== ""
                     ? Number(filters.minPrice)
@@ -589,7 +599,7 @@ export default function FilterSidebar({
                 </label>
                 <input
                   type="number"
-                  placeholder="Min price"
+                  placeholder="0"
                   value={filters.minPrice || ""}
                   onChange={(e) => {
                     const v =
@@ -597,9 +607,9 @@ export default function FilterSidebar({
                     handleFilterChange("minPrice", v);
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:border-transparent"
-                  min="0"
+                  min="100"
                   max="4000"
-                  step="100"
+                  step="10"
                 />
               </div>
               <div className="flex-1">
@@ -618,7 +628,7 @@ export default function FilterSidebar({
                   className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:border-transparent"
                   min="0"
                   max="4000"
-                  step="100"
+                  step="10"
                 />
               </div>
             </div>
@@ -627,14 +637,14 @@ export default function FilterSidebar({
       </FilterSection>
 
       {/* Availability */}
-      <FilterSection title="Availability" section="availability">
+      {/* <FilterSection title="Availability" section="availability">
         <CheckboxOption
           value="inStock"
           label="In Stock Only"
           checked={filters.inStockOnly || false}
           onChange={(checked) => handleFilterChange("inStockOnly", checked)}
         />
-      </FilterSection>
+      </FilterSection> */}
 
       {/* Discount */}
       <FilterSection title="Discount" section="discount">

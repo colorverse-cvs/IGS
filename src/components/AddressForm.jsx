@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import indianStates from "../data/indianStates.json";
 import Dropdown from "./Dropdown";
-
+import CustomSearchDropdown from "./CustomSearchDropdown";
+import { validatePincode } from "../utils/helpers";
 /**
  * AddressForm Component - Delivery address input form
  * 
@@ -13,7 +14,7 @@ import Dropdown from "./Dropdown";
  * 
  * Features:
  * - Full address form with Indian states dropdown
- * - Validates mobile (10 digits), email, pincode (6 digits)
+ * - Validates mobile (10 digits) and pincode (6 digits)
  * - Address aliases (Home, Work, Other) for saving multiple addresses
  * - Set as default address option
  * - Displays validation errors inline
@@ -29,16 +30,16 @@ export default function AddressForm({
   initial,
   submitLabel = "Use this address",
 }) {
-  const [name, setName] = useState(initial?.name || "");
-  const [mobile, setMobile] = useState(initial?.mobile || "");
-  const [email, setEmail] = useState(initial?.email || "");
-  const [flat, setFlat] = useState("");
-  const [area, setArea] = useState("");
-  const [landmark, setLandmark] = useState("");
-  const [pincode, setPincode] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  
+  const [mobile, setMobile] = useState(initial?.mobile || initial?.phone || "");
+
+  // Initialize granular fields from API structure
+  const [flat, setFlat] = useState(initial?.line1 || initial?.flat || "");
+  const [area, setArea] = useState(initial?.line2 || initial?.area || "");
+  const [landmark, setLandmark] = useState(initial?.landmark || "");
+  const [pincode, setPincode] = useState(initial?.postalCode || initial?.pincode || "");
+  const [city, setCity] = useState(initial?.city || "");
+  const [state, setState] = useState(initial?.state || "");
+
   // Address type aliases
   const DEFAULT_ALIASES = ["Home", "Work", "Other"];
   const aliasOptions = React.useMemo(() => {
@@ -58,13 +59,10 @@ export default function AddressForm({
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = {};
-    if (!name.trim()) validationErrors.name = "Name is required";
 
     const mobileDigits = onlyDigits(mobile);
     if (mobileDigits.length !== 10)
       validationErrors.mobile = "Enter a valid 10-digit mobile number";
-    if (email && !/^\S+@\S+\.\S+$/.test(email))
-      validationErrors.email = "Enter a valid email address";
 
     if (!/^[0-9]{6}$/.test(pincode))
       validationErrors.pincode = "Pincode must be 6 digits";
@@ -88,73 +86,84 @@ export default function AddressForm({
 
     const newAddress = {
       id: initial?.id || `addr_${Date.now()}`,
-      name: name.trim(),
       tag: alias.trim() || "Home",
       addressLine,
       mobile: `+91 ${mobileDigits}`,
-      email: email.trim(),
       isDefault: makeDefault,
+      // Granular fields for API
+      line1: flat,
+      line2: `${area} ${landmark ? "Near " + landmark : ""}`.trim(),
+      city,
+      state,
+      postalCode: pincode,
+      country: "India",
+      phone: `+91${mobileDigits}`,
     };
     onSubmit?.(newAddress);
   };
 
+  const handleMobileChange = (e) => {
+    let val = e.target.value;
+    val = val.replace(/^(\+?91)/, "");
+    val = val.replace(/\D/g, "");
+    val = val.slice(0, 10);
+    setMobile(val);
+  };
+
+  const handlePincodeBlur = async () => {
+    if (pincode.length !== 6) {
+      setErrors({ ...errors, pincode: "Pincode must be 6 digits" });
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const data = await res.json();
+
+      if (!data || data[0].Status !== "Success") {
+        setErrors({ ...errors, pincode: "Invalid Pincode" });
+        return;
+      }
+
+      // Auto-fill city and state from API response
+      const postOffice = data[0].PostOffice[0];
+      setCity(postOffice.Block);
+      setState(postOffice.State);
+
+      // Clear pincode error if valid
+      setErrors({ ...errors, pincode: "" });
+    } catch (error) {
+      console.error("Pincode validation failed:", error);
+      setErrors({ ...errors, pincode: "Invalid Pincode" });
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-500">
-          Name *
-        </label>
-        <input
-          type="text"
-          className={`w-full border rounded px-3 py-2 border-gray-200 ${
-            errors.name ? "border-red-500" : ""
-          }`}
-          placeholder="John Doe"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        {errors.name && (
-          <p className="mt-1 text-xs text-red-600">{errors.name}</p>
-        )}
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-500">
-          Email ID
-        </label>
-        <input
-          type="email"
-          className={`w-full border rounded px-3 py-2 border-gray-200 ${
-            errors.email ? "border-red-500" : ""
-          }`}
-          placeholder="demo@gmail.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-        />
-        {errors.email && (
-          <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-        )}
-      </div>
+
       <div>
         <label className="block text-sm font-medium mb-1 text-gray-500">
           Mobile Number *
         </label>
-        <input
-          type="tel"
-          className={`w-full border rounded px-3 py-2 border-gray-200 ${
-            errors.mobile ? "border-red-500" : ""
-          }`}
-          placeholder="Enter 10 digits"
-          value={mobile}
-          onChange={(e) => setMobile(onlyDigits(e.target.value).slice(0, 10))}
-          inputMode="numeric"
-          maxLength={10}
-        />
+
+        <div className="flex items-center">
+          {/* <span className="px-2 text-gray-600">+91</span> */}
+          <input
+            type="tel"
+            className={`w-full border rounded px-3 py-2 border-gray-200 ${errors.mobile ? "border-red-500" : ""
+              }`}
+            placeholder="Enter 10 digits"
+            value={mobile}
+            onChange={(e) => { handleMobileChange(e) }}
+            inputMode="numeric"
+            maxLength={10}
+          />
+        </div>
         {errors.mobile && (
           <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>
         )}
       </div>
+
       <div>
         <label className="block text-sm font-medium mb-1 text-gray-500">
           Flat, House no., Building, Company, Apartment
@@ -195,12 +204,12 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className={`w-full border rounded px-3 py-2 border-gray-200 ${
-            errors.pincode ? "border-red-500" : ""
-          }`}
+          className={`w-full border rounded px-3 py-2 border-gray-200 ${errors.pincode ? "border-red-500" : ""
+            }`}
           placeholder="6 digits [0-9]"
           value={pincode}
           onChange={(e) => setPincode(onlyDigits(e.target.value).slice(0, 6))}
+          onBlur={handlePincodeBlur}
           required
         />
         {errors.pincode && (
@@ -216,20 +225,33 @@ export default function AddressForm({
             type="text"
             className="w-full border rounded px-3 py-2 border-gray-200"
             value={city}
-            onChange={(e) => setCity(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+              setCity(value);
+            }}
           />
         </div>
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-500">
             State *
           </label>
-          <Dropdown
+          {/* <Dropdown
             options={indianStates}
             value={state}
             onChange={(v) => setState(v)}
             placeholder="Select your state"
             className={`${errors.state ? "ring-2 ring-red-400" : ""}`}
+          /> */}
+
+          <CustomSearchDropdown
+            options={indianStates}
+            value={state}
+            onChange={(v) => setState(v)}
+            placeholder="Select your state"
+            searchable
+            className={errors.state ? "ring-2 ring-red-400" : ""}
           />
+
           {errors.state && (
             <p className="mt-1 text-xs text-red-600">{errors.state}</p>
           )}

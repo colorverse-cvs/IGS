@@ -6,11 +6,17 @@ import {
   addToCart,
   updateQty,
   removeFromCart,
+  addToCartAsync,
 } from "../features/cart/cartSlice";
 import { ShoppingCart, Star } from "lucide-react";
+import useAuth from "../hooks/useAuth";
+import AuthModal from "./AuthModal";
+import toast from "react-hot-toast";
 
 const ProductCard = ({ product, onOpenProduct }) => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
   const {
     id,
     name,
@@ -33,8 +39,14 @@ const ProductCard = ({ product, onOpenProduct }) => {
 
   // Add product to cart with all its details
   const handleAddToCart = () => {
+    console.log("Adding to cart:", product);
+    if (!isAuthenticated) {
+      toast.error("You need to log in first to add this product to your cart.");
+      setIsAuthModalOpen(true);
+      return;
+    }
     dispatch(
-      addToCart({
+      addToCartAsync({
         id: id,
         title: name,
         price: price,
@@ -43,6 +55,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
         discount: discount,
         material: material,
         size: size,
+        qty: 1,
       })
     );
   };
@@ -165,9 +178,9 @@ const ProductCard = ({ product, onOpenProduct }) => {
             {qtyInCart === 0 ? (
               <button
                 className="flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-brand-800 font-semibold text-xs 
-            transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-50
-            rounded-sm md:opacity-0 md:translate-y-1 md:pointer-events-none
-            md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm"
+                  transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-50
+                  rounded-sm md:opacity-0 md:translate-y-1 md:pointer-events-none
+                  md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -188,9 +201,15 @@ const ProductCard = ({ product, onOpenProduct }) => {
                     e.preventDefault();
                     e.stopPropagation();
                     if (qtyInCart > 1) {
-                      dispatch(updateQty({ id, qty: qtyInCart - 1 }));
+                      // Use API thunk for quantity update
+                      import("../features/cart/cartSlice").then(({ updateCartItemQuantityAsync }) => {
+                        dispatch(updateCartItemQuantityAsync({ productId: id, quantity: qtyInCart - 1 }));
+                      });
                     } else {
-                      dispatch(removeFromCart(id));
+                      // Use API thunk for removal
+                      import("../features/cart/cartSlice").then(({ removeItemFromCartAsync }) => {
+                        dispatch(removeItemFromCartAsync(id));
+                      });
                     }
                   }}
                   aria-label="Decrease quantity"
@@ -203,10 +222,10 @@ const ProductCard = ({ product, onOpenProduct }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    // use addToCart to increment by 1
-                    dispatch(
-                      addToCart({ id, title: name, price, image: imageURL })
-                    );
+                    // Use API thunk for quantity update
+                    import("../features/cart/cartSlice").then(({ updateCartItemQuantityAsync }) => {
+                      dispatch(updateCartItemQuantityAsync({ productId: id, quantity: qtyInCart + 1 }));
+                    });
                   }}
                   aria-label="Increase quantity"
                 >
@@ -244,6 +263,12 @@ const ProductCard = ({ product, onOpenProduct }) => {
       }}
     >
       {content}
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialTab="login"
+      />
     </Link>
   );
 };

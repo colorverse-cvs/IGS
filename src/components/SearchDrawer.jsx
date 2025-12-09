@@ -1,40 +1,23 @@
 import React from "react";
 import { X, Search, Star } from "lucide-react";
-import categoriesData from "../data/categories.json";
 import { useNavigate } from "react-router-dom";
 
-/**
- * SearchDrawer Component - Slide-out search panel with live product filtering
- * 
- * Props:
- * - isOpen: boolean - whether the drawer is visible
- * - onClose: function - callback to close the drawer
- * 
- * Features:
- * - Real-time search filtering across all products
- * - Searches by: name, material, size, category, price, rating
- * - Shows up to 30 most relevant results
- * - Click on a result navigates to filter page with pre-applied filters
- * - Prevents background scroll when drawer is open
- * 
- * For beginners:
- * - Uses React.useMemo for performance optimization (doesn't recalculate unless query changes)
- * - Shows product preview cards with image, name, category, price, and rating
- */
+
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../features/products/productSlice";
+
 export default function SearchDrawer({ isOpen, onClose }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [query, setQuery] = React.useState("");
 
-  // Build searchable product index from all categories
-  const allProducts = React.useMemo(() => {
-    const arr = [];
-    categoriesData.sections.forEach((section) =>
-      section.products.forEach((p) =>
-        arr.push({ ...p, categoryId: section.id, categoryName: section.title })
-      )
-    );
-    return arr;
-  }, []);
+  const { products: allProducts, status } = useSelector((state) => state.products);
+
+  React.useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchProducts());
+    }
+  }, [status, dispatch]);
 
   // Convert text to URL-friendly format for category slugs
   const toSlug = (val) => (val || "").toLowerCase().replace(/\s+/g, "-");
@@ -60,14 +43,10 @@ export default function SearchDrawer({ isOpen, onClose }) {
     });
   }, [query, allProducts]);
 
-  // Navigate to filter page with selected product and its category pre-applied
+  // Navigate to product details page
   const handleClick = (p) => {
-    const params = new URLSearchParams();
-    params.set("category", p.categoryId || toSlug(p.categoryName));
-    if (p.material) params.set("material", (p.material || "").toLowerCase());
-    if (p.size) params.set("size", p.size);
     onClose?.();
-    navigate(`/filter?${params.toString()}`);
+    navigate(`/product/${p.id}`, { state: { product: p } });
   };
 
   // Prevent background scroll when drawer is open
@@ -81,22 +60,27 @@ export default function SearchDrawer({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
+  // Clear query when drawer closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setQuery("");
+    }
+  }, [isOpen]);
+
   return (
     <>
       {/* Backdrop overlay - click to close */}
       <div
-        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
+        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+          }`}
         onClick={onClose}
         aria-hidden={!isOpen}
       />
-      
+
       {/* Drawer panel - slides in from right side */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         role="dialog"
         aria-modal="true"
         aria-label="Search products"

@@ -48,7 +48,7 @@ export default function FilterPage() {
     { value: "popular", label: "Popular" },
     { value: "price-low", label: "Price: Low to High" },
     { value: "price-high", label: "Price: High to Low" },
-    { value: "rating", label: "Rating" },
+    // { value: "rating", label: "Rating" },
   ];
 
   const currentSortLabel =
@@ -145,8 +145,8 @@ export default function FilterPage() {
         selected.some((cat) => {
           // Match by categoryId (slug) or category name
           const categorySlug = product.categoryId || getCategorySlug(product.category || "");
-          return categorySlug === cat || 
-                 (product.category || "").toLowerCase().includes((cat || "").replace("-", " "));
+          return categorySlug === cat ||
+            (product.category || "").toLowerCase().includes((cat || "").replace("-", " "));
         })
       );
     }
@@ -163,9 +163,10 @@ export default function FilterPage() {
       const selected = Array.isArray(filters.material)
         ? filters.material
         : [filters.material];
-      filtered = filtered.filter((product) =>
-        selected.includes((product.material || "").toLowerCase())
-      );
+      filtered = filtered.filter((product) => {
+        const productMaterial = (product.material || "").toLowerCase();
+        return selected.some(mat => productMaterial.startsWith(mat.toLowerCase()));
+      });
     }
 
     // Size filter - OR within size (small OR medium), AND with other filters
@@ -208,8 +209,7 @@ export default function FilterPage() {
 
     // In stock filter - AND with other filters
     if (filters.inStockOnly) {
-      // Placeholder for future stock data - currently all products are considered in stock
-      // filtered = filtered.filter((product) => product.stock > 0);
+      filtered = filtered.filter((product) => product.stock > 0);
     }
 
     return filtered;
@@ -400,9 +400,8 @@ export default function FilterPage() {
                 <span>{currentSortLabel}</span>
                 <ChevronDown
                   size={16}
-                  className={`ml-2 transition-transform ${
-                    isSortDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                  className={`ml-2 transition-transform ${isSortDropdownOpen ? "rotate-180" : "rotate-0"
+                    }`}
                 />
               </button>
               {isSortDropdownOpen && (
@@ -412,11 +411,10 @@ export default function FilterPage() {
                       <button
                         key={option.value}
                         onClick={() => handleSortSelect(option.value)}
-                        className={`block w-full text-left px-4 py-2 text-sm transition ${
-                          sortBy === option.value
-                            ? "bg-purple-50 text-brand-700 font-medium"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
+                        className={`block w-full text-left px-4 py-2 text-sm transition ${sortBy === option.value
+                          ? "bg-purple-50 text-brand-700 font-medium"
+                          : "text-gray-700 hover:bg-gray-100"
+                          }`}
                       >
                         {option.label}
                       </button>
@@ -460,9 +458,8 @@ export default function FilterPage() {
                   <span>{itemsPerPage}</span>
                   <ChevronDown
                     size={16}
-                    className={`ml-2 transition-transform ${
-                      isItemsPerPageDropdownOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`ml-2 transition-transform ${isItemsPerPageDropdownOpen ? "rotate-180" : "rotate-0"
+                      }`}
                   />
                 </button>
                 {isItemsPerPageDropdownOpen && (
@@ -476,11 +473,10 @@ export default function FilterPage() {
                         <button
                           key={option.value}
                           onClick={() => handleItemsPerPageSelect(option.value)}
-                          className={`block w-full text-left px-4 py-2 text-sm transition ${
-                            itemsPerPage === option.value
-                              ? "bg-purple-50 text-brand-700 font-medium"
-                              : "text-gray-700 hover:bg-gray-100"
-                          }`}
+                          className={`block w-full text-left px-4 py-2 text-sm transition ${itemsPerPage === option.value
+                            ? "bg-purple-50 text-brand-700 font-medium"
+                            : "text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           {option.label}
                         </button>
@@ -502,9 +498,8 @@ export default function FilterPage() {
                   <span>{currentSortLabel}</span>
                   <ChevronDown
                     size={16}
-                    className={`ml-2 transition-transform ${
-                      isSortDropdownOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`ml-2 transition-transform ${isSortDropdownOpen ? "rotate-180" : "rotate-0"
+                      }`}
                   />
                 </button>
                 {isSortDropdownOpen && (
@@ -518,11 +513,10 @@ export default function FilterPage() {
                         <button
                           key={option.value}
                           onClick={() => handleSortSelect(option.value)}
-                          className={`block w-full text-left px-4 py-2 text-sm transition ${
-                            sortBy === option.value
-                              ? "bg-purple-50 text-brand-700 font-medium"
-                              : "text-gray-700 hover:bg-gray-100"
-                          }`}
+                          className={`block w-full text-left px-4 py-2 text-sm transition ${sortBy === option.value
+                            ? "bg-purple-50 text-brand-700 font-medium"
+                            : "text-gray-700 hover:bg-gray-100"
+                            }`}
                         >
                           {option.label}
                         </button>

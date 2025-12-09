@@ -8,16 +8,15 @@ import ExploreCollections from "./ExploreCollections.jsx";
 import CustomizationWorksPage from "./CustomizationWorksPage.jsx";
 import TestimonialsPage from "./TestimonialsPage.jsx";
 import testimonials from "../data/testimonials.json";
+// import useAuth from "../hooks/useAuth";
 
-/**
- * HomePage Component
- * Main landing page that displays hero section, collections, category mosaic,
- * customization process, and customer testimonials
- * Uses Redux Toolkit for state management
- */
+
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
+  // const { isAuthenticated, user } = useAuth();
+
+  // console.log("HomePage Auth Status:", { isAuthenticated, user });
 
   // When there's a hash in the URL (e.g. /#section-<id>), scroll to the section
   useEffect(() => {
@@ -131,7 +130,7 @@ export default function HomePage() {
 
       <CustomizationWorksPage />
       <section className="bg-brand-50">
-      <TestimonialsPage items={testimonials} />
+        <TestimonialsPage items={testimonials} />
       </section>
     </>
   );

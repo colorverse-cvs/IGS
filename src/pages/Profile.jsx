@@ -6,6 +6,11 @@ import {
   setDefaultAddress,
   removeAddress,
   addOrUpdateAddress,
+  fetchAddressesAsync,
+  addAddressAsync,
+  updateAddressAsync,
+  removeAddressAsync,
+  setDefaultAddressAsync,
 } from "../features/user/userSlice";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
@@ -46,6 +51,14 @@ export default function Profile() {
   React.useEffect(() => {
     setTab(initialTab);
   }, [initialTab]);
+
+  // Fetch addresses when tab changes to 'addresses'
+  React.useEffect(() => {
+    console.log(tab, user);
+    if (tab === "addresses" && user?.profile?.id) {
+      dispatch(fetchAddressesAsync(user.profile.id));
+    }
+  }, [tab, user?.profile?.id, dispatch]);
 
   // Scroll to top when tab changes
   React.useEffect(() => {
@@ -249,41 +262,37 @@ export default function Profile() {
       {/* Tabs - Desktop View */}
       <div className="hidden md:flex gap-6 text-sm mb-6">
         <button
-          className={`${
-            tab === "profile"
-              ? "border-b-2 border-brand-700 text-brand-700"
-              : "text-gray-600"
-          }`}
+          className={`${tab === "profile"
+            ? "border-b-2 border-brand-700 text-brand-700"
+            : "text-gray-600"
+            }`}
           onClick={() => setTab("profile")}
         >
           Your Profile
         </button>
-        <button
-          className={`${
-            tab === "orders"
-              ? "border-b-2 border-brand-700 text-brand-700"
-              : "text-gray-600"
-          }`}
+        {/* <button
+          className={`${tab === "orders"
+            ? "border-b-2 border-brand-700 text-brand-700"
+            : "text-gray-600"
+            }`}
           onClick={() => setTab("orders")}
         >
           Recent Orders
-        </button>
+        </button> */}
         <button
-          className={`${
-            tab === "addresses"
-              ? "border-b-2 border-brand-700 text-brand-700"
-              : "text-gray-600"
-          }`}
+          className={`${tab === "addresses"
+            ? "border-b-2 border-brand-700 text-brand-700"
+            : "text-gray-600"
+            }`}
           onClick={() => setTab("addresses")}
         >
           Saved Addresses
         </button>
         <button
-          className={`${
-            tab === "payments"
-              ? "border-b-2 border-brand-700 text-brand-700"
-              : "text-gray-600"
-          }`}
+          className={`${tab === "payments"
+            ? "border-b-2 border-brand-700 text-brand-700"
+            : "text-gray-600"
+            }`}
           onClick={() => setTab("payments")}
         >
           Payment Options
@@ -293,46 +302,43 @@ export default function Profile() {
       {/* Tabs - Mobile View (Sticky Bottom) */}
       <div className="md:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 flex gap-2 px-2 py-2 z-40 overflow-x-auto">
         <button
-          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${
-            tab === "profile"
-              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
-              : "bg-white text-gray-600 border border-gray-300"
-          }`}
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "profile"
+            ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+            : "bg-white text-gray-600 border border-gray-300"
+            }`}
           onClick={() => setTab("profile")}
         >
           Profile
         </button>
         <button
-          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${
-            tab === "orders"
-              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
-              : "bg-white text-gray-600 border border-gray-300"
-          }`}
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "orders"
+            ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+            : "bg-white text-gray-600 border border-gray-300"
+            }`}
           onClick={() => setTab("orders")}
         >
           Orders
         </button>
         <button
-          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${
-            tab === "addresses"
-              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
-              : "bg-white text-gray-600 border border-gray-300"
-          }`}
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "addresses"
+            ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+            : "bg-white text-gray-600 border border-gray-300"
+            }`}
           onClick={() => setTab("addresses")}
         >
           Saved Addresses
         </button>
         <button
-          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${
-            tab === "payments"
-              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
-              : "bg-white text-gray-600 border border-gray-300"
-          }`}
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "payments"
+            ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+            : "bg-white text-gray-600 border border-gray-300"
+            }`}
           onClick={() => setTab("payments")}
         >
           Payment Options
         </button>
       </div>
+
       {tab === "profile" && (
         <div className="bg-white py-4 max-w-5xl">
           <p className="text-2xl font-bold mb-4">Profile</p>
@@ -340,9 +346,8 @@ export default function Profile() {
             <div>
               <label className="text-gray-500 block text-sm mb-1">Name *</label>
               <input
-                className={`w-full border rounded px-3 py-2 ${
-                  profileErrors.name ? "border-red-500" : "border-gray-200"
-                } bg-gray-50 cursor-not-allowed`}
+                className={`w-full border rounded px-3 py-2 ${profileErrors.name ? "border-red-500" : "border-gray-200"
+                  } bg-gray-50 cursor-not-allowed`}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
@@ -360,9 +365,8 @@ export default function Profile() {
                 Mobile Number *
               </label>
               <input
-                className={`w-full border rounded px-3 py-2 ${
-                  profileErrors.mobile ? "border-red-500" : "border-gray-200"
-                } bg-gray-50 cursor-not-allowed`}
+                className={`w-full border rounded px-3 py-2 ${profileErrors.mobile ? "border-red-500" : "border-gray-200"
+                  } bg-gray-50 cursor-not-allowed`}
                 value={mobile}
                 onChange={(e) =>
                   setMobile(onlyDigits(e.target.value).slice(0, 10))
@@ -381,9 +385,8 @@ export default function Profile() {
             <div>
               <label className="text-gray-500 block text-sm mb-1">Email</label>
               <input
-                className={`w-full border rounded px-3 py-2 ${
-                  profileErrors.email ? "border-red-500" : "border-gray-200"
-                } bg-gray-50 cursor-not-allowed`}
+                className={`w-full border rounded px-3 py-2 ${profileErrors.email ? "border-red-500" : "border-gray-200"
+                  } bg-gray-50 cursor-not-allowed`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="demo@email.com"
@@ -446,9 +449,8 @@ export default function Profile() {
                     Name *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${
-                      profileErrors.name ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`w-full border rounded px-3 py-2 ${profileErrors.name ? "border-red-500" : "border-gray-200"
+                      }`}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your name"
@@ -459,11 +461,10 @@ export default function Profile() {
                     Mobile Number *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${
-                      profileErrors.mobile
-                        ? "border-red-500"
-                        : "border-gray-200"
-                    }`}
+                    className={`w-full border rounded px-3 py-2 ${profileErrors.mobile
+                      ? "border-red-500"
+                      : "border-gray-200"
+                      }`}
                     value={mobile}
                     onChange={(e) =>
                       setMobile(onlyDigits(e.target.value).slice(0, 10))
@@ -477,9 +478,8 @@ export default function Profile() {
                     Email
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${
-                      profileErrors.email ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`w-full border rounded px-3 py-2 ${profileErrors.email ? "border-red-500" : "border-gray-200"
+                      }`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="demo@email.com"
@@ -527,69 +527,13 @@ export default function Profile() {
         </div>
       )}
 
-      {tab === "orders" && (
-        <div className="space-y-6">
-          <p className="text-2xl font-bold mb-4">Recent orders</p>
-          {orders.map((order) => (
-            <div key={order.id} className="border rounded-lg overflow-hidden">
-              <div className="grid grid-cols-12 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-700">
-                <div className="col-span-2">Order ID</div>
-                <div className="col-span-5">Items</div>
-                <div className="col-span-1">Status</div>
-                <div className="col-span-2">Order Date</div>
-                <div className="col-span-2">Total</div>
-              </div>
-              {order.items.map((it, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-12 items-stretch gap-3 px-4 py-3 border-t text-sm"
-                >
-                  <div className="col-span-2 flex items-center">{order.id}</div>
-                  <div className="col-span-5 flex gap-4">
-                    <img
-                      src={it.image}
-                      alt={it.title}
-                      className="w-20 h-20 object-cover rounded"
-                    />
-                    <div className="flex-1">
-                      <div className="font-medium">{it.title}</div>
-                      <div className="text-xs text-gray-500">
-                        Material: {it.material || "-"} &nbsp; Size:{" "}
-                        {it.size || "-"}
-                      </div>
-                      <div className="text-brand-700 font-semibold">
-                        ₹{it.price}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-xs px-2 py-1 rounded border text-yellow-700 border-yellow-300">
-                      {order.status || "Placed"}
-                    </span>
-                  </div>
-                  <div className="col-span-2 flex items-center">
-                    {new Date(order.date).toLocaleDateString()}
-                  </div>
-                  <div className="col-span-2 flex items-center">
-                    ₹{order.totals?.payable}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-          {orders.length === 0 && (
-            <div className="text-gray-500">No orders yet.</div>
-          )}
-        </div>
-      )}
-
       {tab === "addresses" && (
         <div className="max-w-4xl">
           <p className="text-2xl font-bold mb-4">Saved Addresses</p>
           <div className="space-y-4">
             {addresses.map((addr) => (
               <div
-                key={addr.id}
+                key={addr._id}
                 className="border-b border-gray-300 py-4 text-sm"
               >
                 <div className="flex items-start gap-3">
@@ -601,7 +545,7 @@ export default function Profile() {
                   />
                   <div className="flex-1">
                     <div className="font-medium">
-                      {addr.name}
+                      {addr.name || "Address"}
                       {addr.tag && (
                         <span className="ml-2 text-xs bg-gray-100 px-2 py-0.5 rounded border border-gray-200 text-gray-600">
                           {addr.tag}
@@ -614,10 +558,10 @@ export default function Profile() {
                       )}
                     </div>
                     <div className="text-gray-600">
-                      Delivery address: {addr.addressLine}
+                      Delivery address: {addr.addressLine || [addr.line1, addr.line2, addr.city, addr.state, addr.postalCode ? `- ${addr.postalCode}` : ""].filter(Boolean).join(", ")}
                     </div>
                     <div className="text-gray-600">
-                      Mobile number: {addr.mobile}
+                      Mobile number: {addr.mobile || addr.phone}
                     </div>
                     {addr.email && (
                       <div className="text-gray-600">Email: {addr.email}</div>
@@ -634,14 +578,14 @@ export default function Profile() {
                       </button>
                       <button
                         className="text-xs text-brand-700"
-                        onClick={() => dispatch(removeAddress(addr.id))}
+                        onClick={() => dispatch(removeAddressAsync(addr.id || addr._id))}
                       >
                         Remove
                       </button>
                       {!addr.isDefault && (
                         <button
                           className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold"
-                          onClick={() => dispatch(setDefaultAddress(addr.id))}
+                          onClick={() => dispatch(setDefaultAddressAsync(addr.id || addr._id))}
                         >
                           Set as Default address
                         </button>
@@ -671,7 +615,16 @@ export default function Profile() {
               submitLabel={editAddress ? "Save address" : "Use this address"}
               onCancel={() => setIsAddressModalOpen(false)}
               onSubmit={(a) => {
-                dispatch(addOrUpdateAddress(a));
+                if (editAddress) {
+                  // Update existing address
+                  dispatch(updateAddressAsync({
+                    addressId: editAddress.id || editAddress._id,
+                    addressData: a
+                  }));
+                } else {
+                  // creating new address via API
+                  dispatch(addAddressAsync(a));
+                }
                 setIsAddressModalOpen(false);
               }}
             />
@@ -739,9 +692,8 @@ export default function Profile() {
                       </button>
                       <ChevronDown
                         size={18}
-                        className={`transition-transform ${
-                          isOpen ? "rotate-180" : "rotate-0"
-                        }`}
+                        className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
+                          }`}
                       />
                     </div>
                   </div>
@@ -901,8 +853,8 @@ export default function Profile() {
                       editingCard
                         ? "(optional)"
                         : cardBrand === "amex"
-                        ? "4 digits"
-                        : "3 digits"
+                          ? "4 digits"
+                          : "3 digits"
                     }
                   />
                   {cardErrors.cvv ? (
@@ -941,6 +893,63 @@ export default function Profile() {
           </Modal>
         </div>
       )}
+
+      {/* {tab === "orders" && (
+        <div className="space-y-6">
+          <p className="text-2xl font-bold mb-4">Recent orders</p>
+          {orders.map((order) => (
+            <div key={order.id} className="border rounded-lg overflow-hidden">
+              <div className="grid grid-cols-12 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-700">
+                <div className="col-span-2">Order ID</div>
+                <div className="col-span-5">Items</div>
+                <div className="col-span-1">Status</div>
+                <div className="col-span-2">Order Date</div>
+                <div className="col-span-2">Total</div>
+              </div>
+              {order.items.map((it, idx) => (
+                <div
+                  key={idx}
+                  className="grid grid-cols-12 items-stretch gap-3 px-4 py-3 border-t text-sm"
+                >
+                  <div className="col-span-2 flex items-center">{order.id}</div>
+                  <div className="col-span-5 flex gap-4">
+                    <img
+                      src={it.image}
+                      alt={it.title}
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">{it.title}</div>
+                      <div className="text-xs text-gray-500">
+                        Material: {it.material || "-"} &nbsp; Size:{" "}
+                        {it.size || "-"}
+                      </div>
+                      <div className="text-brand-700 font-semibold">
+                        ₹{it.price}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-span-1 flex items-center">
+                    <span className="text-xs px-2 py-1 rounded border text-yellow-700 border-yellow-300">
+                      {order.status || "Placed"}
+                    </span>
+                  </div>
+                  <div className="col-span-2 flex items-center">
+                    {new Date(order.date).toLocaleDateString()}
+                  </div>
+                  <div className="col-span-2 flex items-center">
+                    ₹{order.totals?.payable}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+          {orders.length === 0 && (
+            <div className="text-gray-500">No orders yet.</div>
+          )}
+        </div>
+      )} */}
+
     </div>
   );
 }
