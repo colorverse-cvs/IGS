@@ -1,38 +1,65 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { BASE_URL } from '../../utils/constants';
+import { api } from '../../utils/api';
 
 export const addToCartAsync = createAsyncThunk(
   'cart/addToCartAsync',
   async (productData, { dispatch, rejectWithValue }) => {
     console.log("Adding to cart", productData);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${BASE_URL}/api/v1/cart/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          productId: productData.id,
-          quantity: productData.qty || 1,
-        }),
+      // Using the centralized API utility - token is automatically included
+      const data = await api.post('/api/v1/cart/add', {
+        productId: productData.id,
+        quantity: productData.qty || 1,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add to cart');
+      console.log("API Response:", data);
+
+      // Extract the cart item ID from the API response
+      // The API returns: { _id: "cart-session-id", items: [{ _id: "cart-item-id", product: {...}, quantity: 1 }] }
+      // We want the cart ITEM id (items[0]._id), NOT the cart session id (top-level _id)
+
+      let cartItemId = null;
+
+      // PRIORITY 1: Check if response has items array with _id (most common for your API)
+      // This extracts the cart ITEM id, not the cart/session id
+      if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+        // Find the item that matches the product we just added
+        const addedItem = data.items.find(item => item.product && item.product._id === productData.id);
+        if (addedItem) {
+          cartItemId = addedItem._id;  // This gets items[0]._id, e.g., "69387fbf4902b34bb02d60c1"
+          console.log("Found cart item in items array:", cartItemId);
+        }
+      }
+      // PRIORITY 2: Check if response has data._id (nested structure)
+      else if (data.data && data.data._id) {
+        cartItemId = data.data._id;
+        console.log("Found cart item in data._id:", cartItemId);
+      }
+      // PRIORITY 3: Check if response has _id directly (might be cart session ID, use as fallback)
+      else if (data._id) {
+        cartItemId = data._id;
+        console.log("Using top-level _id (might be session ID):", cartItemId);
+      }
+      // PRIORITY 4: Fallback to other common patterns
+      else {
+        cartItemId = data.id || data.cartItemId || (data.data && data.data.id);
+        console.log("Using fallback ID:", cartItemId);
       }
 
-      const data = await response.json();
+      console.log("Extracted Cart Item ID:", cartItemId);
 
-      // Attempt to find the cart item ID from common API response patterns
-      // We look for 'id', 'cartItemId', '_id', or nested 'data.id'
-      const serverId = data.id || data.cartItemId || data._id || (data.data && data.data.id);
-      console.log("Server returned Cart Item ID:", serverId);
+      if (!cartItemId) {
+        console.warn("Could not extract cart item ID from response. Full response:", data);
+      }
 
-      // Dispatch the local reducer to update UI immediately (optimistic or confirmed)
-      // We pass the full productData because the API might not return all details needed for the UI
-      dispatch(addToCart({ ...productData, cartItemId: serverId }));
+      // Dispatch the local reducer to update UI immediately
+      // Store the _id from the response for future updates
+      dispatch(addToCart({
+        ...productData,
+        _id: cartItemId,
+        cartItemId: cartItemId // Keep for backward compatibility
+      }));
 
       return data;
     } catch (error) {
@@ -41,6 +68,7 @@ export const addToCartAsync = createAsyncThunk(
     }
   }
 );
+
 
 /**
  * Cart Slice - Redux Toolkit State Management
@@ -59,7 +87,7 @@ export const addToCartAsync = createAsyncThunk(
  */
 
 const initialState = {
-  items: [], // Array of cart items: { id, title, price, image, qty, mrp, discount, material, size }
+  items: [], // Array of cart items: { id, title, price, image, qty, mrp, discount, material, size, _id }
 };
 
 const cartSlice = createSlice({
@@ -77,9 +105,11 @@ const cartSlice = createSlice({
 
       if (existingItem) {
         existingItem.qty += 1;
+        // Update the cart item ID if provided
+        if (newItem._id) existingItem._id = newItem._id;
         if (newItem.cartItemId) existingItem.cartItemId = newItem.cartItemId;
       } else {
-        state.items.push({ ...newItem, qty: 1 });
+        state.items.push({ ...newItem, qty: newItem.qty || 1 });
       }
     },
 
@@ -120,63 +150,48 @@ export const updateCartItemQuantityAsync = createAsyncThunk(
   async ({ productId, quantity }, { dispatch, getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const token = localStorage.getItem("token");
 
       // Find cart item by productId
       const cartItem = state.cart.items.find(i => i.id === productId);
 
-      if (!cartItem?.cartItemId) {
-        throw new Error("Cart item ID not found");
+      if (!cartItem) {
+        throw new Error("Cart item not found in local state");
       }
 
-      const targetId = cartItem.cartItemId;
+      // Use _id (from API response) or cartItemId as fallback
+      const targetId = cartItem._id || cartItem.cartItemId;
 
-      const response = await fetch(`${BASE_URL}/api/v1/cart/update/${targetId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ quantity }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        return rejectWithValue(errorData.message || "Update failed");
+      if (!targetId) {
+        console.error("Cart item missing ID:", cartItem);
+        throw new Error("Cart item ID not found. Please refresh and try again.");
       }
 
-      const data = await response.json();
+      console.log(`Updating cart item ${productId} (Cart Item ID: ${targetId}) to quantity: ${quantity}`);
 
+      // Using the centralized API utility - token is automatically included
+      const data = await api.patch(`/api/v1/cart/update/${targetId}`, { quantity });
+
+      // Update local state on success
       dispatch(updateQty({ id: productId, qty: quantity }));
 
       return data;
     } catch (error) {
+      console.error("Error updating cart item quantity:", error);
       return rejectWithValue(error.message);
     }
   }
 );
 
 
+
 export const clearCartAsync = createAsyncThunk(
   'cart/clearCartAsync',
   async (_, { dispatch, rejectWithValue }) => {
     try {
-      const token = localStorage.getItem('token');
       console.log('Clearing cart...');
 
-      const response = await fetch(`${BASE_URL}/api/v1/cart/remove`, {
-        method: 'DELETE', // Assuming RPC style based on endpoint name
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to clear cart');
-      }
-
-      await response.json(); // Consume body if any
+      // Using the centralized API utility - token is automatically included
+      await api.delete('/api/v1/cart/remove');
 
       // Update local state on success
       dispatch(clearCart());
@@ -194,28 +209,22 @@ export const removeItemFromCartAsync = createAsyncThunk(
   async (productId, { dispatch, getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const token = localStorage.getItem('token');
       console.log('Removing item from cart', productId);
-      // Find the item in the cart to check for a specific cartItemId
+
+      // Find the item in the cart to get the cart item ID
       const cartItem = state.cart.items.find(item => item.id === productId);
-      // Use cartItemId if available, otherwise fallback to productId
-      const targetId = cartItem?.cartItemId || productId;
 
-      console.log(`Removing cart item ${productId} (Target ID: ${targetId})`);
-
-      const response = await fetch(`${BASE_URL}/api/v1/cart/remove/${targetId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to remove item from cart');
+      if (!cartItem) {
+        throw new Error("Cart item not found in local state");
       }
 
-      await response.json(); // Consume body if any
+      // Use _id (from API response) or cartItemId as fallback, or productId as last resort
+      const targetId = cartItem._id || cartItem.cartItemId || productId;
+
+      console.log(`Removing cart item ${productId} (Cart Item ID: ${targetId})`);
+
+      // Using the centralized API utility - token is automatically included
+      await api.delete(`/api/v1/cart/remove/${targetId}`);
 
       // Update local state on success
       dispatch(removeFromCart(productId));
