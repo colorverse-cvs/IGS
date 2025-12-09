@@ -26,7 +26,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       { type: "Small", value: "small", subType: "Under 6 in" },
       { type: "Medium", value: "medium", subType: "6 in - 10 in" },
       { type: "Large", value: "large", subType: "10 in - 15 in" },
-      { type: "Extra Large", value: "extra", subType: "Above 15 in" }
+      { type: "Extra Large", value: "x-large", subType: "Above 15 in" }
     ],
     []
   );

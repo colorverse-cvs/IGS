@@ -55,10 +55,10 @@ export default function EditProductModal({
   ];
 
   const sizeOptions = [
-    { type: "Small", subType: "Under 6 in" },
-    { type: "Medium", subType: "6 in - 10 in" },
-    { type: "Large", subType: "10 in - 15 in" },
-    { type: "Extra Large", subType: "Above 15 in" },
+    { type: "Small", value: "small", subType: "Under 6 in" },
+    { type: "Medium", value: "medium", subType: "6 in - 10 in" },
+    { type: "Large", value: "large", subType: "10 in - 15 in" },
+    { type: "Extra Large", value: "x-large", subType: "Above 15 in" },
   ];
 
   const [formData, setFormData] = useState({
@@ -340,7 +340,7 @@ export default function EditProductModal({
               label="Size"
               options={sizeOptions.map((s) => ({
                 label: `${s.type} - ${s.subType}`,
-                value: s.type.toLowerCase().replace(/\s+/g, "-"),
+                value: s.value,
               }))}
               value={formData.dimensions.sizeCategory}
               onChange={(val) =>

@@ -200,9 +200,15 @@ const ProductCard = ({ product, onOpenProduct }) => {
                     e.preventDefault();
                     e.stopPropagation();
                     if (qtyInCart > 1) {
-                      dispatch(updateQty({ id, qty: qtyInCart - 1 }));
+                      // Use API thunk for quantity update
+                      import("../features/cart/cartSlice").then(({ updateCartItemQuantityAsync }) => {
+                        dispatch(updateCartItemQuantityAsync({ productId: id, quantity: qtyInCart - 1 }));
+                      });
                     } else {
-                      dispatch(removeFromCart(id));
+                      // Use API thunk for removal
+                      import("../features/cart/cartSlice").then(({ removeItemFromCartAsync }) => {
+                        dispatch(removeItemFromCartAsync(id));
+                      });
                     }
                   }}
                   aria-label="Decrease quantity"
@@ -215,10 +221,10 @@ const ProductCard = ({ product, onOpenProduct }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    // use addToCart to increment by 1
-                    dispatch(
-                      addToCart({ id, title: name, price, image: imageURL })
-                    );
+                    // Use API thunk for quantity update
+                    import("../features/cart/cartSlice").then(({ updateCartItemQuantityAsync }) => {
+                      dispatch(updateCartItemQuantityAsync({ productId: id, quantity: qtyInCart + 1 }));
+                    });
                   }}
                   aria-label="Increase quantity"
                 >
