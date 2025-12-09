@@ -246,11 +246,7 @@ export default function ProductInfoPage() {
         { value: "small", label: "Small", description: "Under 6 in" },
         { value: "medium", label: "Medium", description: "6 in - 10 in" },
         { value: "large", label: "Large", description: "10 in - 15 in" },
-        {
-          value: "extra-large",
-          label: "Extra Large",
-          description: "Above 15 in",
-        },
+        { value: "x-large", label: "Extra Large", description: "Above 15 in" },
       ]
   ).map((s) =>
     typeof s === "string"
