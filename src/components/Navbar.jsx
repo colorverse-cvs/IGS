@@ -12,6 +12,7 @@ import {
   Phone,
   LogOut,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import CartDrawer from "./CartDrawer";
 import SearchDrawer from "./SearchDrawer.jsx";
 import AuthModal from "./AuthModal";
@@ -386,6 +387,12 @@ export default function Navbar() {
                     onClick={() => {
                       dispatch(logoutAsync());
                       setIsProfileDropdownOpen(false);
+                      toast("User Signed Out", {
+                        icon: "👋",
+                        style: {
+                          color: "red",
+                        },
+                      });
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
                   >
@@ -510,6 +517,12 @@ export default function Navbar() {
                     onClick={() => {
                       dispatch(logoutAsync());
                       setIsProfileDropdownOpen(false);
+                      toast("User Signed Out", {
+                        icon: "👋",
+                        style: {
+                          color: "red",
+                        },
+                      });
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
                   >
@@ -588,6 +601,12 @@ export default function Navbar() {
                     onClick={() => {
                       dispatch(logoutAsync());
                       setIsProfileDropdownOpen(false);
+                      toast("User Signed Out", {
+                        icon: "👋",
+                        style: {
+                          color: "red",
+                        },
+                      });
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
                   >

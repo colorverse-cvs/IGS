@@ -251,7 +251,10 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       const data = await res.json();
 
       if (!res.ok) {
-        setLoginError(data?.message || "Login failed");
+        // Handle nested message object from 401 response
+        const errorMsg = data?.message?.message || data?.message || "Login failed";
+        setLoginError(errorMsg);
+        toast.error(errorMsg);
         return;
       }
 
@@ -275,6 +278,11 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         })
       );
 
+      toast.success("Login Successful", {
+        style: {
+          color: "green",
+        },
+      });
       resetAllForms();
       onClose?.();
 
