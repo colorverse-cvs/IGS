@@ -4,6 +4,7 @@ import {
   removeFromCart,
   updateQty,
   clearCart,
+  updateCartItemQuantityAsync,
 } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
@@ -21,8 +22,8 @@ export default function Cart({ isDrawer = false, onClose }) {
   React.useEffect(() => {
     setWrapMap((prev) => {
       const next = { ...prev };
-      for (const it of items) {
-        if (next[it.id] === undefined) next[it.id] = false;
+      for (const item of items) {
+        if (next[item.id] === undefined) next[item.id] = false;
       }
       return next;
     });
@@ -31,7 +32,7 @@ export default function Cart({ isDrawer = false, onClose }) {
   const wrapTotal = React.useMemo(
     () =>
       items.reduce(
-        (sum, it) => sum + (wrapMap[it.id] ? WRAP_FEE_PER_UNIT * it.qty : 0),
+        (sum, item) => sum + (wrapMap[item.id] ? WRAP_FEE_PER_UNIT * item.qty : 0),
         0
       ),
     [items, wrapMap]
@@ -98,31 +99,53 @@ export default function Cart({ isDrawer = false, onClose }) {
               : "md:w-3/4 bg-white pt-0 p-2 md:p-6 rounded-xl shadow-lg"
               } space-y-6`}
           >
-            {items.map((it) => {
-              const lineWrap = wrapMap[it.id] ? WRAP_FEE_PER_UNIT * it.qty : 0;
+            {items.map((item) => {
+              const lineWrap = wrapMap[item.id] ? WRAP_FEE_PER_UNIT * item.qty : 0;
 
               /* Drawer Layout */
               if (isDrawer) {
                 return (
                   <div
-                    key={it.id}
+                    key={item.id}
                     className="border border-gray-100 hover:shadow-lg p-2 rounded-lg flex items-start gap-4 text-sm"
                   >
-                    <img src={it.image} alt={it.title} className="w-28 h-28 rounded object-cover" />
+                    <img src={item.image} alt={item.title} className="w-28 h-28 rounded object-cover" />
 
                     <div className="min-w-0">
-                      <div className="font-medium text-gray-900">{it.title}</div>
+                      <div className="font-medium text-gray-900">{item.title}</div>
                       <div className="text-gray-500">
-                        Material: {it.material || "-"} &nbsp; Size: {it.size || "-"}
+                        Material: {item.material || "-"} &nbsp; Size: {item.size || "-"}
                       </div>
-                      <div className="text-brand-700 font-semibold">₹{it.price}</div>
+                      <div className="text-brand-700 font-semibold">₹{item.price}</div>
 
-                      <div className="flex gap-6 lg:gap-4 py-2">
+                      <div className="flex items-center gap-2 border border-gray-200 rounded mt-2 w-fit">
                         <button
                           type="button"
-                          className="px-2"
+                          className="px-2 py-1 text-gray-600 hover:bg-gray-100"
                           onClick={() =>
-                            dispatch(updateQty({ id: it.id, qty: it.qty + 1 }))
+                            item.qty > 1
+                              ? dispatch(
+                                updateCartItemQuantityAsync({
+                                  productId: item.id,
+                                  quantity: item.qty - 1,
+                                })
+                              )
+                              : dispatch(removeFromCart(item.id))
+                          }
+                        >
+                          -
+                        </button>
+                        <span className="text-sm font-medium w-4 text-center">{item.qty}</span>
+                        <button
+                          type="button"
+                          className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                          onClick={() =>
+                            dispatch(
+                              updateCartItemQuantityAsync({
+                                productId: item.id,
+                                quantity: item.qty + 1,
+                              })
+                            )
                           }
                         >
                           +
@@ -132,7 +155,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                       <button
                         type="button"
                         className="text-red-600 text-xs"
-                        onClick={() => handleRemoveItem(it.id)}
+                        onClick={() => handleRemoveItem(item.id)}
                       >
                         <span className="hidden lg:block">Remove from cart</span>
                         <span className="lg:hidden">
@@ -143,11 +166,11 @@ export default function Cart({ isDrawer = false, onClose }) {
                       {/* <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
                         <input
                           type="checkbox"
-                          checked={!!wrapMap[it.id]}
+                          checked={!!wrapMap[item.id]}
                           onChange={(e) =>
                             setWrapMap((prev) => ({
                               ...prev,
-                              [it.id]: e.target.checked,
+                              [item.id]: e.target.checked,
                             }))
                           }
                         />
@@ -161,20 +184,20 @@ export default function Cart({ isDrawer = false, onClose }) {
               /* Full Page Layout */
               return (
                 <div
-                  key={it.id}
+                  key={item.id}
                   className="py-4 flex items-start gap-4 text-sm border border-gray-100 hover:shadow-lg rounded-lg p-2"
                 >
-                  <img src={it.image} alt={it.title} className="w-28 h-28 rounded object-cover" />
+                  <img src={item.image} alt={item.title} className="w-28 h-28 rounded object-cover" />
 
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-gray-900 truncate">{it.title}</div>
+                    <div className="font-medium text-gray-900 truncate">{item.title}</div>
 
                     <div className="text-gray-500 flex flex-col gap-1">
-                      <span>Material: {it.material || "-"}</span>
-                      <span>Size: {it.size || "-"}</span>
+                      <span>Material: {item.material || "-"}</span>
+                      <span>Size: {item.size || "-"}</span>
                     </div>
 
-                    <div className="text-brand-700 font-semibold">₹{it.price}</div>
+                    <div className="text-brand-700 font-semibold">₹{item.price}</div>
 
                     <div className="flex items-center gap-5 py-2">
                       <div className="flex items-center gap-2 border border-gray-200 rounded">
@@ -182,21 +205,31 @@ export default function Cart({ isDrawer = false, onClose }) {
                           type="button"
                           className="px-2"
                           onClick={() =>
-                            it.qty > 1
-                              ? dispatch(updateQty({ id: it.id, qty: it.qty - 1 }))
-                              : dispatch(removeFromCart(it.id))
+                            item.qty > 1
+                              ? dispatch(
+                                updateCartItemQuantityAsync({
+                                  productId: item.id,
+                                  quantity: item.qty - 1,
+                                })
+                              )
+                              : dispatch(removeFromCart(item.id))
                           }
                         >
                           -
                         </button>
 
-                        <span>{it.qty}</span>
+                        <span>{item.qty}</span>
 
                         <button
                           type="button"
                           className="px-2"
                           onClick={() =>
-                            dispatch(updateQty({ id: it.id, qty: it.qty + 1 }))
+                            dispatch(
+                              updateCartItemQuantityAsync({
+                                productId: item.id,
+                                quantity: item.qty + 1,
+                              })
+                            )
                           }
                         >
                           +
@@ -206,7 +239,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                       <button
                         type="button"
                         className="text-red-600 text-xs"
-                        onClick={() => handleRemoveItem(it.id)}
+                        onClick={() => handleRemoveItem(item.id)}
                       >
                         <span className="hidden lg:block">Remove</span>
                         <span className="lg:hidden">
@@ -218,11 +251,11 @@ export default function Cart({ isDrawer = false, onClose }) {
                     {/* <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
                       <input
                         type="checkbox"
-                        checked={!!wrapMap[it.id]}
+                        checked={!!wrapMap[item.id]}
                         onChange={(e) =>
                           setWrapMap((prev) => ({
                             ...prev,
-                            [it.id]: e.target.checked,
+                            [item.id]: e.target.checked,
                           }))
                         }
                       />

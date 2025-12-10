@@ -3,8 +3,8 @@ import { getDiscountedPrice, validatePincode } from "../utils/helpers";
 import { BASE_URL } from "../utils/constants";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
-import { useDispatch } from "react-redux";
-import { addToCart, addToCartAsync } from "../features/cart/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, addToCartAsync, updateCartItemQuantityAsync } from "../features/cart/cartSlice";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
@@ -19,6 +19,7 @@ export default function ProductInfoPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const cartItems = useSelector((state) => state.cart.items);
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -311,8 +312,25 @@ export default function ProductInfoPage() {
     { label: "Origin", value: product.origin || aboutDefaults.origin || "—" },
   ];
 
-  const increment = () => setQuantity((q) => Math.min(99, q + 1));
-  const decrement = () => setQuantity((q) => Math.max(1, q - 1));
+  const increment = () => {
+    const newQty = Math.min(99, quantity + 1);
+    setQuantity(newQty);
+    // If product is in cart, update it there too
+    const inCart = cartItems.find((item) => item.id === product?.id);
+    if (inCart) {
+      dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: newQty }));
+    }
+  };
+
+  const decrement = () => {
+    const newQty = Math.max(1, quantity - 1);
+    setQuantity(newQty);
+    // If product is in cart, update it there too
+    const inCart = cartItems.find((item) => item.id === product?.id);
+    if (inCart) {
+      dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: newQty }));
+    }
+  };
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -552,21 +570,22 @@ export default function ProductInfoPage() {
                 {/* Material Selection */}
                 <div className="space-y-3">
                   <p className="text-md font-semibold text-gray-900">
-                    Select material
+                    Material
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {materialOptions.map((option) => (
                       <label
                         key={option.value}
-                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${selectedMaterial === option.value ? "shadow-lg" : "border-gray-300"}`}
+                        className={`relative cursor-not-allowed p-3 border border-gray-300 rounded-xl transition-all shadow-sm opacity-50 ${selectedMaterial === option.value ? "shadow-lg" : "border-gray-300"}`}
                       >
                         <input
                           type="radio"
                           name="material"
                           value={option.value}
                           checked={selectedMaterial === option.value}
+                          disabled={true}
                           onChange={(e) => setSelectedMaterial(e.target.value)}
-                          className="absolute right-3 top-3 text-brand-600 focus:ring-brand-600"
+                          className="absolute right-3 top-3 text-brand-600 focus:ring-brand-600 cursor-not-allowed"
                         />
                         <div className="text-gray-900 font-medium">
                           {option.label}
@@ -584,13 +603,13 @@ export default function ProductInfoPage() {
                 {/* Size Selection */}
                 <div className="space-y-3">
                   <p className="text-md font-semibold text-gray-900">
-                    Select size
+                    size
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
                     {sizeOptions.map((option) => (
                       <label
                         key={option.value}
-                        className={`relative cursor-pointer p-3 border border-gray-300 rounded-xl transition-all shadow-sm hover:shadow-lg duration-300 focus:outline-none focus:ring-2 focus:ring-brand-500 ${selectedSize === option.value
+                        className={`relative cursor-not-allowed p-3 border border-gray-300 rounded-xl transition-all shadow-sm opacity-50 ${selectedSize === option.value
                           ? "shadow-lg"
                           : " border-gray-300"
                           }`}
@@ -600,8 +619,9 @@ export default function ProductInfoPage() {
                           name="size"
                           value={option.value}
                           checked={selectedSize === option.value}
+                          disabled={true}
                           onChange={(e) => setSelectedSize(e.target.value)}
-                          className="absolute right-3 top-3 text-brand-600 focus:ring-brand-600"
+                          className="absolute right-3 top-3 text-brand-600 focus:ring-brand-600 cursor-not-allowed"
                         />
                         <div className="font-medium text-gray-900">
                           {option.label}
