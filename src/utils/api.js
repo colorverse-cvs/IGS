@@ -88,6 +88,7 @@ export const apiRequest = async (endpoint, options = {}) => {
     const fetchOptions = {
         method,
         headers: requestHeaders,
+        credentials: 'include',
     };
 
     // Add body if present

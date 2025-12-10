@@ -199,7 +199,7 @@ export const fetchUserProfileAsync = createAsyncThunk(
 
       console.log('Fetching user profile...', { userId, hasToken: !!token });
 
-      const response = await fetch(`${BASE_URL}/api/v1/user/profile`, {
+      const response = await fetch(`${BASE_URL}/api/v1/users/profile`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
