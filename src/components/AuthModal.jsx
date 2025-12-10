@@ -322,13 +322,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       ],
       password,
       role: "customer",
-      profile: [
-        {
-          avatarUrl: "",
-          displayName: name,
-          bio: "",
-        },
-      ],
+      profile: {
+        avatarUrl: "",
+        displayName: name,
+        bio: "",
+        gender: "",
+        dob: "",
+        mobile: mobile,
+      },
     };
 
     try {

@@ -334,13 +334,14 @@ export const updateAddressAsync = createAsyncThunk(
       const userId = state.user.profile.id;
       if (!token || !userId || !addressId) return;
 
+      const { addressLine, ...payload } = addressData;
       const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(addressData)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
