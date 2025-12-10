@@ -19,7 +19,8 @@ import AuthModal from "./AuthModal";
 import Dropdown from "./Dropdown";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import categoriesData from "../data/categories.json";
-import { logoutAsync } from "../features/user/userSlice";
+import { logoutAsync, fetchUserProfileAsync } from "../features/user/userSlice";
+import { clearCart } from "../features/cart/cartSlice";
 import { useAdminPanel } from "../contexts/AdminPanelContext";
 
 
@@ -48,9 +49,7 @@ export default function Navbar() {
   const isHomePage = location.pathname === "/";
 
   // Redux selectors: Get cart items and user data
-  const totalItems = useSelector((s) =>
-    s.cart.items.reduce((sum, item) => sum + item.qty, 0)
-  );
+  const totalItems = useSelector((s) => s.cart?.items?.length || 0);
   const user = useSelector((s) => s.user);
 
   // Toggle handlers for drawer and menu states
@@ -334,7 +333,10 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={setIsProfileDropdownOpen}
+                  onToggle={(val) => {
+                    setIsProfileDropdownOpen(val);
+                    if (val) dispatch(fetchUserProfileAsync());
+                  }}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="flex items-center gap-2 px-3 py-2 transition">
@@ -386,6 +388,8 @@ export default function Navbar() {
                     type="button"
                     onClick={() => {
                       dispatch(logoutAsync());
+                      dispatch(clearCart());
+                      navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
                         icon: "👋",
@@ -467,7 +471,10 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={setIsProfileDropdownOpen}
+                  onToggle={(val) => {
+                    setIsProfileDropdownOpen(val);
+                    if (val) dispatch(fetchUserProfileAsync());
+                  }}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="flex items-center gap-2 px-3 py-2 transition">
@@ -516,6 +523,8 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       dispatch(logoutAsync());
+                      dispatch(clearCart());
+                      navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
                         icon: "👋",
@@ -561,7 +570,10 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={setIsProfileDropdownOpen}
+                  onToggle={(val) => {
+                    setIsProfileDropdownOpen(val);
+                    if (val) dispatch(fetchUserProfileAsync());
+                  }}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="p-2 rounded-lg hover:bg-gray-100 transition">
@@ -600,6 +612,8 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       dispatch(logoutAsync());
+                      dispatch(clearCart());
+                      navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
                         icon: "👋",

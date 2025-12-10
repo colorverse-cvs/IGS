@@ -88,7 +88,10 @@ const userSlice = createSlice({
         localStorage.setItem('refreshToken', refreshToken);
       }
       // Prefer payload ID (from API), then existing ID. Do not generate fake ID for auth'd user.
-      if (id) state.profile.id = id;
+      if (id) {
+        state.profile.id = id;
+        localStorage.setItem('id', id);
+      }
 
       state.profile.name = name || state.profile.name || 'User';
       state.profile.email = email || state.profile.email || '';
@@ -102,10 +105,21 @@ const userSlice = createSlice({
      * Saves to localStorage automatically
      */
     signup(state, action) {
-      const { name, email, mobile, id } = action.payload || {};
+      const { name, email, mobile, id, token, refreshToken } = action.payload || {};
       state.isAuthenticated = true;
+
+      if (token) {
+        state.token = token;
+        localStorage.setItem('token', token);
+      }
+      if (refreshToken) {
+        state.refreshToken = refreshToken;
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+
       // Use ID from backend if available, otherwise fake it only if absolutely necessary (or leave null)
       state.profile.id = id || nanoid();
+      if (state.profile.id) localStorage.setItem('id', state.profile.id);
       state.profile.name = name || 'User';
       state.profile.email = email || '';
       state.profile.mobile = mobile || '';
@@ -125,6 +139,7 @@ const userSlice = createSlice({
       state.profile = { id: null, name: '', email: '', mobile: '', gender: '', dob: '', addresses: [] };
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('id');
       saveState(state);
     },
 

@@ -281,6 +281,7 @@ export default function FilterPage() {
       discount: null,
     };
     setFilters(resetFilters);
+    setSearchQuery("");
     setSearchParams({});
     setCurrentPage(1);
   };

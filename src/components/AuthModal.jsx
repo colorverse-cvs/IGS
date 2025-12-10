@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import ForgotPassword from "./ForgotPassword";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
-import { login, signup } from "../features/user/userSlice";
+import { login, signup, fetchUserProfileAsync } from "../features/user/userSlice";
 import toast from "react-hot-toast";
 import logo from "../assets/ishita-gallery-logo.jpg";
 import { Eye, EyeOff, X } from "lucide-react";
@@ -278,6 +278,9 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         })
       );
 
+      // Fetch full profile data
+      dispatch(fetchUserProfileAsync());
+
       toast.success("Login Successful", {
         style: {
           color: "green",
@@ -348,6 +351,10 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       }
 
       dispatch(signup({ name, email, mobile }));
+
+      // Fetch profile (even if empty, establishes state)
+      dispatch(fetchUserProfileAsync());
+
       setApiMessage("Account created successfully.");
       resetAllForms();
       onClose?.();

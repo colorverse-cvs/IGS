@@ -39,7 +39,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
 
   // Add product to cart with all its details
   const handleAddToCart = () => {
-    console.log("Adding to cart:", product);
+    // console.log("Adding to cart:", product);
     if (!isAuthenticated) {
       toast.error("You need to log in first to add this product to your cart.");
       setIsAuthModalOpen(true);
@@ -265,10 +265,6 @@ const ProductCard = ({ product, onOpenProduct }) => {
         }}
         className="block w-full h-full"
         style={{ textDecoration: "none", color: "inherit" }}
-        onClick={() => {
-          // Debug: verify product ID is being passed
-          console.log("Navigating to product:", product);
-        }}
       >
         {content}
       </Link>
