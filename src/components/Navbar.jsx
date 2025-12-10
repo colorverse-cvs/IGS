@@ -115,10 +115,9 @@ export default function Navbar() {
     () => [
       { to: "/profile", label: "Your Account", path: "/profile" },
       {
-        to: "/profile?tab=orders",
+        to: "/orders",
         label: "Your Orders",
-        path: "/profile",
-        search: "?tab=orders",
+        path: "/orders",
       },
       { to: "/cart", label: "Saved Items", path: "/cart" },
     ],

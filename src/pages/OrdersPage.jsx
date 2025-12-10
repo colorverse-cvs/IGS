@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { updateOrderStatus } from "../features/orders/ordersSlice";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
@@ -29,6 +30,7 @@ const formatDate = (iso) =>
  */
 export default function OrdersPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const allOrders = useSelector((s) => s.orders.orders);
 
   const [activeTab, setActiveTab] = React.useState("orders"); // 'orders' | 'current' | 'previous'
@@ -66,39 +68,49 @@ export default function OrdersPage() {
     activeTab === "orders"
       ? filteredAll
       : activeTab === "current"
-      ? currentOrders
-      : previousOrders;
+        ? currentOrders
+        : previousOrders;
 
   const StatusPill = ({ status }) => {
     const label =
       status === "placed"
         ? "Ordered Placed"
         : status === "processing"
-        ? "Processing"
-        : status === "delivered"
-        ? "Delivered"
-        : status === "cancelled"
-        ? "Cancelled"
-        : status || "Placed";
+          ? "Processing"
+          : status === "delivered"
+            ? "Delivered"
+            : status === "cancelled"
+              ? "Cancelled"
+              : status || "Placed";
     const cls =
       status === "delivered"
         ? "text-green-700 border-green-300"
         : status === "cancelled"
-        ? "text-red-700 border-red-300"
-        : "text-yellow-700 border-yellow-300";
+          ? "text-red-700 border-red-300"
+          : "text-yellow-700 border-yellow-300";
     return (
       <span className={`text-xs px-2 py-1 rounded border ${cls}`}>{label}</span>
     );
   };
 
   const ActionButtons = ({ order }) => {
+    const handleViewProduct = () => {
+      const productId = order.items[0]?.productId || order.items[0]?.id;
+      if (productId) {
+        navigate(`/product/${productId}`);
+      }
+    };
+
     if (activeTab === "previous") {
       return (
         <div className="flex flex-col gap-2">
           <button className="px-3 py-1 border rounded text-sm">
             Download Invoice
           </button>
-          <button className="px-3 py-1 border rounded text-sm">
+          <button
+            className="px-3 py-1 border rounded text-sm"
+            onClick={handleViewProduct}
+          >
             View order details
           </button>
         </div>
@@ -109,7 +121,10 @@ export default function OrdersPage() {
         <button className="px-3 py-1 bg-brand-700 text-white rounded text-sm">
           Track package
         </button>
-        <button className="px-3 py-1 border rounded text-sm">
+        <button
+          className="px-3 py-1 border rounded text-sm"
+          onClick={handleViewProduct}
+        >
           View or Edit order
         </button>
         <button
@@ -137,31 +152,28 @@ export default function OrdersPage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-6 text-sm">
             <button
-              className={`pb-2 ${
-                activeTab === "orders"
-                  ? "border-b-2 border-brand-700 text-brand-700"
-                  : "text-gray-600"
-              }`}
+              className={`pb-2 ${activeTab === "orders"
+                ? "border-b-2 border-brand-700 text-brand-700"
+                : "text-gray-600"
+                }`}
               onClick={() => setActiveTab("orders")}
             >
               Orders
             </button>
             <button
-              className={`pb-2 ${
-                activeTab === "current"
-                  ? "border-b-2 border-brand-700 text-brand-700"
-                  : "text-gray-600"
-              }`}
+              className={`pb-2 ${activeTab === "current"
+                ? "border-b-2 border-brand-700 text-brand-700"
+                : "text-gray-600"
+                }`}
               onClick={() => setActiveTab("current")}
             >
               Current Orders
             </button>
             <button
-              className={`pb-2 ${
-                activeTab === "previous"
-                  ? "border-b-2 border-brand-700 text-brand-700"
-                  : "text-gray-600"
-              }`}
+              className={`pb-2 ${activeTab === "previous"
+                ? "border-b-2 border-brand-700 text-brand-700"
+                : "text-gray-600"
+                }`}
               onClick={() => setActiveTab("previous")}
             >
               Previous Orders
