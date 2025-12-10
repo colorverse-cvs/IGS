@@ -140,7 +140,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                         </span>
                       </button>
 
-                      <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
+                      {/* <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
                         <input
                           type="checkbox"
                           checked={!!wrapMap[it.id]}
@@ -152,7 +152,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                           }
                         />
                         Gift wrap this item (₹20)
-                      </label>
+                      </label> */}
                     </div>
                   </div>
                 );
@@ -215,7 +215,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                       </button>
                     </div>
 
-                    <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
+                    {/* <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
                       <input
                         type="checkbox"
                         checked={!!wrapMap[it.id]}
@@ -227,7 +227,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                         }
                       />
                       Gift wrap this item (₹20)
-                    </label>
+                    </label> */}
                   </div>
                 </div>
               );
