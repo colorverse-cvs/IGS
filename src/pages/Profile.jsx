@@ -11,6 +11,7 @@ import {
   updateAddressAsync,
   removeAddressAsync,
   setDefaultAddressAsync,
+  fetchUserProfileAsync,
 } from "../features/user/userSlice";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
@@ -52,6 +53,13 @@ export default function Profile() {
     setTab(initialTab);
   }, [initialTab]);
 
+  // Fetch user profile when tab changes to 'profile'
+  React.useEffect(() => {
+    if (tab === "profile") {
+      dispatch(fetchUserProfileAsync());
+    }
+  }, [tab, dispatch]);
+
   // Fetch addresses when tab changes to 'addresses'
   React.useEffect(() => {
     console.log(tab, user);
@@ -73,6 +81,15 @@ export default function Profile() {
   const [gender, setGender] = React.useState(user?.profile?.gender || "Male");
   const [profileErrors, setProfileErrors] = React.useState({});
   const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false);
+
+  // Sync form state with Redux store when user profile data changes
+  React.useEffect(() => {
+    setName(user?.profile?.name || "");
+    setMobile(user?.profile?.mobile || "");
+    setEmail(user?.profile?.email || "");
+    setDob(user?.profile?.dob || "");
+    setGender(user?.profile?.gender || "Male");
+  }, [user?.profile]);
 
   const onlyDigits = (v) => v.replace(/\D/g, "");
   const strongEmail = (v) => /\S+@\S+\.\S+/.test(v);

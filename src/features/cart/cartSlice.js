@@ -5,7 +5,6 @@ import { api } from '../../utils/api';
 export const addToCartAsync = createAsyncThunk(
   'cart/addToCartAsync',
   async (productData, { dispatch, rejectWithValue }) => {
-    console.log("Adding to cart", productData);
     try {
       // Using the centralized API utility - token is automatically included
       const data = await api.post('/api/v1/cart/add', {
@@ -13,52 +12,35 @@ export const addToCartAsync = createAsyncThunk(
         quantity: productData.qty || 1,
       });
 
-      console.log("API Response:", data);
-
-      // Extract the cart item ID from the API response
-      // The API returns: { _id: "cart-session-id", items: [{ _id: "cart-item-id", product: {...}, quantity: 1 }] }
-      // We want the cart ITEM id (items[0]._id), NOT the cart session id (top-level _id)
-
       let cartItemId = null;
 
-      // PRIORITY 1: Check if response has items array with _id (most common for your API)
-      // This extracts the cart ITEM id, not the cart/session id
       if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-        // Find the item that matches the product we just added
         const addedItem = data.items.find(item => item.product && item.product._id === productData.id);
         if (addedItem) {
-          cartItemId = addedItem._id;  // This gets items[0]._id, e.g., "69387fbf4902b34bb02d60c1"
-          console.log("Found cart item in items array:", cartItemId);
+          cartItemId = addedItem._id;
         }
       }
       // PRIORITY 2: Check if response has data._id (nested structure)
       else if (data.data && data.data._id) {
         cartItemId = data.data._id;
-        console.log("Found cart item in data._id:", cartItemId);
       }
       // PRIORITY 3: Check if response has _id directly (might be cart session ID, use as fallback)
       else if (data._id) {
         cartItemId = data._id;
-        console.log("Using top-level _id (might be session ID):", cartItemId);
       }
       // PRIORITY 4: Fallback to other common patterns
       else {
         cartItemId = data.id || data.cartItemId || (data.data && data.data.id);
-        console.log("Using fallback ID:", cartItemId);
       }
-
-      console.log("Extracted Cart Item ID:", cartItemId);
 
       if (!cartItemId) {
         console.warn("Could not extract cart item ID from response. Full response:", data);
       }
 
-      // Dispatch the local reducer to update UI immediately
-      // Store the _id from the response for future updates
       dispatch(addToCart({
         ...productData,
         _id: cartItemId,
-        cartItemId: cartItemId // Keep for backward compatibility
+        cartItemId: cartItemId
       }));
 
       return data;
@@ -150,6 +132,7 @@ export const updateCartItemQuantityAsync = createAsyncThunk(
   async ({ productId, quantity }, { dispatch, getState, rejectWithValue }) => {
     try {
       const state = getState();
+      console.log("Updating cart item quantity for product:", productId);
 
       // Find cart item by productId
       const cartItem = state.cart.items.find(i => i.id === productId);
@@ -166,10 +149,15 @@ export const updateCartItemQuantityAsync = createAsyncThunk(
         throw new Error("Cart item ID not found. Please refresh and try again.");
       }
 
-      console.log(`Updating cart item ${productId} (Cart Item ID: ${targetId}) to quantity: ${quantity}`);
+      // Check if token exists
+      const token = localStorage.getItem('token');
+      console.log("Token exists:", token);
+      console.log(`Updating Cart Item ID: ${targetId} to quantity: ${quantity}`);
 
       // Using the centralized API utility - token is automatically included
       const data = await api.patch(`/api/v1/cart/update/${targetId}`, { quantity });
+
+      console.log("Update cart quantity API response:", data);
 
       // Update local state on success
       dispatch(updateQty({ id: productId, qty: quantity }));
