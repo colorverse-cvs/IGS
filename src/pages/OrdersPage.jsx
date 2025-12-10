@@ -40,8 +40,8 @@ export default function OrdersPage() {
     if (!query.trim()) return true;
     const q = query.trim().toLowerCase();
     return (
-      order.id.toLowerCase().includes(q) ||
-      order.items?.some((it) => it.title?.toLowerCase().includes(q))
+      String(order.id).toLowerCase().includes(q) ||
+      order.items?.some((it) => it.title && String(it.title).toLowerCase().includes(q))
     );
   };
 
@@ -93,9 +93,9 @@ export default function OrdersPage() {
     );
   };
 
-  const ActionButtons = ({ order }) => {
+  const ActionButtons = ({ order, item }) => {
     const handleViewProduct = () => {
-      const productId = order.items[0]?.productId || order.items[0]?.id;
+      const productId = item?.productId || item?.id;
       if (productId) {
         navigate(`/product/${productId}`);
       }
@@ -118,9 +118,9 @@ export default function OrdersPage() {
     }
     return (
       <div className="flex flex-col gap-2">
-        <button className="px-3 py-1 bg-brand-700 text-white rounded text-sm">
+        {/* <button className="px-3 py-1 bg-brand-700 text-white rounded text-sm">
           Track package
-        </button>
+        </button> */}
         <button
           className="px-3 py-1 border rounded text-sm"
           onClick={handleViewProduct}
@@ -235,7 +235,7 @@ export default function OrdersPage() {
                       </div>
                       {/* Actions */}
                       <div className="flex flex-col gap-2 min-w-[150px] justify-center">
-                        <ActionButtons order={order} />
+                        <ActionButtons order={order} item={it} />
                       </div>
                     </div>
                     <div className="col-span-1 flex items-center">
