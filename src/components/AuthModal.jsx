@@ -1,11 +1,10 @@
 import React from "react";
 import Modal from "./Modal";
+import ForgotPassword from "./ForgotPassword";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { login, signup } from "../features/user/userSlice";
-import googleButton from "../assets/google_buttons.png";
-import facebookButton from "../assets/facebook_buttons.png";
-import appleButton from "../assets/apple_buttons.png";
+import toast from "react-hot-toast";
 import logo from "../assets/ishita-gallery-logo.jpg";
 import { Eye, EyeOff, X } from "lucide-react";
 
@@ -63,6 +62,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [resetEmail, setResetEmail] = React.useState("");
   const [resetStatus, setResetStatus] = React.useState("");
   const [resetLoading, setResetLoading] = React.useState(false);
+  const [resetToken, setResetToken] = React.useState("");
 
   // OAuth popup
   const oauthWindowRef = React.useRef(null);
@@ -350,6 +350,43 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     }
   };
 
+  // Verify user exists before opening forgot password modal
+  const handleForgotPasswordClick = async () => {
+    const emailToVerify = loginIdentifier || resetEmail;
+
+    if (!emailToVerify || !emailRegex.test(emailToVerify)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setResetLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailToVerify }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success && data.data?.resetToken) {
+        // User exists and token received, open the modal
+        setResetToken(data.data.resetToken);
+        setResetEmail(emailToVerify);
+        setResetOpen(true);
+      } else {
+        // User not found or error occurred
+        const errorMessage = data.message?.message || data.message || "User not found. Please check your email.";
+        toast.error(errorMessage);
+      }
+    } catch (err) {
+      console.error("Email verification error:", err);
+      toast.error("Network error. Please try again later.");
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   const handleResetSubmit = async (e) => {
     e?.preventDefault();
     setResetStatus("");
@@ -525,10 +562,11 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 </label>
                 <button
                   type="button"
-                  onClick={() => setResetOpen(true)}
-                  className="text-brand-600 hover:underline"
+                  onClick={handleForgotPasswordClick}
+                  disabled={resetLoading}
+                  className="text-brand-600 hover:underline disabled:opacity-50"
                 >
-                  Forgot password?
+                  {resetLoading ? "Verifying..." : "Forgot password?"}
                 </button>
               </div>
 
@@ -724,44 +762,20 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           setResetOpen(false);
           setResetEmail("");
           setResetStatus("");
+          setResetToken("");
         }}
         title="Reset your password"
       >
-        <form onSubmit={handleResetSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email or Mobile <span className="text-red-500">*</span>
-            </label>
-            <input
-              value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
-              placeholder="john@example.com or 9876543210"
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-          </div>
-
-          {resetStatus && <p className="text-sm text-gray-700">{resetStatus}</p>}
-
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={resetLoading}
-              className="px-4 py-2 rounded bg-brand-600 text-white hover:bg-brand-700 disabled:bg-gray-300"
-            >
-              {resetLoading ? "Sending..." : "Send reset link"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setResetOpen(false);
-                setResetStatus("");
-              }}
-              className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+        <ForgotPassword
+          email={resetEmail}
+          token={resetToken}
+          onSuccess={() => {
+            setResetOpen(false);
+            setResetEmail("");
+            setResetToken("");
+            toast.success("Password reset successfully! Please login with your new password.");
+          }}
+        />
       </Modal>
     </Modal>
   );
