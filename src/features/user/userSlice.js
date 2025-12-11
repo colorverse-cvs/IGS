@@ -38,6 +38,8 @@ const initialState = loadState() || {
   profile: {
     id: null,
     name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     mobile: '',
     gender: '',
@@ -200,19 +202,92 @@ export const fetchUserProfileAsync = createAsyncThunk(
       }
 
       const data = await response.json();
+
+      // Extract data from new API structure
+      const apiData = data.data || data;
+      const fullName = `${apiData.firstName || ''} ${apiData.lastName || ''}`.trim();
+
       // Update profile with fetched data
       dispatch(userSlice.actions.updateProfile({
-        id: data._id || data.id || userId,
-        name: data.name || data.fullName || '',
-        email: data.email || '',
-        mobile: data.mobile || data.phone || '',
-        gender: data.gender || '',
-        dob: data.dob || data.dateOfBirth || ''
+        id: apiData._id || apiData.id || userId,
+        name: fullName || apiData.profile?.displayName || '',
+        firstName: apiData.firstName || '',
+        lastName: apiData.lastName || '',
+        email: apiData.email || '',
+        mobile: apiData.profile?.mobile || apiData.mobile || '',
+        gender: apiData.profile?.gender || apiData.gender || '',
+        dob: apiData.profile?.dob || apiData.dob || '',
+        addresses: apiData.addresses || []
       }));
 
       return data;
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateProfileAsync = createAsyncThunk(
+  'user/updateProfileAsync',
+  async (profileData, { dispatch, getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
+      const userId = state.user.profile.id;
+
+      if (!token || !userId) {
+        return rejectWithValue('Missing authentication token or user ID');
+      }
+
+      // Split name into firstName and lastName
+      const nameParts = (profileData.name || '').trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Prepare payload matching API structure
+      const payload = {
+        firstName,
+        lastName,
+        profile: {
+          mobile: profileData.mobile || '',
+          gender: profileData.gender || '',
+          dob: profileData.dob || ''
+        }
+      };
+
+      const response = await fetch(`${BASE_URL}/api/v1/users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Failed to update user profile:', errorData);
+        return rejectWithValue(errorData.message || 'Failed to update profile');
+      }
+
+      const data = await response.json();
+      const apiData = data.data || data;
+      const fullName = `${apiData.firstName || ''} ${apiData.lastName || ''}`.trim();
+
+      // Update local state with new data
+      dispatch(userSlice.actions.updateProfile({
+        name: fullName || apiData.profile?.displayName || '',
+        firstName: apiData.firstName || '',
+        lastName: apiData.lastName || '',
+        mobile: apiData.profile?.mobile || apiData.mobile || '',
+        gender: apiData.profile?.gender || apiData.gender || '',
+        dob: apiData.profile?.dob || apiData.dob || ''
+      }));
+
+      return data;
+    } catch (error) {
+      console.error('Error updating user profile:', error);
       return rejectWithValue(error.message);
     }
   }

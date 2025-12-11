@@ -12,6 +12,7 @@ import {
   removeAddressAsync,
   setDefaultAddressAsync,
   fetchUserProfileAsync,
+  updateProfileAsync,
 } from "../features/user/userSlice";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
@@ -61,6 +62,8 @@ export default function Profile() {
 
   // Profile form state
   const [name, setName] = React.useState(user?.profile?.name || "");
+  const [firstName, setFirstName] = React.useState(user?.profile?.firstName || "");
+  const [lastName, setLastName] = React.useState(user?.profile?.lastName || "");
   const [mobile, setMobile] = React.useState(user?.profile?.mobile || "");
   const [email, setEmail] = React.useState(user?.profile?.email || "");
   const [dob, setDob] = React.useState(user?.profile?.dob || "");
@@ -71,6 +74,8 @@ export default function Profile() {
   // Sync form state with Redux store when user profile data changes
   React.useEffect(() => {
     setName(user?.profile?.name || "");
+    setFirstName(user?.profile?.firstName || "");
+    setLastName(user?.profile?.lastName || "");
     setMobile(user?.profile?.mobile || "");
     setEmail(user?.profile?.email || "");
     setDob(user?.profile?.dob || "");
@@ -87,8 +92,10 @@ export default function Profile() {
     if (email && !strongEmail(email)) errs.email = "Enter a valid email";
     setProfileErrors(errs);
     if (Object.keys(errs).length) return;
+
+    // Use updateProfileAsync to call the API
     dispatch(
-      updateProfile({
+      updateProfileAsync({
         name: name.trim(),
         mobile: `${onlyDigits(mobile)}`,
         email: email.trim(),
@@ -96,6 +103,7 @@ export default function Profile() {
         gender,
       })
     );
+    setIsProfileModalOpen(false);
   };
 
   // Addresses
