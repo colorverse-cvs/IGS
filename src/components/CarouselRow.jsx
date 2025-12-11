@@ -33,6 +33,7 @@ export default function CarouselRow({
   const maxIndex = Math.max(0, normalizedItems.length - itemsPerView);
   const [firstVisibleIndex, setFirstVisibleIndex] = React.useState(0);
   const dragStateRef = React.useRef({ dragging: false, startX: 0, moved: 0 });
+  const [isPaused, setIsPaused] = React.useState(false);
 
   React.useEffect(() => {
     const onResize = () => setViewportWidth(window.innerWidth);
@@ -45,7 +46,7 @@ export default function CarouselRow({
   }, [maxIndex]);
 
   React.useEffect(() => {
-    if (!autoplay || normalizedItems.length <= itemsPerView) return;
+    if (!autoplay || normalizedItems.length <= itemsPerView || isPaused) return;
     const id = setInterval(() => {
       setFirstVisibleIndex((idx) => {
         const next = idx + stepSize;
@@ -60,6 +61,7 @@ export default function CarouselRow({
     itemsPerView,
     stepSize,
     maxIndex,
+    isPaused,
   ]);
 
   const onPointerDown = (e) => {
@@ -109,10 +111,14 @@ export default function CarouselRow({
     <div className={`relative ${className}`}>
       <div
         className="overflow-hidden select-none"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={(e) => {
+          setIsPaused(false);
+          if (enableDrag) onPointerUp(e);
+        }}
         onMouseDown={enableDrag ? onPointerDown : undefined}
         onMouseMove={enableDrag ? onPointerMove : undefined}
         onMouseUp={enableDrag ? onPointerUp : undefined}
-        onMouseLeave={enableDrag ? onPointerUp : undefined}
         onTouchStart={enableDrag ? onPointerDown : undefined}
         onTouchMove={enableDrag ? onPointerMove : undefined}
         onTouchEnd={enableDrag ? onPointerUp : undefined}

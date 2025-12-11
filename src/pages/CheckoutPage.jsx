@@ -1,17 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Trash2 } from "lucide-react";
-import {
-  clearCart,
-  updateQty,
-  removeFromCart,
-} from "../features/cart/cartSlice";
-import { addOrUpdateAddress } from "../features/user/userSlice";
-import { addOrder } from "../features/orders/ordersSlice";
-import { useNavigate } from "react-router-dom";
-import Modal from "../components/Modal";
-import AddressForm from "../components/AddressForm";
-import Dropdown from "../components/Dropdown";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
 /**
@@ -327,10 +315,10 @@ export default function CheckoutPage() {
           paymentType === "card"
             ? `debit card **${selectedCard?.mask || "0000"}`
             : paymentType === "upi"
-            ? `UPI ${upiOption === "id" ? upiId || "(ID verified)" : "QR"}`
-            : paymentType === "netbanking" && selectedBank
-            ? `Netbanking ${selectedBank}`
-            : paymentType,
+              ? `UPI ${upiOption === "id" ? upiId || "(ID verified)" : "QR"}`
+              : paymentType === "netbanking" && selectedBank
+                ? `Netbanking ${selectedBank}`
+                : paymentType,
       },
       totals: {
         mrpTotal,
@@ -565,11 +553,10 @@ export default function CheckoutPage() {
                           <>
                             <div className="flex items-center gap-2">
                               <input
-                                className={`border px-2 py-1 w-[50%] rounded text-sm ${
-                                  upiId && !isValidUpiId(upiId)
-                                    ? "border-red-500"
-                                    : "border-gray-200"
-                                }`}
+                                className={`border px-2 py-1 w-[50%] rounded text-sm ${upiId && !isValidUpiId(upiId)
+                                  ? "border-red-500"
+                                  : "border-gray-200"
+                                  }`}
                                 placeholder="Enter UPI ID"
                                 value={upiId}
                                 onChange={(e) => {
@@ -579,11 +566,10 @@ export default function CheckoutPage() {
                               />
                               <button
                                 type="button"
-                                className={`text-brand-700 text-sm ${
-                                  isValidUpiId(upiId)
-                                    ? ""
-                                    : "opacity-50 cursor-not-allowed"
-                                }`}
+                                className={`text-brand-700 text-sm ${isValidUpiId(upiId)
+                                  ? ""
+                                  : "opacity-50 cursor-not-allowed"
+                                  }`}
                                 disabled={!isValidUpiId(upiId)}
                                 onClick={() => {
                                   // Mock verification: treat IDs ending with a digit as valid
@@ -595,8 +581,8 @@ export default function CheckoutPage() {
                                 {upiStatus === "valid"
                                   ? "Verified ✓"
                                   : upiStatus === "invalid"
-                                  ? "Invalid ✕"
-                                  : "Verify ID"}
+                                    ? "Invalid ✕"
+                                    : "Verify ID"}
                               </button>
                             </div>
                           </>
@@ -785,11 +771,11 @@ export default function CheckoutPage() {
                                     keepScroll();
                                     i.qty > 1
                                       ? dispatch(
-                                          updateQty({
-                                            id: i.id,
-                                            qty: i.qty - 1,
-                                          })
-                                        )
+                                        updateQty({
+                                          id: i.id,
+                                          qty: i.qty - 1,
+                                        })
+                                      )
                                       : dispatch(removeFromCart(i.id));
                                   }}
                                 >
@@ -930,9 +916,18 @@ export default function CheckoutPage() {
                 setIsAddressModalOpen(false);
               }}
               onSubmit={(newAddr) => {
+                const { id, isDefault, ...addrData } = newAddr;
                 if (user?.isAuthenticated) {
-                  dispatch(addOrUpdateAddress(newAddr));
+                  if (editAddress) {
+                    dispatch(updateAddressAsync({
+                      addressId: editAddress.id,
+                      addressData: { ...newAddr, id: undefined } // ensure no ID in payload if possible, or thunk handles it
+                    }));
+                  } else {
+                    dispatch(addAddressAsync(newAddr));
+                  }
                 } else {
+                  // Guest mode (local state only)
                   setAddrList((prev) => {
                     let list = prev;
                     if (editAddress) {
@@ -951,7 +946,9 @@ export default function CheckoutPage() {
                     return list;
                   });
                 }
-                setSelectedAddressId(newAddr.id);
+                // If it was a new address or edit, select it
+                if (!editAddress) setSelectedAddressId(newAddr.id);
+
                 setEditAddress(null);
                 setIsAddressModalOpen(false);
               }}
@@ -977,10 +974,10 @@ export default function CheckoutPage() {
                     cardBrand === "visa"
                       ? `VISA card ending with ${mask}`
                       : cardBrand === "mastercard"
-                      ? `Mastercard ending with ${mask}`
-                      : cardBrand === "amex"
-                      ? `Amex card ending with ${mask}`
-                      : `Card ending with ${mask}`,
+                        ? `Mastercard ending with ${mask}`
+                        : cardBrand === "amex"
+                          ? `Amex card ending with ${mask}`
+                          : `Card ending with ${mask}`,
                 };
                 setCards((prev) => [...prev, card]);
                 setSelectedCardId(card.id);
@@ -997,9 +994,8 @@ export default function CheckoutPage() {
               <div>
                 <label className="block text-sm mb-1">Name on card</label>
                 <input
-                  className={`w-full border border-gray-200 rounded px-3 py-2 ${
-                    cardErrors.name ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`w-full border border-gray-200 rounded px-3 py-2 ${cardErrors.name ? "border-red-500" : "border-gray-200"
+                    }`}
                   value={cardName}
                   onChange={(e) => setCardName(e.target.value)}
                   placeholder="John Doe"
@@ -1011,9 +1007,8 @@ export default function CheckoutPage() {
               <div>
                 <label className="block text-sm mb-1">Card number</label>
                 <input
-                  className={`w-full border border-gray-200 rounded px-3 py-2 ${
-                    cardErrors.number ? "border-red-500" : "border-gray-200"
-                  }`}
+                  className={`w-full border border-gray-200 rounded px-3 py-2 ${cardErrors.number ? "border-red-500" : "border-gray-200"
+                    }`}
                   value={cardNumber}
                   onChange={(e) => {
                     const digits = onlyDigits(e.target.value).slice(0, 19);
@@ -1033,9 +1028,8 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm mb-1">Expiry (MM/YY)</label>
                   <input
-                    className={`w-full border border-gray-200 rounded px-3 py-2 ${
-                      cardErrors.expiry ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`w-full border border-gray-200 rounded px-3 py-2 ${cardErrors.expiry ? "border-red-500" : "border-gray-200"
+                      }`}
                     value={cardExpiry}
                     onChange={(e) => {
                       const v = onlyDigits(e.target.value).slice(0, 4);
@@ -1054,9 +1048,8 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm mb-1">CVV</label>
                   <input
-                    className={`w-full border border-gray-200 rounded px-3 py-2 ${
-                      cardErrors.cvv ? "border-red-500" : "border-gray-200"
-                    }`}
+                    className={`w-full border border-gray-200 rounded px-3 py-2 ${cardErrors.cvv ? "border-red-500" : "border-gray-200"
+                      }`}
                     value={cardCvv}
                     onChange={(e) =>
                       setCardCvv(onlyDigits(e.target.value).slice(0, 4))

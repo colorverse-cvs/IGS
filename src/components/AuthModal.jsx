@@ -1,11 +1,10 @@
 import React from "react";
 import Modal from "./Modal";
+import ForgotPassword from "./ForgotPassword";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
-import { login, signup } from "../features/user/userSlice";
-import googleButton from "../assets/google_buttons.png";
-import facebookButton from "../assets/facebook_buttons.png";
-import appleButton from "../assets/apple_buttons.png";
+import { login, signup, fetchUserProfileAsync } from "../features/user/userSlice";
+import toast from "react-hot-toast";
 import logo from "../assets/ishita-gallery-logo.jpg";
 import { Eye, EyeOff, X } from "lucide-react";
 
@@ -63,6 +62,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [resetEmail, setResetEmail] = React.useState("");
   const [resetStatus, setResetStatus] = React.useState("");
   const [resetLoading, setResetLoading] = React.useState(false);
+  const [resetToken, setResetToken] = React.useState("");
 
   // OAuth popup
   const oauthWindowRef = React.useRef(null);
@@ -251,7 +251,10 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       const data = await res.json();
 
       if (!res.ok) {
-        setLoginError(data?.message || "Login failed");
+        // Handle nested message object from 401 response
+        const errorMsg = data?.message?.message || data?.message || "Login failed";
+        setLoginError(errorMsg);
+        toast.error(errorMsg);
         return;
       }
 
@@ -275,6 +278,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         })
       );
 
+      // Fetch full profile data
+      dispatch(fetchUserProfileAsync());
+
+      toast.success("Login Successful", {
+        style: {
+          color: "green",
+        },
+      });
       resetAllForms();
       onClose?.();
 
@@ -314,13 +325,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       ],
       password,
       role: "customer",
-      profile: [
-        {
-          avatarUrl: "",
-          displayName: name,
-          bio: "",
-        },
-      ],
+      profile: {
+        avatarUrl: "",
+        displayName: name,
+        bio: "",
+        gender: "",
+        dob: "",
+        mobile: mobile,
+      },
     };
 
     try {
@@ -339,6 +351,10 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       }
 
       dispatch(signup({ name, email, mobile }));
+
+      // Fetch profile (even if empty, establishes state)
+      dispatch(fetchUserProfileAsync());
+
       setApiMessage("Account created successfully.");
       resetAllForms();
       onClose?.();
@@ -347,6 +363,43 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       setApiMessage("Network error. Please try again.");
     } finally {
       setSignupLoading(false);
+    }
+  };
+
+  // Verify user exists before opening forgot password modal
+  const handleForgotPasswordClick = async () => {
+    const emailToVerify = loginIdentifier || resetEmail;
+
+    if (!emailToVerify || !emailRegex.test(emailToVerify)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    setResetLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailToVerify }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success && data.data?.resetToken) {
+        // User exists and token received, open the modal
+        setResetToken(data.data.resetToken);
+        setResetEmail(emailToVerify);
+        setResetOpen(true);
+      } else {
+        // User not found or error occurred
+        const errorMessage = data.message?.message || data.message || "User not found. Please check your email.";
+        toast.error(errorMessage);
+      }
+    } catch (err) {
+      console.error("Email verification error:", err);
+      toast.error("Network error. Please try again later.");
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -388,34 +441,34 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     strongPasswordRegex.test(password) &&
     password === confirmPassword;
 
-  const OAuthButtons = () => (
-    <div className="flex justify-center gap-3">
-      <button
-        type="button"
-        onClick={() => startOAuth("google")}
-        title="Continue with Google"
-        className="transform hover:scale-105 active:scale-95 transition"
-      >
-        <img src={googleButton} alt="Google" className="h-10 w-10 object-contain" />
-      </button>
-      <button
-        type="button"
-        onClick={() => startOAuth("facebook")}
-        title="Continue with Facebook"
-        className="transform hover:scale-105 active:scale-95 transition"
-      >
-        <img src={facebookButton} alt="Facebook" className="h-10 w-10 object-contain" />
-      </button>
-      <button
-        type="button"
-        onClick={() => startOAuth("apple")}
-        title="Continue with Apple"
-        className="transform hover:scale-105 active:scale-95 transition"
-      >
-        <img src={appleButton} alt="Apple" className="h-10 w-10 object-contain" />
-      </button>
-    </div>
-  );
+  // const OAuthButtons = () => (
+  //   <div className="flex justify-center gap-3">
+  //     <button
+  //       type="button"
+  //       onClick={() => startOAuth("google")}
+  //       title="Continue with Google"
+  //       className="transform hover:scale-105 active:scale-95 transition"
+  //     >
+  //       <img src={googleButton} alt="Google" className="h-10 w-10 object-contain" />
+  //     </button>
+  //     <button
+  //       type="button"
+  //       onClick={() => startOAuth("facebook")}
+  //       title="Continue with Facebook"
+  //       className="transform hover:scale-105 active:scale-95 transition"
+  //     >
+  //       <img src={facebookButton} alt="Facebook" className="h-10 w-10 object-contain" />
+  //     </button>
+  //     <button
+  //       type="button"
+  //       onClick={() => startOAuth("apple")}
+  //       title="Continue with Apple"
+  //       className="transform hover:scale-105 active:scale-95 transition"
+  //     >
+  //       <img src={appleButton} alt="Apple" className="h-10 w-10 object-contain" />
+  //     </button>
+  //   </div>
+  // );
 
   return (
     <Modal
@@ -481,7 +534,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             <form onSubmit={handleLogin} className="space-y-4 flex-1">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email/Mobile Number <span className="text-red-500">*</span>
+                  Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -525,10 +578,11 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 </label>
                 <button
                   type="button"
-                  onClick={() => setResetOpen(true)}
-                  className="text-brand-600 hover:underline"
+                  onClick={handleForgotPasswordClick}
+                  disabled={resetLoading}
+                  className="text-brand-600 hover:underline disabled:opacity-50"
                 >
-                  Forgot password?
+                  {resetLoading ? "Verifying..." : "Forgot password?"}
                 </button>
               </div>
 
@@ -543,22 +597,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {loginLoading ? "Logging in..." : "Log In"}
               </button>
 
-              <div className="flex items-center gap-3 my-4">
+              {/* <div className="flex items-center gap-3 my-4">
                 <div className="flex-1 border-t border-gray-300" />
                 <span className="text-xs text-gray-500">Or continue with</span>
                 <div className="flex-1 border-t border-gray-300" />
-              </div>
+              </div> */}
 
-              <OAuthButtons />
+              {/* <OAuthButtons /> */}
 
-              <div className="text-center">
-                <button
-                  type="button"
-                  className="text-sm text-gray-600 hover:text-brand-600 transition"
-                >
-                  Continue as Guest
-                </button>
-              </div>
             </form>
           )}
 
@@ -572,7 +618,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="John Doe"
+                  placeholder="FirstName LastName"
                   className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
                     }`}
                 />
@@ -586,7 +632,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 <input
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="9876543210"
+                  placeholder=""
                   inputMode="numeric"
                   className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
                     }`}
@@ -601,7 +647,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="john@example.com"
+                  placeholder="sample@gmail.com"
                   className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
                     }`}
                 />
@@ -669,13 +715,13 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {signupLoading ? "Creating account..." : "Create account"}
               </button>
 
-              <div className="flex items-center gap-3 my-4">
+              {/* <div className="flex items-center gap-3 my-4">
                 <div className="flex-1 border-t border-gray-300" />
                 <span className="text-xs text-gray-500">Or continue with</span>
                 <div className="flex-1 border-t border-gray-300" />
               </div>
 
-              <OAuthButtons />
+              <OAuthButtons /> */}
             </form>
           )}
         </div>
@@ -732,44 +778,20 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           setResetOpen(false);
           setResetEmail("");
           setResetStatus("");
+          setResetToken("");
         }}
         title="Reset your password"
       >
-        <form onSubmit={handleResetSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email or Mobile <span className="text-red-500">*</span>
-            </label>
-            <input
-              value={resetEmail}
-              onChange={(e) => setResetEmail(e.target.value)}
-              placeholder="john@example.com or 9876543210"
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            />
-          </div>
-
-          {resetStatus && <p className="text-sm text-gray-700">{resetStatus}</p>}
-
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={resetLoading}
-              className="px-4 py-2 rounded bg-brand-600 text-white hover:bg-brand-700 disabled:bg-gray-300"
-            >
-              {resetLoading ? "Sending..." : "Send reset link"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setResetOpen(false);
-                setResetStatus("");
-              }}
-              className="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+        <ForgotPassword
+          email={resetEmail}
+          token={resetToken}
+          onSuccess={() => {
+            setResetOpen(false);
+            setResetEmail("");
+            setResetToken("");
+            toast.success("Password reset successfully! Please login with your new password.");
+          }}
+        />
       </Modal>
     </Modal>
   );

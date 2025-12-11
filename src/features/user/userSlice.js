@@ -61,6 +61,8 @@ const initialState = loadState() || {
     name: '',
     email: '',
     mobile: '',
+    gender: '',
+    dob: '',
     addresses: [],
   },
 };
@@ -86,7 +88,10 @@ const userSlice = createSlice({
         localStorage.setItem('refreshToken', refreshToken);
       }
       // Prefer payload ID (from API), then existing ID. Do not generate fake ID for auth'd user.
-      if (id) state.profile.id = id;
+      if (id) {
+        state.profile.id = id;
+        localStorage.setItem('id', id);
+      }
 
       state.profile.name = name || state.profile.name || 'User';
       state.profile.email = email || state.profile.email || '';
@@ -100,10 +105,21 @@ const userSlice = createSlice({
      * Saves to localStorage automatically
      */
     signup(state, action) {
-      const { name, email, mobile, id } = action.payload || {};
+      const { name, email, mobile, id, token, refreshToken } = action.payload || {};
       state.isAuthenticated = true;
+
+      if (token) {
+        state.token = token;
+        localStorage.setItem('token', token);
+      }
+      if (refreshToken) {
+        state.refreshToken = refreshToken;
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+
       // Use ID from backend if available, otherwise fake it only if absolutely necessary (or leave null)
       state.profile.id = id || nanoid();
+      if (state.profile.id) localStorage.setItem('id', state.profile.id);
       state.profile.name = name || 'User';
       state.profile.email = email || '';
       state.profile.mobile = mobile || '';
@@ -120,9 +136,10 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
       state.token = null;
       state.refreshToken = null;
-      state.profile = { id: null, name: '', email: '', mobile: '', addresses: [] };
+      state.profile = { id: null, name: '', email: '', mobile: '', gender: '', dob: '', addresses: [] };
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('id');
       saveState(state);
     },
 
@@ -182,6 +199,56 @@ export const { login, signup, logout, addOrUpdateAddress, setDefaultAddress, rem
 /**
  * Async Thunks
  */
+export const fetchUserProfileAsync = createAsyncThunk(
+  'user/fetchUserProfileAsync',
+  async (_, { dispatch, getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const token = state.user.token || localStorage.getItem('token');
+      const userId = state.user.profile.id;
+
+      if (!token) {
+        console.log('No token found, skipping profile fetch');
+        return rejectWithValue('No authentication token');
+      }
+
+      console.log('Fetching user profile...', { userId, hasToken: !!token });
+
+      const response = await fetch(`${BASE_URL}/api/v1/users/profile`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Failed to fetch user profile:', errorData);
+        return rejectWithValue(errorData.message || 'Failed to fetch profile');
+      }
+
+      const data = await response.json();
+      console.log('User profile fetched successfully:', data);
+
+      // Update profile with fetched data
+      dispatch(userSlice.actions.updateProfile({
+        id: data._id || data.id || userId,
+        name: data.name || data.fullName || '',
+        email: data.email || '',
+        mobile: data.mobile || data.phone || '',
+        gender: data.gender || '',
+        dob: data.dob || data.dateOfBirth || ''
+      }));
+
+      return data;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const logoutAsync = createAsyncThunk(
   'user/logoutAsync',
   async (_, { dispatch, getState }) => {
@@ -282,13 +349,14 @@ export const updateAddressAsync = createAsyncThunk(
       const userId = state.user.profile.id;
       if (!token || !userId || !addressId) return;
 
+      const { addressLine, id, ...payload } = addressData;
       const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(addressData)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {

@@ -11,6 +11,7 @@ import {
   updateAddressAsync,
   removeAddressAsync,
   setDefaultAddressAsync,
+  fetchUserProfileAsync,
 } from "../features/user/userSlice";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
@@ -52,6 +53,13 @@ export default function Profile() {
     setTab(initialTab);
   }, [initialTab]);
 
+  // Fetch user profile when tab changes to 'profile'
+  React.useEffect(() => {
+    if (tab === "profile") {
+      dispatch(fetchUserProfileAsync());
+    }
+  }, [tab, dispatch]);
+
   // Fetch addresses when tab changes to 'addresses'
   React.useEffect(() => {
     console.log(tab, user);
@@ -73,6 +81,15 @@ export default function Profile() {
   const [gender, setGender] = React.useState(user?.profile?.gender || "Male");
   const [profileErrors, setProfileErrors] = React.useState({});
   const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false);
+
+  // Sync form state with Redux store when user profile data changes
+  React.useEffect(() => {
+    setName(user?.profile?.name || "");
+    setMobile(user?.profile?.mobile || "");
+    setEmail(user?.profile?.email || "");
+    setDob(user?.profile?.dob || "");
+    setGender(user?.profile?.gender || "Male");
+  }, [user?.profile]);
 
   const onlyDigits = (v) => v.replace(/\D/g, "");
   const strongEmail = (v) => /\S+@\S+\.\S+/.test(v);
@@ -288,7 +305,7 @@ export default function Profile() {
         >
           Saved Addresses
         </button>
-        <button
+        {/* <button
           className={`${tab === "payments"
             ? "border-b-2 border-brand-700 text-brand-700"
             : "text-gray-600"
@@ -296,7 +313,7 @@ export default function Profile() {
           onClick={() => setTab("payments")}
         >
           Payment Options
-        </button>
+        </button> */}
       </div>
 
       {/* Tabs - Mobile View (Sticky Bottom) */}
@@ -310,7 +327,7 @@ export default function Profile() {
         >
           Profile
         </button>
-        <button
+        {/* <button
           className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "orders"
             ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
             : "bg-white text-gray-600 border border-gray-300"
@@ -318,7 +335,7 @@ export default function Profile() {
           onClick={() => setTab("orders")}
         >
           Orders
-        </button>
+        </button> */}
         <button
           className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "addresses"
             ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
@@ -328,7 +345,7 @@ export default function Profile() {
         >
           Saved Addresses
         </button>
-        <button
+        {/* <button
           className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "payments"
             ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
             : "bg-white text-gray-600 border border-gray-300"
@@ -336,7 +353,7 @@ export default function Profile() {
           onClick={() => setTab("payments")}
         >
           Payment Options
-        </button>
+        </button> */}
       </div>
 
       {tab === "profile" && (
@@ -632,7 +649,65 @@ export default function Profile() {
         </div>
       )}
 
-      {tab === "payments" && (
+
+      {/* {tab === "orders" && (
+        <div className="space-y-6">
+          <p className="text-2xl font-bold mb-4">Recent orders</p>
+          {orders.map((order) => (
+            <div key={order.id} className="border rounded-lg overflow-hidden">
+              <div className="grid grid-cols-12 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-700">
+                <div className="col-span-2">Order ID</div>
+                <div className="col-span-5">Items</div>
+                <div className="col-span-1">Status</div>
+                <div className="col-span-2">Order Date</div>
+                <div className="col-span-2">Total</div>
+              </div>
+              {order.items.map((it, idx) => (
+                <div
+                  key={idx}
+                  className="grid grid-cols-12 items-stretch gap-3 px-4 py-3 border-t text-sm"
+                >
+                  <div className="col-span-2 flex items-center">{order.id}</div>
+                  <div className="col-span-5 flex gap-4">
+                    <img
+                      src={it.image}
+                      alt={it.title}
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">{it.title}</div>
+                      <div className="text-xs text-gray-500">
+                        Material: {it.material || "-"} &nbsp; Size:{" "}
+                        {it.size || "-"}
+                      </div>
+                      <div className="text-brand-700 font-semibold">
+                        ₹{it.price}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-span-1 flex items-center">
+                    <span className="text-xs px-2 py-1 rounded border text-yellow-700 border-yellow-300">
+                      {order.status || "Placed"}
+                    </span>
+                  </div>
+                  <div className="col-span-2 flex items-center">
+                    {new Date(order.date).toLocaleDateString()}
+                  </div>
+                  <div className="col-span-2 flex items-center">
+                    ₹{order.totals?.payable}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+          {orders.length === 0 && (
+            <div className="text-gray-500">No orders yet.</div>
+          )}
+        </div>
+      )} */}
+
+
+      {/* {tab === "payments" && (
         <div className="max-w-4xl">
           <p className="text-2xl font-bold mb-4">Payment Options</p>
           <div className="space-y-3">
@@ -663,10 +738,10 @@ export default function Profile() {
                         className="px-3 py-1 border border-gray-300 text-gray-700 rounded text-sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          // Open edit modal with prefilled values
+                         
                           setEditingCard(c);
                           setCardName(c.name || "");
-                          setCardNumber(""); // keep masked, allow re-entry if they change
+                          setCardNumber("");
                           setCardExpiry(c.expiry || "");
                           setCardCvv("");
                           setIsCardModalOpen(true);
@@ -738,7 +813,7 @@ export default function Profile() {
               <div className="text-gray-500">No saved cards.</div>
             )}
           </div>
-          {/* Removed global billing summary in favor of per-card accordion details */}
+          
 
           <button
             className="mt-4 px-4 py-2 bg-brand-700 text-white rounded"
@@ -891,62 +966,6 @@ export default function Profile() {
               </div>
             </form>
           </Modal>
-        </div>
-      )}
-
-      {/* {tab === "orders" && (
-        <div className="space-y-6">
-          <p className="text-2xl font-bold mb-4">Recent orders</p>
-          {orders.map((order) => (
-            <div key={order.id} className="border rounded-lg overflow-hidden">
-              <div className="grid grid-cols-12 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-700">
-                <div className="col-span-2">Order ID</div>
-                <div className="col-span-5">Items</div>
-                <div className="col-span-1">Status</div>
-                <div className="col-span-2">Order Date</div>
-                <div className="col-span-2">Total</div>
-              </div>
-              {order.items.map((it, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-12 items-stretch gap-3 px-4 py-3 border-t text-sm"
-                >
-                  <div className="col-span-2 flex items-center">{order.id}</div>
-                  <div className="col-span-5 flex gap-4">
-                    <img
-                      src={it.image}
-                      alt={it.title}
-                      className="w-20 h-20 object-cover rounded"
-                    />
-                    <div className="flex-1">
-                      <div className="font-medium">{it.title}</div>
-                      <div className="text-xs text-gray-500">
-                        Material: {it.material || "-"} &nbsp; Size:{" "}
-                        {it.size || "-"}
-                      </div>
-                      <div className="text-brand-700 font-semibold">
-                        ₹{it.price}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-1 flex items-center">
-                    <span className="text-xs px-2 py-1 rounded border text-yellow-700 border-yellow-300">
-                      {order.status || "Placed"}
-                    </span>
-                  </div>
-                  <div className="col-span-2 flex items-center">
-                    {new Date(order.date).toLocaleDateString()}
-                  </div>
-                  <div className="col-span-2 flex items-center">
-                    ₹{order.totals?.payable}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ))}
-          {orders.length === 0 && (
-            <div className="text-gray-500">No orders yet.</div>
-          )}
         </div>
       )} */}
 
