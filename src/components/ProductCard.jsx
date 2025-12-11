@@ -12,25 +12,32 @@ import { ShoppingCart, Star } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import AuthModal from "./AuthModal";
 import toast from "react-hot-toast";
+import { generateRatingAndReviews } from "../utils/ratingGenerator";
 
 const ProductCard = ({ product, onOpenProduct }) => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+
+  // Generate rating and reviews based on product ID
+  const { rating: generatedRating, reviews: generatedReviews } = generateRatingAndReviews(product.id);
+
   const {
     id,
     name,
     price,
     mrp,
     discount,
-    rating,
     material,
     size,
-    reviews,
     isFeatured,
     isCustomizable,
     imageURL,
   } = product;
+
+  // Use generated rating and reviews
+  const rating = generatedRating;
+  const reviews = generatedReviews;
 
   // Get quantity of this product currently in cart
   const qtyInCart = useSelector(

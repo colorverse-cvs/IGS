@@ -11,6 +11,7 @@ import Breadcrumb from "../components/Breadcrumb.jsx";
 import useAuth from "../hooks/useAuth";
 import AuthModal from "../components/AuthModal";
 import toast from "react-hot-toast";
+import { generateRatingAndReviews } from "../utils/ratingGenerator";
 
 
 export default function ProductInfoPage() {
@@ -189,10 +190,11 @@ export default function ProductInfoPage() {
   const imageSrc = product.imageURL || product.image;
   const mrp = product.mrp;
   const discount = product.discount;
-  const rating = product.rating;
-  const reviews = product.reviews;
   const isCustomizable = product.isCustomizable;
   const isFeatured = product.isFeatured;
+
+  // Generate rating and reviews based on product ID
+  const { rating, reviews } = generateRatingAndReviews(product.id);
 
   // Images: prefer product.images from JSON if present
   const productImages =

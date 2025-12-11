@@ -167,10 +167,27 @@ const userSlice = createSlice({
       state.profile = { ...state.profile, ...action.payload };
       saveState(state);
     },
+
+    /**
+     * Update tokens after refresh
+     * Called when the API client refreshes tokens
+     */
+    updateTokens(state, action) {
+      const { token, refreshToken } = action.payload;
+      if (token) {
+        state.token = token;
+        localStorage.setItem('token', token);
+      }
+      if (refreshToken) {
+        state.refreshToken = refreshToken;
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+      saveState(state);
+    },
   },
 });
 
-export const { login, signup, logout, addOrUpdateAddress, setDefaultAddress, removeAddress, updateProfile } = userSlice.actions;
+export const { login, signup, logout, addOrUpdateAddress, setDefaultAddress, removeAddress, updateProfile, updateTokens } = userSlice.actions;
 
 /**
  * Async Thunks
@@ -525,3 +542,10 @@ export const setDefaultAddressAsync = createAsyncThunk(
 );
 
 export default userSlice.reducer;
+
+// Set up event listeners for token refresh (will be connected in App.jsx)
+if (typeof window !== 'undefined') {
+  // These events are dispatched by apiClient.js
+  // The actual dispatch will be handled in App.jsx where we have access to the store
+  console.log('[UserSlice] Token refresh event listeners ready');
+}
