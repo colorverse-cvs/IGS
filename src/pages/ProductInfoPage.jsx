@@ -535,7 +535,7 @@ export default function ProductInfoPage() {
                     />
                     <button
                       onClick={handleCheckDelivery}
-                      className="px-4 py-2 bg-brand-700 text-white text-md rounded-lg hover:bg-brand-800 transition"
+                      className="cursor-pointer px-4 py-2 bg-brand-700 text-white text-md rounded-lg hover:bg-brand-800 transition"
                     >
                       Verify
                     </button>
@@ -628,11 +628,11 @@ export default function ProductInfoPage() {
                 </div>
 
                 {/* Quantity and Actions */}
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-1 lg:justify-start lg:flex-nowrap">
+                <div className="cursor-pointer mt-4 flex flex-wrap items-center justify-between gap-1 lg:justify-start lg:flex-nowrap">
                   {qtyInCart === 0 ? (
                     <button
                       onClick={handleAddToCart}
-                      className="px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-brand-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
+                      className="cursor-pointer px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-brand-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
                     >
                       Add to Cart <ShoppingCart size={15} />
                     </button>

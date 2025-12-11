@@ -267,13 +267,13 @@ export default function Navbar() {
             <div className="hidden lg:flex lg:items-center lg:gap-1">
               {navLinks.map((link) =>
                 link.isDropdown ? (
-                  <div key={link.name} className="relative">
+                  <div key={link.name} className="relative cursor-pointer">
                     <Dropdown
                       isOpen={isProductsDropdownOpen}
                       onToggle={setIsProductsDropdownOpen}
                       align="left"
                       trigger={(isOpen) => (
-                        <button className="text-gray-700 hover:text-purple-700 lg:px-3 lg:py-3 text-sm font-medium transition flex items-center gap-1">
+                        <button className="text-gray-700 hover:text-purple-700 lg:px-3 lg:py-3 text-sm font-medium transition flex items-center gap-1 cursor-pointer">
                           {link.name}
                           <ChevronDown
                             size={16}
@@ -288,7 +288,7 @@ export default function Navbar() {
                           key={pLink.id}
                           type="button"
                           onClick={() => handleProductLinkClick(pLink)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
+                          className="cursor-pointer block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
                         >
                           {pLink.name}
                         </button>
@@ -319,12 +319,12 @@ export default function Navbar() {
 
               <button
                 onClick={toggleCart}
-                className="p-2 transition relative"
+                className="p-2 transition relative cursor-pointer"
                 aria-label={`Open shopping cart with ${totalItems} items`}
               >
                 <ShoppingCart size={20} />
                 {totalItems > 0 && (
-                  <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-brand-600 rounded-circle min-w-4 h-4">
+                  <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-brand-600 rounded-circle min-w-4 h-4 cursor-pointer">
                     {totalItems > 99 ? "99+" : totalItems}
                   </span>
                 )}
@@ -337,7 +337,7 @@ export default function Navbar() {
                   align="right"
                   trigger={(isOpen) => (
                     <button className="flex items-center gap-2 px-3 py-2 transition">
-                      <span className="flex flex-col items-start text-gray-700">
+                      <span className="flex flex-col items-start text-gray-700 cursor-pointer">
                         <span className="text-xs font-medium">Hey,</span>
                         <span className="flex items-center gap-1 !text-sm !font-semibold">
                           {user.profile.name}
@@ -472,9 +472,9 @@ export default function Navbar() {
                   align="right"
                   trigger={(isOpen) => (
                     <button className="flex items-center gap-2 px-3 py-2 transition">
-                      <span className="flex flex-col items-start text-gray-700">
+                      <span className="flex flex-col items-start text-gray-700 cursor-pointer">
                         <span className="text-xs font-medium">Hey,</span>
-                        <span className="flex items-center gap-1 !text-sm !font-semibold">
+                        <span className="cursor-pointer flex items-center gap-1 !text-sm !font-semibold">
                           {user.profile.name}
                           <ChevronDown
                             size={16}

@@ -90,7 +90,7 @@ export default function AboutPage() {
               <button
                 type="button"
                 onClick={() => navigate("/filter")}
-                className="mt-6 inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] transition"
+                className="cursor-pointer mt-6 inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] transition"
               >
                 Explore Collection
               </button>
@@ -182,7 +182,7 @@ export default function AboutPage() {
             <button
               type="button"
               onClick={() => navigate("/filter?category=shivaji")}
-              className="inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] transition"
+              className="cursor-pointer inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] transition"
             >
               Explore more
             </button>

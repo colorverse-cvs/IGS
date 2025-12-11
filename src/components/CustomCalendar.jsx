@@ -131,7 +131,7 @@ export default function CustomCalendar({
                     key={day}
                     type="button"
                     onClick={() => handleDateSelect(day)}
-                    className={`p-2 text-sm rounded hover:bg-brand-50 transition ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
+                    className={`p-2 text-sm rounded hover:bg-brand-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
                         } ${isToday && !isSelected ? 'border border-brand-700 text-brand-700' : ''}`}
                 >
                     {day}
@@ -150,7 +150,7 @@ export default function CustomCalendar({
                     key={month}
                     type="button"
                     onClick={() => handleMonthSelect(index)}
-                    className={`p-3 text-sm rounded hover:bg-brand-50 transition ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
+                    className={`p-3 text-sm rounded hover:bg-brand-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
                         }`}
                 >
                     {month.substring(0, 3)}
@@ -172,7 +172,7 @@ export default function CustomCalendar({
                     key={year}
                     type="button"
                     onClick={() => handleYearSelect(year)}
-                    className={`p-3 text-sm rounded hover:bg-brand-50 transition ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
+                    className={`p-3 text-sm rounded hover:bg-brand-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
                         }`}
                 >
                     {year}
@@ -224,7 +224,7 @@ export default function CustomCalendar({
                         <button
                             type="button"
                             onClick={viewMode === 'years' ? previousYearRange : previousMonth}
-                            className="p-1 hover:bg-gray-100 rounded transition"
+                            className="p-1 hover:bg-gray-100 rounded transition cursor-pointer"
                         >
                             <ChevronLeft size={20} />
                         </button>
@@ -235,14 +235,14 @@ export default function CustomCalendar({
                                     <button
                                         type="button"
                                         onClick={() => setViewMode('months')}
-                                        className="px-3 py-1 hover:bg-gray-100 rounded text-sm font-medium transition"
+                                        className="px-3 py-1 hover:bg-gray-100 rounded text-sm font-medium transition cursor-pointer"
                                     >
                                         {monthNames[currentMonth]}
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setViewMode('years')}
-                                        className="px-3 py-1 hover:bg-gray-100 rounded text-sm font-medium transition"
+                                        className="px-3 py-1 hover:bg-gray-100 rounded text-sm font-medium transition cursor-pointer"
                                     >
                                         {currentYear}
                                     </button>
@@ -252,7 +252,7 @@ export default function CustomCalendar({
                                 <button
                                     type="button"
                                     onClick={() => setViewMode('years')}
-                                    className="px-3 py-1 hover:bg-gray-100 rounded text-sm font-medium transition"
+                                    className="px-3 py-1 hover:bg-gray-100 rounded text-sm font-medium transition cursor-pointer"
                                 >
                                     {currentYear}
                                 </button>
@@ -267,7 +267,7 @@ export default function CustomCalendar({
                         <button
                             type="button"
                             onClick={viewMode === 'years' ? nextYearRange : nextMonth}
-                            className="p-1 hover:bg-gray-100 rounded transition"
+                            className="p-1 hover:bg-gray-100 rounded transition cursor-pointer"
                         >
                             <ChevronRight size={20} />
                         </button>

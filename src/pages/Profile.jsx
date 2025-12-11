@@ -437,7 +437,7 @@ export default function Profile() {
           </div>
           <button
             onClick={() => setIsProfileModalOpen(true)}
-            className="w-full md:w-auto mt-4 px-4 py-2 bg-brand-700 text-white rounded-md"
+            className="w-full md:w-auto mt-4 px-4 py-2 bg-brand-700 text-white rounded-md cursor-pointer"
           >
             Edit Profile
           </button>
@@ -522,13 +522,13 @@ export default function Profile() {
                 <button
                   type="button"
                   onClick={() => setIsProfileModalOpen(false)}
-                  className="px-4 py-2 border rounded"
+                  className="px-4 py-2 border rounded cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-brand-700 text-white rounded"
+                  className="px-4 py-2 bg-brand-700 text-white rounded cursor-pointer"
                 >
                   Save changes
                 </button>
@@ -579,7 +579,7 @@ export default function Profile() {
                     )}
                     <div className="mt-2 flex gap-3">
                       <button
-                        className="text-xs text-brand-700"
+                        className="text-xs text-brand-700 cursor-pointer"
                         onClick={() => {
                           console.log('[Profile] Edit address clicked:', addr);
                           setEditAddress(addr);
@@ -589,7 +589,7 @@ export default function Profile() {
                         Edit
                       </button>
                       <button
-                        className="text-xs text-brand-700"
+                        className="text-xs text-brand-700 cursor-pointer"
                         onClick={() => {
                           const addressId = addr._id || addr.id;
                           console.log('[Profile] Remove address clicked:', addressId);
@@ -600,7 +600,7 @@ export default function Profile() {
                       </button>
                       {!addr.isDefault && (
                         <button
-                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold"
+                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold cursor-pointer"
                           onClick={() => {
                             const addressId = addr._id || addr.id;
                             console.log('[Profile] Set default address clicked:', addressId);
@@ -617,7 +617,7 @@ export default function Profile() {
             ))}
           </div>
           <button
-            className="mt-4 px-4 py-2 bg-brand-700 text-white rounded"
+            className="mt-4 px-4 py-2 bg-brand-700 text-white rounded cursor-pointer"
             onClick={() => {
               setEditAddress(null);
               setIsAddressModalOpen(true);
