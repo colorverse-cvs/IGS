@@ -461,7 +461,7 @@ export default function Profile() {
                     Name *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${profileErrors.name ? "border-red-500" : "border-gray-200"
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.name ? "border-red-500" : "border-gray-200"
                       }`}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -473,7 +473,7 @@ export default function Profile() {
                     Mobile Number *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${profileErrors.mobile
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.mobile
                       ? "border-red-500"
                       : "border-gray-200"
                       }`}
@@ -490,7 +490,7 @@ export default function Profile() {
                     Email
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${profileErrors.email ? "border-red-500" : "border-gray-200"
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.email ? "border-red-500" : "border-gray-200"
                       }`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -502,7 +502,7 @@ export default function Profile() {
                     Date of Birth
                   </label>
                   <input
-                    className="w-full border rounded px-3 py-2 border-gray-200"
+                    className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                     value={dob}
                     onChange={(e) => setDob(e.target.value)}
                     placeholder="DD/MM/YYYY"
