@@ -17,6 +17,7 @@ import {
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
 import Dropdown from "../components/Dropdown";
+import CustomCalendar from "../components/CustomCalendar";
 import { ChevronDown } from "lucide-react";
 
 
@@ -444,6 +445,7 @@ export default function Profile() {
             isOpen={isProfileModalOpen}
             onClose={() => setIsProfileModalOpen(false)}
             title="Edit Profile"
+            className="max-w-3xl w-full m-4"
           >
             <form
               onSubmit={(e) => {
@@ -498,13 +500,10 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-500 block text-sm mb-1">
-                    Date of Birth
-                  </label>
-                  <input
-                    className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                  <CustomCalendar
+                    label="Date of Birth"
                     value={dob}
-                    onChange={(e) => setDob(e.target.value)}
+                    onChange={(date) => setDob(date)}
                     placeholder="DD/MM/YYYY"
                   />
                 </div>
