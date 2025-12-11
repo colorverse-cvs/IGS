@@ -123,6 +123,12 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = [];
     },
+    /**
+     * Set all items in the cart (used when fetching from API)
+     */
+    setCart: (state, action) => {
+      state.items = action.payload;
+    },
   },
 });
 
@@ -225,5 +231,43 @@ export const removeItemFromCartAsync = createAsyncThunk(
   }
 );
 
-export const { addToCart, removeFromCart, updateQty, clearCart } = cartSlice.actions;
+export const fetchCartAsync = createAsyncThunk(
+  'cart/fetchCartAsync',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      console.log('Fetching cart...');
+      const response = await api.get('/api/v1/cart');
+
+      let items = [];
+      if (response && response.items) {
+        items = response.items;
+      } else if (response && response.data && response.data.items) {
+        items = response.data.items;
+      } else if (Array.isArray(response)) {
+        items = response;
+      }
+
+      // Map API items to state items format
+      const cartItems = items.map(item => ({
+        id: item.product._id || item.product,
+        title: item.product.name,
+        price: item.product.price,
+        image: item.product.imageURL || (item.product.images && item.product.images[0]),
+        qty: item.quantity,
+        mrp: item.product.listPrice,
+        discount: item.product.discount,
+        _id: item._id, // Cart item ID
+        cartItemId: item._id
+      }));
+
+      dispatch(setCart(cartItems));
+      return cartItems;
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const { addToCart, removeFromCart, updateQty, clearCart, setCart } = cartSlice.actions;
 export default cartSlice.reducer;

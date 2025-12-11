@@ -4,7 +4,7 @@ import { BASE_URL } from "../utils/constants";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, addToCartAsync, updateCartItemQuantityAsync } from "../features/cart/cartSlice";
+import { addToCart, addToCartAsync, updateCartItemQuantityAsync, removeItemFromCartAsync } from "../features/cart/cartSlice";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
@@ -29,7 +29,9 @@ export default function ProductInfoPage() {
   const [pincodeStatus, setPincodeStatus] = useState("idle");
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+
+  const cartItem = useSelector((state) => state.cart.items.find((item) => item.id === id));
+  const qtyInCart = cartItem ? cartItem.qty : 0;
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const didFetchRef = useRef(false);
@@ -312,29 +314,11 @@ export default function ProductInfoPage() {
     { label: "Origin", value: product.origin || aboutDefaults.origin || "—" },
   ];
 
-  const increment = () => {
-    const newQty = Math.min(99, quantity + 1);
-    setQuantity(newQty);
-    // If product is in cart, update it there too
-    const inCart = cartItems.find((item) => item.id === product?.id);
-    if (inCart) {
-      dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: newQty }));
-    }
-  };
-
-  const decrement = () => {
-    const newQty = Math.max(1, quantity - 1);
-    setQuantity(newQty);
-    // If product is in cart, update it there too
-    const inCart = cartItems.find((item) => item.id === product?.id);
-    if (inCart) {
-      dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: newQty }));
-    }
-  };
+  // Remove increment/decrement functions as they are now handled inline or via redux
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      toast.error("Please login befor add product to cart");
+      toast.error("Please login before adding product to cart");
       setIsAuthModalOpen(true);
       return;
     }
@@ -348,13 +332,20 @@ export default function ProductInfoPage() {
         discount,
         material: selectedMaterial,
         size: selectedSize,
-        qty: quantity,
+        qty: 1,
       })
     );
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    if (!isAuthenticated) {
+      toast.error("Please login to proceed");
+      setIsAuthModalOpen(true);
+      return;
+    }
+    if (qtyInCart === 0) {
+      handleAddToCart();
+    }
     navigate("/checkout");
   };
 
@@ -638,31 +629,41 @@ export default function ProductInfoPage() {
 
                 {/* Quantity and Actions */}
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-1 lg:justify-start lg:flex-nowrap">
-                  <div className="inline-flex items-center border justify-between rounded-lg overflow-hidden w-[46%] lg:w-auto">
+                  {qtyInCart === 0 ? (
                     <button
-                      type="button"
-                      onClick={decrement}
-                      className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
+                      onClick={handleAddToCart}
+                      className="px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-brand-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
                     >
-                      -
+                      Add to Cart <ShoppingCart size={15} />
                     </button>
-                    <div className="w-[35%] p-2 text-sm min-w-10 text-center">
-                      {quantity}
+                  ) : (
+                    <div className="inline-flex items-center border justify-between rounded-lg overflow-hidden w-[46%] lg:w-auto">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (qtyInCart > 1) {
+                            dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: qtyInCart - 1 }));
+                          } else {
+                            dispatch(removeItemFromCartAsync(product.id));
+                          }
+                        }}
+                        className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
+                      >
+                        -
+                      </button>
+                      <div className="w-[35%] p-2 text-sm min-w-10 text-center">
+                        {qtyInCart}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: qtyInCart + 1 }))}
+                        className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
+                      >
+                        +
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={increment}
-                      className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    onClick={handleAddToCart}
-                    className="px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-brand-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
-                  >
-                    Add to Cart <ShoppingCart size={15} />
-                  </button>
+                  )}
+
                   <button
                     onClick={handleBuyNow}
                     className="px-2 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition w-full lg:w-auto"
