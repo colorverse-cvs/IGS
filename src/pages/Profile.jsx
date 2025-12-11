@@ -18,27 +18,7 @@ import AddressForm from "../components/AddressForm";
 import Dropdown from "../components/Dropdown";
 import { ChevronDown } from "lucide-react";
 
-/**
- * Profile Page Component - User account management
- * 
- * Features:
- * - Profile Tab: Edit name, email, mobile, DOB, gender
- * - Addresses Tab: Add, edit, delete, set default delivery addresses
- * - Orders Tab: View order history with status and details
- * - Payments Tab: Placeholder for payment methods (future feature)
- * 
- * How it works:
- * - URL query param ?tab=name determines which section to show
- * - Form validation before saving (email, mobile format)
- * - All changes saved to Redux state which persists to localStorage
- * - Orders loaded from Redux orders state
- * 
- * For beginners:
- * - useSearchParams() reads URL query parameters
- * - useState() manages local form state before saving
- * - dispatch() saves changes to Redux which updates localStorage
- * - Modal opens for editing individual addresses
- */
+
 export default function Profile() {
   const user = useSelector((s) => s.user);
   const orders = useSelector((s) => s.orders?.orders || []);
@@ -53,17 +33,23 @@ export default function Profile() {
     setTab(initialTab);
   }, [initialTab]);
 
+  // Track if profile has been fetched to prevent redundant API calls
+  const profileFetchedRef = React.useRef(false);
+
   // Fetch user profile when tab changes to 'profile'
   React.useEffect(() => {
-    if (tab === "profile") {
+    if (tab === "profile" && !profileFetchedRef.current) {
       dispatch(fetchUserProfileAsync());
+      profileFetchedRef.current = true;
     }
   }, [tab, dispatch]);
 
   // Fetch addresses when tab changes to 'addresses'
   React.useEffect(() => {
-    console.log(tab, user);
+    console.log('[Profile] Tab changed:', tab);
+    console.log('[Profile] User profile ID:', user?.profile?.id);
     if (tab === "addresses" && user?.profile?.id) {
+      console.log('[Profile] Fetching addresses for user:', user.profile.id);
       dispatch(fetchAddressesAsync(user.profile.id));
     }
   }, [tab, user?.profile?.id, dispatch]);
@@ -104,7 +90,7 @@ export default function Profile() {
     dispatch(
       updateProfile({
         name: name.trim(),
-        mobile: `+91 ${onlyDigits(mobile)}`,
+        mobile: `${onlyDigits(mobile)}`,
         email: email.trim(),
         dob,
         gender,
@@ -114,6 +100,7 @@ export default function Profile() {
 
   // Addresses
   const addresses = user?.profile?.addresses || [];
+  console.log('[Profile] Current addresses:', addresses);
   const [isAddressModalOpen, setIsAddressModalOpen] = React.useState(false);
   const [editAddress, setEditAddress] = React.useState(null);
 
@@ -587,6 +574,7 @@ export default function Profile() {
                       <button
                         className="text-xs text-brand-700"
                         onClick={() => {
+                          console.log('[Profile] Edit address clicked:', addr);
                           setEditAddress(addr);
                           setIsAddressModalOpen(true);
                         }}
@@ -595,14 +583,22 @@ export default function Profile() {
                       </button>
                       <button
                         className="text-xs text-brand-700"
-                        onClick={() => dispatch(removeAddressAsync(addr.id || addr._id))}
+                        onClick={() => {
+                          const addressId = addr._id || addr.id;
+                          console.log('[Profile] Remove address clicked:', addressId);
+                          dispatch(removeAddressAsync(addressId));
+                        }}
                       >
                         Remove
                       </button>
                       {!addr.isDefault && (
                         <button
                           className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold"
-                          onClick={() => dispatch(setDefaultAddressAsync(addr.id || addr._id))}
+                          onClick={() => {
+                            const addressId = addr._id || addr.id;
+                            console.log('[Profile] Set default address clicked:', addressId);
+                            dispatch(setDefaultAddressAsync(addressId));
+                          }}
                         >
                           Set as Default address
                         </button>
@@ -632,14 +628,18 @@ export default function Profile() {
               submitLabel={editAddress ? "Save address" : "Use this address"}
               onCancel={() => setIsAddressModalOpen(false)}
               onSubmit={(a) => {
+                console.log('[Profile] Address form submitted:', a);
                 if (editAddress) {
-                  // Update existing address
+                  // Update existing address - use _id from API
+                  const addressId = editAddress._id || editAddress.id;
+                  console.log('[Profile] Updating address:', addressId);
                   dispatch(updateAddressAsync({
-                    addressId: editAddress.id || editAddress._id,
+                    addressId: addressId,
                     addressData: a
                   }));
                 } else {
                   // creating new address via API
+                  console.log('[Profile] Adding new address');
                   dispatch(addAddressAsync(a));
                 }
                 setIsAddressModalOpen(false);

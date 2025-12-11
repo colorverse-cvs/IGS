@@ -85,10 +85,9 @@ export default function AddressForm({
       .join(", ");
 
     const newAddress = {
-      id: initial?.id || `addr_${Date.now()}`,
       tag: alias.trim() || "Home",
       addressLine,
-      mobile: `+91 ${mobileDigits}`,
+      mobile: `${mobileDigits}`,
       isDefault: makeDefault,
       // Granular fields for API
       line1: flat,
@@ -97,14 +96,23 @@ export default function AddressForm({
       state,
       postalCode: pincode,
       country: "India",
-      phone: `+91${mobileDigits}`,
+      phone: `${mobileDigits}`,
     };
+
+    // If editing, preserve the existing ID
+    if (initial?.id) {
+      newAddress.id = initial.id;
+    }
+    if (initial?._id) {
+      newAddress._id = initial._id;
+    }
+
     onSubmit?.(newAddress);
   };
 
   const handleMobileChange = (e) => {
     let val = e.target.value;
-    val = val.replace(/^(\+?91)/, "");
+    val = val.replace(/^(\+91|91)/, "");
     val = val.replace(/\D/g, "");
     val = val.slice(0, 10);
     setMobile(val);

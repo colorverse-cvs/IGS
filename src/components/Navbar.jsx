@@ -333,10 +333,7 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={(val) => {
-                    setIsProfileDropdownOpen(val);
-                    if (val) dispatch(fetchUserProfileAsync());
-                  }}
+                  onToggle={setIsProfileDropdownOpen}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="flex items-center gap-2 px-3 py-2 transition">
@@ -471,10 +468,7 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={(val) => {
-                    setIsProfileDropdownOpen(val);
-                    if (val) dispatch(fetchUserProfileAsync());
-                  }}
+                  onToggle={setIsProfileDropdownOpen}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="flex items-center gap-2 px-3 py-2 transition">
@@ -570,10 +564,7 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={(val) => {
-                    setIsProfileDropdownOpen(val);
-                    if (val) dispatch(fetchUserProfileAsync());
-                  }}
+                  onToggle={setIsProfileDropdownOpen}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="p-2 rounded-lg hover:bg-gray-100 transition">
