@@ -108,7 +108,7 @@ export default function Products() {
 
             return (
               <div
-                key={product.id}
+                key={product.name}
                 className="border border-gray-100 hover:border-violet-500 rounded-xl p-4 bg-white shadow-sm
                            flex flex-col md:flex-row md:justify-between md:items-center"
               >
