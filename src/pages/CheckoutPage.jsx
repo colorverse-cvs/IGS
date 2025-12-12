@@ -1,41 +1,14 @@
 import React, { useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Breadcrumb from "../components/Breadcrumb.jsx";
+import { useNavigate } from 'react-router-dom';
+import Dropdown from "../components/Dropdown.jsx";
+import { addOrder } from "../features/orders/ordersSlice";
+import { clearCart } from "../features/cart/cartSlice";
+import { Trash2 } from "lucide-react";
+import Modal from "../components/Modal.jsx";
+import AddressForm from "../components/AddressForm.jsx";
 
-/**
- * CheckoutPage Component - Multi-step checkout flow
- * 
- * Features:
- * - Review cart items with quantity controls
- * - Manage delivery addresses (add, edit, select default)
- * - Gift wrap option (₹20 per unit)
- * - Multiple payment methods (Cards, UPI, Wallets, Net Banking)
- * - Order summary with itemized costs
- * - Mock payment processing (creates order without real payment)
- * 
- * Steps:
- * 1. Cart Review: Adjust quantities, apply gift wrap
- * 2. Address: Select or add delivery address
- * 3. Payment: Choose payment method and process order
- * 4. Confirmation: Redirects to OrderPlaced page
- * 
- * For beginners:
- * - useSelector() gets cart items and user from Redux
- * - dispatch() saves addresses and orders to Redux state
- * - useState() manages UI state (modals, forms, tabs)
- * - Orders are saved to localStorage via Redux middleware
- * 
- * Payment Methods UI:
- * - Card icons (Visa, Mastercard, RuPay)
- * - UPI options (Google Pay, PhonePe)
- * - Net Banking (6 major Indian banks)
- * - Wallets, Buy Later options
- */
-
-/**
- * Payment Method Icons
- * These are fallback icons for payment method logos if SVG files fail to load
- */
 const VisaIcon = () => (
   <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold tracking-widest text-[#1a1f71] border border-[#1a1f71] rounded">
     VISA
@@ -140,6 +113,7 @@ export default function CheckoutPage() {
   });
   const [addrList, setAddrList] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
+
   const selectedAddress = useMemo(
     () => addrList.find((a) => a.id === selectedAddressId),
     [selectedAddressId, addrList]
