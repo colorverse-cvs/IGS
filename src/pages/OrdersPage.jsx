@@ -181,7 +181,7 @@ export default function OrdersPage() {
           </div>
           <div>
             <input
-              className="border rounded px-3 py-1 text-sm min-w-[220px]"
+              className="border rounded px-3 py-1 text-sm min-w-[220px] focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder="Search an order"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

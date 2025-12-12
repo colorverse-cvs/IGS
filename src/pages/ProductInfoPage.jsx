@@ -533,7 +533,7 @@ export default function ProductInfoPage() {
                         setPincodeStatus("idle");
                         setDeliveryEstimate("");
                       }}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent w-40"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-40"
                     />
                     <button
                       onClick={handleCheckDelivery}

@@ -317,18 +317,21 @@ export default function Navbar() {
                 <Search size={20} />
               </button>
 
-              <button
-                onClick={toggleCart}
-                className="p-2 transition relative cursor-pointer"
-                aria-label={`Open shopping cart with ${totalItems} items`}
-              >
-                <ShoppingCart size={20} />
-                {totalItems > 0 && (
-                  <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-brand-600 rounded-circle min-w-4 h-4 cursor-pointer">
-                    {totalItems > 99 ? "99+" : totalItems}
-                  </span>
-                )}
-              </button>
+              {/* Cart Icon - Only show when logged in */}
+              {user.isAuthenticated && (
+                <button
+                  onClick={toggleCart}
+                  className="p-2 transition relative cursor-pointer"
+                  aria-label={`Open shopping cart with ${totalItems} items`}
+                >
+                  <ShoppingCart size={20} />
+                  {totalItems > 0 && (
+                    <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-brand-600 rounded-circle min-w-4 h-4 cursor-pointer">
+                      {totalItems > 99 ? "99+" : totalItems}
+                    </span>
+                  )}
+                </button>
+              )}
 
               {user.isAuthenticated ? (
                 <Dropdown
@@ -385,7 +388,7 @@ export default function Navbar() {
                     type="button"
                     onClick={() => {
                       dispatch(logoutAsync());
-                      dispatch(clearCart());
+                      // dispatch(clearCart()); // Commented out - preserve cart on logout
                       navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
@@ -517,7 +520,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       dispatch(logoutAsync());
-                      dispatch(clearCart());
+                      // dispatch(clearCart()); // Commented out - preserve cart on logout
                       navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
@@ -603,7 +606,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       dispatch(logoutAsync());
-                      dispatch(clearCart());
+                      // dispatch(clearCart()); // Commented out - preserve cart on logout
                       navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
