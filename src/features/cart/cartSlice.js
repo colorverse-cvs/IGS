@@ -53,14 +53,13 @@ export const addToCartAsync = createAsyncThunk(
 
 
 /**
- * Cart Slice - Redux Toolkit State Management
+ * Cart Slice - Redux Toolkit State Management with Persistence
  * 
  * This file manages the shopping cart state using Redux Toolkit.
  * The cart stores an array of items that users want to purchase.
  * 
- * Note: Cart state is NOT persisted to localStorage.
- * Cart items are cleared when the user closes the browser (session-based).
- * For persistent cart, you would add localStorage save/load logic here.
+ * Cart state is now persisted to localStorage for authenticated users.
+ * Cart items are preserved when the user refreshes the browser.
  * 
  * For beginners:
  * - Redux Toolkit simplifies state management
@@ -68,8 +67,30 @@ export const addToCartAsync = createAsyncThunk(
  * - State is immutable (we don't modify it directly, we return new state)
  */
 
+// Load cart from localStorage
+const loadCartFromStorage = () => {
+  try {
+    const savedCart = localStorage.getItem('igs_cart');
+    if (savedCart) {
+      return JSON.parse(savedCart);
+    }
+  } catch (error) {
+    console.error('Error loading cart from localStorage:', error);
+  }
+  return [];
+};
+
+// Save cart to localStorage
+const saveCartToStorage = (items) => {
+  try {
+    localStorage.setItem('igs_cart', JSON.stringify(items));
+  } catch (error) {
+    console.error('Error saving cart to localStorage:', error);
+  }
+};
+
 const initialState = {
-  items: [], // Array of cart items: { id, title, price, image, qty, mrp, discount, material, size, _id }
+  items: loadCartFromStorage(), // Load cart from localStorage on initialization
 };
 
 const cartSlice = createSlice({
@@ -93,6 +114,9 @@ const cartSlice = createSlice({
       } else {
         state.items.push({ ...newItem, qty: newItem.qty || 1 });
       }
+
+      // Save to localStorage
+      saveCartToStorage(state.items);
     },
 
     /**
@@ -102,6 +126,9 @@ const cartSlice = createSlice({
     removeFromCart: (state, action) => {
       const idToRemove = action.payload;
       state.items = state.items.filter(item => item.id !== idToRemove);
+
+      // Save to localStorage
+      saveCartToStorage(state.items);
     },
 
     /**
@@ -114,6 +141,9 @@ const cartSlice = createSlice({
       if (itemToUpdate) {
         itemToUpdate.qty = Math.max(1, qty);
       }
+
+      // Save to localStorage
+      saveCartToStorage(state.items);
     },
 
     /**
@@ -122,12 +152,18 @@ const cartSlice = createSlice({
      */
     clearCart: (state) => {
       state.items = [];
+
+      // Clear from localStorage
+      saveCartToStorage([]);
     },
     /**
      * Set all items in the cart (used when fetching from API)
      */
     setCart: (state, action) => {
       state.items = action.payload;
+
+      // Save to localStorage
+      saveCartToStorage(state.items);
     },
   },
 });
