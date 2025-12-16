@@ -365,18 +365,18 @@ export const fetchAddressesAsync = createAsyncThunk(
         }
 
         // Fetch each address individually
-        const addressPromises = addressIds.map(addressId =>
-          fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }).then(res => res.json())
-        );
+        // const addressPromises = addressIds.map(addressId =>
+        //   fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
+        //     headers: { Authorization: `Bearer ${token}` },
+        //   }).then(res => res.json())
+        // );
 
-        const addressResponses = await Promise.all(addressPromises);
+        // const addressResponses = await Promise.all(addressPromises);
 
         // Extract address data from responses
-        const addresses = addressResponses.map(res => res.data || res).filter(Boolean);
+        // const addresses = addressResponses.map(res => res.data || res).filter(Boolean);
 
-        dispatch(userSlice.actions.updateProfile({ addresses }));
+        // dispatch(userSlice.actions.updateProfile({ addresses }));
       }
     } catch (err) {
       console.error('[fetchAddressesAsync] Error fetching addresses', err);

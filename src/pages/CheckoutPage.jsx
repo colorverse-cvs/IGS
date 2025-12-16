@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { api } from "../utils/api";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 import { useNavigate } from 'react-router-dom';
 import Dropdown from "../components/Dropdown.jsx";
@@ -309,24 +310,123 @@ export default function CheckoutPage() {
     return order;
   };
 
-  const handlePrimaryAction = () => {
-    if (currentStep === 1) {
-      // Require a selected address before proceeding
-      if (!selectedAddress) return;
-      setOpen({ address: false, payment: true, review: false });
-      setDone((d) => ({ ...d, address: true }));
-    } else if (currentStep === 2) {
-      if (!isPaymentValid) return;
-      setOpen({ address: false, payment: false, review: true });
-      setDone((d) => ({ ...d, payment: true }));
-    } else {
-      // Place order then show pre-success page
-      (async () => {
-        const order = await handlePay();
-        navigate("/order-placed", { state: { order } });
-      })();
+  // const handlePrimaryAction = () => {
+  //   if (currentStep === 1) {
+  //     // Require a selected address before proceeding
+  //     if (!selectedAddress) return;
+  //     setOpen({ address: false, payment: true, review: false });
+  //     setDone((d) => ({ ...d, address: true }));
+  //   } else if (currentStep === 2) {
+  //     if (!isPaymentValid) return;
+  //     setOpen({ address: false, payment: false, review: true });
+  //     setDone((d) => ({ ...d, payment: true }));
+  //   } else {
+  //     // Place order then show pre-success page
+  //     (async () => {
+  //       const order = await handlePay();
+  //       navigate("/order-placed", { state: { order } });
+  //     })();
+  //   }
+  // };
+
+
+  const handlePlaceOrder = async () => {
+    try {
+      if (!selectedAddress) {
+        alert("Please select an address");
+        return;
+      }
+
+      // Map frontend payment type to backend
+      const methodMap = {
+        upi: "razorpay",
+        card: "razorpay",
+        netbanking: "razorpay",
+        cod: "cod",
+      };
+
+      const paymentMethod = methodMap[paymentType] || "razorpay";
+
+      const payload = {
+        paymentMethod,
+        name: user?.profile?.name || "Guest",
+        email: user?.profile?.email || "",
+        phone: user?.profile?.mobile || "",
+        address: {
+          line1: selectedAddress.line1 || selectedAddress.addressLine || "",
+          line2: selectedAddress.line2 || "",
+          city: selectedAddress.city || "",
+          state: selectedAddress.state || "",
+          postalCode: selectedAddress.postalCode || "",
+          country: selectedAddress.country || "India",
+          phone: selectedAddress.phone || selectedAddress.mobile || "",
+          isDefault: !!selectedAddress.isDefault,
+        },
+      };
+
+      console.log("Checkout payload:", payload);
+
+      // 1️⃣ Create order (backend)
+      const data = await api.post("/api/v1/cart/checkout", payload);
+      console.log("Checkout response:", data);
+
+      // 2️⃣ COD flow → NO Razorpay
+      if (paymentMethod === "cod") {
+        dispatch(clearCart());
+        dispatch(addOrder(data.order));
+        navigate("/order-placed", { state: { order: data.order } });
+        return;
+      }
+
+      // 3️⃣ Razorpay options
+      const options = {
+        key: data.keyId,
+        amount: data.orderRecord.total,
+        currency: data.orderRecord.currency,
+        order_id: data.order.paymentDetails.razorpayOrderId,
+
+        name: "Ishita Gallery",
+        description: "Checkout Payment",
+
+        handler: async function (rzpResponse) {
+          console.log("Razorpay response:", rzpResponse);
+          try {
+            const verifyResult = await api.post("/api/v1/payments/verify", rzpResponse);
+
+            if (verifyResult.status === "ok") {
+              dispatch(clearCart());
+              dispatch(addOrder(verifyResult.order));
+              navigate("/payment-success", {
+                state: { order: verifyResult.order },
+              });
+            } else {
+              // alert("Payment verification failed");
+            }
+          } catch (err) {
+            console.error("Verification failed:", err);
+            // alert("Payment verification error");
+          }
+        },
+
+        prefill: {
+          name: data.customer?.name || "",
+          email: data.customer?.email || "",
+          contact: data.customer?.phone || "",
+        },
+
+        theme: { color: "#3399cc" },
+      };
+
+      // 4️⃣ Open Razorpay
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch (error) {
+      console.error("Failed to place order:", error);
+      alert("Failed to place order. Please try again.");
     }
   };
+
 
   // Sync address list from user profile if logged in; otherwise use sample JSON
   React.useEffect(() => {
@@ -863,7 +963,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <button
-                  onClick={handlePrimaryAction}
+                  onClick={() => handlePlaceOrder()}
                   className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={
                     items.length === 0 ||
