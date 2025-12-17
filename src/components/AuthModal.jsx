@@ -4,7 +4,7 @@ import ForgotPassword from "./ForgotPassword";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { login, signup, fetchUserProfileAsync } from "../features/user/userSlice";
-import { fetchCartAsync } from "../features/cart/cartSlice";
+import { initializeCart, fetchCartSummaryAsync } from "../features/cart/cartSlice";
 import toast from "react-hot-toast";
 import logo from "../assets/ishita-gallery-logo.jpg";
 import { Eye, EyeOff, X } from "lucide-react";
@@ -325,8 +325,11 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       // Fetch full profile data
       dispatch(fetchUserProfileAsync());
 
-      // Fetch cart data
-      dispatch(fetchCartAsync());
+      // Initialize user cart
+      dispatch(fetchCartSummaryAsync());
+      dispatch(initializeCart(normalized.id)); // Keep this to set basic state if needed, or remove if fetchCartSummaryAsync handles everything.
+      // Actually per previous plan, fetchCartSummaryAsync is the key. initializeCart sets currentUserId.
+      // Let's keep initializeCart just to update currentUserId in state, then fetch.
 
       toast.success("Login Successful", {
         style: {

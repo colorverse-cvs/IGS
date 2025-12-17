@@ -5,6 +5,8 @@ import {
   updateQty,
   clearCart,
   updateCartItemQuantityAsync,
+  removeItemFromCartAsync,
+  clearCartAsync,
 } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
@@ -49,15 +51,13 @@ export default function Cart({ isDrawer = false, onClose }) {
 
   const handleRemoveItem = (id) => {
     console.log("Removing item from cart", id);
-    import("../features/cart/cartSlice").then(({ removeItemFromCartAsync }) => {
-      dispatch(removeItemFromCartAsync(id));
-    });
+    dispatch(removeItemFromCartAsync(id));
   };
 
   const handleClearCart = () => {
-    import("../features/cart/cartSlice").then(({ clearCartAsync }) => {
+    if (window.confirm("Are you sure you want to clear your cart?")) {
       dispatch(clearCartAsync());
-    });
+    }
   };
 
   const handleProceedToCheckout = () => {
@@ -101,6 +101,7 @@ export default function Cart({ isDrawer = false, onClose }) {
           >
             {items.map((item) => {
               const lineWrap = wrapMap[item.id] ? WRAP_FEE_PER_UNIT * item.qty : 0;
+              const imageUrl = item.image?.startsWith("http") ? item.image : `http://localhost:3000${item.image}`;
 
               /* Drawer Layout */
               if (isDrawer) {
@@ -109,7 +110,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                     key={item.id}
                     className="border border-gray-100 hover:shadow-lg p-2 rounded-lg flex items-start gap-4 text-sm"
                   >
-                    <img src={item.image} alt={item.title} className="w-28 h-28 rounded object-cover" />
+                    <img src={imageUrl} alt={item.title} className="w-28 h-28 rounded object-cover" />
 
                     <div className="min-w-0">
                       <div className="font-medium text-gray-900">{item.title}</div>
@@ -187,7 +188,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                   key={item.id}
                   className="py-4 flex items-start gap-4 text-sm border border-gray-100 hover:shadow-lg rounded-lg p-2"
                 >
-                  <img src={item.image} alt={item.title} className="w-28 h-28 rounded object-cover" />
+                  <img src={imageUrl} alt={item.title} className="w-28 h-28 rounded object-cover" />
 
                   <div className="min-w-0 flex-1">
                     <div className="font-medium text-gray-900 truncate">{item.title}</div>

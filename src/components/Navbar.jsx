@@ -20,7 +20,7 @@ import Dropdown from "./Dropdown";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import categoriesData from "../data/categories.json";
 import { logoutAsync, fetchUserProfileAsync } from "../features/user/userSlice";
-import { clearCart } from "../features/cart/cartSlice";
+import { initializeCart, clearCart } from "../features/cart/cartSlice";
 import { useAdminPanel } from "../contexts/AdminPanelContext";
 
 
@@ -119,7 +119,7 @@ export default function Navbar() {
         label: "Your Orders",
         path: "/orders",
       },
-      { to: "/cart", label: "Saved Items", path: "/cart" },
+      { to: "/cart", label: "Wishlist", path: "/cart" },
     ],
     []
   );
@@ -388,7 +388,7 @@ export default function Navbar() {
                     type="button"
                     onClick={() => {
                       dispatch(logoutAsync());
-                      // dispatch(clearCart()); // Commented out - preserve cart on logout
+                      dispatch(initializeCart(null));
                       navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
@@ -606,7 +606,8 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       dispatch(logoutAsync());
-                      // dispatch(clearCart()); // Commented out - preserve cart on logout
+                      dispatch(initializeCart(null));
+                      dispatch(clearCart());
                       navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
@@ -722,21 +723,26 @@ export default function Navbar() {
               </Link>
 
               {/* Cart */}
-              <button
-                onClick={toggleCart}
-                className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
-                aria-label={`Cart with ${totalItems} items`}
-              >
-                <div className="relative">
-                  <ShoppingCart size={24} />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
-                      {totalItems > 99 ? "99+" : totalItems}
-                    </span>
-                  )}
-                </div>
-                <span className="text-xs mt-1 font-medium">Cart</span>
-              </button>
+
+              {user.isAuthenticated && (
+                <button
+                  onClick={toggleCart}
+                  className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
+                  aria-label={`Cart with ${totalItems} items`}
+                >
+                  <div className="relative">
+                    <ShoppingCart size={24} />
+                    {totalItems > 0 && (
+                      <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
+                        {totalItems > 99 ? "99+" : totalItems}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs mt-1 font-medium">Cart</span>
+                </button>
+              )}
+
+
 
               {/* Menu */}
               <button
