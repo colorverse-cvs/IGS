@@ -11,8 +11,9 @@ import { Trash2 } from "lucide-react";
 import Modal from "../components/Modal.jsx";
 import AddressForm from "../components/AddressForm.jsx";
 import { addAddressAsync, updateAddressAsync } from "../features/user/userSlice";
+import CustomPopupModal from "../components/CustomPopupModal";
 
-import { removeFromCart, updateQty, removeItemFromCartAsync } from "../features/cart/cartSlice";
+import { removeFromCart, updateQty, removeItemFromCartAsync, clearCartAsync } from "../features/cart/cartSlice";
 
 /**
  * CheckoutPage Component
@@ -80,6 +81,17 @@ export default function CheckoutPage() {
     setTimeout(() => window.scrollTo(0, y), 0);
   };
 
+  // Popup state for replacing alerts
+  const [popup, setPopup] = React.useState({
+    show: false,
+    title: "",
+    message: "",
+  });
+
+  const showPopup = (title, message) => {
+    setPopup({ show: true, title, message });
+  };
+
   const currentStep = open.payment ? 2 : open.address ? 1 : 3;
 
   // Track which steps have been visited/opened
@@ -116,7 +128,7 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async () => {
     try {
       if (!selectedAddress) {
-        alert("Please select an address");
+        showPopup("Address Required", "Please select an address");
         return;
       }
 
@@ -162,17 +174,17 @@ export default function CheckoutPage() {
 
             // Check for success based on the new response structure
             if (verifyResult.success) {
-              dispatch(clearCart());
+              dispatch(clearCartAsync());
               navigate("/order-placed", {
                 state: { order: data.order },
               });
             } else {
               // Payment verification failed
-              alert("Payment verification failed");
+              showPopup("Payment Failed", "Payment verification failed");
             }
           } catch (err) {
             console.error("Verification failed:", err);
-            alert("Payment verification error");
+            showPopup("Payment Error", "Payment verification error");
           }
         },
 
@@ -191,7 +203,7 @@ export default function CheckoutPage() {
 
     } catch (error) {
       console.error("Failed to place order:", error);
-      alert("Failed to place order. Please try again.");
+      showPopup("Order Error", "Failed to place order. Please try again.");
     }
   };
 
@@ -241,6 +253,12 @@ export default function CheckoutPage() {
 
   return (
     <>
+      <CustomPopupModal
+        isOpen={popup.show}
+        onClose={() => setPopup({ ...popup, show: false })}
+        title={popup.title}
+        message={popup.message}
+      />
       {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}
       <style>{`
 

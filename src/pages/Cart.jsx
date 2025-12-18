@@ -11,12 +11,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import EmptyShoppingCart from "../assets/empty-shopping-cart.svg";
+import { APP_URL } from "../constant";
+import CustomPopupModal from "../components/CustomPopupModal";
 
 export default function Cart({ isDrawer = false, onClose }) {
   const navigate = useNavigate();
   const items = useSelector((s) => s.cart.items);
   const dispatch = useDispatch();
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+
+  const [showClearModal, setShowClearModal] = React.useState(false);
 
   const WRAP_FEE_PER_UNIT = 20;
   const [wrapMap, setWrapMap] = React.useState({});
@@ -55,9 +59,7 @@ export default function Cart({ isDrawer = false, onClose }) {
   };
 
   const handleClearCart = () => {
-    if (window.confirm("Are you sure you want to clear your cart?")) {
-      dispatch(clearCartAsync());
-    }
+    setShowClearModal(true);
   };
 
   const handleProceedToCheckout = () => {
@@ -69,6 +71,14 @@ export default function Cart({ isDrawer = false, onClose }) {
 
   return (
     <div className={containerClasses}>
+      <CustomPopupModal
+        isOpen={showClearModal}
+        onClose={() => setShowClearModal(false)}
+        title="Clear Cart"
+        message="Are you sure you want to clear your cart?"
+        confirmText="Yes, Clear"
+        onConfirm={() => dispatch(clearCartAsync())}
+      />
       {!isDrawer && (
         <h2 className="text-4xl text-center font-extrabold text-gray-900 py-2">
           Shopping Cart 🛒
@@ -101,7 +111,7 @@ export default function Cart({ isDrawer = false, onClose }) {
           >
             {items.map((item) => {
               const lineWrap = wrapMap[item.id] ? WRAP_FEE_PER_UNIT * item.qty : 0;
-              const imageUrl = item.image?.startsWith("http") ? item.image : `http://localhost:3000${item.image}`;
+              const imageUrl = item.image?.startsWith("http") ? item.image : `${APP_URL}${item.image}`;
 
               /* Drawer Layout */
               if (isDrawer) {

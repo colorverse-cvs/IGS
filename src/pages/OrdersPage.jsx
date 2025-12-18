@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { updateOrderStatus } from "../features/orders/ordersSlice";
+import { updateOrderStatus, fetchOrdersAsync } from "../features/orders/ordersSlice";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
 /**
@@ -32,6 +32,10 @@ export default function OrdersPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const allOrders = useSelector((s) => s.orders.orders);
+
+  useEffect(() => {
+    dispatch(fetchOrdersAsync());
+  }, [dispatch]);
 
   const [activeTab, setActiveTab] = React.useState("orders"); // 'orders' | 'current' | 'previous'
   const [query, setQuery] = React.useState("");

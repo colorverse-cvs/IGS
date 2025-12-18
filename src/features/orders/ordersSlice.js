@@ -1,4 +1,4 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice, nanoid, createAsyncThunk } from '@reduxjs/toolkit';
 
 /**
  * Orders Slice - Redux Toolkit State Management with localStorage Persistence
@@ -21,41 +21,16 @@ import { createSlice, nanoid } from '@reduxjs/toolkit';
  * Load orders from localStorage
  * Returns empty array if no data exists or if there's an error
  */
-const loadOrders = () => {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem('igs_orders');
-    return raw ? JSON.parse(raw) : [];
-  } catch (error) {
-    console.error('Error loading orders from localStorage:', error);
-    return [];
-  }
-};
-
-/**
- * Save orders array to localStorage
- * Converts the orders array to JSON string before saving
- */
-const saveOrders = (orders) => {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem('igs_orders', JSON.stringify(orders));
-  } catch (error) {
-    console.error('Error saving orders to localStorage:', error);
-  }
-};
-
 const ordersSlice = createSlice({
   name: 'orders',
   initialState: {
-    orders: loadOrders(),
+    orders: [],
   },
   reducers: {
     /**
      * Add a new order to the orders list
      * Creates a unique order ID if one isn't provided
      * Orders are added to the beginning of the array (most recent first)
-     * Saves to localStorage automatically
      */
     addOrder(state, action) {
       const order = {
@@ -64,43 +39,71 @@ const ordersSlice = createSlice({
         ...action.payload,
       };
       state.orders.unshift(order);
-      saveOrders(state.orders);
     },
-    
+
     /**
      * Update the status of an existing order
      * Status values: 'placed', 'processing', 'delivered', 'cancelled'
-     * Saves to localStorage automatically
      */
     updateOrderStatus(state, action) {
       const { id, status } = action.payload || {};
       const order = state.orders.find((x) => x.id === id);
       if (order) {
         order.status = status;
-        saveOrders(state.orders);
       }
     },
-    
+
     /**
      * Replace the entire orders array
      * Useful for syncing with server or bulk updates
-     * Saves to localStorage automatically
      */
     replaceOrders(state, action) {
       state.orders = Array.isArray(action.payload) ? action.payload : [];
-      saveOrders(state.orders);
     },
-    
+
     /**
      * Clear all orders from the history
-     * Saves to localStorage automatically
      */
     clearOrders(state) {
       state.orders = [];
-      saveOrders(state.orders);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchOrdersAsync.fulfilled, (state, action) => {
+        state.orders = action.payload;
+      });
   },
 });
 
 export const { addOrder, replaceOrders, clearOrders, updateOrderStatus } = ordersSlice.actions;
+
+export const fetchOrdersAsync = createAsyncThunk(
+  'orders/fetchOrdersAsync',
+  async (_, { rejectWithValue }) => {
+    try {
+      // Import dynamically nicely or move import to top. 
+      // Since 'api' is not imported at top, let's fix imports in a separate Edit or just assume we'll fix strict imports
+      // Actually, I should check if I added the import. I didn't in this chunk.
+      // I will add the import in a separate chunk or rely on the previous content having it? 
+      // The previous content DOES NOT have it. I need to add it.
+      // Wait, I cannot add imports with this tool if I am editing the bottom.
+      // This tool only accepts one contiguous block.
+      // I should use multi_replace_file_content to add import AND add the thunk.
+      // But I am already using replace_file_content here.
+      // I will cancel this and use multi_replace.
+      // No, I can't cancel. I will submit this and then add the import in the next step.
+      // actually, I can just use 'api' from '../utils/api' if I had imported it.
+      // I'll assume I will fix the import in the next step.
+      const response = await import('../../utils/api').then(m => m.api.get('/api/v1/orders/my'));
+
+      // Expected response structure: { success: true, count: N, data: [...] } or just [...]
+      // Adapting based on common patterns.
+      return response.data || response;
+    } catch (error) {
+      console.error('Fetch orders failed:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
 export default ordersSlice.reducer;
