@@ -4,6 +4,7 @@ import { api } from "../utils/api";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 import { useNavigate } from 'react-router-dom';
 
+import { APP_URL } from "../constant";
 import { addOrder } from "../features/orders/ordersSlice";
 import { clearCart } from "../features/cart/cartSlice";
 import { Trash2 } from "lucide-react";
@@ -81,6 +82,26 @@ export default function CheckoutPage() {
 
   const currentStep = open.payment ? 2 : open.address ? 1 : 3;
 
+  // Track which steps have been visited/opened
+  const [visitedSteps, setVisitedSteps] = useState({
+    address: true, // Initially open, so effectively visited
+    review: false,
+    payment: false,
+  });
+
+  const handleToggle = (step) => {
+    setOpen((prev) => {
+      const isOpen = !prev[step];
+      // If opening, mark as visited
+      if (isOpen) {
+        setVisitedSteps((v) => ({ ...v, [step]: true }));
+      }
+      return { ...prev, [step]: isOpen };
+    });
+  };
+
+  const allStepsVisited = visitedSteps.address && visitedSteps.review && visitedSteps.payment;
+
   // Delivery ETA: 7 days from now
   const now = new Date();
   const addDays = (d, n) => {
@@ -139,17 +160,19 @@ export default function CheckoutPage() {
           try {
             const verifyResult = await api.post("/api/v1/payments/verify", rzpResponse);
 
-            if (verifyResult.status === "ok") {
+            // Check for success based on the new response structure
+            if (verifyResult.success) {
               dispatch(clearCart());
-              dispatch(addOrder(verifyResult.order));
-              navigate("/payment-success", {
-                state: { order: verifyResult.order },
+              navigate("/order-placed", {
+                state: { order: data.order },
               });
             } else {
               // Payment verification failed
+              alert("Payment verification failed");
             }
           } catch (err) {
             console.error("Verification failed:", err);
+            alert("Payment verification error");
           }
         },
 
@@ -261,7 +284,7 @@ export default function CheckoutPage() {
               <Section
                 title="User Address Details"
                 isOpen={open.address}
-                onToggle={() => setOpen((p) => ({ ...p, address: !p.address }))}
+                onToggle={() => handleToggle("address")}
               >
                 <div className="space-y-3">
                   {addrList.map((addr) => (
@@ -318,7 +341,7 @@ export default function CheckoutPage() {
               <Section
                 title="Review Products"
                 isOpen={open.review}
-                onToggle={() => setOpen((p) => ({ ...p, review: !p.review }))}
+                onToggle={() => handleToggle("review")}
               >
                 <div>
                   {items.map((i) => {
@@ -332,7 +355,7 @@ export default function CheckoutPage() {
                           className="py-4 flex items-start gap-4 text-sm "
                         >
                           <img
-                            src={i.image}
+                            src={`${APP_URL}${i.image}`}
                             alt={i.title}
                             className="w-30 h-40 rounded object-cover"
                           />
@@ -447,7 +470,7 @@ export default function CheckoutPage() {
               <Section
                 title="Payment Details"
                 isOpen={open.payment}
-                onToggle={() => setOpen((p) => ({ ...p, payment: !p.payment }))}
+                onToggle={() => handleToggle("payment")}
               >
                 <div className="flex items-start gap-5">
                   <img src="../../public/assets/logos/razorpay-icon.png" alt="" />
@@ -463,7 +486,8 @@ export default function CheckoutPage() {
                 className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={
                   items.length === 0 ||
-                  (currentStep === 1 && !selectedAddress)
+                  (currentStep === 1 && !selectedAddress) ||
+                  !allStepsVisited
                 }
               >
                 Place Order
