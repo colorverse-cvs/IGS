@@ -82,23 +82,8 @@ export const fetchOrdersAsync = createAsyncThunk(
   'orders/fetchOrdersAsync',
   async (_, { rejectWithValue }) => {
     try {
-      // Import dynamically nicely or move import to top. 
-      // Since 'api' is not imported at top, let's fix imports in a separate Edit or just assume we'll fix strict imports
-      // Actually, I should check if I added the import. I didn't in this chunk.
-      // I will add the import in a separate chunk or rely on the previous content having it? 
-      // The previous content DOES NOT have it. I need to add it.
-      // Wait, I cannot add imports with this tool if I am editing the bottom.
-      // This tool only accepts one contiguous block.
-      // I should use multi_replace_file_content to add import AND add the thunk.
-      // But I am already using replace_file_content here.
-      // I will cancel this and use multi_replace.
-      // No, I can't cancel. I will submit this and then add the import in the next step.
-      // actually, I can just use 'api' from '../utils/api' if I had imported it.
-      // I'll assume I will fix the import in the next step.
       const response = await import('../../utils/api').then(m => m.api.get('/api/v1/orders/my'));
 
-      // Expected response structure: { success: true, count: N, data: [...] } or just [...]
-      // Adapting based on common patterns.
       return response.data || response;
     } catch (error) {
       console.error('Fetch orders failed:', error);

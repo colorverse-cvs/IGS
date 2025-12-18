@@ -1,23 +1,6 @@
 import { BASE_URL } from './constants';
 
-/**
- * API Utility - Centralized API Request Handler
- * 
- * This utility provides a consistent way to make API calls with automatic
- * token management. It automatically includes the access token from localStorage
- * in the Authorization header for all requests.
- * 
- * Features:
- * - Automatic token injection from localStorage
- * - Consistent error handling
- * - Support for all HTTP methods (GET, POST, PUT, PATCH, DELETE)
- * - Automatic JSON parsing
- */
 
-/**
- * Get the access token from localStorage
- * @returns {string|null} The access token or null if not found
- */
 export const getAccessToken = () => {
     return localStorage.getItem('token');
 };
@@ -58,16 +41,7 @@ const getAuthHeaders = () => {
     return headers;
 };
 
-/**
- * Make an authenticated API request
- * @param {string} endpoint - API endpoint (e.g., '/api/v1/cart/add')
- * @param {Object} options - Fetch options
- * @param {string} options.method - HTTP method (GET, POST, PUT, PATCH, DELETE)
- * @param {Object} options.body - Request body (will be JSON stringified)
- * @param {Object} options.headers - Additional headers to merge
- * @param {boolean} options.skipAuth - Skip adding Authorization header
- * @returns {Promise<Object>} Parsed JSON response
- */
+
 // Token refresh queue management
 let isRefreshing = false;
 let refreshSubscribers = [];
@@ -159,17 +133,7 @@ const refreshAccessToken = async () => {
     }
 };
 
-/**
- * Make an authenticated API request
- * @param {string} endpoint - API endpoint (e.g., '/api/v1/cart/add')
- * @param {Object} options - Fetch options
- * @param {string} options.method - HTTP method (GET, POST, PUT, PATCH, DELETE)
- * @param {Object} options.body - Request body (will be JSON stringified)
- * @param {Object} options.headers - Additional headers to merge
- * @param {boolean} options.skipAuth - Skip adding Authorization header
- * @param {boolean} options._retry - Internal flag to prevent infinite loops
- * @returns {Promise<Object>} Parsed JSON response
- */
+
 export const apiRequest = async (endpoint, options = {}) => {
     const {
         method = 'GET',
@@ -267,51 +231,20 @@ export const apiRequest = async (endpoint, options = {}) => {
  */
 
 export const api = {
-    /**
-     * GET request
-     * @param {string} endpoint - API endpoint
-     * @param {Object} options - Additional options
-     * @returns {Promise<Object>} Response data
-     */
+
     get: (endpoint, options = {}) =>
         apiRequest(endpoint, { ...options, method: 'GET' }),
 
-    /**
-     * POST request
-     * @param {string} endpoint - API endpoint
-     * @param {Object} body - Request body
-     * @param {Object} options - Additional options
-     * @returns {Promise<Object>} Response data
-     */
+
     post: (endpoint, body, options = {}) =>
         apiRequest(endpoint, { ...options, method: 'POST', body }),
 
-    /**
-     * PUT request
-     * @param {string} endpoint - API endpoint
-     * @param {Object} body - Request body
-     * @param {Object} options - Additional options
-     * @returns {Promise<Object>} Response data
-     */
     put: (endpoint, body, options = {}) =>
         apiRequest(endpoint, { ...options, method: 'PUT', body }),
 
-    /**
-     * PATCH request
-     * @param {string} endpoint - API endpoint
-     * @param {Object} body - Request body
-     * @param {Object} options - Additional options
-     * @returns {Promise<Object>} Response data
-     */
     patch: (endpoint, body, options = {}) =>
         apiRequest(endpoint, { ...options, method: 'PATCH', body }),
 
-    /**
-     * DELETE request
-     * @param {string} endpoint - API endpoint
-     * @param {Object} options - Additional options
-     * @returns {Promise<Object>} Response data
-     */
     delete: (endpoint, options = {}) =>
         apiRequest(endpoint, { ...options, method: 'DELETE' }),
 };

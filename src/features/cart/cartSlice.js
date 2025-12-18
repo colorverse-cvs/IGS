@@ -24,15 +24,6 @@ const loadCartFromStorage = (userId = null) => {
   return [];
 };
 
-// Local storage persistence disabled as per user request
-// const saveCartToStorage = (items, userId = null) => {
-//   try {
-//     const key = getStorageKey(userId);
-//     localStorage.setItem(key, JSON.stringify(items));
-//   } catch (error) {
-//     console.error('Error saving cart to localStorage:', error);
-//   }
-// };
 
 const initialState = {
   items: [], // Start empty, fetch from API
@@ -199,7 +190,7 @@ export const updateCartItemQuantityAsync = createAsyncThunk(
   async ({ productId, quantity }, { dispatch, getState, rejectWithValue }) => {
     try {
       const state = getState();
-      console.log("Updating cart item quantity for product:", productId);
+      // console.log("Updating cart item quantity for product:", productId);
 
       // Find cart item by productId
       const cartItem = state.cart.items.find(i => i.id === productId);
@@ -219,12 +210,12 @@ export const updateCartItemQuantityAsync = createAsyncThunk(
         return { productId, quantity };
       }
 
-      console.log(`Updating Cart Item (ID: ${targetId}) to quantity: ${quantity}`);
+      // console.log(`Updating Cart Item (ID: ${targetId}) to quantity: ${quantity}`);
 
       // Using the centralized API utility - token is automatically included
       const data = await api.patch(`/api/v1/cart/update/${targetId}`, { quantity });
 
-      console.log("Update cart quantity API response:", data);
+      // console.log("Update cart quantity API response:", data);
 
       // Update local state on success
       dispatch(updateQty({ id: productId, qty: quantity }));
@@ -244,7 +235,7 @@ export const removeItemFromCartAsync = createAsyncThunk(
   async (productId, { dispatch, getState, rejectWithValue }) => {
     try {
       const state = getState();
-      console.log('Removing item from cart', productId);
+      // console.log('Removing item from cart', productId);
 
       // Find the item in the cart
       const cartItem = state.cart.items.find(item => item.id === productId);
@@ -263,7 +254,7 @@ export const removeItemFromCartAsync = createAsyncThunk(
         return true;
       }
 
-      console.log(`Removing cart item (ID: ${targetId})`);
+      // console.log(`Removing cart item (ID: ${targetId})`);
 
       // Using the centralized API utility - token is automatically included
       await api.delete(`/api/v1/cart/remove/${targetId}`);
