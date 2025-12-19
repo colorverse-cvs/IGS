@@ -190,8 +190,8 @@ export default function CheckoutPage() {
       // 2️⃣ Razorpay options
       const options = {
         key: data.keyId,
-        amount: data.orderRecord.total,
-        currency: data.orderRecord.currency,
+        amount: data.order.amount,
+        currency: data.order.currency,
         order_id: data.order.paymentDetails.razorpayOrderId,
 
         name: "Ishita Gallery",
