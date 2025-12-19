@@ -458,6 +458,11 @@ export default function ProductInfoPage() {
                   <div className="text-3xl font-bold text-gray-900 mb-2">
                     {title}
                   </div>
+                  {product.description && (
+                    <p className="text-gray-600 mt-2 text-sm max-w-xl">
+                      {product.description}
+                    </p>
+                  )}
                   <div className="flex items-center gap-4 mb-3">
                     <div className="flex items-center text-sm text-gray-600">
                       <span className="mr-1">{rating}</span>

@@ -153,8 +153,38 @@ export default function CheckoutPage() {
 
       console.log("Checkout payload:", payload);
 
-      // 1️⃣ Create order (backend)
-      const data = await api.post("/api/v1/cart/checkout", payload);
+      // 1️⃣ Create order (backend) with manual fetch to handle error statuses manually
+      // Use fetch instead of api.post to get raw response first for error handling
+      const token = localStorage.getItem("token");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
+      const res = await fetch(`${APP_URL}/api/v1/cart/checkout`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Handle Validation Errors (400)
+        if (res.status === 400 && data.message) {
+          let errorMsg = "Invalid details provided.";
+          // User provided structure: { message: { message: ["..."], ... } }
+          if (data.message.message && Array.isArray(data.message.message)) {
+            errorMsg = data.message.message.join(", ");
+          } else if (typeof data.message === "string") {
+            errorMsg = data.message;
+          } else if (data.message.error) {
+            errorMsg = data.message.error;
+          }
+          showPopup("Order Failed", errorMsg);
+          return;
+        }
+        throw new Error(data.message || "Failed to create order");
+      }
+
       console.log("Checkout response:", data);
 
       // 2️⃣ Razorpay options
@@ -203,7 +233,7 @@ export default function CheckoutPage() {
 
     } catch (error) {
       console.error("Failed to place order:", error);
-      showPopup("Order Error", "Failed to place order. Please try again.");
+      showPopup("Order Error", error.message || "Failed to place order. Please try again.");
     }
   };
 

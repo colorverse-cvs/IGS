@@ -416,7 +416,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
   // Verify user exists before opening forgot password modal
   const handleForgotPasswordClick = async () => {
-    const emailToVerify = loginIdentifier || resetEmail;
+    const emailToVerify = (loginIdentifier || resetEmail || "").toLowerCase();
 
     if (!emailToVerify || !emailRegex.test(emailToVerify)) {
       toast.error("Please enter a valid email address");
