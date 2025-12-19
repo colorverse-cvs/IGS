@@ -45,20 +45,27 @@ const ProductCard = ({ product, onOpenProduct }) => {
   );
 
   // Add product to cart with all its details
-  const handleAddToCart = () => {
-    // console.log("Adding to cart:", product);
+  const handleAddToCart = (e) => {
+    if (e && e.stopPropagation) {
+      e.stopPropagation(); // prevent navigating to product page
+    }
+
     if (!isAuthenticated) {
       toast.error("You need to log in first to add this product to your cart.");
       setIsAuthModalOpen(true);
       return;
     }
+
+    // Calculate final selling price to ensure cart matches display
+    const finalPrice = getDiscountedPrice(mrp || price, discount);
+
     dispatch(
       addToCartAsync({
         id: id,
         title: name,
-        price: price,
+        price: finalPrice,
         image: imageURL,
-        mrp: mrp,
+        mrp: mrp || price,
         discount: discount,
         material: material,
         size: size,

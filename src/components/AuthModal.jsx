@@ -451,32 +451,32 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     }
   };
 
-  const handleResetSubmit = async (e) => {
-    e?.preventDefault();
-    setResetStatus("");
-    if (!emailRegex.test(resetEmail) && !mobileRegex.test(resetEmail)) {
-      setResetStatus("Enter a valid email or 10-digit mobile number");
-      return;
-    }
+  // const handleResetSubmit = async (e) => {
+  //   e?.preventDefault();
+  //   setResetStatus("");
+  //   if (!emailRegex.test(resetEmail) && !mobileRegex.test(resetEmail)) {
+  //     setResetStatus("Enter a valid email or 10-digit mobile number");
+  //     return;
+  //   }
 
-    setResetLoading(true);
-    try {
-      const res = await fetch(`${BASE_URL}/api/v1/auth/reset`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier: resetEmail }),
-      });
-      if (res.ok) setResetStatus("If an account exists, a reset link has been sent.");
-      else {
-        const body = await res.json().catch(() => ({}));
-        setResetStatus(body.message || "Unable to send reset link.");
-      }
-    } catch (err) {
-      setResetStatus("Network error. Try again later.");
-    } finally {
-      setResetLoading(false);
-    }
-  };
+  //   setResetLoading(true);
+  //   try {
+  //     const res = await fetch(`${BASE_URL}/api/v1/auth/reset`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ identifier: resetEmail }),
+  //     });
+  //     if (res.ok) setResetStatus("If an account exists, a reset link has been sent.");
+  //     else {
+  //       const body = await res.json().catch(() => ({}));
+  //       setResetStatus(body.message || "Unable to send reset link.");
+  //     }
+  //   } catch (err) {
+  //     setResetStatus("Network error. Try again later.");
+  //   } finally {
+  //     setResetLoading(false);
+  //   }
+  // };
 
   const isLoginValid =
     (emailRegex.test(loginIdentifier) || mobileRegex.test(loginIdentifier)) &&
@@ -771,6 +771,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           token={resetToken}
           onSuccess={() => {
             setResetToken("");
+            setResetOpen(false);
+            setTab("login");
             toast.success("Password reset successfully! Please login with your new password.");
           }}
         />

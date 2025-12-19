@@ -49,11 +49,6 @@ export default function ForgotPassword({ email, token, onSuccess }) {
                 setIsSuccess(true);
                 setNewPassword("");
                 setConfirm("");
-
-                // Call onSuccess callback after a short delay
-                setTimeout(() => {
-                    onSuccess?.();
-                }, 1500);
             }
         } catch (error) {
             setMsg("Network error. Try again later.");
@@ -120,14 +115,16 @@ export default function ForgotPassword({ email, token, onSuccess }) {
             )}
 
             <button
-                onClick={handleSave}
-                disabled={loading || !newPassword || !confirm}
-                className={`w-full py-2.5 rounded text-sm font-semibold transition ${!loading && newPassword && confirm
-                    ? "bg-brand-600 text-white hover:bg-brand-700"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                onClick={isSuccess ? onSuccess : handleSave}
+                disabled={!isSuccess && (loading || !newPassword || !confirm)}
+                className={`w-full py-2.5 rounded text-sm font-semibold transition ${isSuccess
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : (!loading && newPassword && confirm
+                        ? "bg-brand-600 text-white hover:bg-brand-700"
+                        : "bg-gray-200 text-gray-500 cursor-not-allowed")
                     }`}
             >
-                {loading ? "Resetting..." : "Reset Password"}
+                {isSuccess ? "Continue Login" : (loading ? "Resetting..." : "Reset Password")}
             </button>
         </div>
     );

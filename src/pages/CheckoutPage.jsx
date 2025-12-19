@@ -373,7 +373,11 @@ export default function CheckoutPage() {
                           className="py-4 flex items-start gap-4 text-sm "
                         >
                           <img
-                            src={`${APP_URL}${i.image}`}
+                            src={
+                              i.image.startsWith("http")
+                                ? i.image
+                                : `${APP_URL}${i.image}`
+                            }
                             alt={i.title}
                             className="w-30 h-40 rounded object-cover"
                           />
@@ -521,7 +525,7 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="text-sm space-y-2">
                   <div className="flex justify-between">
-                    <span>Price:</span>
+                    <span>Price ({items.length} items):</span>
                     <span>₹{mrpTotal}</span>
                   </div>
                   <div className="flex justify-between text-green-700">
@@ -535,7 +539,7 @@ export default function CheckoutPage() {
 
                   <hr />
                   <div className="flex justify-between font-semibold">
-                    <span>Payable Price:</span>
+                    <span>Total Amount:</span>
                     <span>₹{payable}</span>
                   </div>
                 </div>

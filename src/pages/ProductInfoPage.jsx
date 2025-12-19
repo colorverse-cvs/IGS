@@ -20,6 +20,7 @@ export default function ProductInfoPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const user = useSelector((state) => state.user);
   const cartItems = useSelector((state) => state.cart.items);
 
   const [product, setProduct] = useState(null);
@@ -41,6 +42,55 @@ export default function ProductInfoPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
+
+  const handleCheckDelivery = async (pinOverride) => {
+    const pin = (typeof pinOverride === "string" ? pinOverride : pincode).replace(/\D/g, "");
+
+    if (pin.length !== 6) {
+      setPincodeStatus("invalid");
+      setDeliveryEstimate("");
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const data = await res.json();
+
+      if (!data || data[0].Status !== "Success") {
+        setPincodeStatus("no-service");
+        setDeliveryEstimate("");
+        return;
+      }
+
+      // Calculate delivery ETA
+      const eta = new Date();
+      eta.setDate(eta.getDate() + 5);
+
+      const formatted = eta.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "long",
+      });
+
+      setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
+      setPincodeStatus("ok");
+
+    } catch (error) {
+      console.error("Pincode check failed:", error);
+      setPincodeStatus("no-service");
+      setDeliveryEstimate("");
+    }
+  };
+
+  // Auto-fill pincode from user address
+  useEffect(() => {
+    if (user?.isAuthenticated && user?.profile?.addresses?.length > 0 && !pincode) {
+      const defaultAddr = user.profile.addresses.find((a) => a.isDefault) || user.profile.addresses[0];
+      if (defaultAddr?.postalCode) {
+        setPincode(defaultAddr.postalCode);
+        handleCheckDelivery(defaultAddr.postalCode);
+      }
+    }
+  }, [user?.isAuthenticated, user?.profile?.addresses]);
 
   // Transform API product to expected format
   const transformProduct = (apiProduct) => {
@@ -68,14 +118,19 @@ export default function ProductInfoPage() {
       images = ["https://via.placeholder.com/300"];
     }
 
-    // Get discount percentage - use API discount field if available, otherwise calculate from listPrice and price
-    let discount = "0% Off";
+    // Get discount percentage and calculate selling price
+    let discountStr = "0% Off";
+    const mrp = apiProduct.listPrice || apiProduct.price;
+    let sellingPrice = apiProduct.price;
+
     if (apiProduct.discount && apiProduct.discount > 0) {
-      // Use discount percentage directly from API
-      discount = `${Math.round(apiProduct.discount)}% Off`;
+      // Use discount percentage directly from API to calculate selling price
+      discountStr = `${Math.round(apiProduct.discount)}% Off`;
+      sellingPrice = Math.round(mrp - (mrp * apiProduct.discount / 100));
     } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
       // Calculate discount from listPrice and price
-      discount = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+      discountStr = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+      sellingPrice = apiProduct.price;
     }
 
     // Get category slug
@@ -86,9 +141,9 @@ export default function ProductInfoPage() {
       id: apiProduct._id || apiProduct.id,
       name: apiProduct.name,
       title: apiProduct.name,
-      price: apiProduct.price,
-      mrp: apiProduct.listPrice || apiProduct.price,
-      discount: discount,
+      price: sellingPrice,
+      mrp: mrp,
+      discount: discountStr,
       rating: apiProduct.rating || 4.5,
       reviews: apiProduct.reviews || 0,
       isFeatured: apiProduct.isFeatured || false,
@@ -170,6 +225,8 @@ export default function ProductInfoPage() {
     };
   }, [id]);
 
+
+
   if (loading) {
     return (
       <div className="text-center mt-10 text-gray-500">
@@ -204,43 +261,7 @@ export default function ProductInfoPage() {
 
   const currentImage = productImages[selectedImageIndex];
 
-  const handleCheckDelivery = async () => {
-    const pin = pincode.replace(/\D/g, "");
 
-    if (pin.length !== 6) {
-      setPincodeStatus("invalid");
-      setDeliveryEstimate("");
-      return;
-    }
-
-    try {
-      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
-      const data = await res.json();
-
-      if (!data || data[0].Status !== "Success") {
-        setPincodeStatus("no-service");
-        setDeliveryEstimate("");
-        return;
-      }
-
-      // Calculate delivery ETA
-      const eta = new Date();
-      eta.setDate(eta.getDate() + 5);
-
-      const formatted = eta.toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "long",
-      });
-
-      setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
-      setPincodeStatus("ok");
-
-    } catch (error) {
-      console.error("Pincode check failed:", error);
-      setPincodeStatus("no-service");
-      setDeliveryEstimate("");
-    }
-  };
 
 
   const handleThumbnailClick = (index) => {
