@@ -3,6 +3,7 @@ import cartReducer from '../features/cart/cartSlice';
 import productReducer from '../features/products/productSlice';
 import userReducer from '../features/user/userSlice';
 import ordersReducer from '../features/orders/ordersSlice';
+import adminReducer from '../admin/store/adminSlice';
 
 /**
  * Redux Store Configuration
@@ -27,6 +28,7 @@ const store = configureStore({
     products: productReducer,
     user: userReducer,
     orders: ordersReducer,
+    admin: adminReducer,
   }
 });
 

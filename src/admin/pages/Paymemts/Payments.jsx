@@ -1,4 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllPaymentsAsync, selectAdminPayments } from "../../store/adminSlice";
 import PaymentDetailCard from "./components/PaymentDetailCard";
 import PaymentDetailTable from "./components/PaymentDetailTable";
 import Dropdown from "../../../components/Dropdown";
@@ -18,61 +20,36 @@ const paymentStatus = [
   "Refunded"
 ];
 
-const paymentData = [
-  {
-    transactionID: "TXN-78945",
-    orderID: "ORD-1247",
-    date: "Nov 15 2024",
-    amount: 5222,
-    method: "UPI",
-    gateway: "Razorpay",
-    status: "Success"
-  },
-  {
-    transactionID: "TXN-78944",
-    orderID: "ORD-1246",
-    date: "Nov 15 2024",
-    amount: 5222,
-    method: "Debit Card",
-    gateway: "Paytm",
-    status: "Success"
-  },
-  {
-    transactionID: "TXN-78943",
-    orderID: "ORD-1245",
-    date: "Nov 15 2024",
-    amount: 5222,
-    method: "COD",
-    gateway: "PhonePe",
-    status: "Pending"
-  },
-  {
-    transactionID: "TXN-78942",
-    orderID: "ORD-1245",
-    date: "Nov 15 2024",
-    amount: 5222,
-    method: "Debit Card",
-    gateway: "Paytm",
-    status: "Success"
-  },
-  {
-    transactionID: "TXN-78941",
-    orderID: "ORD-1244",
-    date: "Nov 15 2024",
-    amount: 5222,
-    method: "Debit Card",
-    gateway: "Paytm",
-    status: "Pending"
-  }
-];
-
 export default function Payments() {
+  const dispatch = useDispatch();
+  const payments = useSelector(selectAdminPayments);
+  const hasFetched = useRef(false);
+
   const [categoryValue, setCategoryValue] = useState("All Gateway");
   const [statusValue, setStatusValue] = useState("All Status");
   const [searchTerm, setSearchTerm] = useState("");
 
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    dispatch(fetchAllPaymentsAsync());
+  }, [dispatch]);
+
   const filteredPayments = useMemo(() => {
-    let data = paymentData;
+    // Map API data to UI structure
+    // Assuming API structure. Adjust property accessors based on actual API response.
+    // Fallback values provided to prevent crashes.
+    const mappedData = (payments || []).map(payment => ({
+      transactionID: payment.razorpayPaymentId || payment.transactionID || payment._id || "N/A",
+      orderID: payment.razorpayOrderId || payment.orderID || "N/A",
+      date: payment.createdAt ? new Date(payment.createdAt).toLocaleDateString() : "N/A",
+      amount: payment.amount ? (payment.amount / 100) : 0, // Assuming amount is in paise like orders
+      method: payment.method || "N/A",
+      gateway: "Razorpay", // Default or extract from payment.id prefix
+      status: payment.status || "Pending" // e.g. "captured", "failed"
+    }));
+
+    let data = mappedData;
 
     // Gateway filter
     if (categoryValue !== "All Gateway") {
@@ -81,20 +58,22 @@ export default function Payments() {
 
     // Status filter
     if (statusValue !== "All Status") {
-      data = data.filter(payment => payment.status === statusValue);
+      data = data.filter(payment =>
+        String(payment.status).toLowerCase() === String(statusValue).toLowerCase()
+      );
     }
 
     // Search filter (Transaction ID OR Order ID)
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
       data = data.filter(payment =>
-        payment.transactionID.toLowerCase().includes(search) ||
-        payment.orderID.toLowerCase().includes(search)
+        String(payment.transactionID).toLowerCase().includes(search) ||
+        String(payment.orderID).toLowerCase().includes(search)
       );
     }
 
     return data;
-  }, [categoryValue, statusValue, searchTerm]);
+  }, [categoryValue, statusValue, searchTerm, payments]);
 
   return (
     <>

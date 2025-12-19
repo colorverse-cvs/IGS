@@ -1,34 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllOrdersAsync, selectAdminOrders, selectAdminLoading } from "../../store/adminSlice";
 import { FaRegEye } from "react-icons/fa";
 import { AiFillPrinter } from "react-icons/ai";
 
 import Dropdown from "../../../components/Dropdown";
 import ViewCurrentOrder from "./components/ViewCurrentOrder";
-
-const orders = [
-  {
-    id: "ORD-1247",
-    status: "Pending Paid",
-    statusColor: "bg-orange-100 text-orange-600",
-    customer: "Priya Sharma",
-    mobileNumber: "+91 98765 43210",
-    items: "Teddy Bear(small), Greeting Card",
-    amount: "₹850",
-    date: "Nov 18, 2025",
-    address : "456, Indiranagar, Bangalore - 560038"
-  },
-  {
-    id: "ORD-1246",
-    status: "Packed",
-    statusColor: "bg-blue-100 text-blue-600",
-    customer: "Arjun Patel",
-    mobileNumber: "+91 98765 43210",
-    items: "Photo Frame",
-    amount: "₹450",
-    date: "Nov 18, 2025",
-    address : "456, Indiranagar, Bangalore - 560038"
-  }
-];
 
 const orderStatusValue = [
   "All Orders",
@@ -40,24 +17,70 @@ const orderStatusValue = [
 ]
 
 export default function Orders() {
+  const dispatch = useDispatch();
+  const orders = useSelector(selectAdminOrders);
+  const loading = useSelector(selectAdminLoading);
+  const hasFetched = useRef(false);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Orders");
-  const [filteredOrders, setFilteredOrders] = useState(orders);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOpenViewOrderModal, setIsOpenViewOrderModal] = useState(false);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    dispatch(fetchAllOrdersAsync());
+  }, [dispatch]);
+
+  // Transform and filter orders
+  useEffect(() => {
+    if (!orders) return;
+
     const timer = setTimeout(() => {
-      let result = orders.filter((order) => {
+      // Map API data to UI format
+      const mappedOrders = orders.map(order => {
+        const user = order.user || {};
+        const profile = user.profile || {};
+        const items = order.items || [];
+
+        // Calculate items summary
+        const itemsSummary = items.map(item =>
+          `${item.product?.name || 'Unknown Product'} (x${item.quantity})`
+        ).join(", ");
+
+        // Amount: Access total directly. If it seems to be in paise (e.g. > 100x expected), divide by 100.
+        // Based on the provided JSON: price=2000, total=200000. So total is in paise.
+        const amountValue = order.total ? (order.total / 100) : 0;
+
+        return {
+          ...order,
+          id: order._id || "N/A",
+          customer: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || "Guest",
+          mobileNumber: profile.mobile || user.mobile || "N/A",
+          items: itemsSummary || "No items",
+          amount: `₹${amountValue}`,
+          date: new Date(order.createdAt).toLocaleDateString("en-IN", {
+            year: 'numeric', month: 'short', day: 'numeric'
+          }),
+          status: order.status || "Pending",
+          statusColor: getStatusColor(order.status),
+          // Address might be missing in some API responses dependent on backend implementation of snapshotting
+          address: "Address details not available in summary"
+        };
+      });
+
+      let result = mappedOrders.filter((order) => {
         const textMatch =
-          order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          order.items.toLowerCase().includes(searchTerm.toLowerCase());
+          String(order.id).toLowerCase().includes(searchTerm.toLowerCase()) ||
+          String(order.customer).toLowerCase().includes(searchTerm.toLowerCase()) ||
+          String(order.items).toLowerCase().includes(searchTerm.toLowerCase());
 
         const statusMatch =
           statusFilter === "All Orders"
             ? true
-            : order.status.toLowerCase().includes(statusFilter.toLowerCase());
+            : String(order.status).toLowerCase() === statusFilter.toLowerCase(); // Exact match might be safer for status
 
         return textMatch && statusMatch;
       });
@@ -66,7 +89,18 @@ export default function Orders() {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, statusFilter]);
+  }, [searchTerm, statusFilter, orders]);
+
+  function getStatusColor(status) {
+    switch (String(status).toLowerCase()) {
+      case 'pending': return "bg-orange-100 text-orange-600";
+      case 'packed': return "bg-blue-100 text-blue-600";
+      case 'shipped': return "bg-indigo-100 text-indigo-600";
+      case 'delivered': return "bg-green-100 text-green-600";
+      case 'cancelled': return "bg-red-100 text-red-600";
+      default: return "bg-gray-100 text-gray-600";
+    }
+  }
 
   function handleOpenViewOrderModal(order) {
     setSelectedOrder(order);
@@ -107,11 +141,15 @@ export default function Orders() {
 
         {/* ORDER LIST */}
         <div className="space-y-4">
-          {filteredOrders.length === 0 && (
+          {loading && (
+            <p className="text-sm text-gray-500 text-center">Loading orders...</p>
+          )}
+
+          {!loading && filteredOrders.length === 0 && (
             <p className="text-sm text-gray-500 text-center">No orders found</p>
           )}
 
-          {filteredOrders.map((order) => (
+          {!loading && filteredOrders.map((order) => (
             <div
               key={order.id}
               className="border border-gray-100 rounded-xl p-4 bg-white shadow-sm"
@@ -173,5 +211,3 @@ export default function Orders() {
     </>
   );
 }
-
-
