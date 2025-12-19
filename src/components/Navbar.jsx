@@ -20,7 +20,7 @@ import Dropdown from "./Dropdown";
 import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
 import categoriesData from "../data/categories.json";
 import { logoutAsync, fetchUserProfileAsync } from "../features/user/userSlice";
-import { clearCart } from "../features/cart/cartSlice";
+import { initializeCart, clearCart } from "../features/cart/cartSlice";
 import { useAdminPanel } from "../contexts/AdminPanelContext";
 
 
@@ -119,7 +119,7 @@ export default function Navbar() {
         label: "Your Orders",
         path: "/orders",
       },
-      { to: "/cart", label: "Saved Items", path: "/cart" },
+      { to: "/cart", label: "Wishlist", path: "/cart" },
     ],
     []
   );
@@ -267,13 +267,13 @@ export default function Navbar() {
             <div className="hidden lg:flex lg:items-center lg:gap-1">
               {navLinks.map((link) =>
                 link.isDropdown ? (
-                  <div key={link.name} className="relative">
+                  <div key={link.name} className="relative cursor-pointer">
                     <Dropdown
                       isOpen={isProductsDropdownOpen}
                       onToggle={setIsProductsDropdownOpen}
                       align="left"
                       trigger={(isOpen) => (
-                        <button className="text-gray-700 hover:text-purple-700 lg:px-3 lg:py-3 text-sm font-medium transition flex items-center gap-1">
+                        <button className="text-gray-700 hover:text-purple-700 lg:px-3 lg:py-3 text-sm font-medium transition flex items-center gap-1 cursor-pointer">
                           {link.name}
                           <ChevronDown
                             size={16}
@@ -288,7 +288,7 @@ export default function Navbar() {
                           key={pLink.id}
                           type="button"
                           onClick={() => handleProductLinkClick(pLink)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
+                          className="cursor-pointer block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
                         >
                           {pLink.name}
                         </button>
@@ -317,30 +317,30 @@ export default function Navbar() {
                 <Search size={20} />
               </button>
 
-              <button
-                onClick={toggleCart}
-                className="p-2 transition relative"
-                aria-label={`Open shopping cart with ${totalItems} items`}
-              >
-                <ShoppingCart size={20} />
-                {totalItems > 0 && (
-                  <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-brand-600 rounded-circle min-w-4 h-4">
-                    {totalItems > 99 ? "99+" : totalItems}
-                  </span>
-                )}
-              </button>
+              {/* Cart Icon - Only show when logged in */}
+              {user.isAuthenticated && (
+                <button
+                  onClick={toggleCart}
+                  className="p-2 transition relative cursor-pointer"
+                  aria-label={`Open shopping cart with ${totalItems} items`}
+                >
+                  <ShoppingCart size={20} />
+                  {totalItems > 0 && (
+                    <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-brand-600 rounded-circle min-w-4 h-4 cursor-pointer">
+                      {totalItems > 99 ? "99+" : totalItems}
+                    </span>
+                  )}
+                </button>
+              )}
 
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={(val) => {
-                    setIsProfileDropdownOpen(val);
-                    if (val) dispatch(fetchUserProfileAsync());
-                  }}
+                  onToggle={setIsProfileDropdownOpen}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="flex items-center gap-2 px-3 py-2 transition">
-                      <span className="flex flex-col items-start text-gray-700">
+                      <span className="flex flex-col items-start text-gray-700 cursor-pointer">
                         <span className="text-xs font-medium">Hey,</span>
                         <span className="flex items-center gap-1 !text-sm !font-semibold">
                           {user.profile.name}
@@ -388,7 +388,7 @@ export default function Navbar() {
                     type="button"
                     onClick={() => {
                       dispatch(logoutAsync());
-                      dispatch(clearCart());
+                      dispatch(initializeCart(null));
                       navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
@@ -471,16 +471,13 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={(val) => {
-                    setIsProfileDropdownOpen(val);
-                    if (val) dispatch(fetchUserProfileAsync());
-                  }}
+                  onToggle={setIsProfileDropdownOpen}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="flex items-center gap-2 px-3 py-2 transition">
-                      <span className="flex flex-col items-start text-gray-700">
+                      <span className="flex flex-col items-start text-gray-700 cursor-pointer">
                         <span className="text-xs font-medium">Hey,</span>
-                        <span className="flex items-center gap-1 !text-sm !font-semibold">
+                        <span className="cursor-pointer flex items-center gap-1 !text-sm !font-semibold">
                           {user.profile.name}
                           <ChevronDown
                             size={16}
@@ -523,7 +520,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       dispatch(logoutAsync());
-                      dispatch(clearCart());
+                      // dispatch(clearCart()); // Commented out - preserve cart on logout
                       navigate("/");
                       setIsProfileDropdownOpen(false);
                       toast("User Signed Out", {
@@ -570,10 +567,7 @@ export default function Navbar() {
               {user.isAuthenticated ? (
                 <Dropdown
                   isOpen={isProfileDropdownOpen}
-                  onToggle={(val) => {
-                    setIsProfileDropdownOpen(val);
-                    if (val) dispatch(fetchUserProfileAsync());
-                  }}
+                  onToggle={setIsProfileDropdownOpen}
                   align="right"
                   trigger={(isOpen) => (
                     <button className="p-2 rounded-lg hover:bg-gray-100 transition">
@@ -612,6 +606,7 @@ export default function Navbar() {
                   <button
                     onClick={() => {
                       dispatch(logoutAsync());
+                      dispatch(initializeCart(null));
                       dispatch(clearCart());
                       navigate("/");
                       setIsProfileDropdownOpen(false);
@@ -728,21 +723,26 @@ export default function Navbar() {
               </Link>
 
               {/* Cart */}
-              <button
-                onClick={toggleCart}
-                className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
-                aria-label={`Cart with ${totalItems} items`}
-              >
-                <div className="relative">
-                  <ShoppingCart size={24} />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
-                      {totalItems > 99 ? "99+" : totalItems}
-                    </span>
-                  )}
-                </div>
-                <span className="text-xs mt-1 font-medium">Cart</span>
-              </button>
+
+              {user.isAuthenticated && (
+                <button
+                  onClick={toggleCart}
+                  className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
+                  aria-label={`Cart with ${totalItems} items`}
+                >
+                  <div className="relative">
+                    <ShoppingCart size={24} />
+                    {totalItems > 0 && (
+                      <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
+                        {totalItems > 99 ? "99+" : totalItems}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs mt-1 font-medium">Cart</span>
+                </button>
+              )}
+
+
 
               {/* Menu */}
               <button

@@ -1,27 +1,6 @@
 import { createSlice, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { BASE_URL } from '../../utils/constants';
 
-/**
- * User Slice - Redux Toolkit State Management with localStorage Persistence
- * 
- * This file manages user authentication and profile data using Redux Toolkit.
- * User data is persisted to localStorage so it remains after browser refresh.
- * 
- * How localStorage works here:
- * 1. loadState() - Reads user data from localStorage when app starts
- * 2. saveState() - Saves user data to localStorage whenever state changes
- * 3. Key used: 'igs_user' - You can see this in browser DevTools > Application > Local Storage
- * 
- * For beginners:
- * - localStorage stores data in the browser (survives page refresh)
- * - Data is stored as JSON strings, so we use JSON.parse() and JSON.stringify()
- * - Redux Toolkit handles state updates, then we save to localStorage
- */
-
-/**
- * Load user state from localStorage
- * Returns null if no data exists or if there's an error
- */
 const loadState = () => {
   if (typeof window === 'undefined') return null;
   try {
@@ -59,6 +38,8 @@ const initialState = loadState() || {
   profile: {
     id: null,
     name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     mobile: '',
     gender: '',
@@ -71,11 +52,6 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    /**
-     * Log in an existing user
-     * Updates authentication status and user profile
-     * Saves to localStorage automatically
-     */
     login(state, action) {
       const { name, email, mobile, token, refreshToken, id } = action.payload || {};
       state.isAuthenticated = true;
@@ -191,10 +167,27 @@ const userSlice = createSlice({
       state.profile = { ...state.profile, ...action.payload };
       saveState(state);
     },
+
+    /**
+     * Update tokens after refresh
+     * Called when the API client refreshes tokens
+     */
+    updateTokens(state, action) {
+      const { token, refreshToken } = action.payload;
+      if (token) {
+        state.token = token;
+        localStorage.setItem('token', token);
+      }
+      if (refreshToken) {
+        state.refreshToken = refreshToken;
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+      saveState(state);
+    },
   },
 });
 
-export const { login, signup, logout, addOrUpdateAddress, setDefaultAddress, removeAddress, updateProfile } = userSlice.actions;
+export const { login, signup, logout, addOrUpdateAddress, setDefaultAddress, removeAddress, updateProfile, updateTokens } = userSlice.actions;
 
 /**
  * Async Thunks
@@ -208,11 +201,8 @@ export const fetchUserProfileAsync = createAsyncThunk(
       const userId = state.user.profile.id;
 
       if (!token) {
-        console.log('No token found, skipping profile fetch');
         return rejectWithValue('No authentication token');
       }
-
-      console.log('Fetching user profile...', { userId, hasToken: !!token });
 
       const response = await fetch(`${BASE_URL}/api/v1/users/profile`, {
         method: 'GET',
@@ -229,21 +219,92 @@ export const fetchUserProfileAsync = createAsyncThunk(
       }
 
       const data = await response.json();
-      console.log('User profile fetched successfully:', data);
+
+      // Extract data from new API structure
+      const apiData = data.data || data;
+      const fullName = `${apiData.firstName || ''} ${apiData.lastName || ''}`.trim();
 
       // Update profile with fetched data
       dispatch(userSlice.actions.updateProfile({
-        id: data._id || data.id || userId,
-        name: data.name || data.fullName || '',
-        email: data.email || '',
-        mobile: data.mobile || data.phone || '',
-        gender: data.gender || '',
-        dob: data.dob || data.dateOfBirth || ''
+        id: apiData._id || apiData.id || userId,
+        name: fullName || apiData.profile?.displayName || '',
+        firstName: apiData.firstName || '',
+        lastName: apiData.lastName || '',
+        email: apiData.email || '',
+        mobile: apiData.profile?.mobile || apiData.mobile || '',
+        gender: apiData.profile?.gender || apiData.gender || '',
+        dob: apiData.profile?.dob || apiData.dob || '',
+        addresses: apiData.addresses || []
       }));
 
       return data;
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateProfileAsync = createAsyncThunk(
+  'user/updateProfileAsync',
+  async (profileData, { dispatch, getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
+      const userId = state.user.profile.id;
+
+      if (!token || !userId) {
+        return rejectWithValue('Missing authentication token or user ID');
+      }
+
+      // Split name into firstName and lastName
+      const nameParts = (profileData.name || '').trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Prepare payload matching API structure
+      const payload = {
+        firstName,
+        lastName,
+        profile: {
+          mobile: profileData.mobile || '',
+          gender: profileData.gender || '',
+          dob: profileData.dob || ''
+        }
+      };
+
+      const response = await fetch(`${BASE_URL}/api/v1/users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Failed to update user profile:', errorData);
+        return rejectWithValue(errorData.message || 'Failed to update profile');
+      }
+
+      const data = await response.json();
+      const apiData = data.data || data;
+      const fullName = `${apiData.firstName || ''} ${apiData.lastName || ''}`.trim();
+
+      // Update local state with new data
+      dispatch(userSlice.actions.updateProfile({
+        name: fullName || apiData.profile?.displayName || '',
+        firstName: apiData.firstName || '',
+        lastName: apiData.lastName || '',
+        mobile: apiData.profile?.mobile || apiData.mobile || '',
+        gender: apiData.profile?.gender || apiData.gender || '',
+        dob: apiData.profile?.dob || apiData.dob || ''
+      }));
+
+      return data;
+    } catch (error) {
+      console.error('Error updating user profile:', error);
       return rejectWithValue(error.message);
     }
   }
@@ -258,10 +319,7 @@ export const logoutAsync = createAsyncThunk(
       const refreshToken = state.user.refreshToken;
       const userId = state.user.profile.id;
 
-      console.log('Logout initiated', { token, refreshToken, userId });
-
       if (token && refreshToken && userId) {
-        console.log('Calling logout API...');
         const response = await fetch(`${BASE_URL}/api/v1/auth/logout`, {
           method: 'POST',
           headers: {
@@ -270,9 +328,6 @@ export const logoutAsync = createAsyncThunk(
           },
           body: JSON.stringify({ userId, refreshToken })
         });
-        console.log('Logout API response status:', response.status);
-      } else {
-        console.log('Skipping Logout API: Missing credentials');
       }
     } catch (error) {
       console.error('Logout API failed:', error);
@@ -285,26 +340,46 @@ export const logoutAsync = createAsyncThunk(
 export const fetchAddressesAsync = createAsyncThunk(
   'user/fetchAddressesAsync',
   async (userId, { dispatch, getState }) => {
+
     try {
       const state = getState();
       const token = state.user.token;
-      if (!userId) return;
+      if (!userId) {
+        console.error('[fetchAddressesAsync] Missing userId');
+        return;
+      }
 
       const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const json = await response.json();
-      if (response.ok) {
-        // Handle various response structures: array, {data: []}, {addresses: []}
-        const addresses = Array.isArray(json)
-          ? json
-          : (json.data || json.addresses || []);
 
-        dispatch(userSlice.actions.updateProfile({ addresses }));
+      if (response.ok) {
+        // API returns array of address IDs in data field
+        const addressIds = json.data || [];
+
+        if (!Array.isArray(addressIds) || addressIds.length === 0) {
+          dispatch(userSlice.actions.updateProfile({ addresses: [] }));
+          return;
+        }
+
+        // Fetch each address individually
+        // const addressPromises = addressIds.map(addressId =>
+        //   fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
+        //     headers: { Authorization: `Bearer ${token}` },
+        //   }).then(res => res.json())
+        // );
+
+        // const addressResponses = await Promise.all(addressPromises);
+
+        // Extract address data from responses
+        // const addresses = addressResponses.map(res => res.data || res).filter(Boolean);
+
+        // dispatch(userSlice.actions.updateProfile({ addresses }));
       }
     } catch (err) {
-      console.error("Failed to fetch addresses", err);
+      console.error('[fetchAddressesAsync] Error fetching addresses', err);
     }
   }
 );
@@ -316,7 +391,11 @@ export const addAddressAsync = createAsyncThunk(
       const state = getState();
       const token = state.user.token;
       const userId = state.user.profile.id;
-      if (!token || !userId) return;
+
+      if (!token || !userId) {
+        console.error('[addAddressAsync] Missing token or userId', { token: !!token, userId });
+        return;
+      }
 
       const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses`, {
         method: 'POST',
@@ -328,14 +407,17 @@ export const addAddressAsync = createAsyncThunk(
       });
 
       const json = await response.json();
+
       if (response.ok) {
-        // Refresh addresses list
-        dispatch(fetchAddressesAsync(userId));
-      } else {
-        console.error("Failed to add address", json);
+        // Store the full address object (including _id) in Redux
+        const newAddress = json.data || json;
+        const currentAddresses = state.user.profile.addresses || [];
+        const updatedAddresses = [...currentAddresses, newAddress];
+
+        dispatch(userSlice.actions.updateProfile({ addresses: updatedAddresses }));
       }
     } catch (err) {
-      console.error("Error adding address", err);
+      console.error('[addAddressAsync] Error adding address', err);
     }
   }
 );
@@ -347,7 +429,11 @@ export const updateAddressAsync = createAsyncThunk(
       const state = getState();
       const token = state.user.token;
       const userId = state.user.profile.id;
-      if (!token || !userId || !addressId) return;
+
+      if (!token || !userId || !addressId) {
+        console.error('[updateAddressAsync] Missing required data', { token: !!token, userId, addressId });
+        return;
+      }
 
       const { addressLine, id, ...payload } = addressData;
       const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
@@ -359,15 +445,22 @@ export const updateAddressAsync = createAsyncThunk(
         body: JSON.stringify(payload)
       });
 
+      const json = await response.json().catch(() => ({}));
+
       if (response.ok) {
-        // Refresh addresses list
-        dispatch(fetchAddressesAsync(userId));
-      } else {
-        const json = await response.json();
-        console.error("Failed to update address", json);
+        // Update the address in local state
+        const updatedAddressData = json.data || json;
+        const currentAddresses = state.user.profile.addresses || [];
+        const updatedAddresses = currentAddresses.map(addr =>
+          (addr._id === addressId || addr.id === addressId)
+            ? { ...addr, ...updatedAddressData, _id: addressId }
+            : addr
+        );
+
+        dispatch(userSlice.actions.updateProfile({ addresses: updatedAddresses }));
       }
     } catch (err) {
-      console.error("Error updating address", err);
+      console.error('[updateAddressAsync] Error updating address', err);
     }
   }
 );
@@ -379,8 +472,12 @@ export const removeAddressAsync = createAsyncThunk(
       const state = getState();
       const token = state.user.token;
       const userId = state.user.profile.id;
-      if (!token || !userId || !addressId) return;
-      console.log("Removing address", { token, userId, addressId });
+
+      if (!token || !userId || !addressId) {
+        console.error('[removeAddressAsync] Missing required data', { token: !!token, userId, addressId });
+        return;
+      }
+
       const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
         method: 'DELETE',
         headers: {
@@ -388,15 +485,19 @@ export const removeAddressAsync = createAsyncThunk(
         }
       });
 
+      const json = await response.json().catch(() => ({}));
+
       if (response.ok) {
-        // Refresh addresses list
-        dispatch(fetchAddressesAsync(userId));
-      } else {
-        const json = await response.json();
-        console.error("Failed to remove address", json);
+        // Remove the address from local state
+        const currentAddresses = state.user.profile.addresses || [];
+        const updatedAddresses = currentAddresses.filter(addr =>
+          addr._id !== addressId && addr.id !== addressId
+        );
+
+        dispatch(userSlice.actions.updateProfile({ addresses: updatedAddresses }));
       }
     } catch (err) {
-      console.error("Error removing address", err);
+      console.error('[removeAddressAsync] Error removing address', err);
     }
   }
 );
@@ -408,7 +509,10 @@ export const setDefaultAddressAsync = createAsyncThunk(
       const state = getState();
       const token = state.user.token;
       const userId = state.user.profile.id;
-      if (!token || !userId || !addressId) return;
+
+      if (!token || !userId || !addressId) {
+        return;
+      }
 
       const response = await fetch(`${BASE_URL}/api/v1/users/${userId}/addresses/${addressId}`, {
         method: 'PATCH',
@@ -419,17 +523,29 @@ export const setDefaultAddressAsync = createAsyncThunk(
         body: JSON.stringify({ isDefault: true })
       });
 
+      const json = await response.json().catch(() => ({}));
+
       if (response.ok) {
-        // Refresh addresses list
-        dispatch(fetchAddressesAsync(userId));
-      } else {
-        const json = await response.json();
-        console.error("Failed to set default address", json);
+        // Update isDefault flag in local state
+        const currentAddresses = state.user.profile.addresses || [];
+        const updatedAddresses = currentAddresses.map(addr => ({
+          ...addr,
+          isDefault: (addr._id === addressId || addr.id === addressId)
+        }));
+
+        dispatch(userSlice.actions.updateProfile({ addresses: updatedAddresses }));
       }
     } catch (err) {
-      console.error("Error setting default address", err);
+      console.error('[setDefaultAddressAsync] Error setting default address', err);
     }
   }
 );
 
 export default userSlice.reducer;
+
+// Set up event listeners for token refresh (will be connected in App.jsx)
+if (typeof window !== 'undefined') {
+  // These events are dispatched by apiClient.js
+  // The actual dispatch will be handled in App.jsx where we have access to the store
+  console.log('[UserSlice] Token refresh event listeners ready');
+}

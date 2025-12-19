@@ -1,4 +1,4 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice, nanoid, createAsyncThunk } from '@reduxjs/toolkit';
 
 /**
  * Orders Slice - Redux Toolkit State Management with localStorage Persistence
@@ -21,41 +21,16 @@ import { createSlice, nanoid } from '@reduxjs/toolkit';
  * Load orders from localStorage
  * Returns empty array if no data exists or if there's an error
  */
-const loadOrders = () => {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem('igs_orders');
-    return raw ? JSON.parse(raw) : [];
-  } catch (error) {
-    console.error('Error loading orders from localStorage:', error);
-    return [];
-  }
-};
-
-/**
- * Save orders array to localStorage
- * Converts the orders array to JSON string before saving
- */
-const saveOrders = (orders) => {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem('igs_orders', JSON.stringify(orders));
-  } catch (error) {
-    console.error('Error saving orders to localStorage:', error);
-  }
-};
-
 const ordersSlice = createSlice({
   name: 'orders',
   initialState: {
-    orders: loadOrders(),
+    orders: [],
   },
   reducers: {
     /**
      * Add a new order to the orders list
      * Creates a unique order ID if one isn't provided
      * Orders are added to the beginning of the array (most recent first)
-     * Saves to localStorage automatically
      */
     addOrder(state, action) {
       const order = {
@@ -64,43 +39,56 @@ const ordersSlice = createSlice({
         ...action.payload,
       };
       state.orders.unshift(order);
-      saveOrders(state.orders);
     },
-    
+
     /**
      * Update the status of an existing order
      * Status values: 'placed', 'processing', 'delivered', 'cancelled'
-     * Saves to localStorage automatically
      */
     updateOrderStatus(state, action) {
       const { id, status } = action.payload || {};
       const order = state.orders.find((x) => x.id === id);
       if (order) {
         order.status = status;
-        saveOrders(state.orders);
       }
     },
-    
+
     /**
      * Replace the entire orders array
      * Useful for syncing with server or bulk updates
-     * Saves to localStorage automatically
      */
     replaceOrders(state, action) {
       state.orders = Array.isArray(action.payload) ? action.payload : [];
-      saveOrders(state.orders);
     },
-    
+
     /**
      * Clear all orders from the history
-     * Saves to localStorage automatically
      */
     clearOrders(state) {
       state.orders = [];
-      saveOrders(state.orders);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchOrdersAsync.fulfilled, (state, action) => {
+        state.orders = action.payload;
+      });
   },
 });
 
 export const { addOrder, replaceOrders, clearOrders, updateOrderStatus } = ordersSlice.actions;
+
+export const fetchOrdersAsync = createAsyncThunk(
+  'orders/fetchOrdersAsync',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await import('../../utils/api').then(m => m.api.get('/api/v1/orders/my'));
+
+      return response.data || response;
+    } catch (error) {
+      console.error('Fetch orders failed:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
 export default ordersSlice.reducer;

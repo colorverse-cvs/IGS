@@ -58,7 +58,7 @@ export default function CustomSearchDropdown({
                 disabled={disabled}
                 onClick={() => setOpen((v) => !v)}
                 className={`w-full flex items-center justify-between bg-white border rounded px-3 py-2 text-sm
-                ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+                ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                 border-gray-300`}
             >
                 <span className="truncate">

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { updateOrderStatus } from "../features/orders/ordersSlice";
+import { updateOrderStatus, fetchOrdersAsync } from "../features/orders/ordersSlice";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
 /**
@@ -32,6 +32,10 @@ export default function OrdersPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const allOrders = useSelector((s) => s.orders.orders);
+
+  useEffect(() => {
+    dispatch(fetchOrdersAsync());
+  }, [dispatch]);
 
   const [activeTab, setActiveTab] = React.useState("orders"); // 'orders' | 'current' | 'previous'
   const [query, setQuery] = React.useState("");
@@ -181,7 +185,7 @@ export default function OrdersPage() {
           </div>
           <div>
             <input
-              className="border rounded px-3 py-1 text-sm min-w-[220px]"
+              className="border rounded px-3 py-1 text-sm min-w-[220px] focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder="Search an order"
               value={query}
               onChange={(e) => setQuery(e.target.value)}

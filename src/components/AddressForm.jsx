@@ -85,10 +85,9 @@ export default function AddressForm({
       .join(", ");
 
     const newAddress = {
-      id: initial?.id || `addr_${Date.now()}`,
       tag: alias.trim() || "Home",
       addressLine,
-      mobile: `+91 ${mobileDigits}`,
+      mobile: `${mobileDigits}`,
       isDefault: makeDefault,
       // Granular fields for API
       line1: flat,
@@ -97,46 +96,68 @@ export default function AddressForm({
       state,
       postalCode: pincode,
       country: "India",
-      phone: `+91${mobileDigits}`,
+      phone: `${mobileDigits}`,
     };
+
+    // If editing, preserve the existing ID
+    if (initial?.id) {
+      newAddress.id = initial.id;
+    }
+    if (initial?._id) {
+      newAddress._id = initial._id;
+    }
+
     onSubmit?.(newAddress);
   };
 
   const handleMobileChange = (e) => {
     let val = e.target.value;
-    val = val.replace(/^(\+?91)/, "");
+    val = val.replace(/^(\+91|91)/, "");
     val = val.replace(/\D/g, "");
     val = val.slice(0, 10);
     setMobile(val);
   };
 
-  const handlePincodeBlur = async () => {
-    if (pincode.length !== 6) {
-      setErrors({ ...errors, pincode: "Pincode must be 6 digits" });
-      return;
-    }
-
-    try {
-      const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
-      const data = await res.json();
-
-      if (!data || data[0].Status !== "Success") {
-        setErrors({ ...errors, pincode: "Invalid Pincode" });
+  // Debounce Pincode Change
+  React.useEffect(() => {
+    const validateAndFetchPincode = async () => {
+      if (pincode.length !== 6) {
+        // Only show error if user has typed something invalid length (and not empty initially or just starting)
+        // Actually for better UX, maybe only error on submit or if length > 6 or < 6 after pause?
+        // Let's stick to simple: if 6 digits, fetch. If not 6 digits, clear city/state if they were auto-filled?
         return;
       }
 
-      // Auto-fill city and state from API response
-      const postOffice = data[0].PostOffice[0];
-      setCity(postOffice.Block);
-      setState(postOffice.State);
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+        const data = await res.json();
 
-      // Clear pincode error if valid
-      setErrors({ ...errors, pincode: "" });
-    } catch (error) {
-      console.error("Pincode validation failed:", error);
-      setErrors({ ...errors, pincode: "Invalid Pincode" });
-    }
-  };
+        if (!data || data[0].Status !== "Success") {
+          setErrors((prev) => ({ ...prev, pincode: "Invalid Pincode" }));
+          return;
+        }
+
+        // Auto-fill city and state from API response
+        const postOffice = data[0].PostOffice[0];
+        setCity(postOffice.Block);
+        setState(postOffice.State);
+
+        // Clear pincode error if valid
+        setErrors((prev) => ({ ...prev, pincode: "" }));
+      } catch (error) {
+        console.error("Pincode validation failed:", error);
+        setErrors((prev) => ({ ...prev, pincode: "Invalid Pincode" }));
+      }
+    };
+
+    const timer = setTimeout(() => {
+      if (pincode.length === 6) {
+        validateAndFetchPincode();
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [pincode]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
@@ -150,7 +171,7 @@ export default function AddressForm({
           {/* <span className="px-2 text-gray-600">+91</span> */}
           <input
             type="tel"
-            className={`w-full border rounded px-3 py-2 border-gray-200 ${errors.mobile ? "border-red-500" : ""
+            className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${errors.mobile ? "border-red-500" : ""
               }`}
             placeholder="Enter 10 digits"
             value={mobile}
@@ -170,7 +191,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
           value={flat}
           onChange={(e) => setFlat(e.target.value)}
         />
@@ -181,7 +202,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
           value={area}
           onChange={(e) => setArea(e.target.value)}
         />
@@ -192,7 +213,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
           placeholder="Eg: Near Famous chowk"
           value={landmark}
           onChange={(e) => setLandmark(e.target.value)}
@@ -204,12 +225,11 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className={`w-full border rounded px-3 py-2 border-gray-200 ${errors.pincode ? "border-red-500" : ""
+          className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${errors.pincode ? "border-red-500" : ""
             }`}
           placeholder="6 digits [0-9]"
           value={pincode}
           onChange={(e) => setPincode(onlyDigits(e.target.value).slice(0, 6))}
-          onBlur={handlePincodeBlur}
           required
         />
         {errors.pincode && (
@@ -223,7 +243,7 @@ export default function AddressForm({
           </label>
           <input
             type="text"
-            className="w-full border rounded px-3 py-2 border-gray-200"
+            className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
             value={city}
             onChange={(e) => {
               const value = e.target.value.replace(/[^a-zA-Z\s]/g, "");

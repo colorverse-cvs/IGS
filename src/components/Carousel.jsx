@@ -142,14 +142,14 @@ export default function Carousel({
         <>
           <button
             onClick={goPrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10 cursor-pointer"
             aria-label="Previous"
           >
             ←
           </button>
           <button
             onClick={goNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10 cursor-pointer"
             aria-label="Next"
           >
             →
@@ -163,9 +163,8 @@ export default function Carousel({
             <button
               key={it.id || idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`h-2 rounded-full transition-all ${
-                idx === currentIndex ? "w-3.5 bg-brand-700" : "w-2 bg-gray-300"
-              }`}
+              className={`h-2 rounded-full transition-all ${idx === currentIndex ? "w-3.5 bg-brand-700" : "w-2 bg-gray-300"
+                }`}
               aria-label={`Go to slide ${idx + 1}`}
             />
           ))}

@@ -55,8 +55,8 @@ export default function Dropdown({
   const isFormMode = options.length > 0 && onChange !== undefined;
   const normalized = isFormMode
     ? options.map((opt) =>
-        typeof opt === "string" ? { value: opt, label: opt } : opt
-      )
+      typeof opt === "string" ? { value: opt, label: opt } : opt
+    )
     : [];
 
   const selected = isFormMode
@@ -150,8 +150,8 @@ export default function Dropdown({
 
   const visible = isFormMode
     ? normalized.filter((o) =>
-        o.label.toLowerCase().includes(filter.toLowerCase())
-      )
+      o.label.toLowerCase().includes(filter.toLowerCase())
+    )
     : [];
 
   const onKeyDown = (e) => {
@@ -196,18 +196,16 @@ export default function Dropdown({
           aria-labelledby={id}
           onClick={() => !disabled && setOpen((v) => !v)}
           disabled={disabled}
-          className={`w-full text-left border rounded px-3 py-2 border-gray-200 flex items-center justify-between bg-white ${
-            disabled ? "opacity-60 cursor-not-allowed bg-gray-50" : ""
-          }`}
+          className={`w-full text-left border rounded px-3 py-2 border-gray-200 flex items-center justify-between bg-white ${disabled ? "opacity-60 cursor-not-allowed bg-gray-50" : "cursor-pointer"
+            }`}
         >
           <span className="truncate text-sm text-gray-700">
             {selected ? selected.label : placeholder}
           </span>
           <ChevronDown
             size={16}
-            className={`ml-2 transition-transform ${
-              open ? "rotate-180" : "rotate-0"
-            }`}
+            className={`ml-2 transition-transform ${open ? "rotate-180" : "rotate-0"
+              }`}
           />
         </button>
       )}
@@ -229,9 +227,8 @@ export default function Dropdown({
       {open && (
         <div
           ref={panelRef}
-          className={`${
-            isFormMode ? "absolute" : "fixed"
-          } rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-50`}
+          className={`${isFormMode ? "absolute" : "fixed"
+            } rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-50`}
           style={(() => {
             if (!isFormMode) {
               return {
@@ -295,11 +292,10 @@ export default function Dropdown({
                     key={opt.value}
                     role="option"
                     aria-selected={value === opt.value}
-                    className={`px-3 py-2 text-sm text-gray-700 cursor-pointer ${
-                      idx === highlight
+                    className={`px-3 py-2 text-sm text-gray-700 cursor-pointer ${idx === highlight
                         ? "bg-purple-50 text-brand-700"
                         : "hover:bg-purple-50 hover:text-brand-700"
-                    }`}
+                      }`}
                     onMouseEnter={() => setHighlight(idx)}
                     onClick={() => {
                       onChange?.(opt.value);

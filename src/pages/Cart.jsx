@@ -5,16 +5,22 @@ import {
   updateQty,
   clearCart,
   updateCartItemQuantityAsync,
+  removeItemFromCartAsync,
+  clearCartAsync,
 } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
 import EmptyShoppingCart from "../assets/empty-shopping-cart.svg";
+import { APP_URL } from "../constant";
+import CustomPopupModal from "../components/CustomPopupModal";
 
 export default function Cart({ isDrawer = false, onClose }) {
   const navigate = useNavigate();
   const items = useSelector((s) => s.cart.items);
   const dispatch = useDispatch();
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+
+  const [showClearModal, setShowClearModal] = React.useState(false);
 
   const WRAP_FEE_PER_UNIT = 20;
   const [wrapMap, setWrapMap] = React.useState({});
@@ -49,15 +55,11 @@ export default function Cart({ isDrawer = false, onClose }) {
 
   const handleRemoveItem = (id) => {
     console.log("Removing item from cart", id);
-    import("../features/cart/cartSlice").then(({ removeItemFromCartAsync }) => {
-      dispatch(removeItemFromCartAsync(id));
-    });
+    dispatch(removeItemFromCartAsync(id));
   };
 
   const handleClearCart = () => {
-    import("../features/cart/cartSlice").then(({ clearCartAsync }) => {
-      dispatch(clearCartAsync());
-    });
+    setShowClearModal(true);
   };
 
   const handleProceedToCheckout = () => {
@@ -69,6 +71,14 @@ export default function Cart({ isDrawer = false, onClose }) {
 
   return (
     <div className={containerClasses}>
+      <CustomPopupModal
+        isOpen={showClearModal}
+        onClose={() => setShowClearModal(false)}
+        title="Clear Cart"
+        message="Are you sure you want to clear your cart?"
+        confirmText="Yes, Clear"
+        onConfirm={() => dispatch(clearCartAsync())}
+      />
       {!isDrawer && (
         <h2 className="text-4xl text-center font-extrabold text-gray-900 py-2">
           Shopping Cart 🛒
@@ -101,6 +111,7 @@ export default function Cart({ isDrawer = false, onClose }) {
           >
             {items.map((item) => {
               const lineWrap = wrapMap[item.id] ? WRAP_FEE_PER_UNIT * item.qty : 0;
+              const imageUrl = item.image?.startsWith("http") ? item.image : `${APP_URL}${item.image}`;
 
               /* Drawer Layout */
               if (isDrawer) {
@@ -109,7 +120,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                     key={item.id}
                     className="border border-gray-100 hover:shadow-lg p-2 rounded-lg flex items-start gap-4 text-sm"
                   >
-                    <img src={item.image} alt={item.title} className="w-28 h-28 rounded object-cover" />
+                    <img src={imageUrl} alt={item.title} className="w-28 h-28 rounded object-cover" />
 
                     <div className="min-w-0">
                       <div className="font-medium text-gray-900">{item.title}</div>
@@ -187,7 +198,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                   key={item.id}
                   className="py-4 flex items-start gap-4 text-sm border border-gray-100 hover:shadow-lg rounded-lg p-2"
                 >
-                  <img src={item.image} alt={item.title} className="w-28 h-28 rounded object-cover" />
+                  <img src={imageUrl} alt={item.title} className="w-28 h-28 rounded object-cover" />
 
                   <div className="min-w-0 flex-1">
                     <div className="font-medium text-gray-900 truncate">{item.title}</div>

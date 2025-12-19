@@ -4,24 +4,52 @@ import ForgotPassword from "./ForgotPassword";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { login, signup, fetchUserProfileAsync } from "../features/user/userSlice";
+import { initializeCart, fetchCartSummaryAsync } from "../features/cart/cartSlice";
 import toast from "react-hot-toast";
 import logo from "../assets/ishita-gallery-logo.jpg";
 import { Eye, EyeOff, X } from "lucide-react";
 
-
-// Import product images for gallery
-import art1 from "../assets/art1.png";
-import art2 from "../assets/art2.png";
-import art3 from "../assets/art3.png";
-import rect16 from "../assets/Rectangle 16.png";
-import rect17 from "../assets/Rectangle 17.png";
-import rect18 from "../assets/Rectangle 18.png";
-import rect33 from "../assets/Rectangle 33.png";
-import rect35 from "../assets/Rectangle 35.png";
+// Auth Banner
+import authBanner from "../assets/auth_banner.jpg";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileRegex = /^\d{10}$/;
 const strongPasswordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
+const validEmailDomains = [
+  "gmail.com",
+  "yahoo.com",
+  "yahoo.in",
+  "outlook.com",
+  "hotmail.com",
+  "live.com",
+  "icloud.com",
+  "aol.com",
+
+  // India-popular domains
+  "rediffmail.com",
+  "rediff.com",
+  "in.com",
+
+  // Company / Developer domains
+  "protonmail.com",
+  "zoho.com",
+  "gmx.com",
+  "yandex.com",
+
+  // Education / Organization
+  "edu.in",
+  "ac.in",
+  "gov.in",
+  "nic.in"
+];
+
+const isValidDomain = (email) => {
+  const parts = email.split("@");
+  if (parts.length !== 2) return false;
+  const domain = parts[1];
+  return validEmailDomains.includes(domain);
+};
 
 export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const dispatch = useDispatch();
@@ -40,6 +68,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
   // Login
   const [loginIdentifier, setLoginIdentifier] = React.useState("");
+  const [loginIdentifierError, setLoginIdentifierError] = React.useState(""); // New state for inline error
   const [loginPassword, setLoginPassword] = React.useState("");
   const [showLoginPassword, setShowLoginPassword] = React.useState(false);
   const [loginError, setLoginError] = React.useState("");
@@ -64,15 +93,12 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [resetLoading, setResetLoading] = React.useState(false);
   const [resetToken, setResetToken] = React.useState("");
 
-  // OAuth popup
-  const oauthWindowRef = React.useRef(null);
-  const oauthIntervalRef = React.useRef(null);
-
   /* -------------------------
      Helpers
   ------------------------- */
   const resetAllForms = () => {
     setLoginIdentifier("");
+    setLoginIdentifierError("");
     setLoginPassword("");
     setLoginError("");
     setName("");
@@ -89,7 +115,11 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const validateSignupClient = () => {
     const e = {};
     if (!name.trim()) e.name = "Please enter your name";
-    if (!emailRegex.test(email)) e.email = "Enter a valid email";
+    if (!emailRegex.test(email)) {
+      e.email = "Email is not correct";
+    } else if (!isValidDomain(email)) {
+      e.email = "Email is not correct";
+    }
     if (!mobileRegex.test(mobile)) e.mobile = "Enter a 10-digit mobile number";
     if (!strongPasswordRegex.test(password))
       e.password = "Min 8 chars with letters and numbers";
@@ -145,6 +175,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           oauthIntervalRef.current = null;
           oauthWindowRef.current = null;
           resetAllForms();
+
+          dispatch(fetchCartAsync());
           onClose?.();
         }
       } catch (err) {
@@ -218,14 +250,26 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginError("");
+    setLoginIdentifierError("");
     setApiMessage(null);
 
     const normalizedIdentifier = loginIdentifier.toLowerCase();
 
-    if (!emailRegex.test(normalizedIdentifier) && !mobileRegex.test(normalizedIdentifier)) {
-      setLoginError("Enter valid email or 10-digit mobile");
-      return;
+    // Improved validation for Login
+    if (normalizedIdentifier.includes('@')) {
+      // Treat as email
+      if (!emailRegex.test(normalizedIdentifier) || !isValidDomain(normalizedIdentifier)) {
+        setLoginIdentifierError("Email is not correct");
+        return;
+      }
+    } else {
+      // Treat as mobile
+      if (!mobileRegex.test(normalizedIdentifier)) {
+        setLoginIdentifierError("Email or Mobile is not correct");
+        return;
+      }
     }
+
     if (!loginPassword || loginPassword.length < 8) {
       setLoginError("Password must be at least 8 characters");
       return;
@@ -281,6 +325,12 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       // Fetch full profile data
       dispatch(fetchUserProfileAsync());
 
+      // Initialize user cart
+      dispatch(fetchCartSummaryAsync());
+      dispatch(initializeCart(normalized.id)); // Keep this to set basic state if needed, or remove if fetchCartSummaryAsync handles everything.
+      // Actually per previous plan, fetchCartSummaryAsync is the key. initializeCart sets currentUserId.
+      // Let's keep initializeCart just to update currentUserId in state, then fetch.
+
       toast.success("Login Successful", {
         style: {
           color: "green",
@@ -311,18 +361,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       email,
       firstName: firstName || "",
       lastName: lastName || "",
-      addresses: [
-        {
-          line1: "",
-          line2: "",
-          city: "",
-          state: "",
-          postalCode: "",
-          country: "India",
-          phone: mobile,
-          isDefault: true,
-        },
-      ],
+      addresses: [],
       password,
       role: "customer",
       profile: {
@@ -350,14 +389,23 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         return;
       }
 
-      dispatch(signup({ name, email, mobile }));
-
-      // Fetch profile (even if empty, establishes state)
-      dispatch(fetchUserProfileAsync());
-
-      setApiMessage("Account created successfully.");
+      // REDIRECT TO LOGIN LOGIC
+      // 1. Reset forms but keep the email for prefilling
+      const registeredEmail = email;
       resetAllForms();
-      onClose?.();
+
+      // 2. Prefill login email
+      setLoginIdentifier(registeredEmail);
+
+      // 3. Switch to login tab
+      setTab("login");
+
+      // 4. Show success message
+      toast.success("Account created! Please log in.", {
+        style: { color: "green" },
+        duration: 4000
+      });
+
     } catch (err) {
       console.error("Signup error:", err);
       setApiMessage("Network error. Please try again.");
@@ -403,32 +451,32 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     }
   };
 
-  const handleResetSubmit = async (e) => {
-    e?.preventDefault();
-    setResetStatus("");
-    if (!emailRegex.test(resetEmail) && !mobileRegex.test(resetEmail)) {
-      setResetStatus("Enter a valid email or 10-digit mobile number");
-      return;
-    }
+  // const handleResetSubmit = async (e) => {
+  //   e?.preventDefault();
+  //   setResetStatus("");
+  //   if (!emailRegex.test(resetEmail) && !mobileRegex.test(resetEmail)) {
+  //     setResetStatus("Enter a valid email or 10-digit mobile number");
+  //     return;
+  //   }
 
-    setResetLoading(true);
-    try {
-      const res = await fetch(`${BASE_URL}/api/v1/auth/reset`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier: resetEmail }),
-      });
-      if (res.ok) setResetStatus("If an account exists, a reset link has been sent.");
-      else {
-        const body = await res.json().catch(() => ({}));
-        setResetStatus(body.message || "Unable to send reset link.");
-      }
-    } catch (err) {
-      setResetStatus("Network error. Try again later.");
-    } finally {
-      setResetLoading(false);
-    }
-  };
+  //   setResetLoading(true);
+  //   try {
+  //     const res = await fetch(`${BASE_URL}/api/v1/auth/reset`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ identifier: resetEmail }),
+  //     });
+  //     if (res.ok) setResetStatus("If an account exists, a reset link has been sent.");
+  //     else {
+  //       const body = await res.json().catch(() => ({}));
+  //       setResetStatus(body.message || "Unable to send reset link.");
+  //     }
+  //   } catch (err) {
+  //     setResetStatus("Network error. Try again later.");
+  //   } finally {
+  //     setResetLoading(false);
+  //   }
+  // };
 
   const isLoginValid =
     (emailRegex.test(loginIdentifier) || mobileRegex.test(loginIdentifier)) &&
@@ -440,35 +488,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     mobileRegex.test(mobile) &&
     strongPasswordRegex.test(password) &&
     password === confirmPassword;
-
-  // const OAuthButtons = () => (
-  //   <div className="flex justify-center gap-3">
-  //     <button
-  //       type="button"
-  //       onClick={() => startOAuth("google")}
-  //       title="Continue with Google"
-  //       className="transform hover:scale-105 active:scale-95 transition"
-  //     >
-  //       <img src={googleButton} alt="Google" className="h-10 w-10 object-contain" />
-  //     </button>
-  //     <button
-  //       type="button"
-  //       onClick={() => startOAuth("facebook")}
-  //       title="Continue with Facebook"
-  //       className="transform hover:scale-105 active:scale-95 transition"
-  //     >
-  //       <img src={facebookButton} alt="Facebook" className="h-10 w-10 object-contain" />
-  //     </button>
-  //     <button
-  //       type="button"
-  //       onClick={() => startOAuth("apple")}
-  //       title="Continue with Apple"
-  //       className="transform hover:scale-105 active:scale-95 transition"
-  //     >
-  //       <img src={appleButton} alt="Apple" className="h-10 w-10 object-contain" />
-  //     </button>
-  //   </div>
-  // );
 
   return (
     <Modal
@@ -494,7 +513,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         </button>
 
         {/* Left Side - Form */}
-        <div className="p-8 lg:p-12 flex flex-col">
+        <div className="p-10 lg:p-16 flex flex-col">
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img src={logo} alt="Ishita Gallery" className="h-16 object-contain" />
@@ -539,11 +558,15 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 <input
                   type="text"
                   value={loginIdentifier}
-                  onChange={(e) => setLoginIdentifier(e.target.value)}
+                  onChange={(e) => {
+                    setLoginIdentifier(e.target.value);
+                    if (loginIdentifierError) setLoginIdentifierError(""); // Clear error on type
+                  }}
                   placeholder="john@gmail.com"
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${loginIdentifierError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"}`}
                   autoComplete="username"
                 />
+                {loginIdentifierError && <p className="text-xs text-red-600 mt-1">{loginIdentifierError}</p>}
               </div>
 
               <div>
@@ -556,7 +579,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
                     autoComplete="current-password"
                   />
                   <button
@@ -611,50 +634,50 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           {/* Signup Form */}
           {tab === "signup" && (
             <form onSubmit={handleSignup} className="space-y-4 flex-1 overflow-y-auto">
-              <div>
+              <div className="mx-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="FirstName LastName"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                  placeholder="Enter Name"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                     }`}
                 />
                 {signupErrors.name && <p className="text-xs text-red-600 mt-1">{signupErrors.name}</p>}
               </div>
 
-              <div>
+              <div className="mx-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Mobile <span className="text-red-500">*</span>
                 </label>
                 <input
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder=""
+                  placeholder="Enter Whatsapp Mobile"
                   inputMode="numeric"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                     }`}
                 />
                 {signupErrors.mobile && <p className="text-xs text-red-600 mt-1">{signupErrors.mobile}</p>}
               </div>
 
-              <div>
+              <div className="mx-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="sample@gmail.com"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                  placeholder="Enter Email"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                     }`}
                 />
                 {signupErrors.email && <p className="text-xs text-red-600 mt-1">{signupErrors.email}</p>}
               </div>
 
-              <div>
+              <div className="mx-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Password <span className="text-red-500">*</span>
                 </label>
@@ -664,7 +687,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min 8 chars, letters & numbers"
-                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                       }`}
                   />
                   <button
@@ -678,7 +701,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {signupErrors.password && <p className="text-xs text-red-600 mt-1">{signupErrors.password}</p>}
               </div>
 
-              <div>
+              <div className="mx-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Confirm Password <span className="text-red-500">*</span>
                 </label>
@@ -688,7 +711,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-brand-500"
+                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                       }`}
                   />
                   <button
@@ -726,48 +749,9 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           )}
         </div>
 
-        {/* Right Side - Product Gallery */}
-        <div className="hidden lg:block bg-gradient-to-br from-purple-100 via-pink-50 to-orange-50 p-6 rounded-r-lg relative overflow-hidden">
-          <div className="grid grid-cols-3 gap-3 h-full">
-            {/* Column 1 */}
-            <div className="space-y-3">
-              <div className="bg-purple-200 rounded-lg overflow-hidden h-32">
-                <img src={rect33} alt="Product" className="w-full h-full object-cover" />
-              </div>
-              <div className="bg-gray-200 rounded-lg overflow-hidden h-48">
-                <img src={art1} alt="Product" className="w-full h-full object-cover" />
-              </div>
-              <div className="bg-purple-300 rounded-lg overflow-hidden h-32">
-                <img src={rect35} alt="Product" className="w-full h-full object-cover" />
-              </div>
-            </div>
-
-            {/* Column 2 */}
-            <div className="space-y-3 pt-12">
-              <div className="bg-green-200 rounded-lg overflow-hidden h-40">
-                <img src={art2} alt="Product" className="w-full h-full object-cover" />
-              </div>
-              <div className="bg-gray-300 rounded-lg overflow-hidden h-32">
-                <img src={rect16} alt="Product" className="w-full h-full object-cover" />
-              </div>
-              <div className="bg-pink-200 rounded-lg overflow-hidden h-48">
-                <img src={rect17} alt="Product" className="w-full h-full object-cover" />
-              </div>
-            </div>
-
-            {/* Column 3 */}
-            <div className="space-y-3">
-              <div className="bg-blue-200 rounded-lg overflow-hidden h-40">
-                <img src={rect18} alt="Product" className="w-full h-full object-cover" />
-              </div>
-              <div className="bg-orange-200 rounded-lg overflow-hidden h-32">
-                <img src={art3} alt="Product" className="w-full h-full object-cover" />
-              </div>
-              <div className="bg-gray-400 rounded-lg overflow-hidden h-48">
-                <img src={rect33} alt="Product" className="w-full h-full object-cover grayscale" />
-              </div>
-            </div>
-          </div>
+        {/* Right Side - Product Gallery - Replaced with Banner */}
+        <div className="hidden lg:block h-full relative overflow-hidden rounded-r-lg">
+          <img src={authBanner} alt="Auth Banner" className="w-full h-full object-cover" />
         </div>
       </div>
 
@@ -786,9 +770,9 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           email={resetEmail}
           token={resetToken}
           onSuccess={() => {
-            setResetOpen(false);
-            setResetEmail("");
             setResetToken("");
+            setResetOpen(false);
+            setTab("login");
             toast.success("Password reset successfully! Please login with your new password.");
           }}
         />
@@ -796,3 +780,5 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     </Modal>
   );
 }
+
+

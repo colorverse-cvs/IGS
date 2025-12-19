@@ -38,7 +38,7 @@ export default function Inventory() {
             placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition focus:border-transparent"
           />
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
             🔍
@@ -56,7 +56,7 @@ export default function Inventory() {
               className="border border-gray-100 hover:border-violet-500 rounded-xl p-4 bg-white shadow-sm"
             >
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                
+
                 {/* PRODUCT INFO */}
                 <div>
                   <p className="text-sm font-medium text-gray-800">

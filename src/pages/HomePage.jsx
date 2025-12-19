@@ -57,11 +57,11 @@ export default function HomePage() {
               <div className="flex flex-col md:flex-row flex-wrap gap-4 py-5">
                 <button
                   onClick={() => navigate("/filter")}
-                  className="bg-brand-900 text-white py-1 px-4 rounded-md font-medium hover:bg-brand-800 transition"
+                  className="cursor-pointer bg-brand-900 text-white py-1 px-4 rounded-md font-medium hover:bg-brand-800 transition"
                 >
                   Explore Collection
                 </button>
-                <button className="border-2 border-brand-700 text-brand-700  py-1 px-4 rounded-md font-medium hover:bg-brand-50 transition">
+                <button className="cursor-pointer border-2 border-brand-700 text-brand-700  py-1 px-4 rounded-md font-medium hover:bg-brand-50 transition">
                   Custom Order
                 </button>
               </div>

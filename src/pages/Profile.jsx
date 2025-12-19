@@ -12,33 +12,15 @@ import {
   removeAddressAsync,
   setDefaultAddressAsync,
   fetchUserProfileAsync,
+  updateProfileAsync,
 } from "../features/user/userSlice";
 import Modal from "../components/Modal";
 import AddressForm from "../components/AddressForm";
 import Dropdown from "../components/Dropdown";
+import CustomCalendar from "../components/CustomCalendar";
 import { ChevronDown } from "lucide-react";
 
-/**
- * Profile Page Component - User account management
- * 
- * Features:
- * - Profile Tab: Edit name, email, mobile, DOB, gender
- * - Addresses Tab: Add, edit, delete, set default delivery addresses
- * - Orders Tab: View order history with status and details
- * - Payments Tab: Placeholder for payment methods (future feature)
- * 
- * How it works:
- * - URL query param ?tab=name determines which section to show
- * - Form validation before saving (email, mobile format)
- * - All changes saved to Redux state which persists to localStorage
- * - Orders loaded from Redux orders state
- * 
- * For beginners:
- * - useSearchParams() reads URL query parameters
- * - useState() manages local form state before saving
- * - dispatch() saves changes to Redux which updates localStorage
- * - Modal opens for editing individual addresses
- */
+
 export default function Profile() {
   const user = useSelector((s) => s.user);
   const orders = useSelector((s) => s.orders?.orders || []);
@@ -53,17 +35,23 @@ export default function Profile() {
     setTab(initialTab);
   }, [initialTab]);
 
+  // Track if profile has been fetched to prevent redundant API calls
+  const profileFetchedRef = React.useRef(false);
+
   // Fetch user profile when tab changes to 'profile'
   React.useEffect(() => {
-    if (tab === "profile") {
+    if (tab === "profile" && !profileFetchedRef.current) {
       dispatch(fetchUserProfileAsync());
+      profileFetchedRef.current = true;
     }
   }, [tab, dispatch]);
 
   // Fetch addresses when tab changes to 'addresses'
   React.useEffect(() => {
-    console.log(tab, user);
+    console.log('[Profile] Tab changed:', tab);
+    console.log('[Profile] User profile ID:', user?.profile?.id);
     if (tab === "addresses" && user?.profile?.id) {
+      console.log('[Profile] Fetching addresses for user:', user.profile.id);
       dispatch(fetchAddressesAsync(user.profile.id));
     }
   }, [tab, user?.profile?.id, dispatch]);
@@ -75,6 +63,8 @@ export default function Profile() {
 
   // Profile form state
   const [name, setName] = React.useState(user?.profile?.name || "");
+  const [firstName, setFirstName] = React.useState(user?.profile?.firstName || "");
+  const [lastName, setLastName] = React.useState(user?.profile?.lastName || "");
   const [mobile, setMobile] = React.useState(user?.profile?.mobile || "");
   const [email, setEmail] = React.useState(user?.profile?.email || "");
   const [dob, setDob] = React.useState(user?.profile?.dob || "");
@@ -85,6 +75,8 @@ export default function Profile() {
   // Sync form state with Redux store when user profile data changes
   React.useEffect(() => {
     setName(user?.profile?.name || "");
+    setFirstName(user?.profile?.firstName || "");
+    setLastName(user?.profile?.lastName || "");
     setMobile(user?.profile?.mobile || "");
     setEmail(user?.profile?.email || "");
     setDob(user?.profile?.dob || "");
@@ -101,19 +93,23 @@ export default function Profile() {
     if (email && !strongEmail(email)) errs.email = "Enter a valid email";
     setProfileErrors(errs);
     if (Object.keys(errs).length) return;
+
+    // Use updateProfileAsync to call the API
     dispatch(
-      updateProfile({
+      updateProfileAsync({
         name: name.trim(),
-        mobile: `+91 ${onlyDigits(mobile)}`,
+        mobile: `${onlyDigits(mobile)}`,
         email: email.trim(),
         dob,
         gender,
       })
     );
+    setIsProfileModalOpen(false);
   };
 
   // Addresses
   const addresses = user?.profile?.addresses || [];
+  console.log('[Profile] Current addresses:', addresses);
   const [isAddressModalOpen, setIsAddressModalOpen] = React.useState(false);
   const [editAddress, setEditAddress] = React.useState(null);
 
@@ -441,7 +437,7 @@ export default function Profile() {
           </div>
           <button
             onClick={() => setIsProfileModalOpen(true)}
-            className="w-full md:w-auto mt-4 px-4 py-2 bg-brand-700 text-white rounded-md"
+            className="w-full md:w-auto mt-4 px-4 py-2 bg-brand-700 text-white rounded-md cursor-pointer"
           >
             Edit Profile
           </button>
@@ -449,6 +445,7 @@ export default function Profile() {
             isOpen={isProfileModalOpen}
             onClose={() => setIsProfileModalOpen(false)}
             title="Edit Profile"
+            className="max-w-3xl w-full m-4"
           >
             <form
               onSubmit={(e) => {
@@ -466,7 +463,7 @@ export default function Profile() {
                     Name *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${profileErrors.name ? "border-red-500" : "border-gray-200"
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.name ? "border-red-500" : "border-gray-200"
                       }`}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -478,7 +475,7 @@ export default function Profile() {
                     Mobile Number *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${profileErrors.mobile
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.mobile
                       ? "border-red-500"
                       : "border-gray-200"
                       }`}
@@ -495,7 +492,7 @@ export default function Profile() {
                     Email
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 ${profileErrors.email ? "border-red-500" : "border-gray-200"
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.email ? "border-red-500" : "border-gray-200"
                       }`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -503,13 +500,10 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-500 block text-sm mb-1">
-                    Date of Birth
-                  </label>
-                  <input
-                    className="w-full border rounded px-3 py-2 border-gray-200"
+                  <CustomCalendar
+                    label="Date of Birth"
                     value={dob}
-                    onChange={(e) => setDob(e.target.value)}
+                    onChange={(date) => setDob(date)}
                     placeholder="DD/MM/YYYY"
                   />
                 </div>
@@ -528,13 +522,13 @@ export default function Profile() {
                 <button
                   type="button"
                   onClick={() => setIsProfileModalOpen(false)}
-                  className="px-4 py-2 border rounded"
+                  className="px-4 py-2 border rounded cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-brand-700 text-white rounded"
+                  className="px-4 py-2 bg-brand-700 text-white rounded cursor-pointer"
                 >
                   Save changes
                 </button>
@@ -585,8 +579,9 @@ export default function Profile() {
                     )}
                     <div className="mt-2 flex gap-3">
                       <button
-                        className="text-xs text-brand-700"
+                        className="text-xs text-brand-700 cursor-pointer"
                         onClick={() => {
+                          console.log('[Profile] Edit address clicked:', addr);
                           setEditAddress(addr);
                           setIsAddressModalOpen(true);
                         }}
@@ -594,15 +589,23 @@ export default function Profile() {
                         Edit
                       </button>
                       <button
-                        className="text-xs text-brand-700"
-                        onClick={() => dispatch(removeAddressAsync(addr.id || addr._id))}
+                        className="text-xs text-brand-700 cursor-pointer"
+                        onClick={() => {
+                          const addressId = addr._id || addr.id;
+                          console.log('[Profile] Remove address clicked:', addressId);
+                          dispatch(removeAddressAsync(addressId));
+                        }}
                       >
                         Remove
                       </button>
                       {!addr.isDefault && (
                         <button
-                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold"
-                          onClick={() => dispatch(setDefaultAddressAsync(addr.id || addr._id))}
+                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold cursor-pointer"
+                          onClick={() => {
+                            const addressId = addr._id || addr.id;
+                            console.log('[Profile] Set default address clicked:', addressId);
+                            dispatch(setDefaultAddressAsync(addressId));
+                          }}
                         >
                           Set as Default address
                         </button>
@@ -614,7 +617,7 @@ export default function Profile() {
             ))}
           </div>
           <button
-            className="mt-4 px-4 py-2 bg-brand-700 text-white rounded"
+            className="mt-4 px-4 py-2 bg-brand-700 text-white rounded cursor-pointer"
             onClick={() => {
               setEditAddress(null);
               setIsAddressModalOpen(true);
@@ -632,14 +635,18 @@ export default function Profile() {
               submitLabel={editAddress ? "Save address" : "Use this address"}
               onCancel={() => setIsAddressModalOpen(false)}
               onSubmit={(a) => {
+                console.log('[Profile] Address form submitted:', a);
                 if (editAddress) {
-                  // Update existing address
+                  // Update existing address - use _id from API
+                  const addressId = editAddress._id || editAddress.id;
+                  console.log('[Profile] Updating address:', addressId);
                   dispatch(updateAddressAsync({
-                    addressId: editAddress.id || editAddress._id,
+                    addressId: addressId,
                     addressData: a
                   }));
                 } else {
                   // creating new address via API
+                  console.log('[Profile] Adding new address');
                   dispatch(addAddressAsync(a));
                 }
                 setIsAddressModalOpen(false);

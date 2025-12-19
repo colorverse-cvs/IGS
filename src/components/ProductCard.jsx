@@ -12,25 +12,32 @@ import { ShoppingCart, Star } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import AuthModal from "./AuthModal";
 import toast from "react-hot-toast";
+import { generateRatingAndReviews } from "../utils/ratingGenerator";
 
 const ProductCard = ({ product, onOpenProduct }) => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+
+  // Generate rating and reviews based on product ID
+  const { rating: generatedRating, reviews: generatedReviews } = generateRatingAndReviews(product.id);
+
   const {
     id,
     name,
     price,
     mrp,
     discount,
-    rating,
     material,
     size,
-    reviews,
     isFeatured,
     isCustomizable,
     imageURL,
   } = product;
+
+  // Use generated rating and reviews
+  const rating = generatedRating;
+  const reviews = generatedReviews;
 
   // Get quantity of this product currently in cart
   const qtyInCart = useSelector(
@@ -38,20 +45,27 @@ const ProductCard = ({ product, onOpenProduct }) => {
   );
 
   // Add product to cart with all its details
-  const handleAddToCart = () => {
-    // console.log("Adding to cart:", product);
+  const handleAddToCart = (e) => {
+    if (e && e.stopPropagation) {
+      e.stopPropagation(); // prevent navigating to product page
+    }
+
     if (!isAuthenticated) {
       toast.error("You need to log in first to add this product to your cart.");
       setIsAuthModalOpen(true);
       return;
     }
+
+    // Calculate final selling price to ensure cart matches display
+    const finalPrice = getDiscountedPrice(mrp || price, discount);
+
     dispatch(
       addToCartAsync({
         id: id,
         title: name,
-        price: price,
+        price: finalPrice,
         image: imageURL,
-        mrp: mrp,
+        mrp: mrp || price,
         discount: discount,
         material: material,
         size: size,
@@ -177,7 +191,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
           <div className="flex items-center md:justify-center">
             {qtyInCart === 0 ? (
               <button
-                className="flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-brand-800 font-semibold text-xs 
+                className="cursor-pointer flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-brand-800 font-semibold text-xs 
                   transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-50
                   rounded-sm md:opacity-0 md:translate-y-1 md:pointer-events-none
                   md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm"

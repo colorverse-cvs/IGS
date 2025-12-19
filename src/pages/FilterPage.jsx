@@ -454,7 +454,7 @@ export default function FilterPage() {
                   onClick={() =>
                     setIsItemsPerPageDropdownOpen(!isItemsPerPageDropdownOpen)
                   }
-                  className="flex items-center justify-between px-2 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition min-w-[80px]"
+                  className="cursor-pointer flex items-center justify-between px-2 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition min-w-[80px]"
                 >
                   <span>{itemsPerPage}</span>
                   <ChevronDown
@@ -494,7 +494,7 @@ export default function FilterPage() {
               <div className="relative sort-dropdown-container">
                 <button
                   onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                  className="flex items-center justify-between px-2 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition min-w-[160px]"
+                  className="cursor-pointer flex items-center justify-between px-2 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition min-w-[160px]"
                 >
                   <span>{currentSortLabel}</span>
                   <ChevronDown

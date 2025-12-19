@@ -4,13 +4,14 @@ import { BASE_URL } from "../utils/constants";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, addToCartAsync, updateCartItemQuantityAsync } from "../features/cart/cartSlice";
+import { addToCart, addToCartAsync, updateCartItemQuantityAsync, removeItemFromCartAsync } from "../features/cart/cartSlice";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 import useAuth from "../hooks/useAuth";
 import AuthModal from "../components/AuthModal";
 import toast from "react-hot-toast";
+import { generateRatingAndReviews } from "../utils/ratingGenerator";
 
 
 export default function ProductInfoPage() {
@@ -19,6 +20,7 @@ export default function ProductInfoPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const user = useSelector((state) => state.user);
   const cartItems = useSelector((state) => state.cart.items);
 
   const [product, setProduct] = useState(null);
@@ -29,7 +31,9 @@ export default function ProductInfoPage() {
   const [pincodeStatus, setPincodeStatus] = useState("idle");
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+
+  const cartItem = useSelector((state) => state.cart.items.find((item) => item.id === id));
+  const qtyInCart = cartItem ? cartItem.qty : 0;
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const didFetchRef = useRef(false);
@@ -38,6 +42,55 @@ export default function ProductInfoPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
+
+  const handleCheckDelivery = async (pinOverride) => {
+    const pin = (typeof pinOverride === "string" ? pinOverride : pincode).replace(/\D/g, "");
+
+    if (pin.length !== 6) {
+      setPincodeStatus("invalid");
+      setDeliveryEstimate("");
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
+      const data = await res.json();
+
+      if (!data || data[0].Status !== "Success") {
+        setPincodeStatus("no-service");
+        setDeliveryEstimate("");
+        return;
+      }
+
+      // Calculate delivery ETA
+      const eta = new Date();
+      eta.setDate(eta.getDate() + 5);
+
+      const formatted = eta.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "long",
+      });
+
+      setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
+      setPincodeStatus("ok");
+
+    } catch (error) {
+      console.error("Pincode check failed:", error);
+      setPincodeStatus("no-service");
+      setDeliveryEstimate("");
+    }
+  };
+
+  // Auto-fill pincode from user address
+  useEffect(() => {
+    if (user?.isAuthenticated && user?.profile?.addresses?.length > 0 && !pincode) {
+      const defaultAddr = user.profile.addresses.find((a) => a.isDefault) || user.profile.addresses[0];
+      if (defaultAddr?.postalCode) {
+        setPincode(defaultAddr.postalCode);
+        handleCheckDelivery(defaultAddr.postalCode);
+      }
+    }
+  }, [user?.isAuthenticated, user?.profile?.addresses]);
 
   // Transform API product to expected format
   const transformProduct = (apiProduct) => {
@@ -65,14 +118,19 @@ export default function ProductInfoPage() {
       images = ["https://via.placeholder.com/300"];
     }
 
-    // Get discount percentage - use API discount field if available, otherwise calculate from listPrice and price
-    let discount = "0% Off";
+    // Get discount percentage and calculate selling price
+    let discountStr = "0% Off";
+    const mrp = apiProduct.listPrice || apiProduct.price;
+    let sellingPrice = apiProduct.price;
+
     if (apiProduct.discount && apiProduct.discount > 0) {
-      // Use discount percentage directly from API
-      discount = `${Math.round(apiProduct.discount)}% Off`;
+      // Use discount percentage directly from API to calculate selling price
+      discountStr = `${Math.round(apiProduct.discount)}% Off`;
+      sellingPrice = Math.round(mrp - (mrp * apiProduct.discount / 100));
     } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
       // Calculate discount from listPrice and price
-      discount = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+      discountStr = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+      sellingPrice = apiProduct.price;
     }
 
     // Get category slug
@@ -83,9 +141,9 @@ export default function ProductInfoPage() {
       id: apiProduct._id || apiProduct.id,
       name: apiProduct.name,
       title: apiProduct.name,
-      price: apiProduct.price,
-      mrp: apiProduct.listPrice || apiProduct.price,
-      discount: discount,
+      price: sellingPrice,
+      mrp: mrp,
+      discount: discountStr,
       rating: apiProduct.rating || 4.5,
       reviews: apiProduct.reviews || 0,
       isFeatured: apiProduct.isFeatured || false,
@@ -167,6 +225,8 @@ export default function ProductInfoPage() {
     };
   }, [id]);
 
+
+
   if (loading) {
     return (
       <div className="text-center mt-10 text-gray-500">
@@ -187,10 +247,11 @@ export default function ProductInfoPage() {
   const imageSrc = product.imageURL || product.image;
   const mrp = product.mrp;
   const discount = product.discount;
-  const rating = product.rating;
-  const reviews = product.reviews;
   const isCustomizable = product.isCustomizable;
   const isFeatured = product.isFeatured;
+
+  // Generate rating and reviews based on product ID
+  const { rating, reviews } = generateRatingAndReviews(product.id);
 
   // Images: prefer product.images from JSON if present
   const productImages =
@@ -200,43 +261,7 @@ export default function ProductInfoPage() {
 
   const currentImage = productImages[selectedImageIndex];
 
-  const handleCheckDelivery = async () => {
-    const pin = pincode.replace(/\D/g, "");
 
-    if (pin.length !== 6) {
-      setPincodeStatus("invalid");
-      setDeliveryEstimate("");
-      return;
-    }
-
-    try {
-      const res = await fetch(`https://api.postalpincode.in/pincode/${pin}`);
-      const data = await res.json();
-
-      if (!data || data[0].Status !== "Success") {
-        setPincodeStatus("no-service");
-        setDeliveryEstimate("");
-        return;
-      }
-
-      // Calculate delivery ETA
-      const eta = new Date();
-      eta.setDate(eta.getDate() + 5);
-
-      const formatted = eta.toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "long",
-      });
-
-      setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
-      setPincodeStatus("ok");
-
-    } catch (error) {
-      console.error("Pincode check failed:", error);
-      setPincodeStatus("no-service");
-      setDeliveryEstimate("");
-    }
-  };
 
 
   const handleThumbnailClick = (index) => {
@@ -312,29 +337,11 @@ export default function ProductInfoPage() {
     { label: "Origin", value: product.origin || aboutDefaults.origin || "—" },
   ];
 
-  const increment = () => {
-    const newQty = Math.min(99, quantity + 1);
-    setQuantity(newQty);
-    // If product is in cart, update it there too
-    const inCart = cartItems.find((item) => item.id === product?.id);
-    if (inCart) {
-      dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: newQty }));
-    }
-  };
-
-  const decrement = () => {
-    const newQty = Math.max(1, quantity - 1);
-    setQuantity(newQty);
-    // If product is in cart, update it there too
-    const inCart = cartItems.find((item) => item.id === product?.id);
-    if (inCart) {
-      dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: newQty }));
-    }
-  };
+  // Remove increment/decrement functions as they are now handled inline or via redux
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      toast.error("Please login befor add product to cart");
+      toast.error("Please login before adding product to cart");
       setIsAuthModalOpen(true);
       return;
     }
@@ -348,13 +355,20 @@ export default function ProductInfoPage() {
         discount,
         material: selectedMaterial,
         size: selectedSize,
-        qty: quantity,
+        qty: 1,
       })
     );
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    if (!isAuthenticated) {
+      toast.error("Please login to proceed");
+      setIsAuthModalOpen(true);
+      return;
+    }
+    if (qtyInCart === 0) {
+      handleAddToCart();
+    }
     navigate("/checkout");
   };
 
@@ -540,11 +554,11 @@ export default function ProductInfoPage() {
                         setPincodeStatus("idle");
                         setDeliveryEstimate("");
                       }}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent w-40"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-40"
                     />
                     <button
                       onClick={handleCheckDelivery}
-                      className="px-4 py-2 bg-brand-700 text-white text-md rounded-lg hover:bg-brand-800 transition"
+                      className="cursor-pointer px-4 py-2 bg-brand-700 text-white text-md rounded-lg hover:bg-brand-800 transition"
                     >
                       Verify
                     </button>
@@ -637,32 +651,42 @@ export default function ProductInfoPage() {
                 </div>
 
                 {/* Quantity and Actions */}
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-1 lg:justify-start lg:flex-nowrap">
-                  <div className="inline-flex items-center border justify-between rounded-lg overflow-hidden w-[46%] lg:w-auto">
+                <div className="cursor-pointer mt-4 flex flex-wrap items-center justify-between gap-1 lg:justify-start lg:flex-nowrap">
+                  {qtyInCart === 0 ? (
                     <button
-                      type="button"
-                      onClick={decrement}
-                      className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
+                      onClick={handleAddToCart}
+                      className="cursor-pointer px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-brand-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
                     >
-                      -
+                      Add to Cart <ShoppingCart size={15} />
                     </button>
-                    <div className="w-[35%] p-2 text-sm min-w-10 text-center">
-                      {quantity}
+                  ) : (
+                    <div className="inline-flex items-center border justify-between rounded-lg overflow-hidden w-[46%] lg:w-auto">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (qtyInCart > 1) {
+                            dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: qtyInCart - 1 }));
+                          } else {
+                            dispatch(removeItemFromCartAsync(product.id));
+                          }
+                        }}
+                        className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
+                      >
+                        -
+                      </button>
+                      <div className="w-[35%] p-2 text-sm min-w-10 text-center">
+                        {qtyInCart}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: qtyInCart + 1 }))}
+                        className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
+                      >
+                        +
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={increment}
-                      className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    onClick={handleAddToCart}
-                    className="px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-brand-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
-                  >
-                    Add to Cart <ShoppingCart size={15} />
-                  </button>
+                  )}
+
                   <button
                     onClick={handleBuyNow}
                     className="px-2 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition w-full lg:w-auto"
