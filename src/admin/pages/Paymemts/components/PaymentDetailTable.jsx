@@ -71,6 +71,16 @@ export default function PaymentDetailTable({ data }) {
     );
   };
 
+  const getDisplayId = (id) => {
+    if (!id) return "";
+    return `IGS-${id.slice(-5)}`;
+  };
+
+  const getDisplayOrderId = (id) => {
+    if (!id) return "";
+    return `ORD-${id.slice(-5)}`;
+  };
+
   return (
     <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
       <table className="min-w-full text-sm text-left">
@@ -90,11 +100,11 @@ export default function PaymentDetailTable({ data }) {
           {data.map((payment, index) => (
             <tr key={index} className="hover:bg-gray-50 transition-colors">
               <td className="px-6 py-4 font-medium text-gray-700">
-                {payment.transactionID}
+                {getDisplayId(payment.transactionID)}
               </td>
               <td className="px-6 py-4">
                 <span className="text-purple-600 font-medium cursor-pointer hover:underline">
-                  {payment.orderID}
+                  {getDisplayOrderId(payment.orderID)}
                 </span>
               </td>
               <td className="px-6 py-4 text-gray-500">
