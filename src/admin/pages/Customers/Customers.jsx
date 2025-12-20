@@ -1,7 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllCustomersAsync, selectAdminCustomers } from "../../store/adminSlice";
+
 import CustomerDetailCard from "./components/CustomerDetailCard";
 import CustomerDetailTable from "./components/CustomerDetailTable";
 import Dropdown from "../../../components/Dropdown";
+
 
 const customerStatusValue = [
   "All Customers",
@@ -10,69 +14,59 @@ const customerStatusValue = [
   "VIP"
 ];
 
-const customerData = [
-  {
-    customerName: "Akash Jadhav",
-    emailId: "akash@gmail.com",
-    mobile: "9874562140",
-    totalOrders: 9,
-    totalSpent: 12000,
-    Status: "Active",
-    joinDate: "Jan 2024"
-  },
-  {
-    customerName: "Tusha Jadhav",
-    emailId: "tusha@gmail.com",
-    mobile: "9874562140",
-    totalOrders: 9,
-    totalSpent: 12000,
-    Status: "VIP",
-    joinDate: "Jan 2024"
-  },
-  {
-    customerName: "Suraj Jadhav",
-    emailId: "suraj@gmail.com",
-    mobile: "9874562140",
-    totalOrders: 19,
-    totalSpent: 12000,
-    Status: "Inactive",
-    joinDate: "Feb 2024"
-  },
-  {
-    customerName: "Akash Jadhav",
-    emailId: "akash@gmail.com",
-    mobile: "9874562140",
-    totalOrders: 19,
-    totalSpent: 12000,
-    Status: "Inactive",
-    joinDate: "Feb 2024"
-  }
-];
-
 export default function Customers() {
+  const dispatch = useDispatch();
+  const customers = useSelector(selectAdminCustomers);
+  const hasFetched = useRef(false);
+
   const [statusFilter, setStatusFilter] = useState("All Customers");
   const [searchTerm, setSearchTerm] = useState("");
 
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    dispatch(fetchAllCustomersAsync());
+  }, [dispatch]);
+
   // ✅ Combined filtering (status + search)
   const filteredCustomers = useMemo(() => {
-    let data = customerData;
+    // Map API data to UI structure
+    const mappedData = (customers || []).map(customer => {
+      const user = customer.user || customer; // Handle potentially different nesting
+      const profile = user.profile || {};
+
+      return {
+        ...customer,
+        customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.name || user.displayName || "Guest",
+        emailId: user.email || "N/A",
+        mobile: profile.mobile || user.phone || user.mobile || "N/A",
+        totalOrders: customer.totalOrders || 0,
+        totalSpent: customer.totalSpent ? `₹${customer.totalSpent}` : '₹0',
+        Status: customer.status || (user.isActive ? "Active" : "Inactive"), // Infer status if not explicit
+        joinDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"
+      };
+    });
+
+    let data = mappedData;
 
     // Status filter
     if (statusFilter !== "All Customers") {
-      data = data.filter(customer => customer.Status === statusFilter);
+      data = data.filter(customer =>
+        String(customer.Status).toLowerCase() === String(statusFilter).toLowerCase()
+      );
     }
 
     // Search filter (name or email)
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
       data = data.filter(customer =>
-        customer.customerName.toLowerCase().includes(search) ||
-        customer.emailId.toLowerCase().includes(search)
+        String(customer.customerName).toLowerCase().includes(search) ||
+        String(customer.emailId).toLowerCase().includes(search)
       );
     }
 
     return data;
-  }, [statusFilter, searchTerm]);
+  }, [statusFilter, searchTerm, customers]);
 
   return (
     <>
@@ -85,7 +79,7 @@ export default function Customers() {
 
       <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-md">
         <div className="search-bar-wrapper flex justify-between gap-4">
-          
+
           {/* ✅ SEARCH INPUT */}
           <div className="relative flex-1">
             <input

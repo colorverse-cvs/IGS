@@ -132,13 +132,21 @@ export default function CheckoutPage() {
         return;
       }
 
+      const rawPhone = selectedAddress.phone || selectedAddress.mobile || "";
+      const sanitizedPhone = sanitizePhoneForRazorpay(rawPhone);
+
+      if (sanitizedPhone.length < 10) {
+        showPopup("Error", "Mobile number is incorrect, please update it.");
+        return;
+      }
+
       const paymentMethod = "razorpay";
 
       const payload = {
         paymentMethod,
         name: user?.profile?.name || "Guest",
         email: user?.profile?.email || "",
-        phone: user?.profile?.mobile || "",
+        phone: sanitizedPhone,
         address: {
           line1: selectedAddress.line1 || selectedAddress.addressLine || "",
           line2: selectedAddress.line2 || "",
@@ -190,8 +198,8 @@ export default function CheckoutPage() {
       // 2️⃣ Razorpay options
       const options = {
         key: data.keyId,
-        amount: data.orderRecord.total,
-        currency: data.orderRecord.currency,
+        amount: data.order.amount,
+        currency: data.order.currency,
         order_id: data.order.paymentDetails.razorpayOrderId,
 
         name: "Ishita Gallery",
@@ -204,7 +212,7 @@ export default function CheckoutPage() {
 
             // Check for success based on the new response structure
             if (verifyResult.success) {
-              dispatch(clearCartAsync());
+              await dispatch(clearCartAsync());
               navigate("/order-placed", {
                 state: { order: data.order },
               });
@@ -235,6 +243,18 @@ export default function CheckoutPage() {
       console.error("Failed to place order:", error);
       showPopup("Order Error", error.message || "Failed to place order. Please try again.");
     }
+  };
+
+  const sanitizePhoneForRazorpay = (phone) => {
+    if (!phone) return "";
+
+    let cleaned = phone.replace(/\D/g, "");
+    cleaned = cleaned.replace(/^0+/, "");
+    if (cleaned.length > 10) {
+      cleaned = cleaned.slice(-10);
+    }
+
+    return cleaned;
   };
 
 

@@ -1,28 +1,43 @@
-import { useEffect, useState } from "react";
-
-const products = [
-  { id: 1, name: "Teddy Bear - Small", stock: 2, lowStock: true },
-  { id: 2, name: "Photo Frame - Wooden", stock: 25, lowStock: false },
-  { id: 3, name: "Panda - Small", stock: 2, lowStock: true },
-  { id: 4, name: "Photo Frame - Wooden", stock: 25, lowStock: true },
-  { id: 5, name: "Photo Frame - Wooden", stock: 25, lowStock: false },
-];
+import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllProductsAsync, selectAdminProducts } from "../../store/adminSlice";
 
 export default function Inventory() {
+  const dispatch = useDispatch();
+  const products = useSelector(selectAdminProducts);
+  const hasFetched = useRef(false);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [productList, setProductList] = useState(products);
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [filteredProducts, setFilteredProducts] = useState(products || []);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    dispatch(fetchAllProductsAsync());
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Check if products is undefined or not an array to avoid errors
+    const productList = Array.isArray(products) ? products : [];
+
     const debounceTimer = setTimeout(() => {
-      const filtered = productList.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      let filtered = productList.map(p => ({
+        id: p._id || p.id,
+        name: p.name,
+        stock: p.stock || p.quantity || 0,
+        lowStock: (p.stock || p.quantity || 0) < 5 // Threshold for low stock
+      }));
+
+      if (searchTerm) {
+        filtered = filtered.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
       setFilteredProducts(filtered);
     }, 100);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, productList]);
+  }, [searchTerm, products]);
 
   return (
     <>
@@ -68,7 +83,7 @@ export default function Inventory() {
                       Stock: {product.stock}
                     </span>
 
-                    {product.lowStock && (
+                    {product.stock <= 5 && (
                       <span className="text-orange-600 bg-orange-50 px-2 py-1 rounded-full font-medium">
                         Low Stock Alert
                       </span>
