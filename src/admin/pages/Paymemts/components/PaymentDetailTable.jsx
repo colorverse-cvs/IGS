@@ -73,7 +73,7 @@ export default function PaymentDetailTable({ data }) {
 
   const getDisplayId = (id) => {
     if (!id) return "";
-    return `IGS-${id.slice(-5)}`;
+    return `TXN-${id.slice(-5)}`;
   };
 
   const getDisplayOrderId = (id) => {

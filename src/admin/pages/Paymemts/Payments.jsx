@@ -35,28 +35,29 @@ export default function Payments() {
     dispatch(fetchAllPaymentsAsync());
   }, [dispatch]);
 
-  const filteredPayments = useMemo(() => {
+  // 1. Base mapped data
+  const mappedPayments = useMemo(() => {
     if (!payments) return [];
 
-    const mappedData = payments.map(payment => {
-      const details = payment.paymentDetails || {};
-      // console.log("payment ", payment);
-      // console.log("details ", details);
+    return payments.map(payment => {
+      // const details = payment.paymentDetails || {};
       return {
         transactionID: payment._id || "N/A",
         orderID: payment.order || "N/A",
         date: payment.createdAt ? new Date(payment.createdAt).toLocaleDateString("en-IN", {
           year: 'numeric', month: 'short', day: 'numeric'
         }) : "N/A",
-
         amount: payment.amount || 0,
         method: payment.paymentMethod || "N/A",
         gateway: "Razorpay",
-        status: payment.status || "Pending"
+        status: payment.status === "succeeded" ? "Success" : (payment.status || "Pending")
       };
     });
+  }, [payments]);
 
-    let data = mappedData;
+  // 2. Data for Stats Cards (Filtered by Gateway & Status only)
+  const statsPayments = useMemo(() => {
+    let data = mappedPayments;
 
     // Gateway filter
     if (categoryValue !== "All Gateway") {
@@ -67,10 +68,24 @@ export default function Payments() {
 
     // Status filter
     if (statusValue !== "All Status") {
-      data = data.filter(payment =>
-        String(payment.status).toLowerCase() === String(statusValue).toLowerCase()
-      );
+      data = data.filter(payment => {
+        const paymentStatus = String(payment.status).toLowerCase();
+        const filterStatus = String(statusValue).toLowerCase();
+
+        // Handle "succeeded" vs "success" alias if not already normalized (double check)
+        if (filterStatus === "success" && (paymentStatus === "succeeded" || paymentStatus === "success")) {
+          return true;
+        }
+
+        return paymentStatus === filterStatus;
+      });
     }
+    return data;
+  }, [categoryValue, statusValue, mappedPayments]);
+
+  // 3. Data for Table (Stats Data + Search Filter)
+  const filteredPayments = useMemo(() => {
+    let data = statsPayments;
 
     // Search filter (Transaction ID OR Order ID)
     if (searchTerm.trim()) {
@@ -82,7 +97,7 @@ export default function Payments() {
     }
 
     return data;
-  }, [categoryValue, statusValue, searchTerm, payments]);
+  }, [statsPayments, searchTerm]);
 
   return (
     <>
@@ -111,7 +126,7 @@ export default function Payments() {
         </div>
       </div>
 
-      <PaymentDetailCard payments={filteredPayments} />
+      <PaymentDetailCard payments={mappedPayments} />
 
       <div className="space-y-6 bg-white p-4 rounded-lg">
         <div className="flex flex-col lg:flex-row gap-4">
@@ -129,26 +144,26 @@ export default function Payments() {
               🔍
             </span>
           </div>
-            <div className="flex justify-around gap-2 ">
-              
-          {/* GATEWAY */}
-          <Dropdown
-            className="w-full md:w-[220px] cursor-pointer"
-            options={PaymentCategory}
-            value={categoryValue}
-            onChange={(val) => setCategoryValue(val || "All Gateway")}
-            placeholder="Select Payment Gateway"
-          />
+          <div className="flex justify-around gap-2 ">
 
-          {/* STATUS */}
-          <Dropdown
-            className="w-full md:w-[200px] cursor-pointer"
-            options={paymentStatus}
-            value={statusValue}
-            onChange={(val) => setStatusValue(val || "All Status")}
-            placeholder="Select Payment Status"
-          />
-            </div>
+            {/* GATEWAY */}
+            <Dropdown
+              className="w-full md:w-[220px] cursor-pointer"
+              options={PaymentCategory}
+              value={categoryValue}
+              onChange={(val) => setCategoryValue(val || "All Gateway")}
+              placeholder="Select Payment Gateway"
+            />
+
+            {/* STATUS */}
+            <Dropdown
+              className="w-full md:w-[200px] cursor-pointer"
+              options={paymentStatus}
+              value={statusValue}
+              onChange={(val) => setStatusValue(val || "All Status")}
+              placeholder="Select Payment Status"
+            />
+          </div>
         </div>
 
         {/* Mobile Transaction List */}
@@ -170,12 +185,12 @@ export default function Payments() {
                     {payment.status}
                   </span>
                 </div>
-                
+
                 <div className="mb-2">
                   <p className="text-xs text-gray-500 mb-1">Order ID</p>
                   <p className="text-sm text-purple-600 font-medium">{payment.orderID}</p>
                 </div>
-                
+
                 <div className="flex justify-between items-center mb-2">
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Date</p>
@@ -186,7 +201,7 @@ export default function Payments() {
                     <p className="text-sm font-semibold text-gray-900">₹{payment.amount?.toLocaleString() || "0"}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-2 mt-3">
                   <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
                     {payment.method || "UPI"}
