@@ -151,7 +151,7 @@ export default function OrdersPage() {
         >
           View Order
         </button>
-        <button
+        {/* <button
           className="px-3 py-1 border rounded text-sm text-red-600 cursor-pointer"
           onClick={() =>
             dispatch(
@@ -163,7 +163,7 @@ export default function OrdersPage() {
           }
         >
           Cancel Order
-        </button>
+        </button> */}
       </div>
     );
   };
@@ -288,7 +288,7 @@ export default function OrdersPage() {
                       </div>
 
                       <div className="col-span-1 flex items-center">
-                        ₹{order.total / 100}
+                        ₹{order.total}
                       </div>
                     </div>
                   );
