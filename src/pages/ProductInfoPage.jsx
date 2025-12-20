@@ -604,7 +604,7 @@ export default function ProductInfoPage() {
                           checked={selectedMaterial === option.value}
                           disabled={true}
                           onChange={(e) => setSelectedMaterial(e.target.value)}
-                          className="absolute right-3 top-3 text-brand-600 focus:ring-brand-600 cursor-not-allowed"
+                          className="absolute right-3 top-3 text-brand-600 focus:ring-purple-600 cursor-not-allowed"
                         />
                         <div className="text-gray-900 font-medium">
                           {option.label}
@@ -640,7 +640,7 @@ export default function ProductInfoPage() {
                           checked={selectedSize === option.value}
                           disabled={true}
                           onChange={(e) => setSelectedSize(e.target.value)}
-                          className="absolute right-3 top-3 text-brand-600 focus:ring-brand-600 cursor-not-allowed"
+                          className="absolute right-3 top-3 text-brand-600 focus:ring-purple-600 cursor-not-allowed"
                         />
                         <div className="font-medium text-gray-900">
                           {option.label}

@@ -172,119 +172,248 @@ export default function OrdersPage() {
         <Breadcrumb items={breadcrumbItems} />
       </div>
 
-      <div className="mx-auto py-6 px-4 md:px-15 lg:px-20">
-        <h2 className="text-2xl font-bold mb-4">Your Orders</h2>
+      <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-lg mx-auto py-6 px-4 md:px-15 lg:px-20">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold">Your Orders</h2>
+            <p className="text-sm text-gray-600">Track and manage your orders</p>
+          </div>
+        </div>
 
-        {/* Tabs + Search */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex gap-6 text-sm">
+        {/* SEARCH + FILTER */}
+        <div className="search-bar-wrapper flex flex-col md:flex-row gap-4">
+
+          {/* Desktop Tabs */}
+          <div className="hidden md:flex gap-6 text-sm">
             {["orders", "current", "previous"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 capitalize ${
+                className={`pb-2 capitalize transition-colors ${
                   activeTab === tab
-                    ? "border-b-2 border-brand-700 text-brand-700"
-                    : "text-gray-600"
+                    ? "border-b-2 border-purple-500 text-purple-600 font-medium"
+                    : "text-gray-600 hover:text-gray-800"
                 }`}
               >
                 {tab} orders
               </button>
             ))}
           </div>
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Search orders..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              🔍
+            </span>
+          </div>
 
-          <input
-            className="border rounded px-3 py-1 text-sm min-w-[220px]"
-            placeholder="Search order"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+          {/* Mobile Dropdown */}
+          <div className="md:hidden w-full">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="w-full border border-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            >
+              {["orders", "current", "previous"].map((tab) => (
+                <option key={tab} value={tab}>
+                  {tab === "orders" ? "All Orders" : tab.charAt(0).toUpperCase() + tab.slice(1) + " Orders"}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Orders List */}
-        {data.length === 0 ? (
-          <div className="text-gray-500">No orders found.</div>
-        ) : (
-          <div className="space-y-6">
-            {data.map((order) => (
+        {/* ORDER LIST */}
+        <div className="space-y-4">
+          {data.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-gray-400 text-4xl mb-4">📦</div>
+              <div className="text-gray-500 text-lg">No orders found.</div>
+              <div className="text-gray-400 text-sm mt-2">Try adjusting your search or filters.</div>
+            </div>
+          ) : (
+            data.map((order) => (
               <div
                 key={order._id}
-                className="border rounded-lg overflow-hidden"
+                className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
-                {/* Header */}
-                <div className="grid grid-cols-12 bg-gray-50 px-4 py-2 text-xs font-medium">
-                  <div className="col-span-2">Order ID</div>
-                  <div className="col-span-5">Items</div>
-                  <div className="col-span-1">Status</div>
-                  <div className="col-span-2">Order Date</div>
-                  <div className="col-span-1">Qty</div>
-                  <div className="col-span-1">Total</div>
+                {/* Mobile/Tablet Card Header */}
+                <div className="lg:hidden px-4 py-3 border-b border-gray-100">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-semibold text-sm text-gray-900">Order #{order._id}</div>
+                      <div className="text-xs text-gray-500 mt-1">{formatDate(order.createdAt)}</div>
+                    </div>
+                    <div className="text-right">
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full inline-block mb-1 ${
+                          order.status === "delivered"
+                            ? "bg-green-100 text-green-600"
+                            : order.status === "cancelled"
+                            ? "bg-red-100 text-red-600"
+                            : order.status === "processing"
+                            ? "bg-blue-100 text-blue-600"
+                            : "bg-orange-100 text-orange-600"
+                        }`}
+                      >
+                        {order.status || "Pending"}
+                      </span>
+                      <div className="text-sm font-semibold text-gray-900 mt-1">₹{order.total}</div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Items */}
-                {order.items.map((it) => {
+                {order.items.map((it, index) => {
                   const product = it.product || {};
 
                   return (
                     <div
                       key={it._id}
-                      className="grid grid-cols-12 gap-3 px-4 py-3 border-t text-sm"
+                      className={`${
+                        index > 0 ? 'border-t border-gray-100' : ''
+                      }`}
                     >
-                      <div className="col-span-2 flex items-center">
-                        {order._id}
-                      </div>
+                      {/* Desktop Table Row */}
+                      <div className="hidden lg:grid lg:grid-cols-12 gap-4 px-4 py-4 text-sm">
+                        <div className="col-span-2 flex items-center font-medium text-gray-900">
+                          {order._id}
+                        </div>
 
-                      <div className="col-span-5 flex gap-4">
-                        <img
-                          src={`${APP_URL}${product.images?.[0]?.url}`}
-                          alt={product.name}
-                          className="w-24 h-24 object-cover rounded"
-                        />
+                        <div className="col-span-5 flex gap-4">
+                          <img
+                            src={`${APP_URL}${product.images?.[0]?.url}`}
+                            alt={product.name}
+                            className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                          />
 
-                        <div className="flex-1">
-                          <div className="font-medium">{product.name}</div>
-                          <div className="text-xs text-gray-500">
-                            Material: {product.attributes?.material || "-"}
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 truncate">{product.name}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              Material: {product.attributes?.material || "-"}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              Size: {product.dimensions?.sizeCategory || "-"}
+                            </div>
+                            <div className="text-purple-600 font-semibold mt-1">
+                              ₹{it.price}
+                            </div>
+                            <div className="text-[11px] text-gray-500 mt-1">
+                              Will be delivered by {addDays(order.createdAt, 4)}, 8 AM - 8 PM
+                            </div>
                           </div>
 
-                          <div className="text-xs text-gray-500">
-                            Size: {product.dimensions?.sizeCategory || "-"}
-                          </div>
-
-                          <div className="text-brand-700 font-semibold">
-                            ₹{it.price}
-                          </div>
-                          <div className="text-[11px] text-gray-500">
-                            Will be delivered by {addDays(order.createdAt, 4)},
-                            8 AM - 8 PM
+                          <div className="flex flex-col gap-2">
+                            {activeTab === "previous" ? (
+                              <>
+                                <button className="px-3 py-1 border rounded text-sm">
+                                  Download Invoice
+                                </button>
+                                <button
+                                  className="px-3 py-1 border rounded text-sm cursor-pointer"
+                                  onClick={() => navigate(`/product/${product._id}`)}
+                                >
+                                  View Order Details
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                className="px-3 py-1 border rounded text-sm cursor-pointer"
+                                onClick={() => navigate(`/product/${product._id}`)}
+                              >
+                                View Order
+                              </button>
+                            )}
                           </div>
                         </div>
 
-                        <ActionButtons order={order} item={it} />
+                        <div className="col-span-1 flex items-center">
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              order.status === "delivered"
+                                ? "bg-green-100 text-green-600"
+                                : order.status === "cancelled"
+                                ? "bg-red-100 text-red-600"
+                                : order.status === "processing"
+                                ? "bg-blue-100 text-blue-600"
+                                : "bg-orange-100 text-orange-600"
+                            }`}
+                          >
+                            {order.status || "Pending"}
+                          </span>
+                        </div>
+
+                        <div className="col-span-2 flex items-center text-gray-600">
+                          {formatDate(order.createdAt)}
+                        </div>
+
+                        <div className="col-span-1 flex items-center font-medium">
+                          {it.quantity}
+                        </div>
+
+                        <div className="col-span-1 flex items-center font-semibold text-gray-900">
+                          ₹{order.total}
+                        </div>
                       </div>
 
-                      <div className="col-span-1 flex items-center">
-                        <StatusPill status={order.status} />
-                      </div>
+                      {/* Mobile/Tablet Card Layout */}
+                      <div className="lg:hidden px-4 py-4">
+                        <div className="flex gap-3">
+                          <img
+                            src={`${APP_URL}${product.images?.[0]?.url}`}
+                            alt={product.name}
+                            className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                          />
 
-                      <div className="col-span-2 flex items-center">
-                        {formatDate(order.createdAt)}
-                      </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 text-sm">{product.name}</div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              Material: {product.attributes?.material || "-"} • Size: {product.dimensions?.sizeCategory || "-"}
+                            </div>
+                            <div className="text-purple-600 font-semibold text-sm mt-1">
+                              ₹{it.price} × {it.quantity}
+                            </div>
+                            <div className="text-[11px] text-gray-500 mt-1">
+                              Delivery by {addDays(order.createdAt, 4)}, 8 AM - 8 PM
+                            </div>
+                          </div>
+                        </div>
 
-                      <div className="col-span-1 flex items-center">
-                        {it.quantity}
-                      </div>
-
-                      <div className="col-span-1 flex items-center">
-                        ₹{order.total}
+                        <div className="flex justify-between items-center mt-3">
+                          {activeTab === "previous" ? (
+                            <div className="flex gap-2">
+                              <button className="px-3 py-1 border rounded text-xs">
+                                Download Invoice
+                              </button>
+                              <button
+                                className="px-3 py-1 border rounded text-xs cursor-pointer"
+                                onClick={() => navigate(`/product/${product._id}`)}
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              className="px-3 py-1 border rounded text-xs cursor-pointer"
+                              onClick={() => navigate(`/product/${product._id}`)}
+                            >
+                              View Order
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </>
   );

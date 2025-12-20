@@ -28,7 +28,7 @@ export default function Customers() {
   // ✅ Combined filtering (status + search)
   const filteredCustomers = useMemo(() => {
     // Map API data to UI structure
-    const mappedData = (customers || []).map((customer) => {
+    const mappedData = (customers || []).map(customer => {
       const user = customer.user || customer; // Handle potentially different nesting
       const profile = user.profile || {};
 
