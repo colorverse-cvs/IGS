@@ -111,8 +111,9 @@ export default function Navbar() {
   };
 
   // Build profile navigation links for dropdowns
-  const profileLinks = useMemo(
-    () => [
+  // Build profile navigation links for dropdowns
+  const profileLinks = useMemo(() => {
+    const links = [
       { to: "/profile", label: "Your Account", path: "/profile" },
       {
         to: "/orders",
@@ -120,10 +121,16 @@ export default function Navbar() {
         path: "/orders",
       },
       { to: "/cart", label: "Wishlist", path: "/cart" },
-    ],
-    []
-  );
+      { to: "/admin", label: "Admin Panel", path: "/admin" }
+    ];
 
+    // Only add Admin Panel link if user is admin
+    // if (user?.profile?.role === "admin") {
+    //   links.push({ to: "/admin", label: "Admin Panel", path: "/admin" });
+    // }
+
+    return links;
+  }, [user]);
   // Build searchable product list for search functionality
   const allProducts = useMemo(() => {
     const arr = [];
@@ -167,7 +174,6 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Products", isDropdown: true },
-    // { name: "Customization", path: "/customization" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -229,10 +235,10 @@ export default function Navbar() {
     navigate(`/filter?${params.toString()}`);
   };
 
-  const handleOpenAdminPanel = () => {
-    setIsAdminPanelOpen((prev) => !prev);
-    navigate("/admin");
-  };
+  // const handleOpenAdminPanel = () => {
+  //   setIsAdminPanelOpen((prev) => !prev);
+  //   navigate("/admin");
+  // };
 
   // Sync admin panel state with route
   useEffect(() => {
@@ -429,8 +435,8 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            <button className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 transition text-sm font-medium cursor-pointer"
-              onClick={handleOpenAdminPanel}>ADMIN PANEL</button>
+            {/* <button className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 transition text-sm font-medium cursor-pointer"
+              onClick={handleOpenAdminPanel}>ADMIN PANEL</button> */}
           </div>
         </div>
       </nav >

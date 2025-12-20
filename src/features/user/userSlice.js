@@ -45,6 +45,7 @@ const initialState = loadState() || {
     gender: '',
     dob: '',
     addresses: [],
+    role: '',
   },
 };
 
@@ -112,7 +113,7 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
       state.token = null;
       state.refreshToken = null;
-      state.profile = { id: null, name: '', email: '', mobile: '', gender: '', dob: '', addresses: [] };
+      state.profile = { id: null, name: '', email: '', mobile: '', gender: '', dob: '', addresses: [], role: '' };
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('id');
@@ -234,7 +235,8 @@ export const fetchUserProfileAsync = createAsyncThunk(
         mobile: apiData.profile?.mobile || apiData.mobile || '',
         gender: apiData.profile?.gender || apiData.gender || '',
         dob: apiData.profile?.dob || apiData.dob || '',
-        addresses: apiData.addresses || []
+        addresses: apiData.addresses || [],
+        role: apiData.role || ''
       }));
 
       return data;
