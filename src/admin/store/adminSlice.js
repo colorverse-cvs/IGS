@@ -101,6 +101,7 @@ const adminSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
             // Payments
             .addCase(fetchAllPaymentsAsync.pending, (state) => {
                 state.loading = true;
@@ -108,25 +109,14 @@ const adminSlice = createSlice({
             })
             .addCase(fetchAllPaymentsAsync.fulfilled, (state, action) => {
                 state.loading = false;
-                const payload = action.payload;
-                // Robust extraction of array data
-                if (Array.isArray(payload)) {
-                    state.payments = payload;
-                } else if (payload && Array.isArray(payload.payments)) {
-                    state.payments = payload.payments;
-                } else if (payload && Array.isArray(payload.data)) {
-                    state.payments = payload.data;
-                } else if (payload && Array.isArray(payload.result)) {
-                    state.payments = payload.result;
-                } else {
-                    state.payments = [];
-                    console.warn("fetchAllPaymentsAsync: Could not find payments array in payload", payload);
-                }
+                state.payments = action.payload?.data?.payments ?? [];
             })
             .addCase(fetchAllPaymentsAsync.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = action.payload || action.error?.message;
             })
+
+
             // Customers
             .addCase(fetchAllCustomersAsync.pending, (state) => {
                 state.loading = true;
@@ -162,21 +152,33 @@ const adminSlice = createSlice({
             })
             .addCase(fetchAllProductsAsync.fulfilled, (state, action) => {
                 state.loading = false;
+
                 const payload = action.payload;
-                // Robust extraction of array data
+
                 if (Array.isArray(payload)) {
                     state.products = payload;
-                } else if (payload && Array.isArray(payload.products)) {
+                }
+                else if (payload?.data?.payments && Array.isArray(payload.data.payments)) {
+                    state.products = payload.data.payments;
+                }
+                else if (payload?.products && Array.isArray(payload.products)) {
                     state.products = payload.products;
-                } else if (payload && Array.isArray(payload.data)) {
+                }
+                else if (payload?.data && Array.isArray(payload.data)) {
                     state.products = payload.data;
-                } else if (payload && Array.isArray(payload.items)) {
+                }
+                else if (payload?.items && Array.isArray(payload.items)) {
                     state.products = payload.items;
-                } else if (payload && Array.isArray(payload.result)) {
+                }
+                else if (payload?.result && Array.isArray(payload.result)) {
                     state.products = payload.result;
-                } else {
+                }
+                else {
                     state.products = [];
-                    console.warn("fetchAllProductsAsync: Could not find products array in payload", payload);
+                    console.warn(
+                        "fetchAllProductsAsync: Could not find array in payload",
+                        payload
+                    );
                 }
             })
             .addCase(fetchAllProductsAsync.rejected, (state, action) => {

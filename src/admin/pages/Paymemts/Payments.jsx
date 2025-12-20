@@ -36,24 +36,33 @@ export default function Payments() {
   }, [dispatch]);
 
   const filteredPayments = useMemo(() => {
-    // Map API data to UI structure
-    // Assuming API structure. Adjust property accessors based on actual API response.
-    // Fallback values provided to prevent crashes.
-    const mappedData = (payments || []).map(payment => ({
-      transactionID: payment.razorpayPaymentId || payment.transactionID || payment._id || "N/A",
-      orderID: payment.razorpayOrderId || payment.orderID || "N/A",
-      date: payment.createdAt ? new Date(payment.createdAt).toLocaleDateString() : "N/A",
-      amount: payment.amount ? (payment.amount / 100) : 0, // Assuming amount is in paise like orders
-      method: payment.method || "N/A",
-      gateway: "Razorpay", // Default or extract from payment.id prefix
-      status: payment.status || "Pending" // e.g. "captured", "failed"
-    }));
+    if (!payments) return [];
+
+    const mappedData = payments.map(payment => {
+      const details = payment.paymentDetails || {};
+      // console.log("payment ", payment);
+      // console.log("details ", details);
+      return {
+        transactionID: payment._id || "N/A",
+        orderID: payment.order || "N/A",
+        date: payment.createdAt ? new Date(payment.createdAt).toLocaleDateString("en-IN", {
+          year: 'numeric', month: 'short', day: 'numeric'
+        }) : "N/A",
+
+        amount: payment.amount || 0,
+        method: payment.paymentMethod || "N/A",
+        gateway: "Razorpay",
+        status: payment.status || "Pending"
+      };
+    });
 
     let data = mappedData;
 
     // Gateway filter
     if (categoryValue !== "All Gateway") {
-      data = data.filter(payment => payment.gateway === categoryValue);
+      data = data.filter(payment =>
+        String(payment.gateway).toLowerCase() === String(categoryValue).toLowerCase()
+      );
     }
 
     // Status filter
@@ -102,7 +111,7 @@ export default function Payments() {
         </div>
       </div>
 
-      <PaymentDetailCard />
+      <PaymentDetailCard payments={filteredPayments} />
 
       <div className="space-y-6 bg-white p-4 rounded-lg">
         <div className="flex flex-col lg:flex-row gap-4">

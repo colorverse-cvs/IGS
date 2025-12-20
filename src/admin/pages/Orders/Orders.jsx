@@ -59,7 +59,19 @@ export default function Orders() {
 
         // Amount: Access total directly. If it seems to be in paise (e.g. > 100x expected), divide by 100.
         // Based on the provided JSON: price=2000, total=200000. So total is in paise.
-        const amountValue = order.total ? order.total / 100 : 0;
+        // const amountValue = order.total ? order.total / 100 : 0;
+        // Always calculate total with discount applied from items
+        // Don't use order.total as it doesn't include discount calculations
+        const amountValue = items.reduce((sum, item) => {
+          const product = item.product || {};
+          const basePrice = item.price || 0;
+          const discount = product.discount || 0;
+          const quantity = item.quantity || 0;
+
+          // Apply discount: finalPrice = basePrice - (basePrice * discount / 100)
+          const discountedPrice = basePrice - (basePrice * discount / 100);
+          return sum + (discountedPrice * quantity);
+        }, 0);
 
         return {
           ...order,
@@ -123,6 +135,7 @@ export default function Orders() {
   }
 
   function handleOpenViewOrderModal(order) {
+    console.log("order", order);
     setSelectedOrder(order);
     setIsOpenViewOrderModal(true);
   }
