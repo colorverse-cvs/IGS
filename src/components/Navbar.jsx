@@ -111,7 +111,6 @@ export default function Navbar() {
   };
 
   // Build profile navigation links for dropdowns
-  // Build profile navigation links for dropdowns
   const profileLinks = useMemo(() => {
     const links = [
       { to: "/profile", label: "Your Account", path: "/profile" },
