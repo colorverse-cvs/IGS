@@ -296,95 +296,105 @@ export default function Settings() {
     passwordMatch;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
 
       {/* SHOP SETTINGS */}
-      <div className="bg-white p-4 rounded-xl shadow space-y-5">
+      <div className="bg-white p-4 md:p-6 rounded-xl shadow space-y-5">
         <p className="text-lg font-semibold">Shop Information</p>
 
         {/* SHOP NAME */}
         <div>
-          <label className="text-sm font-medium">Shop Name</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Shop Name</label>
           <input
             type="text"
             name="shopName"
             value={formData.shopName}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
           />
           {!formData.shopName && (
-            <p className="text-red-500 text-xs">Shop name is required</p>
+            <p className="text-red-500 text-xs mt-1">Shop name is required</p>
           )}
         </div>
 
         {/* CONTACT & EMAIL */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium">Contact Number</label>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Contact Number</label>
             <input
               type="text"
               name="contact"
               maxLength={10}
               value={formData.contact}
               onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
             />
             {!phoneValid && formData.contact && (
-              <p className="text-red-500 text-xs">Enter valid 10 digit number</p>
+              <p className="text-red-500 text-xs mt-1">Enter valid 10 digit number</p>
             )}
           </div>
 
           <div>
-            <label className="text-sm font-medium">Email</label>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
             />
             {!emailValid && formData.email && (
-              <p className="text-red-500 text-xs">Invalid email format</p>
+              <p className="text-red-500 text-xs mt-1">Invalid email format</p>
             )}
           </div>
         </div>
 
         {/* ADDRESS */}
         <div>
-          <label className="text-sm font-medium">Address</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Address</label>
           <textarea
             name="address"
             rows="3"
             value={formData.address}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
           />
           {!formData.address && (
-            <p className="text-red-500 text-xs">Address is required</p>
+            <p className="text-red-500 text-xs mt-1">Address is required</p>
           )}
         </div>
 
         {/* LOGO */}
         <div>
-          <label className="text-sm font-medium">Shop Logo</label>
-          <div className="flex justify-center md:justify-start mt-3">
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Shop Logo</label>
+          <div className="flex justify-start mt-2">
             <input
               type="file"
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
+              accept="image/*"
             />
             <div
               onClick={openFileDialog}
-              className="w-24 h-24 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-xl cursor-pointer"
+              className="w-24 h-24 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-xl cursor-pointer hover:border-purple-400 transition"
             >
               {preview ? (
-                <img src={preview} className="w-full h-full object-cover rounded-xl" />
+                <img src={preview} className="w-full h-full object-cover rounded-xl" alt="Shop logo" />
               ) : (
-                <Upload />
+                <div className="flex flex-col items-center justify-center text-gray-400">
+                  <Upload className="w-6 h-6 mb-1" />
+                  <span className="text-xs">Upload</span>
+                </div>
               )}
             </div>
           </div>
+          <button
+            onClick={openFileDialog}
+            className="mt-2 text-sm text-purple-600 hover:text-purple-700 font-medium"
+          >
+            Upload Logo
+          </button>
         </div>
 
         <button
@@ -397,7 +407,7 @@ export default function Settings() {
       </div>
 
       {/* PASSWORD SETTINGS */}
-      <div className="bg-white p-4 rounded-xl shadow space-y-5">
+      <div className="bg-white p-4 md:p-6 rounded-xl shadow space-y-5">
         <p className="text-lg font-semibold">Change Admin Password</p>
 
         {[
@@ -406,13 +416,13 @@ export default function Settings() {
           { key: "confirmPassword", label: "Confirm Password", show: "confirm" }
         ].map((item) => (
           <div key={item.key} className="relative">
-            <label className="text-sm font-medium">{item.label}</label>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">{item.label}</label>
             <input
               type={showPassword[item.show] ? "text" : "password"}
               name={item.key}
               value={passwordData[item.key]}
               onChange={handlePasswordChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-purple-500 outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 pr-10 focus:ring-2 focus:ring-purple-500 outline-none"
             />
             <span
               onClick={() =>
@@ -421,7 +431,7 @@ export default function Settings() {
                   [item.show]: !showPassword[item.show]
                 })
               }
-              className="absolute right-3 top-8 cursor-pointer text-gray-500"
+              className="absolute right-3 top-9 cursor-pointer text-gray-500 hover:text-gray-700"
             >
               {showPassword[item.show] ? <EyeOff size={18} /> : <Eye size={18} />}
             </span>

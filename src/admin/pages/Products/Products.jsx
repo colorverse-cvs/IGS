@@ -42,8 +42,7 @@ export default function Products() {
     fetchProducts();
   }, []);
 
-
-  // SEARCH by name 
+  // SEARCH by name
   useEffect(() => {
     const timer = setTimeout(() => {
       const result = allProducts.filter((product) => {
@@ -59,25 +58,42 @@ export default function Products() {
     return () => clearTimeout(timer);
   }, [searchTerm, allProducts]);
 
-  if (loading) return <div className="text-md text-center">Loading products...</div>;
+  if (loading)
+    return <div className="text-md text-center">Loading products...</div>;
 
   return (
     <>
-      {/* HEADER */}
-      <div className="product-label-top-wrapper flex flex-col sm:flex-row sm:items-center justify-between mb-4 p-4 gap-3">
+      {/* Desktop Header */}
+      <div className="hidden md:flex product-label-top-wrapper flex-col sm:flex-row sm:items-center justify-between mb-4 p-4 gap-3">
         <div className="dashboard-label-wrapper">
           <p className="text-xl font-semibold">Products</p>
-          <p className="text-sm text-gray-500">Manage your gift shop inventory</p>
+          <p className="text-sm text-gray-500">
+            Manage your gift shop inventory
+          </p>
         </div>
-        <button
-          className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg"
-          onClick={() => setAddProductModal(true)}
-        >
-          + Add Product
-        </button>
+        <div className="flex gap-3">
+          <button
+            className="bg-brand-700 px-5 py-2 cursor-pointer text-white rounded-lg"
+            onClick={() => setAddProductModal(true)}
+          >
+            + Add Product
+          </button>
+        </div>
       </div>
 
-      <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-md">
+      {/* Mobile Add Product Button - Centered */}
+      <div className="md:hidden mb-4 space-y-3">
+        <div className="flex gap-3">
+          <button
+            className="flex-1 bg-purple-600 px-5 py-3 cursor-pointer text-white rounded-lg flex items-center justify-center gap-2 font-medium"
+            onClick={() => setAddProductModal(true)}
+          >
+            <span className="text-xl">+</span> Add Product
+          </button>
+        </div>
+      </div>
+
+      <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-lg">
         {/* SEARCH */}
         <div className="search-bar-wrapper">
           <div className="relative">
@@ -86,80 +102,95 @@ export default function Products() {
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              🔍
+            </span>
           </div>
         </div>
 
         <div className="space-y-4">
           {filteredProducts.length === 0 && (
-            <p className="text-sm text-gray-500 text-center">No products found</p>
+            <p className="text-sm text-gray-500 text-center">
+              No products found
+            </p>
           )}
 
           {/* MAP REAL API PRODUCTS */}
           {filteredProducts.map((product) => {
-            const image =
-              product.images?.[0]?.url
-                ? `${BASE_URL}${product.images[0].url}`
-                : "https://via.placeholder.com/80";
+            const image = product.images?.[0]?.url
+              ? `${BASE_URL}${product.images[0].url}`
+              : "https://via.placeholder.com/80";
 
             const isLowStock = product.stock < 10; // <<< UPDATED
 
             return (
               <div
                 key={product.name}
-                className="border border-gray-100 hover:border-violet-500 rounded-xl p-4 bg-white shadow-sm
-                           flex flex-col md:flex-row md:justify-between md:items-center"
+                className="border border-gray-100 hover:border-violet-500 rounded-xl p-4 bg-white shadow-sm"
               >
                 {/* LEFT CONTENT */}
-                <div className="flex gap-3">
-                  <img src={image} alt={product.name} className="w-16 h-16 rounded-lg object-cover" />
+                <div className="flex gap-3 mb-3">
+                  <img
+                    src={image}
+                    alt={product.name}
+                    className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                  />
 
-                  <div className="flex-1">
-                    <div className="flex items-start gap-2">
-                      <p className="font-semibold text-sm leading-tight">{product.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start gap-2 flex-wrap">
+                      <p className="font-semibold text-sm leading-tight">
+                        {product.name}
+                      </p>
 
                       {isLowStock && (
-                        <span className="bg-orange-100 text-orange-600 text-[10px] px-2 py-0.5 rounded-full">
+                        <span className="bg-orange-100 text-orange-600 text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap">
                           Low Stock
                         </span>
                       )}
                     </div>
 
-                    <p className="text-xs text-gray-500">{product.category.name || "Uncategorized"}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {product.category.name || "Uncategorized"}
+                    </p>
 
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
                       {product.listPrice && (
-                        <span className="line-through text-gray-400 text-xs">₹{product.listPrice}</span>
+                        <span className="line-through text-gray-400 text-xs">
+                          ₹{product.listPrice}
+                        </span>
                       )}
-                      <span className="text-green-600 font-semibold text-sm">₹{product.price}</span>
-                      <span className="text-gray-500 text-xs">Stock: {product.stock}</span>
+                      <span className="text-green-600 font-semibold text-sm">
+                        ₹{product.price}
+                      </span>
+                      <span className="text-gray-500 text-xs">
+                        Stock: {product.stock}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* ACTIONS */}
-                <div className="mt-3 flex gap-2 md:mt-0 md:flex-row md:items-center">
+                <div className="flex gap-2 items-center justify-end">
                   <button
-                    className="flex items-center justify-center gap-2 border px-3 py-2 rounded-md hover:bg-gray-50
-                               w-full md:w-auto"
+                    className="flex items-center justify-center gap-2 border border-gray-200 px-3 py-2 rounded-md hover:bg-gray-50 text-sm"
                     onClick={() => {
                       setCurrentProduct(product);
                       setOpenEditProductModal(true);
                     }}
                   >
-                    <MdEditNote /> Edit
+                    <MdEditNote className="w-4 h-4" /> Edit
                   </button>
 
                   <button
                     className="text-red-600 hover:bg-red-50 p-2 rounded-md cursor-pointer"
                     onClick={() => {
                       setCurrentProduct(product);
-                      setOpenDeleteProductModal(true)
+                      setOpenDeleteProductModal(true);
                     }}
                   >
-                    <MdDelete className="text-red-500" />
+                    <MdDelete className="text-red-500 w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -169,30 +200,28 @@ export default function Products() {
       </div>
 
       {/* MODALS */}
-      {openAddProductModal &&
-        (
-          <AddProductModal
-            onClose={() => setAddProductModal(false)}
-            onProductAdded={fetchProducts}
-          />
-        )}
+      {openAddProductModal && (
+        <AddProductModal
+          onClose={() => setAddProductModal(false)}
+          onProductAdded={fetchProducts}
+        />
+      )}
 
       {openEditProductModal && (
         <EditProductModal
           onClose={() => setOpenEditProductModal(false)}
-          existingProduct={currentProduct}   // 👈 pass product
-          onUpdated={() => fetchProducts()}  // 👈 refresh products
+          existingProduct={currentProduct} // 👈 pass product
+          onUpdated={() => fetchProducts()} // 👈 refresh products
         />
       )}
 
       {openDeleteProductModal && (
         <DeleteProductConfirmationModal
           onClose={() => setOpenDeleteProductModal(false)}
-          existingProduct={currentProduct}   // pass clicked product
-          onUpdated={() => fetchProducts()}  // refresh list
+          existingProduct={currentProduct} // pass clicked product
+          onUpdated={() => fetchProducts()} // refresh list
         />
       )}
-
     </>
   );
 }

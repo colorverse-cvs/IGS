@@ -74,7 +74,7 @@ export default function ContactPage() {
       <section
       >
         <div 
-        className="bg-no-repeat bg-cover bg-center py-[5rem] px-4 md:px-15 lg:px-20"
+        className="bg-no-repeat bg-cover bg-center py-[3rem] md:py-[5rem] px-4 md:px-15 lg:px-20"
         style={{ backgroundImage: `url(${backgroundContact})` }}>
           {/* Outer white card */}
           <div className="bg-white rounded-2xl shadow-[0_18px_60px_rgba(0,0,0,0.15)] overflow-hidden grid grid-cols-1 md:grid-cols-[1.1fr_2fr] p-2.5">

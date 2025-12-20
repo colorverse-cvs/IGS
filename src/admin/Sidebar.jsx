@@ -11,8 +11,8 @@ export default function Sidebar({ setActivePage, activePage }) {
   ];
 
   return (
-    <div className="w-64 bg-white border-r shadow-sm border-gray-200">
-      <div className="p-5 text-xl font-bold text-purple-700 border-b border-gray-200 py-3.5">
+    <div className="w-50 lg:w-64 h-full bg-white border-r shadow-sm border-gray-200">
+      <div className="p-5 h-16 text-xl font-bold text-purple-700 border-b border-gray-200 py-3.5">
         Gift Shop Admin
       </div>
 
@@ -20,7 +20,11 @@ export default function Sidebar({ setActivePage, activePage }) {
         {menuItems.map((item) => (
           <li
             key={item}
-            onClick={() => setActivePage(item)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActivePage(item);
+            }}
             className={`
               mx-3 px-4 py-2 rounded-lg cursor-pointer transition
               ${

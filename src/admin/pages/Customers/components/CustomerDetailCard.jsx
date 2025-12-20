@@ -19,11 +19,11 @@ const cardsData = [
 
 export default function CustomerDetailCard() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-6 px-0">
       {cardsData.map((card, index) => (
         <div
           key={index}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex justify-between items-start"
+          className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6"
         >
           <div>
             <p className="text-sm text-gray-500 font-medium">

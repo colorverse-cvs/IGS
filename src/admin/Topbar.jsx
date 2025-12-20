@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { getUserInfo } from "./utils/userInfo";
 
 export default function Topbar({ setActivePage }) {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { name, initials } = getUserInfo();
 
   const handleDropdownClick = () => {
     setIsPopupVisible(prev => !prev);
@@ -41,10 +43,10 @@ export default function Topbar({ setActivePage }) {
         onClick={handleDropdownClick}
       >
         <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">
-          IG
+          {initials}
         </div>
 
-        <span className="text-gray-600 font-medium">Ishita Gallery</span>
+        <span className="text-gray-600 font-medium">{name}</span>
         {isPopupVisible ? <MdExpandLess /> : <MdExpandMore />}
       </div>
 

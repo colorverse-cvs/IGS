@@ -99,7 +99,7 @@ export default function Cart({ isDrawer = false, onClose }) {
         </div>
       ) : (
         <div
-          className={`flex ${isDrawer ? "flex-col h-[90vh]" : "flex-col md:flex-row gap-8 relative"
+          className={`flex ${isDrawer ? "flex-col h-[88vh]" : "flex-col md:flex-row gap-8 relative"
             }`}
         >
           {/* Cart Items */}
@@ -165,7 +165,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
                       <button
                         type="button"
-                        className="text-red-600 text-xs"
+                        className="text-red-600 text-xs pt-2"
                         onClick={() => handleRemoveItem(item.id)}
                       >
                         <span className="hidden lg:block">Remove from cart</span>

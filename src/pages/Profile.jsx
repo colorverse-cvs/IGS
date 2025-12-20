@@ -636,7 +636,6 @@ export default function Profile() {
                   }));
                 } else {
                   // creating new address via API
-                  console.log('[Profile] Adding new address');
                   dispatch(addAddressAsync(a));
                 }
                 setIsAddressModalOpen(false);
