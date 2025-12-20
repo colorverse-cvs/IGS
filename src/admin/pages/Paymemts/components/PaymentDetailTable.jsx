@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 
 export default function PaymentDetailTable({ data }) {
   const navigate = useNavigate();
-  console.log("data ", data);
   if (!data?.length) {
     return (
       <div className="text-center py-10 bg-white rounded-xl border border-gray-100 shadow-sm">

@@ -54,7 +54,6 @@ export default function Cart({ isDrawer = false, onClose }) {
   };
 
   const handleRemoveItem = (id) => {
-    console.log("Removing item from cart", id);
     dispatch(removeItemFromCartAsync(id));
   };
 

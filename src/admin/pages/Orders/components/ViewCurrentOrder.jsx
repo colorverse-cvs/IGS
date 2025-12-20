@@ -10,8 +10,14 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
   const downloadInvoicePDF = (order) => {
     const doc = new jsPDF();
 
-    doc.setFontSize(18);
-    doc.text("Invoice", 14, 20);
+
+    doc.setFontSize(16);
+    doc.text(
+      "Ishita Gallery shop Order Invoice",
+      doc.internal.pageSize.getWidth() / 2,
+      20,
+      { align: "center" }
+    );
 
     doc.setFontSize(11);
     doc.text(`Order ID: ${orderId}`, 14, 35);
@@ -27,7 +33,13 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
     doc.text(`Amount: ₹${order.amount}`, 14, 115);
     doc.text(`Address: ${order.address}`, 14, 125, { maxWidth: 180 });
 
-    doc.save(`order-${orderId}.pdf`);
+    // for download
+    // doc.save(`order-${orderId}.pdf`);
+
+    //for print instead download
+    doc.autoPrint();
+    window.open(doc.output("bloburl"));
+
   };
 
 

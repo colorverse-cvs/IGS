@@ -124,27 +124,40 @@ const adminSlice = createSlice({
             })
             .addCase(fetchAllCustomersAsync.fulfilled, (state, action) => {
                 state.loading = false;
+
                 const payload = action.payload;
-                // Robust extraction of array data
-                if (Array.isArray(payload)) {
+
+                if (Array.isArray(payload?.data?.data)) {
+                    state.customers = payload.data.data;
+                }
+                else if (Array.isArray(payload)) {
                     state.customers = payload;
-                } else if (payload && Array.isArray(payload.customers)) {
+                }
+                else if (Array.isArray(payload?.customers)) {
                     state.customers = payload.customers;
-                } else if (payload && Array.isArray(payload.data)) {
+                }
+                else if (Array.isArray(payload?.data)) {
                     state.customers = payload.data;
-                } else if (payload && Array.isArray(payload.users)) {
+                }
+                else if (Array.isArray(payload?.users)) {
                     state.customers = payload.users;
-                } else if (payload && Array.isArray(payload.result)) {
+                }
+                else if (Array.isArray(payload?.result)) {
                     state.customers = payload.result;
-                } else {
+                }
+                else {
                     state.customers = [];
-                    console.warn("fetchAllCustomersAsync: Could not find customers array in payload", payload);
+                    console.warn(
+                        "fetchAllCustomersAsync: Could not find customers array in payload",
+                        payload
+                    );
                 }
             })
             .addCase(fetchAllCustomersAsync.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = action.payload || action.error?.message;
             })
+
             // Products
             .addCase(fetchAllProductsAsync.pending, (state) => {
                 state.loading = true;

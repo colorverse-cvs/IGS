@@ -55,7 +55,7 @@ export default function ShowCurrentCustomerDetail({ currentCustomerDetail, onClo
 
                         <div className="flex justify-between font-semibold">
                             <span>Total Spent:</span>
-                            <span>₹{currentCustomerDetail.totalSpent}</span>
+                            <span>₹{(currentCustomerDetail.totalSpent || 0).toLocaleString()}</span>
                         </div>
 
                         <div className="flex justify-between font-semibold">

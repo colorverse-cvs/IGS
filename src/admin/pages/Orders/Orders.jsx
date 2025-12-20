@@ -135,7 +135,6 @@ export default function Orders() {
   }
 
   function handleOpenViewOrderModal(order) {
-    console.log("order", order);
     setSelectedOrder(order);
     setIsOpenViewOrderModal(true);
   }
