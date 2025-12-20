@@ -491,7 +491,7 @@ export default function CheckoutPage() {
                                 </span>
                               </button>
                             </div>
-                            <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
+                            {/* <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
                               <input
                                 type="checkbox"
                                 checked={!!wrapMap[i.id]}
@@ -504,7 +504,7 @@ export default function CheckoutPage() {
                                 }}
                               />
                               Gift wrap this item (₹20 for wrapping)
-                            </label>
+                            </label> */}
                             <div className="text-xs text-gray-500 mt-1">
                               Estimated Delivery –{" "}
                               <span className="font-semibold">

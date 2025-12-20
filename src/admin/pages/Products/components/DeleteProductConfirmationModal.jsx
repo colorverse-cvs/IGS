@@ -7,7 +7,6 @@ export default function DeleteProductConfirmationModal({
   onUpdated
 }) {
   const handleDelete = async () => {
-    console.log("existingProduct", existingProduct);
 
     try {
       const response = await fetch(

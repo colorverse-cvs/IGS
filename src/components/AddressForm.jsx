@@ -35,7 +35,7 @@ export default function AddressForm({
   // Initialize granular fields from API structure
   const [flat, setFlat] = useState(initial?.line1 || initial?.flat || "");
   const [area, setArea] = useState(initial?.line2 || initial?.area || "");
-  const [landmark, setLandmark] = useState(initial?.landmark || "");
+  const [landmark, setLandmark] = useState(initial?.line3 || initial?.landmark || "");
   const [pincode, setPincode] = useState(initial?.postalCode || initial?.pincode || "");
   const [city, setCity] = useState(initial?.city || "");
   const [state, setState] = useState(initial?.state || "");
@@ -91,7 +91,8 @@ export default function AddressForm({
       isDefault: makeDefault,
       // Granular fields for API
       line1: flat,
-      line2: `${area} ${landmark ? "Near " + landmark : ""}`.trim(),
+      line2: area,
+      line3: landmark,
       city,
       state,
       postalCode: pincode,
