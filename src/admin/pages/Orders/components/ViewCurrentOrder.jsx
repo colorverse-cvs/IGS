@@ -1,6 +1,36 @@
+import jsPDF from "jspdf";
+
 export default function ViewCurrentOrder({ currentOrder, onClose }) {
   if (!currentOrder) return null;
-  console.log("currentOrder", currentOrder);
+  // console.log("currentOrder", currentOrder);
+
+  // Use fullId for internal processing/PDFs but falling back to id if fullId is not set
+  const orderId = currentOrder.fullId || currentOrder.id;
+
+  const downloadInvoicePDF = (order) => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Invoice", 14, 20);
+
+    doc.setFontSize(11);
+    doc.text(`Order ID: ${orderId}`, 14, 35);
+    doc.text(`Status: ${order.status}`, 14, 42);
+    doc.text(`Customer: ${order.customer}`, 14, 49);
+    doc.text(`Mobile: ${order.mobileNumber}`, 14, 56);
+    doc.text(`Date: ${order.date}`, 14, 63);
+    doc.text(`Payment Method: ${order.paymentMethod}`, 14, 70);
+
+    doc.text("Items:", 14, 82);
+    doc.text(order.items, 14, 90, { maxWidth: 180 });
+
+    doc.text(`Amount: ₹${order.amount}`, 14, 115);
+    doc.text(`Address: ${order.address}`, 14, 125, { maxWidth: 180 });
+
+    doc.save(`order-${orderId}.pdf`);
+  };
+
+
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
@@ -8,7 +38,7 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4 cursor-default">
           <p className="text-lg font-semibold">
-            Order Details - {currentOrder.id}
+            Order Details - {orderId}
           </p>
           <button
             onClick={onClose}
@@ -74,7 +104,8 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
 
         {/* FOOTER BUTTONS */}
         <div className="flex gap-4">
-          <button className="flex-1 border border-gray-300 rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer">
+          <button className="flex-1 border border-gray-300 rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer"
+            onClick={() => downloadInvoicePDF(currentOrder)}>
             🖨 Print Invoice
           </button>
           <button

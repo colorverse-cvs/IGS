@@ -197,7 +197,7 @@ export default function Orders() {
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">{order.id}</span>
+                      <span className="font-semibold text-sm">{`ORD-${order.id.slice(-5)}`}</span>
                       <span
                         className={`text-xs px-2 py-1 rounded-full ${order.statusColor}`}
                       >
