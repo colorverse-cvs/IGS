@@ -1,7 +1,10 @@
 import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Upload, Eye, EyeOff } from "lucide-react";
-import { fetchUserProfileAsync, updateProfileAsync } from "../../../features/user/userSlice";
+import { fetchUserProfileAsync, updateProfileAsync, forgotPasswordAsync, resetPasswordAsync } from "../../../features/user/userSlice";
+import Modal from "../../../components/Modal";
+import { CheckCircle } from "lucide-react";
+import { BASE_URL } from "../../../utils/constants";
 import toast from "react-hot-toast";
 
 export default function Settings() {
@@ -10,6 +13,8 @@ export default function Settings() {
   const { profile } = useSelector((state) => state.user);
   const [preview, setPreview] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [formData, setFormData] = useState({
     shopName: "",
@@ -36,6 +41,7 @@ export default function Settings() {
   }, [dispatch]);
 
   useEffect(() => {
+    console.log(profile);
     if (profile) {
       // Find default address or use the first one
       const defaultAddr = profile.addresses?.find(a => a.isDefault) || profile.addresses?.[0];
@@ -85,17 +91,53 @@ export default function Settings() {
     setIsSaving(true);
     try {
       // updateProfileAsync expects { name, mobile }
-      // The address/email/shopName mapping depends on backend capabilities
-      // Here we map Settings shopName to profile name
       const resultAction = await dispatch(updateProfileAsync({
         name: formData.shopName,
         mobile: formData.contact
       }));
 
       if (updateProfileAsync.fulfilled.match(resultAction)) {
-        toast.success("Settings updated successfully");
+        setSuccessMessage("Shop settings have been updated successfully.");
+        setShowSuccessModal(true);
       } else {
         toast.error(resultAction.payload || "Failed to update settings");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!isPasswordValid) return;
+    setIsSaving(true);
+    try {
+      // Step 1: Request reset token
+      const forgotAction = await dispatch(forgotPasswordAsync(profile.email));
+
+      if (forgotPasswordAsync.fulfilled.match(forgotAction)) {
+        const resetToken = forgotAction.payload;
+
+        // Step 2: Use token to reset password
+        const resetAction = await dispatch(resetPasswordAsync({
+          token: resetToken,
+          newPassword: passwordData.newPassword
+        }));
+
+        if (resetPasswordAsync.fulfilled.match(resetAction)) {
+          setSuccessMessage("Password has been updated successfully.");
+          setShowSuccessModal(true);
+          setPasswordData({
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: ""
+          });
+        } else {
+          toast.error(resetAction.payload || "Failed to reset password");
+        }
+      } else {
+        toast.error(forgotAction.payload || "Failed to start password reset");
       }
     } catch (error) {
       toast.error("An unexpected error occurred");
@@ -264,13 +306,36 @@ export default function Settings() {
         ))}
 
         <button
-          disabled={!isPasswordValid}
+          onClick={handleUpdatePassword}
+          disabled={!isPasswordValid || isSaving}
           className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all
-          ${isPasswordValid ? "bg-purple-700 hover:bg-purple-800" : "bg-gray-400 cursor-not-allowed"}`}
+          ${isPasswordValid && !isSaving ? "bg-purple-700 hover:bg-purple-800" : "bg-gray-400 cursor-not-allowed"}`}
         >
-          Update Password
+          {isSaving ? "Updating..." : "Update Password"}
         </button>
       </div>
+
+      {/* SUCCESS MODAL */}
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        showHeader={false}
+        className="max-w-md w-full"
+      >
+        <div className="p-8 text-center flex flex-col items-center">
+          <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
+            <CheckCircle size={32} />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Success!</h3>
+          <p className="text-gray-600 mb-6">{successMessage}</p>
+          <button
+            onClick={() => setShowSuccessModal(false)}
+            className="w-full bg-brand-600 text-white py-2.5 rounded-lg font-semibold hover:bg-brand-700 transition"
+          >
+            Great, thanks!
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
