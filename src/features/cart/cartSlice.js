@@ -272,8 +272,9 @@ export const clearCartAsync = createAsyncThunk(
   'cart/clearCartAsync',
   async (_, { dispatch, rejectWithValue }) => {
     try {
-      await api.delete('/api/v1/cart/remove'); // Clears entire cart
+      console.log("Clearing cart");
       dispatch(clearCart());
+      await api.delete('/api/v1/cart/remove'); // Clears entire cart
       return true;
     } catch (error) {
       console.error('Error clearing cart:', error);
