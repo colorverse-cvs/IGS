@@ -2,12 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { getUserInfo } from "./utils/userInfo";
+import { logoutAsync } from "../features/user/userSlice";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 
 export default function Topbar({ setActivePage }) {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { name, initials } = getUserInfo();
+  const dispatch = useDispatch();
 
   const handleDropdownClick = () => {
     setIsPopupVisible(prev => !prev);
@@ -30,15 +34,21 @@ export default function Topbar({ setActivePage }) {
     setIsPopupVisible(false);
   };
 
-  const handleLogout = (action) => {
-    setIsPopupVisible(false);
-      // Navigate to home
+  const handleLogout = () => {
+    dispatch(logoutAsync());
     navigate("/");
+    setIsPopupVisible(false);
+    toast("User Signed Out", {
+      icon: "👋",
+      style: {
+        color: "red",
+      },
+    });
   };
 
   return (
     <div className="h-16 bg-white border-b border-gray-200 flex justify-end px-8 relative">
-      <div 
+      <div
         className="flex items-center gap-4 cursor-pointer select-none"
         onClick={handleDropdownClick}
       >
@@ -63,7 +73,7 @@ export default function Topbar({ setActivePage }) {
           </button>
 
           <button
-            onClick={() => handleLogout("logout")}
+            onClick={() => handleLogout()}
             className="block w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-50 cursor-pointer"
           >
             Logout

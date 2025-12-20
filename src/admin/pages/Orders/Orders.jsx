@@ -229,9 +229,9 @@ export default function Orders() {
                     <FaRegEye /> View
                   </button>
 
-                  <button className="flex items-center justify-center gap-2 border border-gray-100 px-3 py-2 rounded-md text-sm hover:bg-gray-50">
+                  {/* <button className="flex items-center justify-center gap-2 border border-gray-100 px-3 py-2 rounded-md text-sm hover:bg-gray-50">
                     <AiFillPrinter /> Print
-                  </button>
+                  </button> */}
                 </div>
               </div>
             ))}
