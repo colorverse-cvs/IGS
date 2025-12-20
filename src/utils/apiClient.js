@@ -46,7 +46,6 @@ const refreshAccessToken = async () => {
             throw new Error('Missing refresh token or user ID');
         }
 
-        console.log('[Token Refresh] Attempting to refresh token...');
 
         const response = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
             method: 'POST',
@@ -71,7 +70,6 @@ const refreshAccessToken = async () => {
             throw new Error('No token in refresh response');
         }
 
-        console.log('[Token Refresh] Token refreshed successfully');
 
         // Update localStorage with new tokens
         const updatedUserData = {
@@ -136,7 +134,6 @@ export const apiFetch = async (url, options = {}) => {
 
     // If 401 (Unauthorized), try to refresh token
     if (response.status === 401) {
-        console.log('[API Client] 401 error detected, attempting token refresh...');
 
         if (!isRefreshing) {
             isRefreshing = true;
@@ -147,7 +144,6 @@ export const apiFetch = async (url, options = {}) => {
                 onTokenRefreshed(newToken);
 
                 // Retry the original request with new token
-                console.log('[API Client] Retrying original request with new token...');
                 response = await fetch(url, {
                     ...options,
                     headers: {
@@ -164,8 +160,6 @@ export const apiFetch = async (url, options = {}) => {
             }
         } else {
             // If already refreshing, wait for it to complete
-            console.log('[API Client] Token refresh already in progress, waiting...');
-
             return new Promise((resolve, reject) => {
                 subscribeTokenRefresh((newToken) => {
                     if (newToken) {

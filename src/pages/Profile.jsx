@@ -48,10 +48,7 @@ export default function Profile() {
 
   // Fetch addresses when tab changes to 'addresses'
   React.useEffect(() => {
-    console.log('[Profile] Tab changed:', tab);
-    console.log('[Profile] User profile ID:', user?.profile?.id);
     if (tab === "addresses" && user?.profile?.id) {
-      console.log('[Profile] Fetching addresses for user:', user.profile.id);
       dispatch(fetchAddressesAsync(user.profile.id));
     }
   }, [tab, user?.profile?.id, dispatch]);
@@ -109,7 +106,6 @@ export default function Profile() {
 
   // Addresses
   const addresses = user?.profile?.addresses || [];
-  console.log('[Profile] Current addresses:', addresses);
   const [isAddressModalOpen, setIsAddressModalOpen] = React.useState(false);
   const [editAddress, setEditAddress] = React.useState(null);
 
@@ -581,7 +577,6 @@ export default function Profile() {
                       <button
                         className="text-xs text-brand-700 cursor-pointer"
                         onClick={() => {
-                          console.log('[Profile] Edit address clicked:', addr);
                           setEditAddress(addr);
                           setIsAddressModalOpen(true);
                         }}
@@ -592,7 +587,6 @@ export default function Profile() {
                         className="text-xs text-brand-700 cursor-pointer"
                         onClick={() => {
                           const addressId = addr._id || addr.id;
-                          console.log('[Profile] Remove address clicked:', addressId);
                           dispatch(removeAddressAsync(addressId));
                         }}
                       >
@@ -603,7 +597,6 @@ export default function Profile() {
                           className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold cursor-pointer"
                           onClick={() => {
                             const addressId = addr._id || addr.id;
-                            console.log('[Profile] Set default address clicked:', addressId);
                             dispatch(setDefaultAddressAsync(addressId));
                           }}
                         >
@@ -635,11 +628,8 @@ export default function Profile() {
               submitLabel={editAddress ? "Save address" : "Use this address"}
               onCancel={() => setIsAddressModalOpen(false)}
               onSubmit={(a) => {
-                console.log('[Profile] Address form submitted:', a);
                 if (editAddress) {
-                  // Update existing address - use _id from API
                   const addressId = editAddress._id || editAddress.id;
-                  console.log('[Profile] Updating address:', addressId);
                   dispatch(updateAddressAsync({
                     addressId: addressId,
                     addressData: a

@@ -20,7 +20,6 @@ export default function Dashboard({ setActivePage }) {
       if (!response.ok) throw new Error(`Error: ${response.status}`);
 
       const result = await response.json();
-      console.log(result.data);
 
       setAllProducts(result.data);
     } catch (error) {

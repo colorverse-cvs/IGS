@@ -74,8 +74,6 @@ const refreshAccessToken = async () => {
             throw new Error('Missing refresh token or user ID');
         }
 
-        console.log('[Token Refresh] Attempting to refresh token...');
-
         // We use fetch directly here to avoid circular dependency or interceptor loops
         const response = await fetch(`${BASE_URL}/api/v1/auth/refresh`, {
             method: 'POST',
@@ -100,7 +98,6 @@ const refreshAccessToken = async () => {
             throw new Error('No token in refresh response');
         }
 
-        console.log('[Token Refresh] Token refreshed successfully');
 
         // Update localStorage with new tokens
         localStorage.setItem('token', newToken); // Legacy key
