@@ -26,7 +26,6 @@ const addDays = (iso, days) => {
   return formatDate(date);
 };
 
-
 const normalizeStatus = (status) => {
   if (status === "pending") return "placed";
   return status || "placed";
@@ -55,9 +54,7 @@ export default function OrdersPage() {
 
     return (
       order._id?.toLowerCase().includes(q) ||
-      order.items?.some((it) =>
-        it.product?.name?.toLowerCase().includes(q)
-      )
+      order.items?.some((it) => it.product?.name?.toLowerCase().includes(q))
     );
   };
 
@@ -71,9 +68,7 @@ export default function OrdersPage() {
   const currentOrders = useMemo(
     () =>
       orders.filter(
-        (o) =>
-          ["pending", "processing"].includes(o.status) &&
-          matchesQuery(o)
+        (o) => ["pending", "processing"].includes(o.status) && matchesQuery(o)
       ),
     [orders, query]
   );
@@ -81,9 +76,7 @@ export default function OrdersPage() {
   const previousOrders = useMemo(
     () =>
       orders.filter(
-        (o) =>
-          ["delivered", "cancelled"].includes(o.status) &&
-          matchesQuery(o)
+        (o) => ["delivered", "cancelled"].includes(o.status) && matchesQuery(o)
       ),
     [orders, query]
   );
@@ -92,8 +85,8 @@ export default function OrdersPage() {
     activeTab === "orders"
       ? filteredAll
       : activeTab === "current"
-        ? currentOrders
-        : previousOrders;
+      ? currentOrders
+      : previousOrders;
 
   /* -------------------- UI Helpers -------------------- */
 
@@ -116,8 +109,9 @@ export default function OrdersPage() {
 
     return (
       <span
-        className={`text-xs px-2 py-1 rounded border ${colorMap[s] || colorMap.placed
-          }`}
+        className={`text-xs px-2 py-1 rounded border ${
+          colorMap[s] || colorMap.placed
+        }`}
       >
         {labelMap[s]}
       </span>
@@ -170,10 +164,7 @@ export default function OrdersPage() {
 
   /* -------------------- Render -------------------- */
 
-  const breadcrumbItems = [
-    { label: "Home", link: "/" },
-    { label: "Orders" },
-  ];
+  const breadcrumbItems = [{ label: "Home", link: "/" }, { label: "Orders" }];
 
   return (
     <>
@@ -191,10 +182,11 @@ export default function OrdersPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 capitalize ${activeTab === tab
-                  ? "border-b-2 border-brand-700 text-brand-700"
-                  : "text-gray-600"
-                  }`}
+                className={`pb-2 capitalize ${
+                  activeTab === tab
+                    ? "border-b-2 border-brand-700 text-brand-700"
+                    : "text-gray-600"
+                }`}
               >
                 {tab} orders
               </button>
@@ -250,26 +242,22 @@ export default function OrdersPage() {
                         />
 
                         <div className="flex-1">
-                          <div className="font-medium">
-                            {product.name}
-                          </div>
+                          <div className="font-medium">{product.name}</div>
                           <div className="text-xs text-gray-500">
-                            Material:{" "}
-                            {product.attributes?.material || "-"}
+                            Material: {product.attributes?.material || "-"}
                           </div>
 
                           <div className="text-xs text-gray-500">
-                            Size:{" "}
-                            {product.dimensions?.sizeCategory || "-"}
+                            Size: {product.dimensions?.sizeCategory || "-"}
                           </div>
 
                           <div className="text-brand-700 font-semibold">
                             ₹{it.price}
                           </div>
                           <div className="text-[11px] text-gray-500">
-                            Will be delivered by {addDays(order.createdAt, 4)}, 8 AM - 8 PM
+                            Will be delivered by {addDays(order.createdAt, 4)},
+                            8 AM - 8 PM
                           </div>
-
                         </div>
 
                         <ActionButtons order={order} item={it} />
@@ -301,4 +289,3 @@ export default function OrdersPage() {
     </>
   );
 }
-

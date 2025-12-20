@@ -23,7 +23,6 @@ import { logoutAsync, fetchUserProfileAsync } from "../features/user/userSlice";
 import { initializeCart, clearCart } from "../features/cart/cartSlice";
 import { useAdminPanel } from "../contexts/AdminPanelContext";
 
-
 export default function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -120,7 +119,7 @@ export default function Navbar() {
         path: "/orders",
       },
       { to: "/cart", label: "Wishlist", path: "/cart" },
-      { to: "/admin", label: "Admin Panel", path: "/admin" }
+      { to: "/admin", label: "Admin Panel", path: "/admin" },
     ];
 
     // Only add Admin Panel link if user is admin
@@ -130,6 +129,7 @@ export default function Navbar() {
 
     return links;
   }, [user]);
+
   // Build searchable product list for search functionality
   const allProducts = useMemo(() => {
     const arr = [];
@@ -250,12 +250,17 @@ export default function Navbar() {
           Shows: Logo, navigation links, product dropdown, search, auth buttons, cart icon
           Features: Sticky positioning with glass blur effect on scroll */}
       <nav
-        className={`hidden lg:block sticky top-0 z-30 border-b transition-colors ${isScrolled
-          ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
-          : "bg-white border-gray-100"
-          }`}
+        className={`hidden lg:block sticky top-0 z-30 border-b transition-colors ${
+          isScrolled
+            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+            : "bg-white border-gray-100"
+        }`}
       >
-        <div className={`mx-auto px-4 md:px-15 lg:px-20 max-w-7xl lg:max-w-full ${isAdminPanelOpen ? 'hidden' : ''}`}>
+        <div
+          className={`mx-auto px-4 md:px-15 lg:px-20 max-w-7xl lg:max-w-full ${
+            isAdminPanelOpen ? "hidden" : ""
+          }`}
+        >
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
@@ -282,8 +287,9 @@ export default function Navbar() {
                           {link.name}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
-                              }`}
+                            className={`transition-transform ${
+                              isOpen ? "rotate-180" : "rotate-0"
+                            }`}
                           />
                         </button>
                       )}
@@ -351,8 +357,9 @@ export default function Navbar() {
                           {user.profile.name}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
-                              }`}
+                            className={`transition-transform ${
+                              isOpen ? "rotate-180" : "rotate-0"
+                            }`}
                           />
                         </span>
                       </span>
@@ -382,8 +389,9 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${idx === 0 ? "first:rounded-t-lg" : ""
-                        } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                        idx === 0 ? "first:rounded-t-lg" : ""
+                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
                       {item.label}
                     </button>
@@ -438,18 +446,22 @@ export default function Navbar() {
               onClick={handleOpenAdminPanel}>ADMIN PANEL</button> */}
           </div>
         </div>
-      </nav >
+      </nav>
       {/* MOBILE NAVBAR - Fixed top navigation bar for small/medium screens (md and below)
           Shows: Logo on left, search and auth on right (on md+), responsive bottom search
           Features: Sticky positioning with blur effect on scroll */}
-      < nav
-        className={`lg:hidden fixed top-0 left-0 right-0 z-40 border-b border-gray-200 ${isScrolled
-          ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
-          : "bg-white border-gray-100"
-          }`
-        }
+      <nav
+        className={`lg:hidden fixed top-0 left-0 right-0 z-40 border-b border-gray-200 ${
+          isScrolled
+            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+            : "bg-white border-gray-100"
+        }`}
       >
-        <div className={`py-3 px-4 md:px-15 lg:px-20 ${isAdminPanelOpen ? 'hidden' : ''}`}>
+        <div
+          className={`py-3 px-4 md:px-15 lg:px-20 ${
+            isAdminPanelOpen ? "hidden" : ""
+          }`}
+        >
           {/* Top Navbar Row */}
           <div className="flex justify-between items-center h-14">
             {/* Logo on left */}
@@ -486,8 +498,9 @@ export default function Navbar() {
                           {user.profile.name}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
-                              }`}
+                            className={`transition-transform ${
+                              isOpen ? "rotate-180" : "rotate-0"
+                            }`}
                           />
                         </span>
                       </span>
@@ -516,8 +529,9 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${idx === 0 ? "first:rounded-t-lg" : ""
-                        } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                        idx === 0 ? "first:rounded-t-lg" : ""
+                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
                       {item.label}
                     </button>
@@ -602,8 +616,9 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${idx === 0 ? "first:rounded-t-lg" : ""
-                        } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                        idx === 0 ? "first:rounded-t-lg" : ""
+                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
                       {item.label}
                     </button>
@@ -668,104 +683,107 @@ export default function Navbar() {
             </div>
           )}
         </div>
-      </nav >
-
-      <div
-        className="md:hidden"
-        style={{ height: isHomePage ? "114px" : "85px" }}
-      />
-      <div
-        className="hidden md:block lg:hidden"
-        style={{
-          height: isAdminPanelOpen ? "unset" : isHomePage ? "80px" : "85px",
-        }}
-      />
+      </nav>
+      {!isAdminPanelOpen && (
+        <>
+          <div
+            className="md:hidden"
+            style={{ height: isHomePage ? "114px" : "85px" }}
+          />
+          <div
+            className="hidden md:block lg:hidden"
+            style={{
+              height: isAdminPanelOpen ? "unset" : isHomePage ? "80px" : "85px",
+            }}
+          />
+        </>
+      )}
 
       {/* MOBILE BOTTOM NAVBAR - Fixed navigation at bottom of screen (mobile only, lg:hidden)
           Shows: Home, Profile, Contact, Cart, Menu (5 main navigation options)
           Features: Active state highlighting, cart badge with item count */}
-      {
-        !isAdminPanelOpen && (
-          <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200">
-            <div className="flex justify-around items-center h-16">
-              {/* Home */}
-              <Link
-                to="/"
-                className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/"
+      {!isAdminPanelOpen && (
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200">
+          <div className="flex justify-around items-center h-16">
+            {/* Home */}
+            <Link
+              to="/"
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+                location.pathname === "/"
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
-                  }`}
-                aria-label="Home"
-              >
-                <Home size={24} />
-                <span className="text-xs mt-1 font-medium">Home</span>
-              </Link>
+              }`}
+              aria-label="Home"
+            >
+              <Home size={24} />
+              <span className="text-xs mt-1 font-medium">Home</span>
+            </Link>
 
-              {/* Profile */}
-              <Link
-                to="/profile"
-                className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/profile"
+            {/* Profile */}
+            <Link
+              to="/profile"
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+                location.pathname === "/profile"
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
-                  }`}
-                aria-label="Profile"
-              >
-                <User size={24} />
-                <span className="text-xs mt-1 font-medium">Profile</span>
-              </Link>
+              }`}
+              aria-label="Profile"
+            >
+              <User size={24} />
+              <span className="text-xs mt-1 font-medium">Profile</span>
+            </Link>
 
-              {/* Contact */}
-              <Link
-                to="/contact"
-                className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/contact"
+            {/* Contact */}
+            <Link
+              to="/contact"
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+                location.pathname === "/contact"
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
-                  }`}
-                aria-label="Contact"
-              >
-                <Phone size={24} />
-                <span className="text-xs mt-1 font-medium">Contact</span>
-              </Link>
+              }`}
+              aria-label="Contact"
+            >
+              <Phone size={24} />
+              <span className="text-xs mt-1 font-medium">Contact</span>
+            </Link>
 
-              {/* Cart */}
+            {/* Cart */}
 
-              {user.isAuthenticated && (
-                <button
-                  onClick={toggleCart}
-                  className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
-                  aria-label={`Cart with ${totalItems} items`}
-                >
-                  <div className="relative">
-                    <ShoppingCart size={24} />
-                    {totalItems > 0 && (
-                      <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
-                        {totalItems > 99 ? "99+" : totalItems}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-xs mt-1 font-medium">Cart</span>
-                </button>
-              )}
-
-
-
-              {/* Menu */}
+            {user.isAuthenticated && (
               <button
-                onClick={toggleMenu}
-                className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${isMenuOpen
+                onClick={toggleCart}
+                className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
+                aria-label={`Cart with ${totalItems} items`}
+              >
+                <div className="relative">
+                  <ShoppingCart size={24} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
+                      {totalItems > 99 ? "99+" : totalItems}
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs mt-1 font-medium">Cart</span>
+              </button>
+            )}
+
+            {/* Menu */}
+            <button
+              onClick={toggleMenu}
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+                isMenuOpen
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
-                  }`}
-                aria-label="Menu"
-                aria-expanded={isMenuOpen}
-              >
-                <Menu size={24} />
-                <span className="text-xs mt-1 font-medium">Menu</span>
-              </button>
-            </div>
-          </nav>
-        )
-      }
+              }`}
+              aria-label="Menu"
+              aria-expanded={isMenuOpen}
+            >
+              <Menu size={24} />
+              <span className="text-xs mt-1 font-medium">Menu</span>
+            </button>
+          </div>
+        </nav>
+      )}
 
       {/* MOBILE MENU DRAWER - Slide-out navigation panel (mobile only, triggered by Menu button)
           Features: Products dropdown with separate state (isMobileProductsDropdownOpen),
@@ -816,8 +834,9 @@ export default function Navbar() {
               Products{" "}
               <ChevronDown
                 size={18}
-                className={`transition-transform ${isMobileProductsDropdownOpen ? "rotate-180" : "rotate-0"
-                  }`}
+                className={`transition-transform ${
+                  isMobileProductsDropdownOpen ? "rotate-180" : "rotate-0"
+                }`}
               />
             </button>
             {isMobileProductsDropdownOpen && (

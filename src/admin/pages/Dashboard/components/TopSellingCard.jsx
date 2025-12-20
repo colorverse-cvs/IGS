@@ -18,7 +18,7 @@ const lowStockDetails = [
 
 export default function TopSellingCard() {
   return (
-    <div className="bg-white rounded-xl shadow p-6 md:max-h-[230px] overflow-auto">
+    <div className="bg-white rounded-xl shadow p-6 md:p-4 lg:p-6 md:max-h-[230px] lg:max-h-[230px] overflow-auto">
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm font-semibold">Top 3 Selling Items</p>
       </div>

@@ -1,38 +1,38 @@
 const paymentCardData = [
   {
-    title: "Total Transactions",
-    value: 1299,
+    title: "Total",
+    value: 1847,
   },
   {
-    title: "Successful",
-    value: 1854,
+    title: "Success",
+    value: 1703,
+    color: "text-green-600",
   },
   {
     title: "Failed",
-    value: 909,
+    value: 89,
+    color: "text-red-600",
   },
   {
     title: "Refunded",
-    value: 210,
+    value: 55,
   },
 ];
 
 export default function PaymentDetailCard() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-6 px-0">
       {paymentCardData.map((card, index) => (
         <div
           key={index}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex justify-between items-start"
+          className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6"
         >
-          <div>
-            <p className="text-sm text-gray-500 font-medium">
-              {card.title}
-            </p>
-            <p className="text-md text-gray-900 mt-2">
-              {card.value}
-            </p>
-          </div>
+          <p className="text-xs md:text-sm text-gray-500 font-medium mb-1">
+            {card.title}
+          </p>
+          <p className={`text-lg md:text-xl font-semibold ${card.color || "text-gray-900"}`}>
+            {card.value}
+          </p>
         </div>
       ))}
     </div>
