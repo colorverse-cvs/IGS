@@ -28,12 +28,12 @@ const transformProduct = (apiProduct) => {
     }
   }
 
-  // Get discount percentage
-  let discount = "0% Off";
+  // Get discount percentage as number
+  let discount = 0;
   if (apiProduct.discount && apiProduct.discount > 0) {
-    discount = `${Math.round(apiProduct.discount)}% Off`;
+    discount = Math.round(apiProduct.discount);
   } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
-    discount = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+    discount = Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100);
   }
 
   // Get category info
@@ -44,7 +44,7 @@ const transformProduct = (apiProduct) => {
     id: apiProduct._id || apiProduct.id,
     name: apiProduct.name,
     price: apiProduct.price,
-    mrp: apiProduct.listPrice || apiProduct.price,
+    listPrice: apiProduct.listPrice || apiProduct.price,
     discount: discount,
     rating: apiProduct.rating || 4.5,
     reviews: apiProduct.reviews || 0,

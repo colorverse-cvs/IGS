@@ -114,20 +114,22 @@ export const fetchCartSummaryAsync = createAsyncThunk(
 
       // Map API response to frontend item structure
       if (response && response.items) {
-        return response.items.map(item => ({
-          id: item.product._id || item.product.id, // Product ID
-          _id: item._id, // Cart Item ID
-          cartItemId: item._id, // Redundancy
-          title: item.product.name,
-          price: item.product.price,
-          image: item.product.images?.[0]?.url || "",
-          qty: item.quantity,
-          mrp: item.product.mrp || item.product.price, // Fallback if mrp invalid
-          discount: item.product.discount,
-          material: item.product.attributes?.material,
-          size: item.product.dimensions?.sizeCategory,
-          // Add other fields as needed from product object
-        }));
+        return response.items
+          .filter(item => item.product && item.product._id) // Filter out null/invalid products
+          .map(item => ({
+            id: item.product._id || item.product.id, // Product ID
+            _id: item._id, // Cart Item ID
+            cartItemId: item._id, // Redundancy
+            title: item.product.name || 'Unknown Product',
+            price: item.product.price || 0,
+            image: item.product.images?.[0]?.url || "",
+            qty: item.quantity || 1,
+            listPrice: item.product.listPrice || item.product.price || 0,
+            discount: item.product.discount || 0,
+            material: item.product.attributes?.material || '',
+            size: item.product.dimensions?.sizeCategory || '',
+            // Add other fields as needed from product object
+          }));
       }
       return [];
     } catch (error) {
@@ -143,6 +145,7 @@ export const addToCartAsync = createAsyncThunk(
     try {
       // API call kept for backend sync if required, but primary source of truth is now local for UI
       // If backend sync is required, uncomment:
+      console.log(typeof productData.id);
       const response = await api.post('/api/v1/cart/add', {
         productId: productData.id,
         quantity: productData.qty || 1,

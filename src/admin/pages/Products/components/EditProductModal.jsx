@@ -64,8 +64,8 @@ export default function EditProductModal({
   const [formData, setFormData] = useState({
     name: existingProduct?.name || "",
     description: existingProduct?.description || "",
-    price: existingProduct?.price || "",
-    discountPrice: existingProduct?.discount || "",
+    listPrice: existingProduct?.listPrice || "",
+    discount: existingProduct?.discount || "",
     stock: existingProduct?.stock || "",
     weight: existingProduct?.weight || "",
 
@@ -90,7 +90,7 @@ export default function EditProductModal({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const numeric = ["price", "discountPrice", "stock", "weight"];
+    const numeric = ["listPrice", "discount", "stock", "weight"];
 
     setFormData((prev) => ({
       ...prev,
@@ -130,7 +130,7 @@ export default function EditProductModal({
 
     if (!formData.name.trim()) e.name = "Required";
     if (!formData.description.trim()) e.description = "Required";
-    if (!formData.price) e.price = "Required";
+    if (!formData.listPrice) e.listPrice = "Required";
     if (!formData.stock) e.stock = "Required";
     if (!formData.weight) e.weight = "Required";
 
@@ -187,10 +187,16 @@ export default function EditProductModal({
       });
 
       /* TEXT FIELDS */
+      // Calculate discounted price from listPrice and discount percentage
+      const listPrice = Number(formData.listPrice);
+      const discountPercent = Number(formData.discount || 0);
+      const discountedPrice = listPrice - (listPrice * discountPercent / 100);
+
       form.append("name", formData.name);
       form.append("description", formData.description);
-      form.append("price", Number(formData.price));
-      form.append("discount", Number(formData.discountPrice || 0));
+      form.append("listPrice", listPrice);
+      form.append("price", discountedPrice);
+      form.append("discount", discountPercent);
       form.append("stock", Number(formData.stock));
       form.append("weight", Number(formData.weight));
 
@@ -235,7 +241,7 @@ export default function EditProductModal({
       <div className="bg-white w-full md:w-[850px] rounded-t-2xl md:rounded-2xl shadow-xl">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between px-6 py-4 border-b">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <p className="text-base font-semibold">Edit Product</p>
           <button onClick={onClose}>
             <X />
@@ -258,7 +264,7 @@ export default function EditProductModal({
 
             <div
               onClick={openFileDialog}
-              className="w-24 h-24 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer"
+              className="w-24 h-24 border-2 border-dashed border-purple-500 rounded-xl flex items-center justify-center cursor-pointer"
             >
               <Upload />
             </div>
@@ -355,8 +361,8 @@ export default function EditProductModal({
 
           {/* NUMBERS */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {renderInput("Price", "price")}
-            {renderInput("Discount", "discountPrice")}
+            {renderInput("Price (₹)", "listPrice")}
+            {renderInput("Discount (%)", "discount")}
             {renderInput("Stock", "stock")}
 
             <Input
@@ -380,7 +386,7 @@ export default function EditProductModal({
         </div>
 
         {/* FOOTER BUTTONS */}
-        <div className="flex justify-end gap-3 border-t p-4">
+        <div className="flex justify-end gap-3 border-t border-gray-200 p-4">
           <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded-lg">
             Cancel
           </button>
@@ -421,8 +427,12 @@ function Input({ label, error, ...props }) {
       <label className="text-sm mb-1 block">{label}</label>
       <input
         {...props}
-        className={`w-full border px-3 py-2 rounded-lg ${error ? "border-red-500" : "border-gray-300"
-          }`}
+        className={`w-full px-3 py-2 rounded-lg border
+          ${error
+            ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+            : "border-gray-300 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:outline-none"
+          }`
+        }
       />
       {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>

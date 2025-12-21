@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   );
 
   const mrpTotal = useMemo(
-    () => items.reduce((s, i) => s + (i.mrp || i.price) * i.qty, 0),
+    () => items.reduce((s, i) => s + (i.listPrice || i.price) * i.qty, 0),
     [items]
   );
   const discount = Math.max(0, mrpTotal - subtotal);
@@ -358,20 +358,21 @@ export default function CheckoutPage() {
                   {addrList.map((addr) => (
                     <label
                       key={addr.id}
-                      className="flex gap-3 items-start p-3 border border-gray-200 rounded-md"
+                      className="flex gap-3 items-start p-3 border border-gray-200 rounded-md cursor-pointer"
                     >
                       <input
                         type="radio"
                         name="address"
                         checked={selectedAddressId === addr.id}
-                        onChange={() => {
+                        onChange={(e) => {
+                          e.stopPropagation();
                           setSelectedAddressId(addr.id);
                           const y = window.scrollY;
                           setTimeout(() => window.scrollTo(0, y), 0);
                         }}
-                        className="mt-1 text-brand-700"
+                        className="mt-1 text-brand-700 cursor-pointer"
                       />
-                      <div className="text-sm">
+                      <div className="text-sm flex-1">
                         <div className="font-medium text-gray-900">
                           {addr.name}
                           {addr.tag && (

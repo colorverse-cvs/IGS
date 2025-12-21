@@ -34,7 +34,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    price: "",
+    listPrice: "",
     discount: "",
     stock: "",
     weight: "",
@@ -75,7 +75,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    const numericFields = ["price", "discount", "stock", "weight"];
+    const numericFields = ["listPrice", "discount", "stock", "weight"];
 
     if (["height", "width"].includes(name)) {
       setFormData((prev) => ({
@@ -128,7 +128,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     if (files.length === 0) newErrors.image = "At least one product image is required";
     if (!formData.name.trim()) newErrors.name = "Product name is required";
     if (!prodCategory) newErrors.category = "Category is required";
-    if (!formData.price) newErrors.price = "Price is required";
+    if (!formData.listPrice) newErrors.listPrice = "List Price is required";
     if (!formData.stock) newErrors.stock = "Stock is required";
 
     setErrors(newErrors);
@@ -140,7 +140,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     files.length > 0 &&
     formData.name.trim() &&
     prodCategory &&
-    formData.price &&
+    formData.listPrice &&
     formData.stock;
 
   /* ---------------- SKU GENERATOR ---------------- */
@@ -167,10 +167,16 @@ export default function AddProductModal({ onClose, onProductAdded }) {
         formDataToSend.append("images", file);
       });
 
+      // Calculate discounted price from listPrice and discount percentage
+      const listPrice = Number(formData.listPrice);
+      const discountPercent = Number(formData.discount || 0);
+      const discountedPrice = listPrice - (listPrice * discountPercent / 100);
+
       formDataToSend.append("name", formData.name);
       formDataToSend.append("description", formData.description);
-      formDataToSend.append("price", Number(formData.price));
-      formDataToSend.append("discount", Number(formData.discount || 0));
+      formDataToSend.append("listPrice", listPrice);
+      formDataToSend.append("price", discountedPrice);
+      formDataToSend.append("discount", discountPercent);
       formDataToSend.append("stock", Number(formData.stock));
       formDataToSend.append("weight", Number(formData.weight || 0));
       formDataToSend.append("attributes", JSON.stringify(formData.attributes));
@@ -292,7 +298,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Input required label="Price (₹)" name="price" value={formData.price} onChange={handleChange} error={errors.price} />
+            <Input required label="Price (₹)" name="listPrice" value={formData.listPrice} onChange={handleChange} error={errors.listPrice} />
             <Input label="Discount (%)" name="discount" value={formData.discount} onChange={handleChange} />
             <Input required label="Stock" name="stock" value={formData.stock} onChange={handleChange} error={errors.stock} />
           </div>

@@ -26,7 +26,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
     id,
     name,
     price,
-    mrp,
+    listPrice,
     discount,
     material,
     size,
@@ -56,16 +56,14 @@ const ProductCard = ({ product, onOpenProduct }) => {
       return;
     }
 
-    // Calculate final selling price to ensure cart matches display
-    const finalPrice = getDiscountedPrice(mrp || price, discount);
-
+    // Use price directly as it's already the discounted price
     dispatch(
       addToCartAsync({
         id: id,
         title: name,
-        price: finalPrice,
+        price: price,
         image: imageURL,
-        mrp: mrp || price,
+        listPrice: listPrice,
         discount: discount,
         material: material,
         size: size,
@@ -153,23 +151,23 @@ const ProductCard = ({ product, onOpenProduct }) => {
 
         {/* Price Row */}
         <div className="flex flex-col gap-1 mb-2">
-          {/* Main Price (Calculated) */}
+          {/* Main Price (Already Discounted) */}
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-brand-700">
-              ₹{getDiscountedPrice(mrp, discount)}
+              ₹{price}
             </span>
 
-            {/* MRP Strikethrough */}
-            {mrp && (
+            {/* List Price Strikethrough */}
+            {listPrice && listPrice > price && (
               <span className="text-sm text-gray-400 line-through">
-                MRP: ₹{mrp}
+                MRP: ₹{listPrice}
               </span>
             )}
 
             {/* Discount Percentage */}
-            {discount && discount !== "0% Off" && (
+            {discount && discount > 0 && (
               <span className="text-xs font-semibold text-brand-600">
-                {discount}
+                {discount}% Off
               </span>
             )}
           </div>
