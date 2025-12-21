@@ -321,7 +321,7 @@ export default function Navbar() {
             {/* Desktop Actions */}
             <div className="flex items-center gap-4">
               <button
-                className="text-gray-500 hover:text-purple-700 transition"
+                className="text-gray-500 hover:text-purple-700 transition cursor-pointer"
                 aria-label="Search"
                 onClick={openSearch}
               >
@@ -477,7 +477,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               {/* Search Icon (MD and up) */}
               <button
-                className="text-gray-500 hover:text-purple-700 transition"
+                className="text-gray-500 hover:text-purple-700 transition cursor-pointer"
                 aria-label="Search"
                 onClick={openSearch}
               >

@@ -51,7 +51,7 @@ export default function ContactPage() {
     e.preventDefault();
     if (!validate()) return;
     setStatus("submitting");
-    setStatusMessage("");
+    setStatusMessage("Sending....");
     try {
       await sendContactMessage(form);
       setStatus("success");
@@ -148,7 +148,7 @@ export default function ContactPage() {
 
             {/* Right form */}
             <div className="bg-white p-8 md:p-10">
-              <form className="space-y-6" onSubmit={handleSubmit}>
+              <form className="space-y-6" onSubmit={handleSubmit} noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-medium text-gray-400 mb-1">
@@ -157,7 +157,10 @@ export default function ContactPage() {
                     <input
                       type="text"
                       value={form.firstName}
-                      onChange={handleChange("firstName")}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                        setForm((prev) => ({ ...prev, firstName: value }));
+                      }}
                       className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
                     />
                     {errors.firstName && (
@@ -173,7 +176,10 @@ export default function ContactPage() {
                     <input
                       type="text"
                       value={form.lastName}
-                      onChange={handleChange("lastName")}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                        setForm((prev) => ({ ...prev, lastName: value }));
+                      }}
                       className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
                     />
                     {errors.lastName && (
@@ -187,7 +193,7 @@ export default function ContactPage() {
                       Email
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       value={form.email}
                       onChange={handleChange("email")}
                       className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
@@ -206,7 +212,10 @@ export default function ContactPage() {
                     <input
                       type="tel"
                       value={form.phone}
-                      onChange={handleChange("phone")}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setForm((prev) => ({ ...prev, phone: value }));
+                      }}
                       className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
                       placeholder="+91 987 654 3210"
                     />
@@ -277,7 +286,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={status === "submitting"}
-                    className="ml-auto inline-flex items-center justify-center px-6 py-3 rounded-md text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="ml-auto inline-flex items-center justify-center px-6 py-3 rounded-md text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {status === "submitting" ? "Sending..." : "Send Message"}
                   </button>

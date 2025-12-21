@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import SlideshowStripe from "../components/SlideshowStripe.jsx";
 import carouselData from "../data/carousel.json";
 import Clippathgroup from "../assets/clip-path-group.svg";
@@ -8,12 +8,14 @@ import ExploreCollections from "./ExploreCollections.jsx";
 import CustomizationWorksPage from "./CustomizationWorksPage.jsx";
 import TestimonialsPage from "./TestimonialsPage.jsx";
 import testimonials from "../data/testimonials.json";
+import CustomOrderModal from "../components/CustomOrderModal.jsx";
 // import useAuth from "../hooks/useAuth";
 
 
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isCustomOrderModalOpen, setIsCustomOrderModalOpen] = useState(false);
   // const { isAuthenticated, user } = useAuth();
 
   // console.log("HomePage Auth Status:", { isAuthenticated, user });
@@ -61,7 +63,10 @@ export default function HomePage() {
                 >
                   Explore Collection
                 </button>
-                <button className="cursor-pointer border-2 border-brand-700 text-brand-700  py-1 px-4 rounded-md font-medium hover:bg-purple-50 transition">
+                <button
+                  onClick={() => setIsCustomOrderModalOpen(true)}
+                  className="cursor-pointer border-2 border-brand-700 text-brand-700  py-1 px-4 rounded-md font-medium hover:bg-purple-50 transition"
+                >
                   Custom Order
                 </button>
               </div>
@@ -132,6 +137,10 @@ export default function HomePage() {
       <section className="bg-brand-50">
         <TestimonialsPage items={testimonials} />
       </section>
+      <CustomOrderModal
+        isOpen={isCustomOrderModalOpen}
+        onClose={() => setIsCustomOrderModalOpen(false)}
+      />
     </>
   );
 }

@@ -270,7 +270,7 @@ export default function AddressForm({
             onChange={(v) => setState(v)}
             placeholder="Select your state"
             searchable
-            className={errors.state ? "ring-2 ring-red-400" : ""}
+            className={errors.state ? "ring-2 ring-red-400" : "text-gray-600"}
           />
 
           {errors.state && (
@@ -302,13 +302,13 @@ export default function AddressForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded"
+          className="px-4 py-2 border border-gray-300 rounded cursor-pointer"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-2 md:px-4 py-2 bg-brand-700 text-white rounded"
+          className="px-2 md:px-4 py-2 bg-brand-700 text-white rounded cursor-pointer"
         >
           {submitLabel}
         </button>

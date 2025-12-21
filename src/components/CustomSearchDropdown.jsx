@@ -95,7 +95,7 @@ export default function CustomSearchDropdown({
                             visibleOptions.map((opt) => (
                                 <li
                                     key={opt.value}
-                                    className="px-3 py-2 text-sm hover:bg-purple-50 cursor-pointer"
+                                    className="px-3 py-2 text-sm hover:bg-purple-50 hover:text-purple-700 cursor-pointer"
                                     onClick={() => {
                                         onChange(opt.value);
                                         setOpen(false);
