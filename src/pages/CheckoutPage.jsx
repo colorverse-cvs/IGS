@@ -344,7 +344,7 @@ export default function CheckoutPage() {
       </div>
       <div className="py-6 px-4 md:px-15 lg:px-20">
         <div className="container mx-auto">
-          <h2 className="text-2xl font-bold mb-4">Secure Checkout</h2>
+          <div className="text-2xl font-bold mb-4">Secure Checkout</div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left: Steps */}
             <div className="lg:col-span-2">
@@ -570,9 +570,9 @@ export default function CheckoutPage() {
             {/* Right: Pricing Summary */}
             <div>
               <div className="border border-gray-200 rounded-lg p-4 sticky top-2/12 bg-white shadow">
-                <h2 className="font-semibold mb-3 text-gray-800">
+                <div className="font-semibold mb-3 text-gray-800">
                   Pricing Details
-                </h2>
+                </div>
                 <div className="text-sm space-y-2">
                   <div className="flex justify-between">
                     <span>Price ({items.length} items):</span>

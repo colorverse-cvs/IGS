@@ -506,14 +506,14 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       showHeader={false}
       className="max-w-5xl w-full m-4"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px] relative">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px] max-h-[600px] relative">
         {/* Close Button - Top Right */}
         <button
           onClick={() => {
             resetAllForms();
             onClose?.();
           }}
-          className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all"
+          className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 bg-gray-25 hover:bg-gray-100 rounded-full transition-all"
           aria-label="Close modal"
         >
           <X size={24} className="cursor-pointer" />
@@ -531,7 +531,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
           {/* Tabs */}
           <div className="flex justify-center mb-6">
-            <div className="inline-flex border-b-2 border-gray-200 gap-8">
+            <div className="inline-flex border-b-2 border-gray-300 gap-8">
               <button
                 type="button"
                 onClick={() => setTab("login")}
@@ -570,7 +570,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     if (loginIdentifierError) setLoginIdentifierError(""); // Clear error on type
                   }}
                   placeholder="john@gmail.com"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${loginIdentifierError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"}`}
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${loginIdentifierError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"}`}
                   autoComplete="username"
                 />
                 {loginIdentifierError && <p className="text-xs text-red-600 mt-1">{loginIdentifierError}</p>}
@@ -586,7 +586,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
                     autoComplete="current-password"
                   />
                   <button
@@ -620,7 +620,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 type="submit"
                 disabled={!isLoginValid || loginLoading || loginDisabledTemporarily}
                 className={`w-full py-2.5 rounded text-sm font-semibold transition ${isLoginValid && !loginLoading && !loginDisabledTemporarily
-                  ? "bg-brand-600 text-white hover:bg-brand-700"
+                  ? "bg-brand-600 text-white hover:bg-purple-700"
                   : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
               >
@@ -649,7 +649,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter Name"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                     }`}
                 />
                 {signupErrors.name && <p className="text-xs text-red-600 mt-1">{signupErrors.name}</p>}
@@ -664,7 +664,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
                   placeholder="Enter Whatsapp Mobile"
                   inputMode="numeric"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                     }`}
                 />
                 {signupErrors.mobile && <p className="text-xs text-red-600 mt-1">{signupErrors.mobile}</p>}
@@ -678,7 +678,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter Email"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                     }`}
                 />
                 {signupErrors.email && <p className="text-xs text-red-600 mt-1">{signupErrors.email}</p>}
@@ -694,7 +694,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min 8 chars, letters & numbers"
-                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                       }`}
                   />
                   <button
@@ -718,7 +718,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 transition ${signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                       }`}
                   />
                   <button
@@ -738,7 +738,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 type="submit"
                 disabled={!isSignupValid || signupLoading}
                 className={`w-full py-2.5 rounded text-sm font-semibold transition ${isSignupValid && !signupLoading
-                  ? "bg-brand-600 text-white hover:bg-brand-700"
+                  ? "bg-brand-600 text-white hover:bg-purple-700"
                   : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
               >

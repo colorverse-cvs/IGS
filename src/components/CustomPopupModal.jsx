@@ -46,7 +46,7 @@ export default function CustomPopupModal({
                                     onConfirm();
                                     onClose();
                                 }}
-                                className="px-6 py-2 bg-brand-700 text-white rounded hover:bg-brand-800 transition-colors flex-1"
+                                className="px-6 py-2 bg-brand-700 text-white rounded hover:bg-purple-800 transition-colors flex-1"
                             >
                                 {confirmText}
                             </button>
@@ -54,7 +54,7 @@ export default function CustomPopupModal({
                     ) : (
                         <button
                             onClick={onClose}
-                            className="px-6 py-2 bg-brand-700 text-white rounded hover:bg-brand-800 transition-colors w-full sm:w-auto"
+                            className="px-6 py-2 bg-brand-700 text-white rounded hover:bg-purple-800 transition-colors w-full sm:w-auto"
                         >
                             Close
                         </button>

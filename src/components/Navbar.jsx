@@ -299,7 +299,7 @@ export default function Navbar() {
                           key={pLink.id}
                           type="button"
                           onClick={() => handleProductLinkClick(pLink)}
-                          className="cursor-pointer block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
+                          className="cursor-pointer block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
                         >
                           {pLink.name}
                         </button>
@@ -321,7 +321,7 @@ export default function Navbar() {
             {/* Desktop Actions */}
             <div className="flex items-center gap-4">
               <button
-                className="text-gray-500 hover:text-purple-700 transition"
+                className="text-gray-500 hover:text-purple-700 transition cursor-pointer"
                 aria-label="Search"
                 onClick={openSearch}
               >
@@ -389,7 +389,7 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
                       } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
@@ -434,7 +434,7 @@ export default function Navbar() {
                       setAuthTab("signup");
                       setIsAuthOpen(true);
                     }}
-                    className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 transition text-sm font-medium cursor-pointer"
+                    className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-purple-800 transition text-sm font-medium cursor-pointer"
                     aria-label="Sign Up"
                   >
                     Sign Up
@@ -442,7 +442,7 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            {/* <button className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-brand-800 transition text-sm font-medium cursor-pointer"
+            {/* <button className="px-4 py-2 bg-brand-700 text-white rounded-md hover:bg-purple-800 transition text-sm font-medium cursor-pointer"
               onClick={handleOpenAdminPanel}>ADMIN PANEL</button> */}
           </div>
         </div>
@@ -477,7 +477,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               {/* Search Icon (MD and up) */}
               <button
-                className="text-gray-500 hover:text-purple-700 transition"
+                className="text-gray-500 hover:text-purple-700 transition cursor-pointer"
                 aria-label="Search"
                 onClick={openSearch}
               >
@@ -529,7 +529,7 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
                       } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
@@ -572,7 +572,7 @@ export default function Navbar() {
                       setAuthTab("signup");
                       setIsAuthOpen(true);
                     }}
-                    className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-sm font-medium"
+                    className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition text-sm font-medium"
                     aria-label="Sign Up"
                   >
                     Sign Up
@@ -616,7 +616,7 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-purple-700 ${
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
                       } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
@@ -660,7 +660,7 @@ export default function Navbar() {
                       setAuthTab("signup");
                       setIsAuthOpen(true);
                     }}
-                    className="px-3 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition text-xs font-medium"
+                    className="px-3 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition text-xs font-medium"
                     aria-label="Sign Up"
                   >
                     Sign Up
@@ -809,17 +809,17 @@ export default function Navbar() {
         aria-label="Mobile menu"
       >
         <div className="flex justify-between items-center p-5">
-          <h2 className="text-lg font-semibold text-gray-700">Menu</h2>
+          <div className="text-lg font-semibold text-gray-700">Menu</div>
           <button
             onClick={toggleMenu}
-            className="p-2 rounded-full text-gray-500 hover:text-purple-700 hover:bg-brand-50 transition"
+            className="p-2 rounded-full text-gray-500 hover:text-purple-700 hover:bg-purple-50 transition"
             aria-label="Close menu"
           >
             <X size={24} />
           </button>
         </div>
 
-        <div className="flex-1 px-4 py-4 space-y-1 overflow-y-auto border-y-2 border-brand-200">
+        <div className="flex-1 px-4 py-4 space-y-1 overflow-y-auto border-y-1 border-gray-200">
           {/* Products Section - Mobile View Only
               IMPORTANT: Uses separate state (isMobileProductsDropdownOpen) to avoid conflict
               with desktop dropdown state (isProductsDropdownOpen). Links scroll to home anchors
@@ -829,7 +829,7 @@ export default function Navbar() {
               onClick={() =>
                 setIsMobileProductsDropdownOpen(!isMobileProductsDropdownOpen)
               }
-              className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-purple-700 px-3 py-2 rounded-lg transition flex justify-between items-center"
+              className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 px-3 py-2 rounded-lg transition flex justify-between items-center"
             >
               Products{" "}
               <ChevronDown
@@ -840,13 +840,13 @@ export default function Navbar() {
               />
             </button>
             {isMobileProductsDropdownOpen && (
-              <div className="pl-6 pt-2 pb-2 space-y-2 bg-gray-50 rounded-lg mt-2">
+              <div className="pl-6 pt-2 pb-2 space-y-2 bg-brand-25 rounded-lg mt-2">
                 {productLinks.map((pLink) => (
                   <button
                     key={pLink.id}
                     type="button"
                     onClick={() => handleProductLinkClick(pLink)}
-                    className="block w-full text-left text-sm text-gray-600 hover:text-purple-700 py-1"
+                    className="block w-full text-left text-sm text-gray-600 hover:bg-purple-50 hover:text-purple-700 py-1"
                   >
                     {pLink.name}
                   </button>
@@ -863,7 +863,7 @@ export default function Navbar() {
                 key={link.name}
                 to={link.path}
                 onClick={toggleMenu}
-                className="block text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-purple-700 px-3 py-2 rounded-lg transition"
+                className="block text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 px-3 py-2 rounded-lg transition"
               >
                 {link.name}
               </Link>
@@ -891,7 +891,7 @@ export default function Navbar() {
                 setAuthTab("signup");
                 setIsAuthOpen(true);
               }}
-              className="w-full text-center px-4 py-3 text-sm font-bold text-white bg-brand-700 rounded-lg hover:bg-brand-800 transition"
+              className="w-full text-center px-4 py-3 text-sm font-bold text-white bg-brand-700 rounded-lg hover:bg-purple-800 transition"
             >
               Sign Up
             </button>

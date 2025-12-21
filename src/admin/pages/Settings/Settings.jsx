@@ -178,7 +178,7 @@ export default function Settings() {
             name="shopName"
             value={formData.shopName}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-purple-500 focus:outline-none"
           />
           {!formData.shopName && (
             <p className="text-red-500 text-xs mt-1">Shop name is required</p>
@@ -195,7 +195,7 @@ export default function Settings() {
               maxLength={10}
               value={formData.contact}
               onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-purple-500 focus:outline-none"
             />
             {!phoneValid && formData.contact && (
               <p className="text-red-500 text-xs mt-1">Enter valid 10 digit number</p>
@@ -209,7 +209,7 @@ export default function Settings() {
               name="email"
               value={formData.email}
               readOnly
-              className="w-full border border-gray-200 bg-gray-50 text-gray-500 rounded-lg px-3 py-2.5 focus:outline-none cursor-not-allowed"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-purple-500 focus:outline-none"
             />
             <p className="text-gray-400 text-[10px] mt-1 italic">Email cannot be changed directly</p>
           </div>
@@ -223,7 +223,7 @@ export default function Settings() {
             rows="3"
             value={formData.address}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-purple-500 focus:outline-none resize-none"
           />
           {!formData.address && (
             <p className="text-red-500 text-xs mt-1">Address is required</p>
@@ -289,7 +289,7 @@ export default function Settings() {
               name={item.key}
               value={passwordData[item.key]}
               onChange={handlePasswordChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 pr-10 focus:ring-2 focus:ring-purple-500 outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 pr-10 focus:ring-1 focus:ring-purple-500 outline-none"
             />
             <span
               onClick={() =>
@@ -330,7 +330,7 @@ export default function Settings() {
           <p className="text-gray-600 mb-6">{successMessage}</p>
           <button
             onClick={() => setShowSuccessModal(false)}
-            className="w-full bg-brand-600 text-white py-2.5 rounded-lg font-semibold hover:bg-brand-700 transition"
+            className="w-full bg-brand-600 text-white py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition"
           >
             Great, thanks!
           </button>

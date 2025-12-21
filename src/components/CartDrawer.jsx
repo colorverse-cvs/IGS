@@ -58,10 +58,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
         aria-label="Shopping Cart"
       >
         {/* Drawer header with title and close button */}
-        <div className="flex items-center justify-between p-4 lg:p-6 border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900">
+        <div className="flex items-center justify-between p-4 xl:p-6 border-b border-gray-100">
+          <div className="text-2xl font-bold text-gray-900">
             Your Shopping Cart
-          </h2>
+          </div>
           <button
             onClick={onClose}
             className="cursor-pointer p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"

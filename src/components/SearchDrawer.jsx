@@ -95,7 +95,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Explore collection"
-              className="w-full border border-gray-300 rounded-lg pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-0 focus:border-brand-500"
+              className="w-full border border-gray-300 rounded-lg pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-1  focus:ring-purple-500"
             />
             <button
               onClick={onClose}

@@ -1,4 +1,4 @@
-import { FaEye } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
 import { useState } from "react";
 import ShowCurrentCustomerDetail from "./ShowCurrentCustomerDetail";
 
@@ -96,10 +96,10 @@ export default function CustomerDetailTable({ data = [] }) {
               </td>
               <td className="px-6 py-4 text-center">
                 <button
-                  className="hover:text-purple-700 hover:bg-purple-50 transition flex items-center gap-2 border border-gray-200 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 cursor-pointer mx-auto"
-                  onClick={() => handleShowCustomerDetailModal(customer)}
+                  className="hover:text-purple-600 transition flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-purple-600 border border-purple-600 hover:bg-purple-50 cursor-pointer mx-auto"
+                  onClick={() => handleShowCustomerDetailModal(customer)}   // 👈 Pass selected customer
                 >
-                  <FaEye className="w-4 h-4" /> View
+                  <FaRegEye className="w-3 h-3" /> View
                 </button>
               </td>
             </tr>
