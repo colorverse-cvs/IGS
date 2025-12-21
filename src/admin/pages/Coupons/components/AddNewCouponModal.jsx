@@ -31,7 +31,7 @@ export default function AddNewCouponModal({ onClose }) {
               <input
                 type="text"
                 placeholder="Teddy Bear - Small"
-                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
               />
             </div>
 
@@ -58,7 +58,7 @@ export default function AddNewCouponModal({ onClose }) {
               <input
                 type="number"
                 placeholder="e.g:20"
-                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
               />
             </div>
 
@@ -69,7 +69,7 @@ export default function AddNewCouponModal({ onClose }) {
               <input
                 type="number"
                 placeholder="Leave empty for unlimited"
-                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
               />
             </div>
 
@@ -80,7 +80,7 @@ export default function AddNewCouponModal({ onClose }) {
               <input
                 type="number"
                 placeholder="₹5"
-                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
               />
             </div>
 
@@ -90,7 +90,7 @@ export default function AddNewCouponModal({ onClose }) {
                 </label>
                 <input
                     type="date"
-                    className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
                 />
             </div>
 
@@ -100,7 +100,7 @@ export default function AddNewCouponModal({ onClose }) {
                 </label>
                 <input
                     type="date"
-                    className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
                 />
             </div>
 
@@ -110,7 +110,7 @@ export default function AddNewCouponModal({ onClose }) {
         <div className="flex justify-end gap-4 mt-8">
           <button
             onClick={onClose}
-            className="px-6 py-2 border border-gray-200 cursor-pointer rounded-lg text-gray-600 hover:bg-gray-50"
+            className="px-6 py-2 border border-gray-300 cursor-pointer rounded-lg text-gray-600 hover:bg-gray-50"
           >
             Cancel
           </button>

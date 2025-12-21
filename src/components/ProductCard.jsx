@@ -86,7 +86,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
       h-full
       w-full
       min-w-0
-      focus:outline-none focus:ring-2 focus:ring-purple-500
+      focus:outline-none focus:ring-1 focus:ring-purple-500
     "
     >
       {/* --- Image and Tag Section --- */}
@@ -191,8 +191,8 @@ const ProductCard = ({ product, onOpenProduct }) => {
           <div className="flex items-center md:justify-center">
             {qtyInCart === 0 ? (
               <button
-                className="cursor-pointer flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-brand-800 font-semibold text-xs 
-                  transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50
+                className="cursor-pointer flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-purple-800 font-semibold text-xs 
+                  transition-all duration-300 ease-out focus:outline-none focus:ring-1 focus:ring-purple-500 focus:ring-opacity-50
                   rounded-sm md:opacity-0 md:translate-y-1 md:pointer-events-none
                   md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm"
                 onClick={(e) => {

@@ -304,9 +304,9 @@ export default function FilterSidebar({
 
       {!isMobile && (
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <div className="text-lg font-semibold text-gray-900">
             Filter Products
-          </h2>
+          </div>
           <button
             type="button"
             onClick={onResetFilters}
@@ -606,7 +606,7 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("minPrice", v);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:outline-none focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-purple-300 focus:outline-none focus:border-transparent"
                   min="100"
                   max="4000"
                   step="10"
@@ -625,7 +625,7 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("maxPrice", v);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:outline-none focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-purple-300 focus:outline-none focus:border-transparent"
                   min="0"
                   max="4000"
                   step="10"
@@ -726,7 +726,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="w-full px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-brand-800 transition"
+            className="w-full px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition"
           >
             Show Results
           </button>

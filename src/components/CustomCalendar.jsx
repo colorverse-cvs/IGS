@@ -131,7 +131,7 @@ export default function CustomCalendar({
                     key={day}
                     type="button"
                     onClick={() => handleDateSelect(day)}
-                    className={`p-2 text-sm rounded hover:bg-brand-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
+                    className={`p-2 text-sm rounded hover:bg-purple-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-purple-800' : ''
                         } ${isToday && !isSelected ? 'border border-brand-700 text-brand-700' : ''}`}
                 >
                     {day}
@@ -150,7 +150,7 @@ export default function CustomCalendar({
                     key={month}
                     type="button"
                     onClick={() => handleMonthSelect(index)}
-                    className={`p-3 text-sm rounded hover:bg-brand-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
+                    className={`p-3 text-sm rounded hover:bg-purple-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-purple-800' : ''
                         }`}
                 >
                     {month.substring(0, 3)}
@@ -172,7 +172,7 @@ export default function CustomCalendar({
                     key={year}
                     type="button"
                     onClick={() => handleYearSelect(year)}
-                    className={`p-3 text-sm rounded hover:bg-brand-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-brand-800' : ''
+                    className={`p-3 text-sm rounded hover:bg-purple-50 transition cursor-pointer ${isSelected ? 'bg-brand-700 text-white hover:bg-purple-800' : ''
                         }`}
                 >
                     {year}
@@ -204,7 +204,7 @@ export default function CustomCalendar({
                     readOnly
                     onClick={() => setIsOpen(!isOpen)}
                     placeholder={placeholder}
-                    className={`w-full border rounded px-3 py-2 pr-10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${error ? 'border-red-500' : 'border-gray-200'
+                    className={`w-full border rounded px-3 py-2 pr-10 cursor-pointer focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${error ? 'border-red-500' : 'border-gray-200'
                         } ${className}`}
                 />
                 <Calendar

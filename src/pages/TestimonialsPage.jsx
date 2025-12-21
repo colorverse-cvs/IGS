@@ -20,7 +20,7 @@ export default function TestimonialsPage({ items = [] }) {
               </p>
               <a
                 href="#"
-                className="inline-block mt-4 text-sm bg-brand-900 text-white px-4 py-2 rounded-md hover:bg-brand-800 w-full text-center md:w-[50%]"
+                className="inline-block mt-4 text-sm bg-brand-900 text-white px-4 py-2 rounded-md hover:bg-purple-800 w-full text-center md:w-[50%]"
               >
                 View All →
               </a>

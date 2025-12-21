@@ -381,7 +381,7 @@ export default function FilterPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 focus:outline-none"
               />
               <Search size={18} className="absolute right-3 text-gray-400" />
             </div>
@@ -538,7 +538,7 @@ export default function FilterPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent px-2 py-1 focus-visible:outline-0 focus:outline-none"
+                className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 focus:border-transparent px-2 py-1 focus-visible:outline-0 focus:outline-none"
               />
               <Search
                 size={16}
@@ -570,7 +570,7 @@ export default function FilterPage() {
             {/* Drawer */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl max-h-[85vh] overflow-hidden flex flex-col">
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                <div className="text-lg font-semibold text-gray-900">Filters</div>
                 <button
                   onClick={() => setIsFilterDrawerOpen(false)}
                   className="p-2 text-gray-400 hover:text-gray-600"

@@ -305,7 +305,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
         </div>
 
         {/* FOOTER */}
-        <div className="p-4 border-t border-gray-200 flex justify-end gap-3">
+        <div className="p-4 border-t border-gray-300 flex justify-end gap-3">
           <button onClick={onClose} className="px-5 py-2 border rounded-lg">Cancel</button>
 
           <button
@@ -329,7 +329,7 @@ function Input({ label, error, ...props }) {
       <label className="text-sm mb-1 block">{label}</label>
       <input
         {...props}
-        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${error
+        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${error
           ? "border-red-500 focus:ring-red-400"
           : "border-gray-300 focus:ring-purple-500"
           }`}

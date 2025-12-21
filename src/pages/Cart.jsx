@@ -98,7 +98,7 @@ export default function Cart({ isDrawer = false, onClose }) {
         </div>
       ) : (
         <div
-          className={`flex ${isDrawer ? "flex-col h-[88vh]" : "flex-col md:flex-row gap-8 relative"
+          className={`flex ${isDrawer ? "flex-col h-[90vh]" : "flex-col md:flex-row gap-8 relative"
             }`}
         >
           {/* Cart Items */}
@@ -127,8 +127,8 @@ export default function Cart({ isDrawer = false, onClose }) {
                         Material: {item.material || "-"} &nbsp; Size: {item.size || "-"}
                       </div>
                       <div className="text-brand-700 font-semibold">₹{item.price}</div>
-
-                      <div className="flex items-center gap-2 border border-gray-200 rounded mt-2 w-fit">
+                      <div className="flex lg:flex-col justify-between">
+                      <div className="flex items-center gap-2 border border-gray-300 rounded mt-2 w-fit">
                         <button
                           type="button"
                           className="px-2 py-1 text-gray-600 hover:bg-gray-100"
@@ -167,11 +167,12 @@ export default function Cart({ isDrawer = false, onClose }) {
                         className="text-red-600 text-xs pt-2"
                         onClick={() => handleRemoveItem(item.id)}
                       >
-                        <span className="hidden lg:block">Remove from cart</span>
+                        <span className="hidden lg:block text-start">Remove from cart</span>
                         <span className="lg:hidden">
                           <Trash2 size={20} className="text-red" />
                         </span>
                       </button>
+                      </div>
 
                       {/* <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">
                         <input
@@ -210,7 +211,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                     <div className="text-brand-700 font-semibold">₹{item.price}</div>
 
                     <div className="flex items-center gap-5 py-2">
-                      <div className="flex items-center gap-2 border border-gray-200 rounded">
+                      <div className="flex items-center gap-2 border border-gray-300 rounded">
                         <button
                           type="button"
                           className="px-2"
@@ -291,7 +292,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
           {/* Checkout Section */}
           {isDrawer ? (
-            <div className="bottom-0 bg-white py-4 px-4 border-t shadow-lg z-10">
+            <div className="bottom-0 bg-white py-4 px-4 border-t border-gray-400 shadow-lg z-10">
               <div className="flex justify-between items-center text-xl font-bold mb-4">
                 <span>Total:</span>
                 <span className="text-brand-700">₹{grandTotal}</span>
@@ -299,23 +300,23 @@ export default function Cart({ isDrawer = false, onClose }) {
 
               <button
                 onClick={handleProceedToCheckout}
-                className="w-full px-4 py-3 bg-brand-600 text-white rounded-lg font-semibold hover:bg-brand-700"
+                className="w-full px-4 py-3 bg-brand-600 text-white rounded-lg font-semibold hover:bg-purple-700"
               >
                 Proceed to Checkout
               </button>
 
               <button
                 onClick={handleClearCart}
-                className="w-full mt-2 text-sm text-gray-500 hover:text-gray-700"
+                className="w-full mt-2 text-sm text-gray-500 hover:text-gray-900"
               >
                 Clear cart
               </button>
             </div>
           ) : (
             <div className="md:w-1/4 bg-gray-50 p-6 rounded-xl shadow-lg h-fit sticky top-[15%]">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
+              <div className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
                 Order Summary
-              </h2>
+              </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between text-gray-600 text-sm">
@@ -330,7 +331,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                   </div>
                 )}
 
-                <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
+                <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-300">
                   <span>Order Total</span>
                   <span className="text-brand-700">₹{grandTotal}</span>
                 </div>
@@ -338,7 +339,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
               <button
                 onClick={handleProceedToCheckout}
-                className="w-full mt-6 px-4 py-3 text-center bg-brand-700 text-white rounded-lg font-semibold hover:bg-brand-800 shadow-lg"
+                className="w-full mt-6 px-4 py-3 text-center bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 shadow-lg"
               >
                 Proceed to Checkout
               </button>

@@ -85,11 +85,7 @@ export default function CustomSearchDropdown({
                             onChange={(e) => setSearch(e.target.value)}
                             autoFocus
                             className="
-                                w-full px-3 py-2 border-b text-sm
-                                ring-1 ring-purple-600 ring-opacity-50
-                                focus:ring-1 focus:ring-purple-600
-                                focus:border-purple-600
-                                focus:outline-none
+                                w-full px-3 py-2 border-b border-gray-300 text-sm outline-none
                             "
                         />
                     )}

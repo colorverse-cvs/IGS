@@ -38,7 +38,7 @@ const Placeholder = (title) => () =>
   (
     <div className="px-4 md:px-15 lg:px-20 py-10">
       <div className="container mx-auto text-center text-gray-700">
-        <h2 className="text-4xl font-semibold">{title}</h2>
+        <div className="text-4xl font-semibold">{title}</div>
         <p className="text-sm mt-2">Content coming soon.</p>
       </div>
     </div>

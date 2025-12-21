@@ -459,7 +459,7 @@ export default function Profile() {
                     Name *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.name ? "border-red-500" : "border-gray-200"
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${profileErrors.name ? "border-red-500" : "border-gray-200"
                       }`}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -471,7 +471,7 @@ export default function Profile() {
                     Mobile Number *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.mobile
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${profileErrors.mobile
                       ? "border-red-500"
                       : "border-gray-200"
                       }`}
@@ -488,7 +488,7 @@ export default function Profile() {
                     Email
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${profileErrors.email ? "border-red-500" : "border-gray-200"
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${profileErrors.email ? "border-red-500" : "border-gray-200"
                       }`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -518,7 +518,7 @@ export default function Profile() {
                 <button
                   type="button"
                   onClick={() => setIsProfileModalOpen(false)}
-                  className="px-4 py-2 border rounded cursor-pointer"
+                  className="px-4 py-2 border border-gray-300 rounded cursor-pointer"
                 >
                   Cancel
                 </button>

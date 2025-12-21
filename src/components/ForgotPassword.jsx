@@ -73,7 +73,7 @@ export default function ForgotPassword({ email, token, onSuccess }) {
                         type={showNewPassword ? "text" : "password"}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
                         placeholder="Min 8 characters"
                     />
                     <button
@@ -95,7 +95,7 @@ export default function ForgotPassword({ email, token, onSuccess }) {
                         type={showConfirmPassword ? "text" : "password"}
                         value={confirm}
                         onChange={(e) => setConfirm(e.target.value)}
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
                         placeholder="Confirm your password"
                     />
                     <button
@@ -120,7 +120,7 @@ export default function ForgotPassword({ email, token, onSuccess }) {
                 className={`w-full py-2.5 rounded text-sm font-semibold transition ${isSuccess
                     ? "bg-green-600 text-white hover:bg-green-700"
                     : (!loading && newPassword && confirm
-                        ? "bg-brand-600 text-white hover:bg-brand-700"
+                        ? "bg-brand-600 text-white hover:bg-purple-700"
                         : "bg-gray-200 text-gray-500 cursor-not-allowed")
                     }`}
             >

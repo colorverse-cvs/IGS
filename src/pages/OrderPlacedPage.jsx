@@ -22,9 +22,9 @@ export default function OrderPlacedPage() {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-12 text-center">
       <img src={OrderSuccessfullyCart} />
-      <h2 className="text-xl md:text-2xl font-semibold text-brand-700 my-2">
+      <div className="text-xl md:text-2xl font-semibold text-brand-700 my-2">
         Your Order Has Been Placed Successfully!
-      </h2>
+      </div>
       <p className="text-gray-600 max-w-xl">
         Thank you for shopping with us
         {order?.address?.name ? `, ${order.address.name.split(" ")[0]}` : ""}.

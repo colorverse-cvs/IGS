@@ -559,11 +559,11 @@ export default function ProductInfoPage() {
                         setPincodeStatus("idle");
                         setDeliveryEstimate("");
                       }}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-40"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 w-40"
                     />
                     <button
                       onClick={handleCheckDelivery}
-                      className="cursor-pointer px-4 py-2 bg-brand-700 text-white text-md rounded-lg hover:bg-brand-800 transition"
+                      className="cursor-pointer px-4 py-2 bg-brand-700 text-white text-md rounded-lg hover:bg-purple-800 transition"
                     >
                       Verify
                     </button>
@@ -604,7 +604,7 @@ export default function ProductInfoPage() {
                           checked={selectedMaterial === option.value}
                           disabled={true}
                           onChange={(e) => setSelectedMaterial(e.target.value)}
-                          className="absolute right-3 top-3 text-brand-600  focus:ring-2 focus:ring-purple-600 cursor-not-allowed focus:outline-none"
+                          className="absolute right-3 top-3 text-brand-600  focus:ring-1 focus:ring-purple-600 cursor-not-allowed focus:outline-none"
                         />
                         <div className="text-gray-900 font-medium">
                           {option.label}
@@ -640,7 +640,7 @@ export default function ProductInfoPage() {
                           checked={selectedSize === option.value}
                           disabled={true}
                           onChange={(e) => setSelectedSize(e.target.value)}
-                          className="absolute right-3 top-3 text-brand-600 focus:ring-2 focus:ring-purple-600 cursor-not-allowed focus:outline-none"
+                          className="absolute right-3 top-3 text-brand-600 focus:ring-1 focus:ring-purple-600 cursor-not-allowed focus:outline-none"
                         />
                         <div className="font-medium text-gray-900">
                           {option.label}
@@ -656,16 +656,16 @@ export default function ProductInfoPage() {
                 </div>
 
                 {/* Quantity and Actions */}
-                <div className="cursor-pointer mt-4 flex flex-wrap items-center justify-between gap-1 lg:justify-start lg:flex-nowrap">
+                <div className="cursor-pointer mt-4 flex items-center justify-between gap-2 lg:justify-start lg:flex-nowrap">
                   {qtyInCart === 0 ? (
                     <button
                       onClick={handleAddToCart}
-                      className="cursor-pointer px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-brand-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
+                      className="cursor-pointer px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-purple-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
                     >
                       Add to Cart <ShoppingCart size={15} />
                     </button>
                   ) : (
-                    <div className="inline-flex items-center border justify-between rounded-lg overflow-hidden w-[46%] lg:w-auto">
+                    <div className="inline-flex items-center border border-gray-300 justify-between rounded-lg overflow-hidden w-[46%] lg:w-auto">
                       <button
                         type="button"
                         onClick={() => {
@@ -694,7 +694,7 @@ export default function ProductInfoPage() {
 
                   <button
                     onClick={handleBuyNow}
-                    className="px-2 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition w-full lg:w-auto"
+                    className="w-[50%] px-2 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition lg:w-auto"
                   >
                     Buy Now
                   </button>

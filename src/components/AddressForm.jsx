@@ -172,7 +172,7 @@ export default function AddressForm({
           {/* <span className="px-2 text-gray-600">+91</span> */}
           <input
             type="tel"
-            className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${errors.mobile ? "border-red-500" : ""
+            className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${errors.mobile ? "border-red-500" : ""
               }`}
             placeholder="Enter 10 digits"
             value={mobile}
@@ -192,7 +192,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
           value={flat}
           onChange={(e) => setFlat(e.target.value)}
         />
@@ -203,7 +203,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
           value={area}
           onChange={(e) => setArea(e.target.value)}
         />
@@ -214,7 +214,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
           placeholder="Eg: Near Famous chowk"
           value={landmark}
           onChange={(e) => setLandmark(e.target.value)}
@@ -226,7 +226,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition ${errors.pincode ? "border-red-500" : ""
+          className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${errors.pincode ? "border-red-500" : ""
             }`}
           placeholder="6 digits [0-9]"
           value={pincode}
@@ -244,7 +244,7 @@ export default function AddressForm({
           </label>
           <input
             type="text"
-            className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
+            className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
             value={city}
             onChange={(e) => {
               const value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
@@ -302,7 +302,7 @@ export default function AddressForm({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border rounded"
+          className="px-4 py-2 border border-gray-300 rounded"
         >
           Cancel
         </button>
