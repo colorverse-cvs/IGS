@@ -8,6 +8,7 @@ import { initializeCart, fetchCartSummaryAsync } from "../features/cart/cartSlic
 import toast from "react-hot-toast";
 import logo from "../assets/ishita-gallery-logo.jpg";
 import { Eye, EyeOff, X } from "lucide-react";
+import CustomPopupModal from "./CustomPopupModal";
 
 // Auth Banner
 import authBanner from "../assets/auth_banner.jpg";
@@ -93,6 +94,9 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [resetStatus, setResetStatus] = React.useState("");
   const [resetLoading, setResetLoading] = React.useState(false);
   const [resetToken, setResetToken] = React.useState("");
+
+  // Email conflict popup
+  const [showEmailConflictPopup, setShowEmailConflictPopup] = React.useState(false);
 
   /* -------------------------
      Helpers
@@ -391,6 +395,27 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       const json = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        // Check for 409 Conflict (Email already exists)
+        if (res.status === 409 || json.statusCode === 409) {
+          const errorMessage = json.message?.message || json.message || "Email already exists";
+
+          // Save email for prefilling login
+          const existingEmail = email;
+
+          // Reset forms
+          resetAllForms();
+
+          // Prefill login email
+          setLoginIdentifier(existingEmail);
+
+          // Show popup
+          setShowEmailConflictPopup(true);
+
+          setSignupLoading(false);
+          return;
+        }
+
+        // Handle other errors
         setApiMessage(json.message || "Signup failed. Please try again.");
         setSignupLoading(false);
         return;
@@ -784,8 +809,23 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
           }}
         />
       </Modal>
+
+      {/* Email Conflict Popup */}
+      <CustomPopupModal
+        isOpen={showEmailConflictPopup}
+        onClose={() => {
+          setShowEmailConflictPopup(false);
+          setTab("login");
+        }}
+        title="Email Already Registered"
+        message="This email is already registered. Please log in with your existing account."
+        confirmText="Go to Login"
+        onConfirm={() => {
+          setShowEmailConflictPopup(false);
+          setTab("login");
+        }}
+      />
     </Modal>
   );
 }
-
 
