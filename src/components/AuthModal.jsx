@@ -73,6 +73,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [showLoginPassword, setShowLoginPassword] = React.useState(false);
   const [loginError, setLoginError] = React.useState("");
   const [loginLoading, setLoginLoading] = React.useState(false);
+  const [loginDisabledTemporarily, setLoginDisabledTemporarily] = React.useState(false);
 
   // Signup
   const [name, setName] = React.useState("");
@@ -299,6 +300,12 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         const errorMsg = data?.message?.message || data?.message || "Login failed";
         setLoginError(errorMsg);
         toast.error(errorMsg);
+
+        // Disable login button for 3 seconds on 401
+        if (res.status === 401 || data?.message?.statusCode === 401) {
+          setLoginDisabledTemporarily(true);
+          setTimeout(() => setLoginDisabledTemporarily(false), 3000);
+        }
         return;
       }
 
@@ -611,13 +618,13 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
               <button
                 type="submit"
-                disabled={!isLoginValid || loginLoading}
-                className={`w-full py-2.5 rounded text-sm font-semibold transition ${isLoginValid && !loginLoading
+                disabled={!isLoginValid || loginLoading || loginDisabledTemporarily}
+                className={`w-full py-2.5 rounded text-sm font-semibold transition ${isLoginValid && !loginLoading && !loginDisabledTemporarily
                   ? "bg-brand-600 text-white hover:bg-brand-700"
                   : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
               >
-                {loginLoading ? "Logging in..." : "Log In"}
+                {loginLoading ? "Logging in..." : loginDisabledTemporarily ? "Retry" : "Log In"}
               </button>
 
               {/* <div className="flex items-center gap-3 my-4">

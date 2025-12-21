@@ -252,28 +252,45 @@ export const updateProfileAsync = createAsyncThunk(
   async (profileData, { dispatch, getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const token = state.user.token;
-      const userId = state.user.profile.id;
+      const token = state.user.token || localStorage.getItem('token');
+      const userId = state.user.profile.id || localStorage.getItem('id');
 
       if (!token || !userId) {
         return rejectWithValue('Missing authentication token or user ID');
       }
 
-      // Split name into firstName and lastName
-      const nameParts = (profileData.name || '').trim().split(' ');
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.slice(1).join(' ') || '';
+      // Build payload matching user's requested structure
+      let payload = {};
 
-      // Prepare payload matching API structure
-      const payload = {
-        firstName,
-        lastName,
-        profile: {
-          mobile: profileData.mobile || '',
+      // If name is provided, split it and set top-level firstName/lastName 
+      // AND profile.displayName
+      if (profileData.name) {
+        const nameParts = (profileData.name || '').trim().split(' ');
+        payload.firstName = nameParts[0] || '';
+        payload.lastName = nameParts.slice(1).join(' ') || '';
+
+        payload.profile = {
+          ...payload.profile,
+          displayName: profileData.name
+        };
+      }
+
+      // Add mobile to profile if provided
+      if (profileData.mobile) {
+        payload.profile = {
+          ...payload.profile,
+          mobile: profileData.mobile
+        };
+      }
+
+      // Add other profile fields if they exist in profileData
+      if (profileData.gender || profileData.dob) {
+        payload.profile = {
+          ...payload.profile,
           gender: profileData.gender || '',
           dob: profileData.dob || ''
-        }
-      };
+        };
+      }
 
       const response = await fetch(`${BASE_URL}/api/v1/users/${userId}`, {
         method: 'PATCH',
@@ -307,6 +324,95 @@ export const updateProfileAsync = createAsyncThunk(
       return data;
     } catch (error) {
       console.error('Error updating user profile:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const changePasswordAsync = createAsyncThunk(
+  'user/changePasswordAsync',
+  async ({ currentPassword, newPassword }, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const token = state.user.token || localStorage.getItem('token');
+      const userId = state.user.profile.id || localStorage.getItem('id');
+
+      if (!token || !userId) {
+        return rejectWithValue('Missing authentication token or user ID');
+      }
+
+      // Some backends use PATCH /users/:id for password, others specialized endpoints
+      // Based on user feedback, using PATCH /api/v1/users/:id
+      const response = await fetch(`${BASE_URL}/api/v1/users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          currentPassword,
+          password: newPassword
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return rejectWithValue(errorData.message || 'Failed to update password');
+      }
+
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const forgotPasswordAsync = createAsyncThunk(
+  'user/forgotPasswordAsync',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/v1/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return rejectWithValue(data.message || 'Failed to send reset request');
+      }
+
+      // Extraction logic based on AuthModal.jsx: data.data?.resetToken
+      return data.data?.resetToken || data.resetToken;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const resetPasswordAsync = createAsyncThunk(
+  'user/resetPasswordAsync',
+  async ({ token, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/v1/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token, newPassword })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return rejectWithValue(data.message || 'Failed to reset password');
+      }
+
+      return data;
+    } catch (error) {
       return rejectWithValue(error.message);
     }
   }
