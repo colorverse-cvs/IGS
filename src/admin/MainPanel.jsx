@@ -8,12 +8,12 @@ import MobileHeader from "./MobileHeader";
 
 export default function AdminPanelMain() {
   const [activePage, setActivePage] = useState("Dashboard");
-  
+
   // Wrapper function to ensure state updates correctly
   const handlePageChange = (page) => {
     setActivePage(page);
   };
-  
+
   const getPageTitle = () => {
     const titles = {
       "Dashboard": "Dashboard",
@@ -26,7 +26,7 @@ export default function AdminPanelMain() {
     };
     return titles[activePage] || activePage;
   };
-  
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Desktop Sidebar */}
@@ -39,15 +39,15 @@ export default function AdminPanelMain() {
         <div className="hidden md:block">
           <Topbar setActivePage={handlePageChange} />
         </div>
-        
+
         {/* Mobile Header */}
         <MobileHeader pageTitle={getPageTitle()} />
-        
+
         {/* Page Content with bottom padding for mobile nav */}
         <div className="flex-1 overflow-auto pb-16 md:pb-0">
           <PageContent setActivePage={handlePageChange} activePage={activePage} />
         </div>
-        
+
         {/* Mobile Bottom Navigation */}
         <BottomNavigation activePage={activePage} setActivePage={handlePageChange} />
       </div>

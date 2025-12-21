@@ -27,10 +27,9 @@ export default function Sidebar({ setActivePage, activePage }) {
             }}
             className={`
               mx-3 px-4 py-2 rounded-lg cursor-pointer transition
-              ${
-                activePage === item
-                  ? "bg-purple-600 text-white"
-                  : "text-gray-600 hover:bg-purple-100"
+              ${activePage === item
+                ? "bg-purple-600 text-white"
+                : "text-gray-600 hover:bg-purple-100"
               }
             `}
           >

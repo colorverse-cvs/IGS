@@ -59,7 +59,19 @@ export default function Orders() {
 
         // Amount: Access total directly. If it seems to be in paise (e.g. > 100x expected), divide by 100.
         // Based on the provided JSON: price=2000, total=200000. So total is in paise.
-        const amountValue = order.total ? order.total / 100 : 0;
+        // const amountValue = order.total ? order.total / 100 : 0;
+        // Always calculate total with discount applied from items
+        // Don't use order.total as it doesn't include discount calculations
+        const amountValue = items.reduce((sum, item) => {
+          const product = item.product || {};
+          const basePrice = item.price || 0;
+          const discount = product.discount || 0;
+          const quantity = item.quantity || 0;
+
+          // Apply discount: finalPrice = basePrice - (basePrice * discount / 100)
+          const discountedPrice = basePrice - (basePrice * discount / 100);
+          return sum + (discountedPrice * quantity);
+        }, 0);
 
         return {
           ...order,
@@ -184,7 +196,7 @@ export default function Orders() {
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">{order.id}</span>
+                      <span className="font-semibold text-sm">{`ORD-${order.id.slice(-5)}`}</span>
                       <span
                         className={`text-xs px-2 py-1 rounded-full ${order.statusColor}`}
                       >
@@ -217,9 +229,9 @@ export default function Orders() {
                     <FaRegEye /> View
                   </button>
 
-                  <button className="flex items-center justify-center gap-2 border border-gray-100 px-3 py-2 rounded-md text-sm hover:bg-gray-50">
+                  {/* <button className="flex items-center justify-center gap-2 border border-gray-100 px-3 py-2 rounded-md text-sm hover:bg-gray-50">
                     <AiFillPrinter /> Print
-                  </button>
+                  </button> */}
                 </div>
               </div>
             ))}

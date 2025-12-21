@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllCustomersAsync,
   selectAdminCustomers,
+  selectAdminLoading,
 } from "../../store/adminSlice";
 
 import CustomerDetailCard from "./components/CustomerDetailCard";
@@ -14,6 +15,7 @@ const customerStatusValue = ["All Customers", "Active", "Inactive", "VIP"];
 export default function Customers() {
   const dispatch = useDispatch();
   const customers = useSelector(selectAdminCustomers);
+  const loading = useSelector(selectAdminLoading);
   const hasFetched = useRef(false);
 
   const [statusFilter, setStatusFilter] = useState("All Customers");
@@ -25,32 +27,38 @@ export default function Customers() {
     dispatch(fetchAllCustomersAsync());
   }, [dispatch]);
 
-  // ✅ Combined filtering (status + search)
-  const filteredCustomers = useMemo(() => {
-    // Map API data to UI structure
-    const mappedData = (customers || []).map(customer => {
-      const user = customer.user || customer; // Handle potentially different nesting
+  // 1. Base mapped data (Full dataset from API)
+  const mappedCustomers = useMemo(() => {
+    return (customers || []).map(customer => {
+      const user = customer.user || customer;
       const profile = user.profile || {};
+
+      // Normalize name
+      const firstName = user.firstName || "";
+      const lastName = user.lastName || "";
+      const fullName = `${firstName} ${lastName}`.trim() || user.name || user.displayName || "Guest";
 
       return {
         ...customer,
-        customerName:
-          `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
-          user.name ||
-          user.displayName ||
-          "Guest",
+        customerName: fullName,
         emailId: user.email || "N/A",
         mobile: profile.mobile || user.phone || user.mobile || "N/A",
         totalOrders: customer.totalOrders || 0,
-        totalSpent: customer.totalSpent ? `₹${customer.totalSpent}` : "₹0",
-        Status: customer.status || (user.isActive ? "Active" : "Inactive"), // Infer status if not explicit
-        joinDate: user.createdAt
-          ? new Date(user.createdAt).toLocaleDateString()
+        totalSpent: customer.totalSpent || 0, // Keep as number for stats, format in table
+        Status: customer.status || (!user.isActive ? "Active" : "Inactive"),
+        joinDate: (customer.joinDate || user.createdAt)
+          ? new Date(customer.joinDate || user.createdAt).toLocaleDateString("en-IN", {
+            year: 'numeric', month: 'short', day: 'numeric'
+          })
           : "N/A",
+        rawDate: customer.joinDate || user.createdAt // For "New This Month" check
       };
     });
+  }, [customers]);
 
-    let data = mappedData;
+  // 2. Data for Table (Filtered by Status and Search)
+  const filteredCustomers = useMemo(() => {
+    let data = mappedCustomers;
 
     // Status filter
     if (statusFilter !== "All Customers") {
@@ -72,7 +80,15 @@ export default function Customers() {
     }
 
     return data;
-  }, [statusFilter, searchTerm, customers]);
+  }, [statusFilter, searchTerm, mappedCustomers]);
+
+  if (loading && mappedCustomers.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-700"></div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -84,7 +100,7 @@ export default function Customers() {
         </div>
       </div>
 
-      <CustomerDetailCard />
+      <CustomerDetailCard customers={mappedCustomers} />
 
       <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-md">
         <div className="search-bar-wrapper flex flex-col md:flex-row justify-between gap-4">
