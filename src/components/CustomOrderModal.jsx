@@ -40,12 +40,12 @@ export default function CustomOrderModal({ isOpen, onClose }) {
       case 'mobile':
         if (!value.trim()) error = 'Mobile number is required';
         break;
-      case 'category':
-        if (!value.trim()) error = 'Category is required';
-        break;
-      case 'material':
-        if (!value.trim()) error = 'Material is required';
-        break;
+      // case 'category':
+      //   if (!value.trim()) error = 'Category is required';
+      //   break;
+      // case 'material':
+      //   if (!value.trim()) error = 'Material is required';
+      //   break;
       case 'size':
         if (!value.trim()) error = 'Size is required';
         break;
