@@ -606,7 +606,7 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("minPrice", v);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:outline-none focus:border-transparent"
                   min="100"
                   max="4000"
                   step="10"
@@ -625,7 +625,7 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("maxPrice", v);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-300 focus:outline-none focus:border-transparent"
                   min="0"
                   max="4000"
                   step="10"

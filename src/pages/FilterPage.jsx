@@ -371,7 +371,7 @@ export default function FilterPage() {
           >
             <ArrowLeft size={20} />
           </button>
-          <div className="px-0 py-3 border-b border-gray-200 w-[90%] md:w-[95%]">
+          <div className="px-0 py-3 w-[90%] md:w-[95%]">
             <div className="relative flex items-center">
               <input
                 type="text"
@@ -381,24 +381,24 @@ export default function FilterPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent"
+                className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
               />
               <Search size={18} className="absolute right-3 text-gray-400" />
             </div>
           </div>
         </div>
         {/* Sort and Filter Buttons */}
-        <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between gap-3 w-full">
+        <div className="px-4 py-2 bg-brand-50 border-b border-gray-200 flex items-center justify-between gap-3 w-full">
           <div className="flex items-center gap-2 flex-1 w-[60%] lg:w-full">
             <span className="text-sm text-gray-700 whitespace-nowrap w-[30%] md:w-[15%] lg:w-auto">
               Sort By:
             </span>
-            <div className="relative sort-dropdown-container flex-1">
+            <div className="relative sort-dropdown-container flex-1 w-[50%] md:w-full">
               <button
                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
                 className="flex items-center justify-between w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition text-left"
               >
-                <span>{currentSortLabel}</span>
+                <span className="truncate">{currentSortLabel}</span>
                 <ChevronDown
                   size={16}
                   className={`ml-2 transition-transform ${isSortDropdownOpen ? "rotate-180" : "rotate-0"
@@ -538,7 +538,7 @@ export default function FilterPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-300 focus:border-transparent px-2 py-1 focus-visible:outline-0"
+                className=" w-20% border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent px-2 py-1 focus-visible:outline-0 focus:outline-none"
               />
               <Search
                 size={16}

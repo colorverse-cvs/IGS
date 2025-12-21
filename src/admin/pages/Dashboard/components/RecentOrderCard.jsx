@@ -47,7 +47,7 @@ export default function RecentOrderCard({ setActivePage }) {
       <div className="flex justify-between items-center mb-4">
         <p className="text-lg font-semibold">Recent Orders</p>
         <button
-          className="text-purple-600 font-medium hover:underline cursor-pointer text-sm"
+          className="text-purple-600 border border-purple-600 hover:bg-purple-50 font-medium hover:underline cursor-pointer text-sm"
           onClick={handleViewAllClick}
         >
           View All

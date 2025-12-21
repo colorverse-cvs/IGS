@@ -310,7 +310,7 @@ export default function Settings() {
             name="shopName"
             value={formData.shopName}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 focus:outline-none"
           />
           {!formData.shopName && (
             <p className="text-red-500 text-xs mt-1">Shop name is required</p>
@@ -327,7 +327,7 @@ export default function Settings() {
               maxLength={10}
               value={formData.contact}
               onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 focus:outline-none"
             />
             {!phoneValid && formData.contact && (
               <p className="text-red-500 text-xs mt-1">Enter valid 10 digit number</p>
@@ -341,7 +341,7 @@ export default function Settings() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 focus:outline-none"
             />
             {!emailValid && formData.email && (
               <p className="text-red-500 text-xs mt-1">Invalid email format</p>
@@ -357,7 +357,7 @@ export default function Settings() {
             rows="3"
             value={formData.address}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-purple-500 focus:outline-none resize-none"
           />
           {!formData.address && (
             <p className="text-red-500 text-xs mt-1">Address is required</p>

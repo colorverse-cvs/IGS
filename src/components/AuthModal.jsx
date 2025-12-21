@@ -506,7 +506,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             resetAllForms();
             onClose?.();
           }}
-          className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all"
+          className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 bg-gray-25 hover:bg-gray-100 rounded-full transition-all"
           aria-label="Close modal"
         >
           <X size={24} className="cursor-pointer" />

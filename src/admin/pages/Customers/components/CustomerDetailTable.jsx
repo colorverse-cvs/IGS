@@ -1,4 +1,4 @@
-import { FaEye } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
 import { useState } from "react";
 import ShowCurrentCustomerDetail from "./ShowCurrentCustomerDetail";
 
@@ -56,10 +56,10 @@ export default function CustomerDetailTable({ data }) {
               {/* ACTION COLUMN */}
               <td className="px-4 py-3 text-center">
                 <button
-                  className="hover:text-purple-600 transition flex items-center gap-2 border border-gray-100 px-3 py-1.5 rounded-md text-sm hover:bg-gray-50 cursor-pointer mx-auto"
+                  className="hover:text-purple-600 transition flex items-center gap-2 px-3 py-1.5 rounded-md text-sm text-purple-600 border border-purple-600 hover:bg-purple-50 cursor-pointer mx-auto"
                   onClick={() => handleShowCustomerDetailModal(customer)}   // 👈 Pass selected customer
                 >
-                  <FaEye /> View
+                  <FaRegEye className="w-3 h-3" /> View
                 </button>
               </td>
             </tr>

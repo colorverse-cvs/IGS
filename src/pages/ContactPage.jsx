@@ -158,7 +158,7 @@ export default function ContactPage() {
                       type="text"
                       value={form.firstName}
                       onChange={handleChange("firstName")}
-                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:border-purple-500"
+                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
                     />
                     {errors.firstName && (
                       <p className="text-xs text-red-500 mt-1">
@@ -174,7 +174,7 @@ export default function ContactPage() {
                       type="text"
                       value={form.lastName}
                       onChange={handleChange("lastName")}
-                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:border-purple-500"
+                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
                     />
                     {errors.lastName && (
                       <p className="text-xs text-red-500 mt-1">
@@ -190,7 +190,7 @@ export default function ContactPage() {
                       type="email"
                       value={form.email}
                       onChange={handleChange("email")}
-                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:border-purple-500"
+                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
                       placeholder="you@example.com"
                     />
                     {errors.email && (
@@ -207,7 +207,7 @@ export default function ContactPage() {
                       type="tel"
                       value={form.phone}
                       onChange={handleChange("phone")}
-                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:border-purple-500"
+                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
                       placeholder="+91 987 654 3210"
                     />
                     {errors.phone && (
@@ -254,7 +254,7 @@ export default function ContactPage() {
                     value={form.message}
                     onChange={handleChange("message")}
                     rows={4}
-                    className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:border-purple-500 resize-none"
+                    className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500 resize-none"
                     placeholder="Write your message..."
                   />
                   {errors.message && (

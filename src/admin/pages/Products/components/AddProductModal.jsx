@@ -331,7 +331,7 @@ function Input({ label, error, ...props }) {
         {...props}
         className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${error
           ? "border-red-500 focus:ring-red-400"
-          : "border-gray-300 focus:ring-violet-500"
+          : "border-gray-300 focus:ring-purple-500"
           }`}
       />
       {error && <ErrorText text={error} />}

@@ -89,7 +89,7 @@ export default function CustomSearchDropdown({
                                 ring-1 ring-purple-600 ring-opacity-50
                                 focus:ring-1 focus:ring-purple-600
                                 focus:border-purple-600
-                                outline-none
+                                focus:outline-none
                             "
                         />
                     )}
