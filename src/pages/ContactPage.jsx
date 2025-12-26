@@ -7,9 +7,9 @@ import {
   Facebook,
   Linkedin,
 } from "lucide-react";
-import backgroundContact from "../assets/background-contact-vector.png";
-import backgroundContactForm from "../assets/contact_form_bg.png";
-import getInTouchBg from "../assets/Rectangle 35.png";
+import backgroundContact from "/public/assets/images/background-contact-vector.png";
+import backgroundContactForm from "/public/assets/images/contact_form_bg.png";
+import getInTouchBg from "/public/assets/images/Rectangle 35.png";
 import testimonials from "../data/testimonials.json";
 import TestimonialsPage from "./TestimonialsPage.jsx";
 import { sendContactMessage } from "../utils/contactApi";
@@ -73,9 +73,9 @@ export default function ContactPage() {
       {/* Contact Form Section */}
       <section
       >
-        <div 
-        className="bg-no-repeat bg-cover bg-center py-[3rem] md:py-[5rem] px-4 md:px-15 lg:px-20"
-        style={{ backgroundImage: `url(${backgroundContact})` }}>
+        <div
+          className="bg-no-repeat bg-cover bg-center py-[3rem] md:py-[5rem] px-4 md:px-15 lg:px-20"
+          style={{ backgroundImage: `url(${backgroundContact})` }}>
           {/* Outer white card */}
           <div className="bg-white rounded-2xl shadow-[0_18px_60px_rgba(0,0,0,0.15)] overflow-hidden grid grid-cols-1 md:grid-cols-[1.1fr_2fr] p-2.5">
             {/* Left contact info panel */}
@@ -276,9 +276,8 @@ export default function ContactPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   {status !== "idle" && statusMessage && (
                     <p
-                      className={`text-xs ${
-                        status === "success" ? "text-green-600" : "text-red-600"
-                      }`}
+                      className={`text-xs ${status === "success" ? "text-green-600" : "text-red-600"
+                        }`}
                     >
                       {statusMessage}
                     </p>

@@ -4,7 +4,6 @@ import {
   getResponsiveSettings,
 } from "../config/carouselConfig";
 
-
 export default function CarouselRow({
   items = [],
   renderItem,
@@ -17,6 +16,7 @@ export default function CarouselRow({
   gapClass = "px-1",
 }) {
   const normalizedItems = Array.isArray(items) ? items : [];
+
   const [viewportWidth, setViewportWidth] = React.useState(
     typeof window !== "undefined" ? window.innerWidth : 1200
   );
@@ -25,118 +25,164 @@ export default function CarouselRow({
     () => getResponsiveSettings(viewportWidth, config),
     [viewportWidth, config]
   );
-  const itemsPerView = Math.max(1, responsive.itemsPerView || 1);
-  const stepSize = Math.max(1, responsive.step || 1);
-  const widthPercent = 100 / itemsPerView;
-  const autoplayDelay = autoplayMs || config.autoplayMs || 3000;
 
-  const maxIndex = Math.max(0, normalizedItems.length - itemsPerView);
-  const [firstVisibleIndex, setFirstVisibleIndex] = React.useState(0);
-  const dragStateRef = React.useRef({ dragging: false, startX: 0, moved: 0 });
+  const itemsPerView = Math.max(1, responsive.itemsPerView || 1);
+  const widthPercent = 100 / itemsPerView;
+
+  const containerRef = React.useRef(null);
+  const trackRef = React.useRef(null);
+
+  const animationFrameRef = React.useRef(null);
+  const lastTimeRef = React.useRef(0);
+  const scrollOffsetRef = React.useRef(0);
+
   const [isPaused, setIsPaused] = React.useState(false);
 
+  // Drag state
+  const dragStateRef = React.useRef({
+    dragging: false,
+    startX: 0,
+    currentX: 0,
+    startOffset: 0,
+  });
+
+  /* -------------------- Resize -------------------- */
   React.useEffect(() => {
     const onResize = () => setViewportWidth(window.innerWidth);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  React.useEffect(() => {
-    setFirstVisibleIndex((idx) => Math.min(idx, maxIndex));
-  }, [maxIndex]);
-
+  /* -------------------- Seamless Auto Scroll -------------------- */
   React.useEffect(() => {
     if (!autoplay || normalizedItems.length <= itemsPerView || isPaused) return;
-    const id = setInterval(() => {
-      setFirstVisibleIndex((idx) => {
-        const next = idx + stepSize;
-        return next > maxIndex ? 0 : next;
-      });
-    }, autoplayDelay);
-    return () => clearInterval(id);
-  }, [
-    autoplay,
-    autoplayDelay,
-    normalizedItems.length,
-    itemsPerView,
-    stepSize,
-    maxIndex,
-    isPaused,
-  ]);
 
+    const scrollSpeed = 0.005; // 🔥 slower & smoother
+
+    const animate = (time) => {
+      if (!lastTimeRef.current) lastTimeRef.current = time;
+      const delta = time - lastTimeRef.current;
+      lastTimeRef.current = time;
+
+      scrollOffsetRef.current += scrollSpeed * delta;
+
+      const singleSetWidth = normalizedItems.length * widthPercent;
+
+      // seamless reset (no jump)
+      if (scrollOffsetRef.current >= singleSetWidth) {
+        scrollOffsetRef.current -= singleSetWidth;
+      }
+
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
+      }
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrameRef.current);
+      lastTimeRef.current = 0;
+    };
+  }, [autoplay, isPaused, normalizedItems.length, itemsPerView, widthPercent]);
+
+  /* -------------------- Click to Pause -------------------- */
+  const handleClick = () => {
+    if (
+      Math.abs(
+        dragStateRef.current.startX - dragStateRef.current.currentX
+      ) < 5
+    ) {
+      setIsPaused((p) => !p);
+    }
+  };
+
+  /* -------------------- Drag Handlers -------------------- */
   const onPointerDown = (e) => {
+    if (!enableDrag) return;
+
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+
     dragStateRef.current = {
       dragging: true,
-      startX: e.clientX ?? (e.touches ? e.touches[0].clientX : 0),
-      moved: 0,
+      startX: clientX,
+      currentX: clientX,
+      startOffset: scrollOffsetRef.current,
     };
+
+    setIsPaused(true);
   };
 
   const onPointerMove = (e) => {
     if (!dragStateRef.current.dragging) return;
-    const x = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
-    dragStateRef.current.moved = x - dragStateRef.current.startX;
-  };
 
-  const onPointerUp = (e) => {
-    if (!dragStateRef.current.dragging) return;
-    const delta = dragStateRef.current.moved;
-    dragStateRef.current.dragging = false;
-    const threshold = 30;
-    if (Math.abs(delta) > threshold) {
-      e.preventDefault?.();
-      e.stopPropagation?.();
-      setFirstVisibleIndex((idx) => {
-        if (delta < 0) {
-          return idx + stepSize > maxIndex ? 0 : idx + stepSize;
-        }
-        return idx - stepSize < 0 ? maxIndex : idx - stepSize;
-      });
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+    dragStateRef.current.currentX = clientX;
+
+    const containerWidth = containerRef.current?.offsetWidth || 1;
+    const delta = dragStateRef.current.startX - clientX;
+    const deltaPercent = (delta / containerWidth) * 100;
+
+    scrollOffsetRef.current =
+      dragStateRef.current.startOffset + deltaPercent;
+
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
     }
   };
 
-  if (normalizedItems.length === 0) {
+  const onPointerUp = () => {
+    if (!dragStateRef.current.dragging) return;
+
+    dragStateRef.current.dragging = false;
+
+    setTimeout(() => {
+      if (!dragStateRef.current.dragging) {
+        setIsPaused(false);
+      }
+    }, 150);
+  };
+
+  if (!normalizedItems.length) {
     return (
-      <div className="text-center text-gray-500 py-8">No items available</div>
+      <div className="text-center text-gray-500 py-8">
+        No items available
+      </div>
     );
   }
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(normalizedItems.length / itemsPerView)
-  );
-  const currentPage = Math.floor(firstVisibleIndex / itemsPerView);
+  /* -------------------- Duplicate Items -------------------- */
+  const displayItems = [...normalizedItems, ...normalizedItems];
 
   return (
     <div className={`relative ${className}`}>
       <div
-        className="overflow-hidden select-none"
+        ref={containerRef}
+        className="overflow-hidden select-none cursor-grab active:cursor-grabbing"
+        style={{ touchAction: "none" }}
         onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={(e) => {
-          setIsPaused(false);
-          if (enableDrag) onPointerUp(e);
-        }}
-        onMouseDown={enableDrag ? onPointerDown : undefined}
-        onMouseMove={enableDrag ? onPointerMove : undefined}
-        onMouseUp={enableDrag ? onPointerUp : undefined}
-        onTouchStart={enableDrag ? onPointerDown : undefined}
-        onTouchMove={enableDrag ? onPointerMove : undefined}
-        onTouchEnd={enableDrag ? onPointerUp : undefined}
+        onMouseLeave={() => !dragStateRef.current.dragging && setIsPaused(false)}
+        onClick={handleClick}
+        onMouseDown={onPointerDown}
+        onMouseMove={onPointerMove}
+        onMouseUp={onPointerUp}
+        onTouchStart={onPointerDown}
+        onTouchMove={onPointerMove}
+        onTouchEnd={onPointerUp}
       >
         <div
-          className="flex transition-transform duration-500 ease-out"
-          style={{
-            transform: `translateX(-${widthPercent * firstVisibleIndex}%)`,
-          }}
+          ref={trackRef}
+          className="flex will-change-transform"
+          style={{ transition: dragStateRef.current.dragging ? "none" : "transform 0.1s linear" }}
         >
-          {normalizedItems.map((item, idx) => (
+          {displayItems.map((item, idx) => (
             <div
-              key={item?.id ?? idx}
+              key={`${item?.id ?? idx}-${idx}`}
               style={{
                 flex: `0 0 ${widthPercent}%`,
                 width: `${widthPercent}%`,
-                maxWidth: `${widthPercent}%`,
-                minWidth: `${widthPercent}%`,
               }}
               className={gapClass}
             >
@@ -146,16 +192,20 @@ export default function CarouselRow({
         </div>
       </div>
 
-      {showIndicators && totalPages > 1 && (
+      {/* -------------------- Indicators -------------------- */}
+      {showIndicators && (
         <div className="mt-4 flex justify-center gap-2">
-          {Array.from({ length: totalPages }).map((_, idx) => (
+          {normalizedItems.map((_, idx) => (
             <button
               key={idx}
               type="button"
-              onClick={() => setFirstVisibleIndex(idx * itemsPerView)}
-              className={`h-2 w-2 rounded-full transition-colors ${idx === currentPage ? "bg-brand-700" : "bg-gray-300"
-                }`}
-              aria-label={`Go to slide ${idx + 1}`}
+              onClick={() => {
+                scrollOffsetRef.current = idx * widthPercent;
+                if (trackRef.current) {
+                  trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
+                }
+              }}
+              className="h-2 w-2 rounded-full bg-gray-300 hover:bg-brand-700"
             />
           ))}
         </div>
@@ -163,4 +213,3 @@ export default function CarouselRow({
     </div>
   );
 }
-

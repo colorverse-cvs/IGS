@@ -6,12 +6,12 @@ import { useDispatch } from "react-redux";
 import { login, signup, fetchUserProfileAsync } from "../features/user/userSlice";
 import { initializeCart, fetchCartSummaryAsync } from "../features/cart/cartSlice";
 import toast from "react-hot-toast";
-import logo from "../assets/ishita-gallery-logo.jpg";
+import logo from "/public/assets/images/ishita-gallery-logo.jpg";
 import { Eye, EyeOff, X } from "lucide-react";
 import CustomPopupModal from "./CustomPopupModal";
 
 // Auth Banner
-import authBanner from "../assets/auth_banner.jpg";
+import authBanner from "/public/assets/images/auth_banner.jpg";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const mobileRegex = /^\d{10}$/;

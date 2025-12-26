@@ -1,6 +1,72 @@
 [
-  {"name":"Animesh Varune","avatar":"https://i.pravatar.cc/40?img=1","text":"The quality of craftsmanship is exceptional. Every detail is perfect, and the delivery was fast.","stars":5},
-  {"name":"Virkesh Gyan","avatar":"https://i.pravatar.cc/40?img=2","text":"Beautiful traditional work with modern finishing. Looks better in room than pictures.","stars":5},
-  {"name":"Sanjan Kumar","avatar":"https://i.pravatar.cc/40?img=3","text":"Ordered custom Ganesh statue for company puja. The team exceeded our expectations in every area.","stars":5},
-  {"name":"Priya Sharma","avatar":"https://i.pravatar.cc/40?img=4","text":"Authentic hand-held work with superb polish and shine. Perfect for gifting too.","stars":5}
+  {
+    "id": "tst-001",
+    "name": "Rahul Patil",
+    "avatar": "https://i.pravatar.cc/40?img=5",
+    "text": "The idol looks premium and very well finished. Packaging was secure and delivery on time.",
+    "stars": 4
+  },
+  {
+    "id": "tst-002",
+    "name": "Neha Kulkarni",
+    "avatar": "https://i.pravatar.cc/40?img=6",
+    "text": "Loved the detailing and traditional touch. Would definitely recommend to friends and family.",
+    "stars": 5
+  },
+  {
+    "id": "tst-003",
+    "name": "Amit Deshmukh",
+    "avatar": "https://i.pravatar.cc/40?img=7",
+    "text": "Good quality and craftsmanship. The size was slightly smaller than expected but overall satisfied.",
+    "stars": 3
+  },
+  {
+    "id": "tst-004",
+    "name": "Pooja Nair",
+    "avatar": "https://i.pravatar.cc/40?img=8",
+    "text": "Very elegant design and smooth finish. It enhanced the beauty of our living room.",
+    "stars": 5
+  },
+  {
+    "id": "tst-005",
+    "name": "Rohit Verma",
+    "avatar": "https://i.pravatar.cc/40?img=9",
+    "text": "Nicely crafted statue with good attention to detail. Delivery was prompt.",
+    "stars": 4
+  },
+  {
+    "id": "tst-006",
+    "name": "Sneha Joshi",
+    "avatar": "https://i.pravatar.cc/40?img=10",
+    "text": "Authentic look and premium feel. Perfect choice for festive decoration.",
+    "stars": 5
+  },
+  {
+    "id": "tst-007",
+    "name": "Kunal Mehta",
+    "avatar": "https://i.pravatar.cc/40?img=11",
+    "text": "Product quality is good, though I expected a bit more weight. Still looks amazing.",
+    "stars": 3
+  },
+  {
+    "id": "tst-008",
+    "name": "Shweta Pawar",
+    "avatar": "https://i.pravatar.cc/40?img=12",
+    "text": "Excellent craftsmanship and finishing. Everyone who visited our home loved it.",
+    "stars": 5
+  },
+  {
+    "id": "tst-009",
+    "name": "Vikas Malhotra",
+    "avatar": "https://i.pravatar.cc/40?img=13",
+    "text": "Very good traditional artwork with modern appeal. Value for money.",
+    "stars": 4
+  },
+  {
+    "id": "tst-010",
+    "name": "Anjali Singh",
+    "avatar": "https://i.pravatar.cc/40?img=14",
+    "text": "Beautifully designed and carefully packed. A great addition to our prayer room.",
+    "stars": 5
+  }
 ]

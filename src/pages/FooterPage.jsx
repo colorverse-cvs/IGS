@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Instagram, MapPin, Phone, Mailbox, Facebook, Linkedin } from "lucide-react";
-import IshitaGalleryLogo from "../assets/watermark-ishita-gallery-logo.png";
+import IshitaGalleryLogo from "/public/assets/images/watermark-ishita-gallery-logo.png";
 
 /**
  * FooterPage Component
@@ -69,11 +69,11 @@ export default function FooterPage() {
               <ul className="space-y-3 text-sm opacity-90">
                 <li>
                   <Link to="/filter?category=shivaji">
-                  Chhatrapati Shivaji Maharaj Statues</Link>
+                    Chhatrapati Shivaji Maharaj Statues</Link>
                 </li>
                 <li>
                   <Link to="/filter?category=mavale">
-                  Mavale Statues</Link>
+                    Mavale Statues</Link>
                 </li>
                 <li>
                   <Link to="/filter?category=god-statues">God Statues</Link>
@@ -140,7 +140,7 @@ export default function FooterPage() {
       </div>
       <div
         className="lg:hidden"
-        style={{ height:"66px" }}
+        style={{ height: "66px" }}
       />
     </footer>
   );

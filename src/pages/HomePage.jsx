@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SlideshowStripe from "../components/SlideshowStripe.jsx";
 import carouselData from "../data/carousel.json";
-import Clippathgroup from "../assets/clip-path-group.svg";
+import Clippathgroup from "/public/assets/images/clip-path-group.svg";
 import { useNavigate, useLocation } from "react-router-dom";
 import CollectionPage from "./CollectionPage.jsx";
 import ExploreCollections from "./ExploreCollections.jsx";
