@@ -12,9 +12,9 @@ import {
   Filter,
   X,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
-import { User } from "lucide-react";
+// import { Link } from "react-router-dom";
+// import IshitaGalleryLogo from "../assets/ishita-gallery-logo.jpg";
+// import { User } from "lucide-react";
 
 export default function FilterPage() {
   const navigate = useNavigate();

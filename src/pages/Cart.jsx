@@ -10,7 +10,7 @@ import {
 } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
-import EmptyShoppingCart from "../assets/empty-shopping-cart.svg";
+import EmptyShoppingCart from "/public/assets/images/empty-shopping-cart.svg";
 import { APP_URL } from "../constant";
 import CustomPopupModal from "../components/CustomPopupModal";
 
@@ -128,50 +128,50 @@ export default function Cart({ isDrawer = false, onClose }) {
                       </div>
                       <div className="text-brand-700 font-semibold">₹{item.price}</div>
                       <div className="flex lg:flex-col justify-between">
-                      <div className="flex items-center gap-2 border border-gray-300 rounded mt-2 w-fit">
-                        <button
-                          type="button"
-                          className="px-2 py-1 text-gray-600 hover:bg-gray-100"
-                          onClick={() =>
-                            item.qty > 1
-                              ? dispatch(
+                        <div className="flex items-center gap-2 border border-gray-300 rounded mt-2 w-fit">
+                          <button
+                            type="button"
+                            className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                            onClick={() =>
+                              item.qty > 1
+                                ? dispatch(
+                                  updateCartItemQuantityAsync({
+                                    productId: item.id,
+                                    quantity: item.qty - 1,
+                                  })
+                                )
+                                : dispatch(removeFromCart(item.id))
+                            }
+                          >
+                            -
+                          </button>
+                          <span className="text-sm font-medium w-4 text-center">{item.qty}</span>
+                          <button
+                            type="button"
+                            className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                            onClick={() =>
+                              dispatch(
                                 updateCartItemQuantityAsync({
                                   productId: item.id,
-                                  quantity: item.qty - 1,
+                                  quantity: item.qty + 1,
                                 })
                               )
-                              : dispatch(removeFromCart(item.id))
-                          }
-                        >
-                          -
-                        </button>
-                        <span className="text-sm font-medium w-4 text-center">{item.qty}</span>
+                            }
+                          >
+                            +
+                          </button>
+                        </div>
+
                         <button
                           type="button"
-                          className="px-2 py-1 text-gray-600 hover:bg-gray-100"
-                          onClick={() =>
-                            dispatch(
-                              updateCartItemQuantityAsync({
-                                productId: item.id,
-                                quantity: item.qty + 1,
-                              })
-                            )
-                          }
+                          className="text-red-600 text-xs pt-2"
+                          onClick={() => handleRemoveItem(item.id)}
                         >
-                          +
+                          <span className="hidden lg:block text-start">Remove from cart</span>
+                          <span className="lg:hidden">
+                            <Trash2 size={20} className="text-red" />
+                          </span>
                         </button>
-                      </div>
-
-                      <button
-                        type="button"
-                        className="text-red-600 text-xs pt-2"
-                        onClick={() => handleRemoveItem(item.id)}
-                      >
-                        <span className="hidden lg:block text-start">Remove from cart</span>
-                        <span className="lg:hidden">
-                          <Trash2 size={20} className="text-red" />
-                        </span>
-                      </button>
                       </div>
 
                       {/* <label className="mt-2 inline-flex items-center gap-2 text-xs text-gray-700">

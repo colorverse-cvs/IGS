@@ -9,22 +9,14 @@ export default function TestimonialsPage({ items = [] }) {
     <section className="py-[8rem]">
       <div className="px-4 md:px-15 lg:px-20">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-center">
-            <h2 className="text-4xl md:text-5xl leading-tight font-serif font-semibold text-gray-900">
+          <div className="mb-8 flex flex-col items-center text-center">
+            <h2 className="text-4xl md:text-5xl leading-tight font-serif font-semibold text-gray-900 mb-4">
               Experiences Shared by Our Clients
             </h2>
-            <div>
-              <p className="text-sm text-gray-700 max-w-md">
-                Hear from satisfied customers who have transformed their spaces
-                with our statues
-              </p>
-              <a
-                href="#"
-                className="inline-block mt-4 text-sm bg-brand-900 text-white px-4 py-2 rounded-md hover:bg-purple-800 w-full text-center md:w-[50%]"
-              >
-                View All →
-              </a>
-            </div>
+            <p className="text-sm text-gray-700 max-w-md">
+              Hear from happy customers who transformed their spaces beautifully using our statues, sharing their experiences, stories, and satisfaction with the quality,
+              design, and impact of our creations.
+            </p>
           </div>
 
           <CarouselRow

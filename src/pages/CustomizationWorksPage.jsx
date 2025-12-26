@@ -1,7 +1,7 @@
 import React from "react";
-import DesignConsult from "../assets/design-consult.svg";
-import CraftCreate from "../assets/craft-create.svg";
-import QualityDeliver from "../assets/quality-deliver.svg";
+import DesignConsult from "/public/assets/images/design-consult.svg";
+import CraftCreate from "/public/assets/images/craft-create.svg";
+import QualityDeliver from "/public/assets/images/quality-deliver.svg";
 
 /**
  * CustomizationWorksPage Component
@@ -26,9 +26,8 @@ import QualityDeliver from "../assets/quality-deliver.svg";
  */
 const StepRow = ({ title, description, Illustration, reverse = false }) => (
   <div
-    className={`grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-10 items-center ${
-      reverse ? "md:[&>div:first-child]:order-2" : ""
-    }`}
+    className={`grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-10 items-center ${reverse ? "md:[&>div:first-child]:order-2" : ""
+      }`}
   >
     <div>
       <h3 className="text-3xl font-semibold text-gray-900 mb-2">

@@ -3,20 +3,9 @@ import {
   CAROUSEL_DEFAULT_CONFIG,
   getResponsiveSettings,
 } from "../config/carouselConfig";
+import { SlArrowRight } from "react-icons/sl";
+import { SlArrowLeft } from "react-icons/sl";
 
-/**
- * Reusable Carousel component with responsive support.
- *
- * Props:
- * - items: Array<{ id, title?, description?, image }>
- * - autoplay: boolean (default: true)
- * - autoplayMs: number (default: 3000)
- * - showPrevNext: boolean (default: true)
- * - showIndicators: boolean (default: true)
- * - className: string (optional)
- * - config: object (optional - carousel config with responsive settings)
- * - enableDrag: boolean (default: false)
- */
 export default function Carousel({
   items = [],
   autoplay = true,
@@ -145,14 +134,14 @@ export default function Carousel({
             className="absolute left-2 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10 cursor-pointer"
             aria-label="Previous"
           >
-            ←
+            <SlArrowLeft />
           </button>
           <button
             onClick={goNext}
             className="absolute right-2 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10 cursor-pointer"
             aria-label="Next"
           >
-            →
+            <SlArrowRight />
           </button>
         </>
       )}
