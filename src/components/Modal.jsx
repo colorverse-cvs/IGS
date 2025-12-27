@@ -68,7 +68,7 @@ export default function Modal({
         )}
 
         {/* Modal body - children are rendered here */}
-        {hasHeader ? <div className="p-6">{children}</div> : children}
+        {hasHeader ? <div className="py-6 px-4 md:px-6">{children}</div> : children}
       </div>
     </div>
   );
