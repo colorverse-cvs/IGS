@@ -7,9 +7,9 @@ import {
   Facebook,
   Linkedin,
 } from "lucide-react";
-import backgroundContact from "/public/assets/images/background-contact-vector.png";
-import backgroundContactForm from "/public/assets/images/contact_form_bg.png";
-import getInTouchBg from "/public/assets/images/Rectangle 35.png";
+import backgroundContact from "/assets/images/background-contact-vector.png";
+import backgroundContactForm from "/assets/images/contact_form_bg.png";
+import getInTouchBg from "/assets/images/Rectangle 35.png";
 import testimonials from "../data/testimonials.json";
 import TestimonialsPage from "./TestimonialsPage.jsx";
 import { sendContactMessage } from "../utils/contactApi";

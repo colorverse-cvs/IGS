@@ -10,7 +10,7 @@ import {
 } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { Trash2, X } from "lucide-react";
-import EmptyShoppingCart from "/public/assets/images/empty-shopping-cart.svg";
+import EmptyShoppingCart from "/assets/images/empty-shopping-cart.svg";
 import { APP_URL } from "../constant";
 import CustomPopupModal from "../components/CustomPopupModal";
 

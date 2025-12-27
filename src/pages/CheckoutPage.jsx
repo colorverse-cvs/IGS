@@ -516,7 +516,7 @@ export default function CheckoutPage() {
                 onToggle={() => handleToggle("payment")}
               >
                 <div className="flex items-start gap-5">
-                  <img src="../../public/assets/logos/razorpay-icon.png" alt="" />
+                  <img src="/assets/logos/razorpay-icon.png" alt="" />
                   <div className="flex flex-col items-start gap-5">
                     <p>Payment System : Razorpay</p>
                     <p>After placing the order, you'll be redirected to Razorpay to complete payment.</p>

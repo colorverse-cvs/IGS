@@ -1,7 +1,7 @@
 import React from "react";
-import DesignConsult from "/public/assets/images/design-consult.svg";
-import CraftCreate from "/public/assets/images/craft-create.svg";
-import QualityDeliver from "/public/assets/images/quality-deliver.svg";
+import DesignConsult from "/assets/images/design-consult.svg";
+import CraftCreate from "/assets/images/craft-create.svg";
+import QualityDeliver from "/assets/images/quality-deliver.svg";
 
 /**
  * CustomizationWorksPage Component

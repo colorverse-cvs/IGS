@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import RibbonImage from "/public/assets/images/Purple-Bow-Gift-Ribbon.png";
-import Rect16 from "/public/assets/images/Rectangle 16.png";
-import Rect17 from "/public/assets/images/Rectangle 17.png";
-import Rect18 from "/public/assets/images/Rectangle 18.png";
-import LeftRings from "/public/assets/images/ring_vector1.png";
-import RightRings from "/public/assets/images/ring_vector2.png";
+import RibbonImage from "/assets/images/Purple-Bow-Gift-Ribbon.png";
+import Rect16 from "/assets/images/Rectangle 16.png";
+import Rect17 from "/assets/images/Rectangle 17.png";
+import Rect18 from "/assets/images/Rectangle 18.png";
+import LeftRings from "/assets/images/ring_vector1.png";
+import RightRings from "/assets/images/ring_vector2.png";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/products/productSlice";
 import CarouselRow from "../components/CarouselRow";

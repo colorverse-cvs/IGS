@@ -17,7 +17,7 @@ import CartDrawer from "./CartDrawer";
 import SearchDrawer from "./SearchDrawer.jsx";
 import AuthModal from "./AuthModal";
 import Dropdown from "./Dropdown";
-import IshitaGalleryLogo from "/public/assets/images/ishita-gallery-logo.jpg";
+import IshitaGalleryLogo from "/assets/images/ishita-gallery-logo.jpg";
 import categoriesData from "../data/categories.json";
 import { logoutAsync, fetchUserProfileAsync } from "../features/user/userSlice";
 import { initializeCart, clearCart } from "../features/cart/cartSlice";
@@ -251,8 +251,8 @@ export default function Navbar() {
           Features: Sticky positioning with glass blur effect on scroll */}
       <nav
         className={`hidden lg:block sticky top-0 z-30 border-b transition-colors ${isScrolled
-            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
-            : "bg-white border-gray-100"
+          ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+          : "bg-white border-gray-100"
           }`}
       >
         <div
@@ -447,8 +447,8 @@ export default function Navbar() {
           Features: Sticky positioning with blur effect on scroll */}
       <nav
         className={`lg:hidden fixed top-0 left-0 right-0 z-40 border-b border-gray-200 ${isScrolled
-            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
-            : "bg-white border-gray-100"
+          ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+          : "bg-white border-gray-100"
           }`}
       >
         <div
@@ -699,8 +699,8 @@ export default function Navbar() {
             <Link
               to="/"
               className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/"
-                  ? "text-brand-700 border-b-4 border-brand-700"
-                  : "text-gray-600 hover:text-purple-700"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-purple-700"
                 }`}
               aria-label="Home"
             >
@@ -712,8 +712,8 @@ export default function Navbar() {
             <Link
               to="/profile"
               className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/profile"
-                  ? "text-brand-700 border-b-4 border-brand-700"
-                  : "text-gray-600 hover:text-purple-700"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-purple-700"
                 }`}
               aria-label="Profile"
             >
@@ -725,8 +725,8 @@ export default function Navbar() {
             <Link
               to="/contact"
               className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/contact"
-                  ? "text-brand-700 border-b-4 border-brand-700"
-                  : "text-gray-600 hover:text-purple-700"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-purple-700"
                 }`}
               aria-label="Contact"
             >
@@ -758,8 +758,8 @@ export default function Navbar() {
             <button
               onClick={toggleMenu}
               className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${isMenuOpen
-                  ? "text-brand-700 border-b-4 border-brand-700"
-                  : "text-gray-600 hover:text-purple-700"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-purple-700"
                 }`}
               aria-label="Menu"
               aria-expanded={isMenuOpen}

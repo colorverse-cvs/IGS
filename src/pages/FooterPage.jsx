@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Instagram, MapPin, Phone, Mailbox, Facebook, Linkedin } from "lucide-react";
-import IshitaGalleryLogo from "/public/assets/images/watermark-ishita-gallery-logo.png";
+import IshitaGalleryLogo from "/assets/images/watermark-ishita-gallery-logo.png";
 
 /**
  * FooterPage Component

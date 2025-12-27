@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import OrderSuccessfullyCart from "/public/assets/images/order-successfully-cart-log.svg";
+import OrderSuccessfullyCart from "/assets/images/order-successfully-cart-log.svg";
 
 /**
  * OrderPlacedPage Component
