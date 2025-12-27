@@ -298,17 +298,17 @@ export default function AddressForm({
         Make this my default address
       </label>
 
-      <div className="flex justify-between gap-3 pt-2">
+      <div className="flex justify-end gap-5 md:gap-4 pt-2">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded cursor-pointer"
+          className="px-2 py-2 border border-gray-300 rounded cursor-pointer"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-2 md:px-4 py-2 bg-brand-700 text-white rounded cursor-pointer"
+          className="px-3 md:px-4 py-2 bg-brand-700 text-white rounded cursor-pointer"
         >
           {submitLabel}
         </button>

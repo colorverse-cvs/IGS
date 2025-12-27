@@ -50,7 +50,7 @@ export default function Modal({
     >
       {/* Modal content box - click inside doesn't trigger backdrop onClick */}
       <div
-        className={`bg-white rounded-lg shadow-2xl transform transition-all max-h-[90vh] overflow-auto ${className || "max-w-lg w-full m-4"}`}
+        className={`bg-white rounded-lg shadow-2xl transform transition-all max-h-[90vh] p-2 overflow-auto ${className || "max-w-lg w-full m-4"}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Optional header with title and close button */}
@@ -59,7 +59,7 @@ export default function Modal({
             <div className="text-xl font-bold text-gray-900">{title}</div>
             <button
               onClick={onClose}
-              className="absolute right-1 top-1 md:right-5 md:top-5 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-50 transition cursor-pointer"
+              className="absolute right-1 top-1 md:right-5 md:top-5 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer"
               aria-label="Close modal"
             >
               <X size={24} />
@@ -68,7 +68,7 @@ export default function Modal({
         )}
 
         {/* Modal body - children are rendered here */}
-        {hasHeader ? <div className="p-6">{children}</div> : children}
+        {hasHeader ? <div className="py-6 px-4 md:px-6">{children}</div> : children}
       </div>
     </div>
   );

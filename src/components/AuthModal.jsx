@@ -538,7 +538,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             resetAllForms();
             onClose?.();
           }}
-          className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 bg-gray-25 hover:bg-gray-100 rounded-full transition-all"
+          className="absolute top-2 right-3 z-10 p-2 text-gray-400 hover:text-gray-600 bg-gray-25 hover:bg-gray-100 rounded-full transition-all"
           aria-label="Close modal"
         >
           <X size={24} className="cursor-pointer" />
@@ -665,8 +665,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
           {/* Signup Form */}
           {tab === "signup" && (
-            <form onSubmit={handleSignup} className="space-y-4 flex-1 overflow-y-auto">
-              <div className="mx-2">
+            <form onSubmit={handleSignup} className="space-y-4 flex-1 overflow-y-auto px-1">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Name <span className="text-red-500">*</span>
                 </label>
@@ -680,7 +680,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {signupErrors.name && <p className="text-xs text-red-600 mt-1">{signupErrors.name}</p>}
               </div>
 
-              <div className="mx-2">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Mobile <span className="text-red-500">*</span>
                 </label>
@@ -695,7 +695,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {signupErrors.mobile && <p className="text-xs text-red-600 mt-1">{signupErrors.mobile}</p>}
               </div>
 
-              <div className="mx-2">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email <span className="text-red-500">*</span>
                 </label>
@@ -709,7 +709,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {signupErrors.email && <p className="text-xs text-red-600 mt-1">{signupErrors.email}</p>}
               </div>
 
-              <div className="mx-2">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Password <span className="text-red-500">*</span>
                 </label>
@@ -719,7 +719,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min 8 chars, letters & numbers"
-                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
+                    className={`w-full border rounded px-3 py-2 text-sm placeholder:w-[90%] truncate focus:outline-none focus:ring-1 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
                       }`}
                   />
                   <button
@@ -733,7 +733,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 {signupErrors.password && <p className="text-xs text-red-600 mt-1">{signupErrors.password}</p>}
               </div>
 
-              <div className="mx-2">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Confirm Password <span className="text-red-500">*</span>
                 </label>
