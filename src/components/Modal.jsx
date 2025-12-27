@@ -55,7 +55,7 @@ export default function Modal({
       >
         {/* Optional header with title and close button */}
         {hasHeader && (
-          <div className="flex justify-center items-center p-5 border-b border-gray-100 relative">
+          <div className="flex justify-center items-center p-5 relative">
             <div className="text-xl font-bold text-gray-900">{title}</div>
             <button
               onClick={onClose}

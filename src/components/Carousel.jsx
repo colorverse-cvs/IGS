@@ -3,8 +3,7 @@ import {
   CAROUSEL_DEFAULT_CONFIG,
   getResponsiveSettings,
 } from "../config/carouselConfig";
-import { SlArrowRight } from "react-icons/sl";
-import { SlArrowLeft } from "react-icons/sl";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export default function Carousel({
   items = [],
@@ -131,17 +130,17 @@ export default function Carousel({
         <>
           <button
             onClick={goPrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10 cursor-pointer"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-brand-50 p-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10 cursor-pointer"
             aria-label="Previous"
           >
-            <SlArrowLeft />
+            <ArrowLeft className="h-5 w-5 text-gray-800" />
           </button>
           <button
             onClick={goNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white px-2 py-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10 cursor-pointer"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-brand-50 p-1 rounded-md shadow border border-gray-300 hover:border-brand-500 hover:bg-gray-100 transition z-10 cursor-pointer"
             aria-label="Next"
           >
-            <SlArrowRight />
+            <ArrowRight className="h-5 w-5 text-gray-800" />
           </button>
         </>
       )}

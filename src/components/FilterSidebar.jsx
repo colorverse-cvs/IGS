@@ -131,72 +131,6 @@ export default function FilterSidebar({
     >
       {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}
       <style>{`
-        /* Custom checkbox styling */
-        input[type="checkbox"] {
-          appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          width: 18px;
-          height: 18px;
-          border: 2px solid #d1d5db;
-          border-radius: 3px;
-          background-color: white;
-          cursor: pointer;
-          position: relative;
-          flex-shrink: 0;
-        }
-        input[type="checkbox"]:checked {
-          background-color: white;
-          border-color: #9333ea;
-        }
-        input[type="checkbox"]:checked::after {
-          content: "";
-          position: absolute;
-          left: 50%;
-          top: 44%;
-          transform: translate(-50%, -50%) rotate(45deg);
-          width: 5px;
-          height: 10px;
-          border: solid white;
-          border-width: 0 2px 2px 0;
-          border-color: #9333ea;
-        }
-        input[type="checkbox"]:hover {
-          border-color: #9333ea;
-        }
-
-        /* Custom radio button styling */
-        input[type="radio"] {
-          appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          width: 18px;
-          height: 18px;
-          border: 2px solid #d1d5db;
-          border-radius: 50%;
-          background-color: white;
-          cursor: pointer;
-          position: relative;
-          flex-shrink: 0;
-        }
-        input[type="radio"]:checked {
-          border-color: #9333ea;
-        }
-        input[type="radio"]:checked::after {
-          content: "";
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background-color: #9333ea;
-        }
-        input[type="radio"]:hover {
-          border-color: #9333ea;
-        }
-
         /* Price range slider styles */
         .price-range-track {
           height: 4px;
@@ -714,11 +648,11 @@ export default function FilterSidebar({
       {/* Mobile "Show Results" Button */}
 
       {isMobile && (
-        <div className="sticky bottom-0 bg-white p-4 mt-4 mx-4 flex">
+        <div className="sticky bottom-0 bg-white py-4 flex gap-3">
           <button
             type="button"
             onClick={onResetFilters}
-            className="text-sm text-brand-600 hover:text-purple-700 flex items-center"
+            className="text-sm text-brand-600 hover:text-purple-700 flex items-center w-[50%] justify-center border border-gray-300 hover:border-purple-500 rounded-lg px-4 py-3"
           >
             <X size={14} className="mr-1" />
             Reset filters
@@ -726,7 +660,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="w-full px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition"
+            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition"
           >
             Show Results
           </button>

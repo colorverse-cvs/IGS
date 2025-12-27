@@ -384,36 +384,6 @@ export default function ProductInfoPage() {
 
   return (
     <>
-      {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}
-      <style>{`
-
-        /* Custom radio button styling */
-        input[type="radio"] {
-          appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          border: 2px solid #d1d5db;
-          border-radius: 50%;
-          background-color: white;
-          width: 10px;
-          height: 10px;
-        }
-        input[type="radio"]:checked {
-          border-radius: 50%;
-          background-color: #9333ea;
-          border-color: #9333ea;
-          outline: 2px solid #c084fc;
-          outline-offset: 2px;
-        }
-        input[type="radio"]:checked::after {
-          border-radius: 50%;
-          background-color: #9333ea;
-          border-color: #9333ea;
-        }
-        input[type="radio"]:hover {
-          border-color: #9333ea;
-        }
-      `}</style>
       <div className="bg-white px-4 md:px-15 lg:px-20">
         <Breadcrumb items={breadcrumbItems} />
         <div className=" container mx-auto">

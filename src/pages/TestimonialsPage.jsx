@@ -6,10 +6,10 @@ export default function TestimonialsPage({ items = [] }) {
   const displayItems = Array.isArray(items) ? items : [];
 
   return (
-    <section className="py-[8rem]">
-      <div className="px-4 md:px-15 lg:px-20">
+    <section className="py-20">
+      <div className="px-4">
         <div className="container mx-auto">
-          <div className="mb-8 flex flex-col items-center text-center">
+          <div className="mb-8 flex flex-col items-center text-center md:px-15 lg:px-20">
             <h2 className="text-4xl md:text-5xl leading-tight font-serif font-semibold text-gray-900 mb-4">
               Experiences Shared by Our Clients
             </h2>
