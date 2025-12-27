@@ -754,6 +754,26 @@ export default function Navbar() {
               <span className="text-xs mt-1 font-medium">Contact</span>
             </Link>
 
+            {/* Cart */}
+
+            {user.isAuthenticated && (
+              <button
+                onClick={toggleCart}
+                className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
+                aria-label={`Cart with ${totalItems} items`}
+              >
+                <div className="relative">
+                  <ShoppingCart size={24} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-brand-700 rounded-full min-w-5 h-5">
+                      {totalItems > 99 ? "99+" : totalItems}
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs mt-1 font-medium">Cart</span>
+              </button>
+            )}
+
             {/* Menu */}
             <button
               onClick={toggleMenu}
