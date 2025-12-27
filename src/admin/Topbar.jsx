@@ -73,6 +73,13 @@ export default function Topbar({ setActivePage }) {
           </button>
 
           <button
+            onClick={() => navigate("/")}
+            className="block w-full text-left px-3 py-2 rounded hover:bg-gray-50 cursor-pointer"
+          >
+            Go To Home
+          </button>
+
+          <button
             onClick={() => handleLogout()}
             className="block w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-50 cursor-pointer"
           >

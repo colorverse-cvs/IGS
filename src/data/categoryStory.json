@@ -3,36 +3,36 @@
     "title": "Our Craft Story",
     "para1": "Each statue in our collection is a symbol of devotion and pride — handcrafted by skilled Indian artisans with decades of traditional sculpting experience.",
     "para2": "From the fine chiseling of marble to the rich polish of rosewood, every detail is made with precision, patience, and purpose.",
-    "image": "../assets/story/god-statues.jpg"
+    "image": "/assets/images/story/god-statues.jpg"
   },
   "god-statues": {
     "title": "Our Craft Story",
     "para1": "Divine idols are sculpted with sacred proportions and calm expressions, reflecting timeless traditions.",
     "para2": "Every piece is purified and polished so it radiates serenity in your home temple.",
-    "image": "../assets/story/god-statues.jpg"
+    "image": "../assets/images/story/god-statues.jpg"
   },
   "shivaji": {
     "title": "Our Craft Story",
     "para1": "Warrior figures are carved with fierce energy, echoing valour and leadership.",
     "para2": "From armour textures to proud posture, we honour the Maratha legacy in every curve.",
-    "image": "../assets/story/shivaji.jpg"
+    "image": "/assets/images/story/shivaji.jpg"
   },
   "mavale": {
     "title": "Our Craft Story",
     "para1": "Mavale statues capture the spirit of loyalty and courage of the Maratha warriors.",
     "para2": "Detailed attire and stance are finished to museum-like quality.",
-    "image": "../assets/story/mavale.jpg"
+    "image": "/assets/images/story/mavale.jpg"
   },
   "motivational": {
     "title": "Our Craft Story",
     "para1": "Modern forms meet traditional craft to inspire focus and grit.",
     "para2": "Clean lines and balanced shapes are polished to a motivating presence.",
-    "image": "../assets/story/motivational.jpg"
+    "image": "/assets/images/story/motivational.jpg"
   },
   "home-decor": {
     "title": "Our Craft Story",
     "para1": "Decor accents are designed to elevate everyday spaces with handcrafted warmth.",
     "para2": "Neutral palettes and tactile finishes blend effortlessly with your interiors.",
-    "image": "../assets/story/home-decor.jpg"
+    "image": "/assets/images/story/home-decor.jpg"
   }
 }

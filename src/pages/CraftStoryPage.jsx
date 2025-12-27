@@ -21,7 +21,7 @@ export default function CraftStoryPage({ categoryId }) {
   let imageUrl = null;
   try {
     imageUrl = new URL(
-      story.image || `../assets/story/${categoryId || "god-statues"}.jpg`,
+      story.image || `/assets/images/story/${categoryId || "god-statues"}.jpg`,
       import.meta.url
     ).href;
   } catch (error) {

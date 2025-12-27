@@ -592,7 +592,7 @@ export default function ProductInfoPage() {
                 {/* Size Selection */}
                 <div className="space-y-3">
                   <p className="text-md font-semibold text-gray-900">
-                    size
+                    Size
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
                     {sizeOptions.map((option) => (

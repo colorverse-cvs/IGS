@@ -12,6 +12,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   const [categories, setCategories] = useState([]);
   const [prodCategory, setProdCategory] = useState("");
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const materialType = useMemo(
     () => [
@@ -152,7 +153,9 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
   /* ---------------- SUBMIT HANDLER ---------------- */
   const handleAddNewProduct = async () => {
-    if (!validateForm()) return;
+    if (!validateForm() || isLoading) return;
+
+    setIsLoading(true);
 
     try {
       const selectedCategory = categories.find((c) => c.name === prodCategory);
@@ -197,6 +200,8 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       onClose();
     } catch (error) {
       console.error("Submit failed:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -206,10 +211,30 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       <div className="bg-white w-full md:w-[800px] rounded-t-2xl md:rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <p className="text-base font-semibold">Add New Product</p>
-          <button onClick={onClose}><X /></button>
+        <div className="p-6 border-b border-gray-200">
+          {/* Top row: Title + Close */}
+          <div className="flex items-center justify-between">
+            <p className="text-base font-semibold text-gray-900">
+              Add New Product
+            </p>
+
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Warning below title */}
+          <div className="mt-2 flex items-start gap-2">
+            <span className="text-sm text-red-600">
+              <strong>Warning:</strong> Please fill all details before adding the product.
+            </span>
+          </div>
         </div>
+
 
         {/* BODY */}
         <div className="p-6 overflow-y-auto space-y-5 max-h-[70vh]">
@@ -229,13 +254,13 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             </div>
 
             {/* Image Previews */}
-            <div className="grid grid-cols-4 gap-3 mt-3">
+            <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-3 mt-3">
               {previews.map((img, index) => (
                 <div key={index} className="relative w-20 h-20">
                   <img src={img} className="w-full h-full object-cover rounded-xl" />
                   <button
                     onClick={() => handleRemoveImage(index)}
-                    className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1"
+                    className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1  "
                   >
                     <X size={14} />
                   </button>
@@ -315,12 +340,12 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           <button onClick={onClose} className="px-5 py-2 border rounded-lg">Cancel</button>
 
           <button
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             onClick={handleAddNewProduct}
-            className={`px-5 py-2 rounded-lg text-white ${isFormValid ? "bg-purple-600" : "bg-gray-300"
+            className={`px-5 py-2 rounded-lg text-white ${isFormValid && !isLoading ? "bg-purple-600" : "bg-gray-300"
               }`}
           >
-            Add Product
+            {isLoading ? "Adding..." : "Add Product"}
           </button>
         </div>
       </div>

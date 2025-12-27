@@ -48,6 +48,7 @@ export default function EditProductModal({
     existingProduct?.category?.name || ""
   );
   const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const materialType = [
     { type: "Marble", subType: "Hand-carved" },
@@ -175,6 +176,10 @@ export default function EditProductModal({
       SAVE CHANGES
   ------------------------------------------- */
   const handleSaveChanges = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
     try {
       const selected = categories.find((c) => c.name === prodCategory);
       if (!selected) return;
@@ -230,6 +235,8 @@ export default function EditProductModal({
       onClose();
     } catch (error) {
       console.error("Update error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -241,12 +248,30 @@ export default function EditProductModal({
       <div className="bg-white w-full md:w-[850px] rounded-t-2xl md:rounded-2xl shadow-xl">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <p className="text-base font-semibold">Edit Product</p>
-          <button onClick={onClose}>
-            <X />
-          </button>
+        <div className="p-6 border-b border-gray-200">
+          {/* Top row: Title + Close */}
+          <div className="flex items-center justify-between">
+            <p className="text-base font-semibold text-gray-900">
+              Edit Product
+            </p>
+
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 transition"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Warning below title */}
+          <div className="mt-2 flex items-start gap-2">
+            <span className="text-sm text-red-600">
+              <strong>Warning:</strong> Please fill all details before editing the product.
+            </span>
+          </div>
         </div>
+
 
         <div className="max-h-[70vh] overflow-y-auto px-6 py-5 space-y-5">
 
@@ -270,24 +295,26 @@ export default function EditProductModal({
             </div>
 
             {/* PREVIEW GRID */}
-            <div className="grid grid-cols-4 gap-3 mt-4">
+            <div className="grid  grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-3 mt-3">
               {images.map((img, index) => (
-                <div key={index} className="relative group">
+                <div key={index} className="relative group w-24 h-24">
                   <img
                     src={img.url}
-                    className="w-24 h-24 rounded-lg object-cover"
+                    className="w-full h-full rounded-lg object-cover"
                   />
 
                   {/* REMOVE BUTTON */}
                   <button
                     onClick={() => removeImage(index)}
-                    className="absolute top-0 right-0 bg-black/60 text-white p-1 rounded-full opacity-0 group-hover:opacity-100"
+                    className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1 cursor-pointer"
+                    aria-label="Remove image"
                   >
                     <X size={14} />
                   </button>
                 </div>
               ))}
             </div>
+
           </div>
 
           {/* INPUTS */}
@@ -392,12 +419,12 @@ export default function EditProductModal({
           </button>
 
           <button
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             onClick={handleSaveChanges}
-            className={`px-5 py-2 rounded-lg text-white ${isFormValid ? "bg-purple-600" : "bg-gray-300"
+            className={`px-5 py-2 rounded-lg text-white ${isFormValid && !isLoading ? "bg-purple-600" : "bg-gray-300"
               }`}
           >
-            Save Changes
+            {isLoading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
