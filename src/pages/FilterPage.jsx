@@ -249,21 +249,10 @@ export default function FilterPage() {
     setPageInput(String(currentPage));
   }, [currentPage]);
 
-  // Update filters state and URL params - applies immediately on checkbox click
+  // Update filters state - applies immediately on checkbox click without URL updates
   const handleFiltersChange = (newFilters) => {
     // Apply filters immediately
     setFilters(newFilters);
-
-    // Update URL params from non-empty filter values
-    const params = new URLSearchParams();
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        if (value.length > 0) params.set(key, value.join(","));
-      } else if (value && value !== "all" && value !== "" && value !== false) {
-        params.set(key, value);
-      }
-    });
-    setSearchParams(params);
     // Reset to first page when filters change
     setCurrentPage(1);
   };
