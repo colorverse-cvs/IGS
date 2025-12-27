@@ -154,7 +154,7 @@ export default function CarouselRow({
   }
 
   /* -------------------- Duplicate Items -------------------- */
-  const displayItems = [...normalizedItems, ...normalizedItems];
+  const displayItems = [...normalizedItems];
 
   return (
     <div className={`relative ${className}`}>
