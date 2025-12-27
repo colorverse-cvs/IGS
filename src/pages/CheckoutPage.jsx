@@ -309,36 +309,6 @@ export default function CheckoutPage() {
         title={popup.title}
         message={popup.message}
       />
-      {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}
-      <style>{`
-
-        /* Custom radio button styling */
-        input[type="radio"] {
-          appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          border: 2px solid #d1d5db;
-          border-radius: 50%;
-          background-color: white;
-          width: 10px;
-          height: 10px;
-        }
-        input[type="radio"]:checked {
-          border-radius: 50%;
-          background-color: #9333ea;
-          border-color: #9333ea;
-          outline: 2px solid #c084fc;
-          outline-offset: 2px;
-        }
-        input[type="radio"]:checked::after {
-          border-radius: 50%;
-          background-color: #9333ea;
-          border-color: #9333ea;
-        }
-        input[type="radio"]:hover {
-          border-color: #9333ea;
-        }
-      `}</style>
       <div className="py-1 px-4 md:px-15 lg:px-20">
         <Breadcrumb items={breadcrumbItems} />
       </div>
@@ -546,7 +516,7 @@ export default function CheckoutPage() {
                 onToggle={() => handleToggle("payment")}
               >
                 <div className="flex items-start gap-5">
-                  <img src="../../public/assets/logos/razorpay-icon.png" alt="" />
+                  <img src="/assets/logos/razorpay-icon.png" alt="" />
                   <div className="flex flex-col items-start gap-5">
                     <p>Payment System : Razorpay</p>
                     <p>After placing the order, you'll be redirected to Razorpay to complete payment.</p>

@@ -1,7 +1,7 @@
 import React from "react";
-import DesignConsult from "/public/assets/images/design-consult.svg";
-import CraftCreate from "/public/assets/images/craft-create.svg";
-import QualityDeliver from "/public/assets/images/quality-deliver.svg";
+import DesignConsult from "/assets/images/design-consult.svg";
+import CraftCreate from "/assets/images/craft-create.svg";
+import QualityDeliver from "/assets/images/quality-deliver.svg";
 
 /**
  * CustomizationWorksPage Component
@@ -75,7 +75,7 @@ const DeliverIllustration = () => (
  */
 export default function CustomizationWorksPage() {
   return (
-    <section className="px-4 md:px-15 lg:px-20 py-14">
+    <section className="px-4 md:px-15 lg:px-20 py-20">
       <div className="container mx-auto text-left md:text-center">
         <h2 className="text-4xl md:text-5xl font-semibold text-gray-900">
           How Customization Works
