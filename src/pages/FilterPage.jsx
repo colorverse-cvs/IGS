@@ -355,7 +355,7 @@ export default function FilterPage() {
         <div className="flex items-center justify-between px-4 gap-2">
           <button
             onClick={() => navigate("/")}
-            className="p-1 text-gray-600 hover:text-gray-900 w-[10%] md:w-[5%]"
+            className="p-1 text-gray-600 hover:text-gray-900 w-[10%] md:w-[5%] cursor-pointer"
             aria-label="Back"
           >
             <ArrowLeft size={20} />
@@ -385,7 +385,7 @@ export default function FilterPage() {
             <div className="relative sort-dropdown-container flex-1 w-[50%] md:w-full">
               <button
                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                className="flex items-center justify-between w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition text-left"
+                className="flex items-center justify-between w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition text-left cursor-pointer"
               >
                 <span className="truncate">{currentSortLabel}</span>
                 <ChevronDown
@@ -401,7 +401,7 @@ export default function FilterPage() {
                       <button
                         key={option.value}
                         onClick={() => handleSortSelect(option.value)}
-                        className={`block w-full text-left px-4 py-2 text-sm transition ${sortBy === option.value
+                        className={`block w-full text-left px-4 py-2 text-sm transition cursor-pointer ${sortBy === option.value
                           ? "bg-purple-50 text-brand-700 font-medium"
                           : "text-gray-700 hover:bg-gray-100"
                           }`}
@@ -416,7 +416,7 @@ export default function FilterPage() {
           </div>
           <button
             onClick={() => setIsFilterDrawerOpen(true)}
-            className="flex items-center gap-2 px-4 py-1.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition w-[40%] lg:w-full justify-center "
+            className="flex items-center gap-2 px-4 py-1.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition w-[40%] lg:w-full justify-center cursor-pointer"
           >
             <Filter size={18} />
             <span>Filters</span>
@@ -429,7 +429,7 @@ export default function FilterPage() {
         <div className="flex lg:flex-row lg:items-center lg:justify-between gap-4">
           <button
             onClick={() => navigate("/")}
-            className="p-1 text-gray-600 hover:text-gray-900 w-[10%] md:w-[5%]"
+            className="p-1 text-gray-600 hover:text-gray-900 w-[10%] md:w-[5%] cursor-pointer"
             aria-label="Back"
           >
             <ArrowLeft size={20} />
@@ -463,8 +463,8 @@ export default function FilterPage() {
                         <button
                           key={option.value}
                           onClick={() => handleItemsPerPageSelect(option.value)}
-                          className={`block w-full text-left px-4 py-2 text-sm transition ${itemsPerPage === option.value
-                            ? "bg-purple-50 text-brand-700 font-medium"
+                          className={`block w-full text-left px-4 py-2 text-sm transition cursor-pointer ${itemsPerPage === option.value
+                            ? "bg-purple-50 text-brand-700 font-medium "
                             : "text-gray-700 hover:bg-gray-100"
                             }`}
                         >
@@ -503,7 +503,7 @@ export default function FilterPage() {
                         <button
                           key={option.value}
                           onClick={() => handleSortSelect(option.value)}
-                          className={`block w-full text-left px-4 py-2 text-sm transition ${sortBy === option.value
+                          className={`block w-full text-left px-4 py-2 text-sm transition cursor-pointer ${sortBy === option.value
                             ? "bg-purple-50 text-brand-700 font-medium"
                             : "text-gray-700 hover:bg-gray-100"
                             }`}
@@ -562,7 +562,7 @@ export default function FilterPage() {
                 <div className="text-lg font-semibold text-gray-900">Filters</div>
                 <button
                   onClick={() => setIsFilterDrawerOpen(false)}
-                  className="p-2 text-gray-400 hover:text-gray-600"
+                  className="p-2 text-gray-400 hover:text-gray-600 cursor-pointer"
                   aria-label="Close"
                 >
                   <X size={24} />
@@ -611,7 +611,7 @@ export default function FilterPage() {
               </p>
               <button
                 onClick={handleResetFilters}
-                className="mt-4 text-brand-600 hover:text-purple-700 font-medium"
+                className="mt-4 text-brand-600 hover:text-purple-700 font-medium cursor-pointer"
               >
                 Clear all filters
               </button>
@@ -656,7 +656,7 @@ export default function FilterPage() {
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="flex items-center gap-2 px-2 lg:px-4 py-2 rounded-md text-sm border border-gray-300 disabled:opacity-50 disabled:via-indigo-200 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-2 lg:px-4 py-2 rounded-md text-sm border border-gray-300 disabled:opacity-50 disabled:via-indigo-200 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <ArrowLeft size={16} /> Previous page
                 </button>
@@ -665,7 +665,7 @@ export default function FilterPage() {
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="flex items-center gap-2 px-2 lg:px-4 py-2 rounded-md text-sm border border-gray-300 disabled:opacity-50 disabled:via-indigo-200 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-2 lg:px-4 py-2 rounded-md text-sm border border-gray-300 disabled:opacity-50 disabled:via-indigo-200 disabled:cursor-not-allowed cursor-pointer"
                 >
                   Next page <ArrowRight size={16} />
                 </button>

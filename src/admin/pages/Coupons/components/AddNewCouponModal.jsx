@@ -16,7 +16,7 @@ export default function AddNewCouponModal({ onClose }) {
       
         <div className="flex items-center justify-between mb-6">
           <p className="text-lg font-semibold text-gray-800">Create New Coupon</p>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 cursor-pointer">
             <X />
           </button>
         </div>

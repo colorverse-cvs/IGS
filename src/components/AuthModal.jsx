@@ -617,7 +617,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   <button
                     type="button"
                     onClick={() => setShowLoginPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                   >
                     {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -635,7 +635,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   type="button"
                   onClick={handleForgotPasswordClick}
                   disabled={resetLoading}
-                  className="text-brand-600 hover:underline disabled:opacity-50"
+                  className="text-brand-600 hover:underline disabled:opacity-50 cursor-pointer"
                 >
                   {resetLoading ? "Verifying..." : "Forgot password?"}
                 </button>
@@ -645,7 +645,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 type="submit"
                 disabled={!isLoginValid || loginLoading || loginDisabledTemporarily}
                 className={`w-full py-2.5 rounded text-sm font-semibold transition ${isLoginValid && !loginLoading && !loginDisabledTemporarily
-                  ? "bg-brand-600 text-white hover:bg-purple-700"
+                  ? "bg-brand-600 text-white hover:bg-purple-700 cursor-pointer"
                   : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
               >
@@ -725,7 +725,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   <button
                     type="button"
                     onClick={() => setShowSignupPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                   >
                     {showSignupPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -749,7 +749,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   <button
                     type="button"
                     onClick={() => setShowSignupConfirm((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                   >
                     {showSignupConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -763,7 +763,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 type="submit"
                 disabled={!isSignupValid || signupLoading}
                 className={`w-full py-2.5 rounded text-sm font-semibold transition ${isSignupValid && !signupLoading
-                  ? "bg-brand-600 text-white hover:bg-purple-700"
+                  ? "bg-brand-600 text-white hover:bg-purple-700 cursor-pointer"
                   : "bg-gray-200 text-gray-500 cursor-not-allowed"
                   }`}
               >

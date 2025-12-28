@@ -141,7 +141,7 @@ export default function RecentOrderCard({ setActivePage }) {
                 <div className="flex justify-between items-center">
                   <p className="font-semibold text-sm">{order.amount}</p>
                   <button
-                    className="flex items-center gap-1 text-purple-600 border border-purple-600 px-3 py-1.5 rounded-md text-xs hover:bg-purple-50"
+                    className="flex items-center gap-1 text-purple-600 border border-purple-600 px-3 py-1.5 rounded-md text-xs hover:bg-purple-50 cursor-pointer"
                     onClick={() => handleOpenViewOrderModal(order)}
                   >
                     <FaRegEye className="w-3 h-3" /> View

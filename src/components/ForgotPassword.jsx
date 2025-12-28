@@ -79,7 +79,7 @@ export default function ForgotPassword({ email, token, onSuccess }) {
                     <button
                         type="button"
                         onClick={() => setShowNewPassword((s) => !s)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                     >
                         {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -101,7 +101,7 @@ export default function ForgotPassword({ email, token, onSuccess }) {
                     <button
                         type="button"
                         onClick={() => setShowConfirmPassword((s) => !s)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                     >
                         {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -120,7 +120,7 @@ export default function ForgotPassword({ email, token, onSuccess }) {
                 className={`w-full py-2.5 rounded text-sm font-semibold transition ${isSuccess
                     ? "bg-green-600 text-white hover:bg-green-700"
                     : (!loading && newPassword && confirm
-                        ? "bg-brand-600 text-white hover:bg-purple-700"
+                        ? "bg-brand-600 text-white hover:bg-purple-700 cursor-pointer"
                         : "bg-gray-200 text-gray-500 cursor-not-allowed")
                     }`}
             >

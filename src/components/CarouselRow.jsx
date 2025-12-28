@@ -235,7 +235,7 @@ export default function CarouselRow({
                   trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
                 }
               }}
-              className="h-2 w-2 rounded-full bg-gray-300 hover:bg-brand-700"
+              className="h-2 w-2 rounded-full bg-gray-300 hover:bg-brand-700 cursor-pointer"
             />
           ))}
         </div>

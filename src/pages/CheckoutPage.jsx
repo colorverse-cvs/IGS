@@ -285,7 +285,7 @@ export default function CheckoutPage() {
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100"
+        className="w-full flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
       >
         <span className="font-semibold text-gray-800 flex items-center gap-2">
           {title}
@@ -366,7 +366,7 @@ export default function CheckoutPage() {
                   ))}
                   <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
                     <button
-                      className="text-sm text-brand-700"
+                      className="text-sm text-brand-700 cursor-pointer"
                       onClick={() => setIsAddressModalOpen(true)}
                     >
                       Add new address
@@ -417,7 +417,7 @@ export default function CheckoutPage() {
                               <div className="flex items-center gap-2 border border-gray-200 rounded">
                                 <button
                                   type="button"
-                                  className="px-2"
+                                  className="px-2 cursor-pointer"
                                   onClick={() => {
                                     keepScroll();
                                     i.qty > 1
@@ -435,7 +435,7 @@ export default function CheckoutPage() {
                                 <span>{i.qty}</span>
                                 <button
                                   type="button"
-                                  className="px-2"
+                                  className="px-2 cursor-pointer"
                                   onClick={() => {
                                     keepScroll();
                                     dispatch(
@@ -448,7 +448,7 @@ export default function CheckoutPage() {
                               </div>
                               <button
                                 type="button"
-                                className="text-red-600 text-xs"
+                                className="text-red-600 text-xs cursor-pointer"
                                 onClick={() => {
                                   keepScroll();
                                   dispatch(removeItemFromCartAsync(i.id));
@@ -526,7 +526,7 @@ export default function CheckoutPage() {
 
               <button
                 onClick={() => handlePlaceOrder()}
-                className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 disabled={
                   items.length === 0 ||
                   (currentStep === 1 && !selectedAddress) ||

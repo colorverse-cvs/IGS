@@ -193,7 +193,7 @@ export default function OrdersPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 capitalize transition-colors ${
+                className={`pb-2 capitalize transition-colors cursor-pointer ${
                   activeTab === tab
                     ? "border-b-2 border-purple-500 text-purple-600 font-medium"
                     : "text-gray-600 hover:text-gray-800"
@@ -250,7 +250,7 @@ export default function OrdersPage() {
                     setActiveTab(tab);
                     setIsOrdersDropdownOpen(false);
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg cursor-pointer"
                 >
                   {tab === "orders"
                     ? "All Orders"
@@ -362,7 +362,7 @@ export default function OrdersPage() {
                                 <div className="flex flex-col gap-2 justify-center items-center">
                                   {activeTab === "previous" ? (
                                     <>
-                                      <button className="px-3 py-1 border rounded text-sm">
+                                      <button className="px-3 py-1 border rounded text-sm cursor-pointer">
                                         Download Invoice
                                       </button>
                                       <button
@@ -452,7 +452,7 @@ export default function OrdersPage() {
                         <div className="flex justify-between items-center mt-3">
                           {activeTab === "previous" ? (
                             <div className="flex gap-2">
-                              <button className="px-3 py-1 border rounded text-xs">
+                              <button className="px-3 py-1 border rounded text-xs cursor-pointer">
                                 Download Invoice
                               </button>
                               <button

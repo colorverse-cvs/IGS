@@ -32,13 +32,13 @@ export default function OrderPlacedPage() {
       </p>
       <div className="mt-6 flex gap-3">
         <button
-          className="p-2 md:px-4 py-2 border rounded"
+          className="p-2 md:px-4 py-2 border rounded cursor-pointer"
           onClick={() => navigate("/")}
         >
           Go to home
         </button>
         <button
-          className="p-2 md:px-4 py-2 bg-brand-700 text-white rounded"
+          className="p-2 md:px-4 py-2 bg-brand-700 text-white rounded cursor-pointer"
           onClick={() => navigate("/orders")}
         >
           View your orders

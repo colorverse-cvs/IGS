@@ -27,7 +27,7 @@ export default function BottomNavigation({ activePage, setActivePage }) {
                 e.stopPropagation();
                 setActivePage(item.name);
               }}
-              className={`flex flex-col items-center justify-center gap-1 px-2 py-1 transition-colors ${
+              className={`flex flex-col items-center justify-center gap-1 px-2 py-1 transition-colors cursor-pointer ${
                 isActive ? "text-purple-600" : "text-gray-500"
               }`}
             >

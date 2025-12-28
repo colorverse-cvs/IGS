@@ -268,7 +268,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
                   />
                   <button
                     onClick={() => handleRemoveImage(index)}
-                    className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1  "
+                    className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1 cursor-pointer"
                   >
                     <X size={14} />
                   </button>

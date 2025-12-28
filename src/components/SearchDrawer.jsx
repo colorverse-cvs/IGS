@@ -122,7 +122,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
                 <li key={p.id}>
                   <button
                     onClick={() => handleClick(p)}
-                    className="w-full text-left"
+                    className="w-full text-left cursor-pointer"
                   >
                     {/* Product result card */}
                     <div className="border border-gray-100 hover:shadow-lg rounded-lg p-2 flex items-start gap-3">

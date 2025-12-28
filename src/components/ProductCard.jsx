@@ -208,7 +208,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
             "
               >
                 <button
-                  className="px-3 py-1"
+                  className="px-3 py-1 cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -230,7 +230,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
                 </button>
                 <span className="px-2 select-none text-sm">{qtyInCart}</span>
                 <button
-                  className="px-3 py-1"
+                  className="px-3 py-1 cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -255,7 +255,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
       <>
         <button
           type="button"
-          className="text-left w-full"
+          className="text-left w-full cursor-pointer"
           onClick={() => onOpenProduct(product)}
         >
           {content}

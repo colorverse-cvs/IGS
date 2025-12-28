@@ -82,7 +82,7 @@ export default function FilterSidebar({
       <button
         type="button"
         onClick={() => toggleSection(section)}
-        className="flex justify-between items-center w-full text-left font-medium text-gray-900 mb-3"
+        className="flex justify-between items-center w-full text-left font-medium text-gray-900 mb-3 cursor-pointer"
       >
         {title}
         {expandedSections[section] ? (
@@ -244,7 +244,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onResetFilters}
-            className="text-sm text-brand-600 hover:text-purple-700 flex items-center"
+            className="text-sm text-brand-600 hover:text-purple-700 flex items-center cursor-pointer"
           >
             <X size={14} className="mr-1" />
             Reset filters
@@ -652,7 +652,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onResetFilters}
-            className="text-sm text-brand-600 hover:text-purple-700 flex items-center w-[50%] justify-center border border-gray-300 hover:border-purple-500 rounded-lg px-4 py-3"
+            className="text-sm text-brand-600 hover:text-purple-700 flex items-center w-[50%] justify-center border border-gray-300 hover:border-purple-500 rounded-lg px-4 py-3 cursor-pointer"
           >
             <X size={14} className="mr-1" />
             Reset filters
@@ -660,7 +660,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition"
+            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition cursor-pointer"
           >
             Show Results
           </button>

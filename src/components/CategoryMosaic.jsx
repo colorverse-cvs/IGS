@@ -110,7 +110,7 @@ export default function CategoryMosaic() {
     return (
       <button
         onClick={() => goTo(section?.id)}
-        className="group relative rounded-xl overflow-hidden aspect-[4/3]"
+        className="group relative rounded-xl overflow-hidden aspect-[4/3] cursor-pointer"
       >
         <img
           src={img}

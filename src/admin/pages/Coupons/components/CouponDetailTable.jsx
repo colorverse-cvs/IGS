@@ -81,14 +81,14 @@ export default function CouponDetailTable() {
                             {/* ✅ Action Buttons */}
                             <td className="px-4 py-3 flex gap-3">
                                 <button
-                                    className="text-blue-600 hover:underline font-medium"
+                                    className="text-blue-600 hover:underline font-medium cursor-pointer"
                                     onClick={() => setOpenEditProductModal(true)}
                                 >
                                     Edit
                                 </button>
 
                                 <button
-                                    className="text-red-600 hover:underline font-medium"
+                                    className="text-red-600 hover:underline font-medium cursor-pointer"
                                 >
                                     Delete
                                 </button>

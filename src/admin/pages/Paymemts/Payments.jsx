@@ -111,7 +111,7 @@ export default function Payments() {
         </div>
 
         <div className="flex gap-3">
-          <button className="bg-brand-700 px-5 py-2 text-white rounded-lg">
+          <button className="bg-brand-700 px-5 py-2 text-white rounded-lg cursor-pointer">
             Export Transactions
           </button>
         </div>
@@ -120,7 +120,7 @@ export default function Payments() {
       {/* Mobile Export Button */}
       <div className="md:hidden mb-4 space-y-3">
         <div className="flex gap-3">
-          <button className="flex-1 bg-brand-700 px-5 py-3 text-white rounded-lg flex items-center justify-center gap-2 font-medium">
+          <button className="flex-1 bg-brand-700 px-5 py-3 text-white rounded-lg flex items-center justify-center gap-2 font-medium cursor-pointer">
             <span>📥</span> Export
           </button>
         </div>

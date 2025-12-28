@@ -131,7 +131,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                         <div className="flex items-center gap-2 border border-gray-300 rounded mt-2 w-fit">
                           <button
                             type="button"
-                            className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                            className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
                             onClick={() =>
                               item.qty > 1
                                 ? dispatch(
@@ -148,7 +148,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                           <span className="text-sm font-medium w-4 text-center">{item.qty}</span>
                           <button
                             type="button"
-                            className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                            className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
                             onClick={() =>
                               dispatch(
                                 updateCartItemQuantityAsync({
@@ -164,7 +164,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
                         <button
                           type="button"
-                          className="text-red-600 text-xs pt-2"
+                          className="text-red-600 text-xs pt-2 cursor-pointer"
                           onClick={() => handleRemoveItem(item.id)}
                         >
                           <span className="hidden lg:block text-start">Remove from cart</span>
@@ -214,7 +214,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                       <div className="flex items-center gap-2 border border-gray-300 rounded">
                         <button
                           type="button"
-                          className="px-2"
+                          className="px-2 cursor-pointer"
                           onClick={() =>
                             item.qty > 1
                               ? dispatch(
@@ -233,7 +233,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
                         <button
                           type="button"
-                          className="px-2"
+                          className="px-2 cursor-pointer"
                           onClick={() =>
                             dispatch(
                               updateCartItemQuantityAsync({
@@ -249,7 +249,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
                       <button
                         type="button"
-                        className="text-red-600 text-xs"
+                        className="text-red-600 text-xs cursor-pointer"
                         onClick={() => handleRemoveItem(item.id)}
                       >
                         <span className="hidden lg:block">Remove</span>
@@ -282,7 +282,7 @@ export default function Cart({ isDrawer = false, onClose }) {
               <div className="pt-4 flex justify-end">
                 <button
                   onClick={handleClearCart}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
                 >
                   <X size={16} className="mr-2" /> Clear All Items
                 </button>
@@ -300,14 +300,14 @@ export default function Cart({ isDrawer = false, onClose }) {
 
               <button
                 onClick={handleProceedToCheckout}
-                className="w-full px-4 py-3 bg-brand-600 text-white rounded-lg font-semibold hover:bg-purple-700"
+                className="w-full px-4 py-3 bg-brand-600 text-white rounded-lg font-semibold hover:bg-purple-700 cursor-pointer"
               >
                 Proceed to Checkout
               </button>
 
               <button
                 onClick={handleClearCart}
-                className="w-full mt-2 text-sm text-gray-500 hover:text-gray-900"
+                className="w-full mt-2 text-sm text-gray-500 hover:text-gray-900 cursor-pointer"
               >
                 Clear cart
               </button>
@@ -339,7 +339,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
               <button
                 onClick={handleProceedToCheckout}
-                className="w-full mt-6 px-4 py-3 text-center bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 shadow-lg"
+                className="w-full mt-6 px-4 py-3 text-center bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 shadow-lg cursor-pointer"
               >
                 Proceed to Checkout
               </button>

@@ -131,14 +131,14 @@ const CategoryPage = () => {
               <>
                 <button
                   onClick={goPrev}
-                  className="absolute -left-5 md:left-0 top-1/2 -translate-y-1/2 z-20 bg-brand-700 text-white p-2 rounded-full hover:bg-purple-800 transition opacity-0 group-hover:opacity-100 md:opacity-100"
+                  className="absolute -left-5 md:left-0 top-1/2 -translate-y-1/2 z-20 bg-brand-700 text-white p-2 rounded-full hover:bg-purple-800 transition opacity-0 group-hover:opacity-100 md:opacity-100 cursor-pointer"
                   aria-label="Previous products"
                 >
                   ←
                 </button>
                 <button
                   onClick={goNext}
-                  className="absolute -right-5 md:right-0 top-1/2 -translate-y-1/2 z-20 bg-brand-700 text-white p-2 rounded-full hover:bg-purple-800 transition opacity-0 group-hover:opacity-100 md:opacity-100"
+                  className="absolute -right-5 md:right-0 top-1/2 -translate-y-1/2 z-20 bg-brand-700 text-white p-2 rounded-full hover:bg-purple-800 transition opacity-0 group-hover:opacity-100 md:opacity-100 cursor-pointer"
                   aria-label="Next products"
                 >
                   →

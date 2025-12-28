@@ -60,14 +60,14 @@ export default function DeleteProductConfirmationModal({
         <div className="flex flex-col gap-3 md:flex-row md:justify-end md:gap-4 mt-6">
           <button
             onClick={onClose}
-            className="w-full md:w-auto px-5 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+            className="w-full md:w-auto px-5 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 cursor-pointer"
           >
             Cancel
           </button>
 
           <button
             onClick={handleDelete}
-            className="w-full md:w-auto px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            className="w-full md:w-auto px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 cursor-pointer"
           >
             Delete
           </button>

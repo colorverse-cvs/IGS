@@ -389,7 +389,7 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 ${
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 cursor-pointer  hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
                       } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
@@ -411,7 +411,7 @@ export default function Navbar() {
                         },
                       });
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer"
                   >
                     <LogOut size={16} />
                     Sign out
@@ -529,7 +529,7 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 ${
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 cursor-pointer hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
                       } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
@@ -549,7 +549,7 @@ export default function Navbar() {
                         },
                       });
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer"
                   >
                     <LogOut size={16} />
                     Sign out
@@ -562,7 +562,7 @@ export default function Navbar() {
                       setAuthTab("login");
                       setIsAuthOpen(true);
                     }}
-                    className="px-4 py-2 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium"
+                    className="px-4 py-2 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium cursor-pointer"
                     aria-label="Log In"
                   >
                     Log In
@@ -572,7 +572,7 @@ export default function Navbar() {
                       setAuthTab("signup");
                       setIsAuthOpen(true);
                     }}
-                    className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition text-sm font-medium"
+                    className="px-4 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition text-sm font-medium cursor-pointer"
                     aria-label="Sign Up"
                   >
                     Sign Up
@@ -589,7 +589,7 @@ export default function Navbar() {
                   onToggle={setIsProfileDropdownOpen}
                   align="right"
                   trigger={(isOpen) => (
-                    <button className="p-2 rounded-lg hover:bg-gray-100 transition">
+                    <button className="p-2 rounded-lg hover:bg-gray-100 transition cursor-pointer">
                       <User size={20} className="text-brand-700" />
                     </button>
                   )}
@@ -616,7 +616,7 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 ${
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 cursor-pointer hover:text-purple-700 ${
                         idx === 0 ? "first:rounded-t-lg" : ""
                       } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
@@ -637,7 +637,7 @@ export default function Navbar() {
                         },
                       });
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer"
                   >
                     <LogOut size={16} />
                     Sign out
@@ -650,7 +650,7 @@ export default function Navbar() {
                       setAuthTab("login");
                       setIsAuthOpen(true);
                     }}
-                    className="px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-50 transition text-xs font-medium"
+                    className="px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-50 transition text-xs font-medium cursor-pointer"
                     aria-label="Log In"
                   >
                     Log In
@@ -660,7 +660,7 @@ export default function Navbar() {
                       setAuthTab("signup");
                       setIsAuthOpen(true);
                     }}
-                    className="px-3 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition text-xs font-medium"
+                    className="px-3 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition text-xs font-medium cursor-pointer"
                     aria-label="Sign Up"
                   >
                     Sign Up
@@ -675,7 +675,7 @@ export default function Navbar() {
             <div className="mt-3 md:hidden">
               <button
                 onClick={openSearch}
-                className="w-full px-4 py-2 bg-gray-100 rounded-lg text-gray-600 flex items-center justify-between hover:bg-gray-200 transition"
+                className="w-full px-4 py-2 bg-gray-100 rounded-lg text-gray-600 flex items-center justify-between hover:bg-gray-200 transition cursor-pointer"
               >
                 <span className="text-sm">Search for a product</span>
                 <Search size={18} className="text-gray-500" />
@@ -729,7 +729,7 @@ export default function Navbar() {
                   setIsAuthOpen(true);
                 }
               }}
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition cursor-pointer ${
                 location.pathname === "/profile"
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
@@ -759,7 +759,7 @@ export default function Navbar() {
             {user.isAuthenticated && (
               <button
                 onClick={toggleCart}
-                className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative"
+                className="flex flex-col items-center justify-center w-full h-full py-2 text-gray-600 hover:text-purple-700 transition relative cursor-pointer"
                 aria-label={`Cart with ${totalItems} items`}
               >
                 <div className="relative">
@@ -777,7 +777,7 @@ export default function Navbar() {
             {/* Menu */}
             <button
               onClick={toggleMenu}
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition cursor-pointer ${
                 isMenuOpen
                   ? "text-brand-700 border-b-4 border-brand-700"
                   : "text-gray-600 hover:text-purple-700"
@@ -819,7 +819,7 @@ export default function Navbar() {
           <div className="text-lg font-semibold text-gray-700">Menu</div>
           <button
             onClick={toggleMenu}
-            className="p-2 rounded-full text-gray-500 hover:text-purple-700 hover:bg-purple-50 transition"
+            className="p-2 rounded-full text-gray-500 hover:text-purple-700 hover:bg-purple-50 transition cursor-pointer"
             aria-label="Close menu"
           >
             <X size={24} />
@@ -836,7 +836,7 @@ export default function Navbar() {
               onClick={() =>
                 setIsMobileProductsDropdownOpen(!isMobileProductsDropdownOpen)
               }
-              className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 px-3 py-2 rounded-lg transition flex justify-between items-center"
+              className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-purple-50 hover:text-purple-700 px-3 py-2 rounded-lg transition flex justify-between items-center cursor-pointer"
             >
               Products{" "}
               <ChevronDown
@@ -853,7 +853,7 @@ export default function Navbar() {
                     key={pLink.id}
                     type="button"
                     onClick={() => handleProductLinkClick(pLink)}
-                    className="block w-full text-left text-sm text-gray-600 hover:bg-purple-50 hover:text-purple-700 py-1"
+                    className="block w-full text-left text-sm text-gray-600 hover:bg-purple-50 hover:text-purple-700 py-1 cursor-pointer"
                   >
                     {pLink.name}
                   </button>
@@ -885,7 +885,7 @@ export default function Navbar() {
                 toggleMenu();
                 toggleCart();
               }}
-              className="flex items-center text-brand-700 font-semibold hover:text-purple-900 transition text-sm"
+              className="flex items-center text-brand-700 font-semibold hover:text-purple-900 transition text-sm cursor-pointer"
             >
               View Cart ({totalItems})
             </button>
@@ -898,7 +898,7 @@ export default function Navbar() {
                 setAuthTab("signup");
                 setIsAuthOpen(true);
               }}
-              className="w-full text-center px-4 py-3 text-sm font-bold text-white bg-brand-700 rounded-lg hover:bg-purple-800 transition"
+              className="w-full text-center px-4 py-3 text-sm font-bold text-white bg-brand-700 rounded-lg hover:bg-purple-800 transition cursor-pointer"
             >
               Sign Up
             </button>

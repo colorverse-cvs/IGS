@@ -645,7 +645,7 @@ export default function ProductInfoPage() {
                             dispatch(removeItemFromCartAsync(product.id));
                           }
                         }}
-                        className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
+                        className="w-[35%] p-2 text-gray-700 hover:bg-gray-50 cursor-pointer"
                       >
                         -
                       </button>
@@ -655,7 +655,7 @@ export default function ProductInfoPage() {
                       <button
                         type="button"
                         onClick={() => dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: qtyInCart + 1 }))}
-                        className="w-[35%] p-2 text-gray-700 hover:bg-gray-50"
+                        className="w-[35%] p-2 text-gray-700 hover:bg-gray-50 cursor-pointer"
                       >
                         +
                       </button>
@@ -664,7 +664,7 @@ export default function ProductInfoPage() {
 
                   <button
                     onClick={handleBuyNow}
-                    className="w-[50%] px-2 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition lg:w-auto"
+                    className="w-[50%] px-2 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition lg:w-auto cursor-pointer"
                   >
                     Buy Now
                   </button>

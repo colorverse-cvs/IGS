@@ -257,7 +257,7 @@ export default function Settings() {
           </div>
           <button
             onClick={openFileDialog}
-            className="mt-2 text-sm text-purple-600 hover:text-purple-700 font-medium"
+            className="mt-2 text-sm text-purple-600 hover:text-purple-700 font-medium cursor-pointer"
           >
             Upload Logo
           </button>
@@ -266,7 +266,7 @@ export default function Settings() {
         <button
           onClick={handleSaveShopSettings}
           disabled={!isShopFormValid || isSaving}
-          className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all
+          className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all cursor-pointer 
           ${isShopFormValid && !isSaving ? "bg-purple-700 hover:bg-purple-800" : "bg-gray-400 cursor-not-allowed"}`}
         >
           {isSaving ? "Saving..." : "Save Shop Settings"}
@@ -308,7 +308,7 @@ export default function Settings() {
         <button
           onClick={handleUpdatePassword}
           disabled={!isPasswordValid || isSaving}
-          className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all
+          className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all cursor-pointer 
           ${isPasswordValid && !isSaving ? "bg-purple-700 hover:bg-purple-800" : "bg-gray-400 cursor-not-allowed"}`}
         >
           {isSaving ? "Updating..." : "Update Password"}
@@ -330,7 +330,7 @@ export default function Settings() {
           <p className="text-gray-600 mb-6">{successMessage}</p>
           <button
             onClick={() => setShowSuccessModal(false)}
-            className="w-full bg-brand-600 text-white py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition"
+            className="w-full bg-brand-600 text-white py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition cursor-pointer"
           >
             Great, thanks!
           </button>

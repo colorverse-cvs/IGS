@@ -257,7 +257,7 @@ export default function EditProductModal({
 
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 transition"
+              className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
               aria-label="Close"
             >
               <X size={18} />
@@ -421,7 +421,7 @@ export default function EditProductModal({
           <button
             disabled={!isFormValid || isLoading}
             onClick={handleSaveChanges}
-            className={`px-5 py-2 rounded-lg text-white ${isFormValid && !isLoading ? "bg-purple-600" : "bg-gray-300"
+            className={`px-5 py-2 rounded-lg text-white cursor-pointer ${isFormValid && !isLoading ? "bg-purple-600" : "bg-gray-300"
               }`}
           >
             {isLoading ? "Saving..." : "Save Changes"}

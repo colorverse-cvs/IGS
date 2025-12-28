@@ -272,7 +272,7 @@ export default function Profile() {
       <div className="hidden md:flex gap-6 text-sm mb-6">
         <button
           className={`${tab === "profile"
-            ? "border-b-2 border-brand-700 text-brand-700"
+            ? "border-b-2 border-brand-700 text-brand-700 cursor-pointer"
             : "text-gray-600"
             }`}
           onClick={() => setTab("profile")}
@@ -290,7 +290,7 @@ export default function Profile() {
         </button> */}
         <button
           className={`${tab === "addresses"
-            ? "border-b-2 border-brand-700 text-brand-700"
+            ? "border-b-2 border-brand-700 text-brand-700 cursor-pointer"
             : "text-gray-600"
             }`}
           onClick={() => setTab("addresses")}
@@ -311,7 +311,7 @@ export default function Profile() {
       {/* Tabs - Mobile View (Sticky Bottom) */}
       <div className="md:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 flex gap-2 px-2 py-2 z-40 overflow-x-auto">
         <button
-          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "profile"
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 cursor-pointer ${tab === "profile"
             ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
             : "bg-white text-gray-600 border border-gray-300"
             }`}
@@ -329,7 +329,7 @@ export default function Profile() {
           Orders
         </button> */}
         <button
-          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "addresses"
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 cursor-pointer ${tab === "addresses"
             ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
             : "bg-white text-gray-600 border border-gray-300"
             }`}

@@ -223,7 +223,7 @@ export default function Orders() {
                 {/* ACTION BUTTONS - STACKED ON MOBILE */}
                 <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
                   <button
-                    className="flex items-center justify-center gap-2 text-purple-600 border border-purple-600 hover:bg-purple-50 px-3 py-2 rounded-md text-sm"
+                    className="flex items-center justify-center gap-2 text-purple-600 border border-purple-600 hover:bg-purple-50 px-3 py-2 rounded-md text-sm cursor-pointer"
                     onClick={() => handleOpenViewOrderModal(order)}
                   >
                     <FaRegEye className="w-3 h-3" /> View

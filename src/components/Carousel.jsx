@@ -151,7 +151,7 @@ export default function Carousel({
             <button
               key={it.id || idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`h-2 rounded-full transition-all ${idx === currentIndex ? "w-3.5 bg-brand-700" : "w-2 bg-gray-300"
+              className={`h-2 rounded-full transition-all cursor-pointer ${idx === currentIndex ? "w-3.5 bg-brand-700" : "w-2 bg-gray-300"
                 }`}
               aria-label={`Go to slide ${idx + 1}`}
             />
