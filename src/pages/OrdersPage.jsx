@@ -88,8 +88,8 @@ export default function OrdersPage() {
     activeTab === "orders"
       ? filteredAll
       : activeTab === "current"
-      ? currentOrders
-      : previousOrders;
+        ? currentOrders
+        : previousOrders;
 
   /* -------------------- UI Helpers -------------------- */
 
@@ -112,9 +112,8 @@ export default function OrdersPage() {
 
     return (
       <span
-        className={`text-xs px-2 py-1 rounded border ${
-          colorMap[s] || colorMap.placed
-        }`}
+        className={`text-xs px-2 py-1 rounded border ${colorMap[s] || colorMap.placed
+          }`}
       >
         {labelMap[s]}
       </span>
@@ -193,11 +192,10 @@ export default function OrdersPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 capitalize transition-colors ${
-                  activeTab === tab
-                    ? "border-b-2 border-purple-500 text-purple-600 font-medium"
-                    : "text-gray-600 hover:text-gray-800"
-                }`}
+                className={`pb-2 capitalize transition-colors ${activeTab === tab
+                  ? "border-b-2 border-purple-500 text-purple-600 font-medium"
+                  : "text-gray-600 hover:text-gray-800"
+                  }`}
               >
                 {tab === "orders"
                   ? "All Orders"
@@ -230,14 +228,13 @@ export default function OrdersPage() {
                     {activeTab === "orders"
                       ? "All Orders"
                       : activeTab.charAt(0).toUpperCase() +
-                        activeTab.slice(1) +
-                        " Orders"}
+                      activeTab.slice(1) +
+                      " Orders"}
                   </span>
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${
-                      isOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
+                      }`}
                   />
                 </button>
               )}
@@ -290,15 +287,14 @@ export default function OrdersPage() {
                     </div>
                     <div className="text-right w-[30%]">
                       <span
-                        className={`text-xs px-2 py-1 rounded-full inline-block mb-1 ${
-                          order.status === "delivered"
-                            ? "bg-green-100 text-green-600"
-                            : order.status === "cancelled"
+                        className={`text-xs px-2 py-1 rounded-full inline-block mb-1 ${order.status === "delivered"
+                          ? "bg-green-100 text-green-600"
+                          : order.status === "cancelled"
                             ? "bg-red-100 text-red-600"
                             : order.status === "processing"
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-orange-100 text-orange-600"
-                        }`}
+                              ? "bg-blue-100 text-blue-600"
+                              : "bg-orange-100 text-orange-600"
+                          }`}
                       >
                         {order.status || "Pending"}
                       </span>
@@ -316,9 +312,8 @@ export default function OrdersPage() {
                   return (
                     <div
                       key={it._id}
-                      className={`${
-                        index > 0 ? "border-t border-gray-100" : ""
-                      }`}
+                      className={`${index > 0 ? "border-t border-gray-100" : ""
+                        }`}
                     >
                       {/* Desktop Table Row */}
                       <table className="hidden lg:table w-full text-sm border-collapse">
@@ -391,15 +386,14 @@ export default function OrdersPage() {
                             {/* Status */}
                             <td className="px-4 py-4 w-[8%]">
                               <span
-                                className={`text-xs px-2 py-1 rounded-full ${
-                                  order.status === "delivered"
-                                    ? "bg-green-100 text-green-600"
-                                    : order.status === "cancelled"
+                                className={`text-xs px-2 py-1 rounded-full ${order.status === "delivered"
+                                  ? "bg-green-100 text-green-600"
+                                  : order.status === "cancelled"
                                     ? "bg-red-100 text-red-600"
                                     : order.status === "processing"
-                                    ? "bg-blue-100 text-blue-600"
-                                    : "bg-orange-100 text-orange-600"
-                                }`}
+                                      ? "bg-blue-100 text-blue-600"
+                                      : "bg-orange-100 text-orange-600"
+                                  }`}
                               >
                                 {order.status || "Pending"}
                               </span>
@@ -417,7 +411,7 @@ export default function OrdersPage() {
 
                             {/* Total */}
                             <td className="px-4 py-4 font-semibold text-gray-900 w-[8%]">
-                              ₹{order.total}
+                              ₹{Number(Math.max(0, order.total).toFixed(2))}
                             </td>
                           </tr>
                         </tbody>

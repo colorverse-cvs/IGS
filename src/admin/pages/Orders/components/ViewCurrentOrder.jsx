@@ -109,7 +109,7 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
             </div>
             <div className="flex justify-between font-semibold">
               <span>Total Amount:</span>
-              <span>₹{currentOrder.amount}</span>
+              <span>{currentOrder.amount}</span>
             </div>
           </div>
         </div>

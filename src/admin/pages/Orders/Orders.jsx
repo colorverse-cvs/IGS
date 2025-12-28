@@ -91,8 +91,11 @@ export default function Orders() {
           }),
           status: order.status || "Pending",
           statusColor: getStatusColor(order.status),
-          // Address might be missing in some API responses dependent on backend implementation of snapshotting
-          address: "Address details not available in summary",
+          // Format shipping address from API
+          address: order.shippingAddress
+            ? `${order.shippingAddress.line1 || ""}${order.shippingAddress.line2 ? ", " + order.shippingAddress.line2 : ""}, ${order.shippingAddress.city || ""}, ${order.shippingAddress.state || ""} - ${order.shippingAddress.postalCode || ""}, ${order.shippingAddress.country || ""}`
+            : "Address not available",
+          shippingAddress: order.shippingAddress || null,
         };
       });
 
