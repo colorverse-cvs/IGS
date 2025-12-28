@@ -159,7 +159,6 @@ export default function CheckoutPage() {
         },
       };
 
-      console.log("Checkout payload:", payload);
 
       // 1️⃣ Create order (backend) with manual fetch to handle error statuses manually
       // Use fetch instead of api.post to get raw response first for error handling
@@ -193,7 +192,6 @@ export default function CheckoutPage() {
         throw new Error(data.message || "Failed to create order");
       }
 
-      console.log("Checkout response:", data);
 
       // 2️⃣ Razorpay options
       const options = {
@@ -206,7 +204,6 @@ export default function CheckoutPage() {
         description: "Checkout Payment",
 
         handler: async function (rzpResponse) {
-          console.log("Razorpay response:", rzpResponse);
           try {
             const verifyResult = await api.post("/api/v1/payments/verify", rzpResponse);
 
