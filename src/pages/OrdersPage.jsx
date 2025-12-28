@@ -33,6 +33,11 @@ const normalizeStatus = (status) => {
   return status || "placed";
 };
 
+const formatOrderId = (id) => {
+  if (!id) return "";
+  return `ORD-${id.slice(-5)}`;
+};
+
 /* -------------------- Component -------------------- */
 
 export default function OrdersPage() {
@@ -71,7 +76,7 @@ export default function OrdersPage() {
   const currentOrders = useMemo(
     () =>
       orders.filter(
-        (o) => ["pending", "processing"].includes(o.status) && matchesQuery(o)
+        (o) => ["pending", "placed"].includes(o.status) && matchesQuery(o)
       ),
     [orders, query]
   );
@@ -79,7 +84,7 @@ export default function OrdersPage() {
   const previousOrders = useMemo(
     () =>
       orders.filter(
-        (o) => ["delivered", "cancelled"].includes(o.status) && matchesQuery(o)
+        (o) => ["shipped", "delivered", "cancelled"].includes(o.status) && matchesQuery(o)
       ),
     [orders, query]
   );
@@ -106,7 +111,7 @@ export default function OrdersPage() {
     const colorMap = {
       delivered: "text-green-700 border-green-300",
       cancelled: "text-red-700 border-red-300",
-      placed: "text-yellow-700 border-yellow-300",
+      placed: "text-green-700 border-green-300",
       processing: "text-yellow-700 border-yellow-300",
     };
 
@@ -279,7 +284,7 @@ export default function OrdersPage() {
                   <div className="flex justify-between items-start">
                     <div className="w-[70%]">
                       <div className="font-semibold text-sm text-gray-900 truncate">
-                        Order #{order._id}
+                        {formatOrderId(order._id)}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
                         {formatDate(order.createdAt)}
@@ -291,9 +296,11 @@ export default function OrdersPage() {
                           ? "bg-green-100 text-green-600"
                           : order.status === "cancelled"
                             ? "bg-red-100 text-red-600"
-                            : order.status === "processing"
-                              ? "bg-blue-100 text-blue-600"
-                              : "bg-orange-100 text-orange-600"
+                            : order.status === "placed"
+                              ? "bg-green-100 text-green-600"
+                              : order.status === "processing"
+                                ? "bg-blue-100 text-blue-600"
+                                : "bg-orange-100 text-orange-600"
                           }`}
                       >
                         {order.status || "Pending"}
@@ -321,7 +328,7 @@ export default function OrdersPage() {
                           <tr className="px-4 py-4">
                             {/* Order ID */}
                             <td className="px-4 py-4 font-medium text-gray-900 w-[10%] xl:w-[14%] truncate">
-                              <div className="w-[130px] xl:w-auto truncate">{order._id}</div>
+                              <div className="w-[130px] xl:w-auto truncate">{formatOrderId(order._id)}</div>
                             </td>
 
                             {/* Product Details */}
@@ -390,9 +397,11 @@ export default function OrdersPage() {
                                   ? "bg-green-100 text-green-600"
                                   : order.status === "cancelled"
                                     ? "bg-red-100 text-red-600"
-                                    : order.status === "processing"
-                                      ? "bg-blue-100 text-blue-600"
-                                      : "bg-orange-100 text-orange-600"
+                                    : order.status === "placed"
+                                      ? "bg-green-100 text-green-600"
+                                      : order.status === "processing"
+                                        ? "bg-blue-100 text-blue-600"
+                                        : "bg-orange-100 text-orange-600"
                                   }`}
                               >
                                 {order.status || "Pending"}

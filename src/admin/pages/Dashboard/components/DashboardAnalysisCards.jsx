@@ -46,21 +46,23 @@ export default function DashboardAnalysisCards() {
     });
   }, [orders]);
 
-  // Calculate today's sales
+  // Calculate today's sales (only placed orders)
   const todaySales = useMemo(() => {
-    return todayOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+    return todayOrders
+      .filter(order => order.status === 'placed')
+      .reduce((sum, order) => sum + (order.total || 0), 0);
   }, [todayOrders]);
 
-  // Calculate this week's sales
+  // Calculate this week's sales (only placed orders)
   const weekSales = useMemo(() => {
-    return weekOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+    return weekOrders
+      .filter(order => order.status === 'placed')
+      .reduce((sum, order) => sum + (order.total || 0), 0);
   }, [weekOrders]);
 
-  // Calculate pending orders
+  // Calculate pending orders (only pending status)
   const pendingOrders = useMemo(() => {
-    return orders.filter(order =>
-      order.status === 'pending' || order.status === 'placed'
-    );
+    return orders.filter(order => order.status === 'pending');
   }, [orders]);
 
   // Calculate low stock items (stock <= 5)
