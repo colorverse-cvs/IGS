@@ -54,6 +54,16 @@ function AppContent() {
     };
   }, [dispatch]);
 
+  // clear console every 10 seconds
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     console.clear();
+  //   }, 10000); // 10 seconds
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

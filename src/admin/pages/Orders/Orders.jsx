@@ -143,7 +143,42 @@ export default function Orders() {
     }
   }
 
+  /**
+   * Get allowed status transitions based on current status
+   * Status flow: pending -> placed -> shipped -> delivered
+   * Cancelled and Returned are terminal states
+   */
+  function getAllowedStatusOptions(currentStatus) {
+    const statusLower = String(currentStatus).toLowerCase();
+
+    // Define which statuses can transition to which
+    const allowedTransitions = {
+      pending: ["pending", "placed", "shipped", "delivered", "cancelled", "returned"],
+      placed: ["placed", "shipped", "delivered", "cancelled", "returned"],
+      shipped: ["shipped", "delivered", "returned"],
+      delivered: ["delivered", "returned"],
+      cancelled: ["cancelled"], // Terminal state
+      returned: ["returned"], // Terminal state
+    };
+
+    const allowed = allowedTransitions[statusLower] || [];
+
+    return statusUpdateOptions.map(option => ({
+      ...option,
+      disabled: !allowed.includes(option.value),
+    }));
+  }
+
   async function handleStatusUpdate(orderId, newStatus) {
+    // Find the current order to check its status
+    const currentOrder = filteredOrders.find(order => order._id === orderId);
+
+    // Prevent API call if status is the same
+    if (currentOrder && currentOrder.status.toLowerCase() === newStatus.toLowerCase()) {
+      toast.error(`Cannot change status from ${newStatus} to ${newStatus}`);
+      return;
+    }
+
     try {
       setUpdatingOrderId(orderId);
 
@@ -274,7 +309,7 @@ export default function Orders() {
                     </label>
                     <Dropdown
                       className="w-full sm:w-48 md:max-w-[200px]"
-                      options={statusUpdateOptions}
+                      options={getAllowedStatusOptions(order.status)}
                       value={order.status}
                       onChange={(newStatus) => handleStatusUpdate(order._id, newStatus)}
                       placeholder="Select Status"
