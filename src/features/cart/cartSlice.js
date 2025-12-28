@@ -145,7 +145,6 @@ export const addToCartAsync = createAsyncThunk(
     try {
       // API call kept for backend sync if required, but primary source of truth is now local for UI
       // If backend sync is required, uncomment:
-      console.log(typeof productData.id);
       const response = await api.post('/api/v1/cart/add', {
         productId: productData.id,
         quantity: productData.qty || 1,

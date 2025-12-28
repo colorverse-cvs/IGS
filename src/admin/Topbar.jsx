@@ -5,6 +5,7 @@ import { getUserInfo } from "./utils/userInfo";
 import { logoutAsync } from "../features/user/userSlice";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
+import { fetchProducts } from "../features/products/productSlice";
 
 export default function Topbar({ setActivePage }) {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -46,6 +47,13 @@ export default function Topbar({ setActivePage }) {
     });
   };
 
+  const handleGoToHome = () => {
+    // Refresh products before navigating to home
+    dispatch(fetchProducts());
+    navigate("/");
+    setIsPopupVisible(false);
+  };
+
   return (
     <div className="h-16 bg-white border-b border-gray-200 flex justify-end px-8 relative">
       <div
@@ -73,7 +81,7 @@ export default function Topbar({ setActivePage }) {
           </button>
 
           <button
-            onClick={() => navigate("/")}
+            onClick={handleGoToHome}
             className="block w-full text-left px-3 py-2 rounded hover:bg-gray-50 cursor-pointer"
           >
             Go To Home

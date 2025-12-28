@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../../../utils/constants";
+import { fetchAllOrdersAsync, fetchAllProductsAsync, selectAdminOrders, selectAdminProducts } from "../../store/adminSlice";
 
 import DashboardAnalysisCards from "./components/DashboardAnalysisCards";
 import RecentOrderCard from "./components/RecentOrderCard";
@@ -7,6 +9,9 @@ import LowStockCard from "./components/LowStock";
 import TopSellingCard from "./components/TopSellingCard";
 
 export default function Dashboard({ setActivePage }) {
+  const dispatch = useDispatch();
+  const orders = useSelector(selectAdminOrders);
+  const products = useSelector(selectAdminProducts);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,8 +36,17 @@ export default function Dashboard({ setActivePage }) {
   useEffect(() => {
     if (didFetchRef.current) return;
     didFetchRef.current = true;
+
+    // Fetch data for dashboard analytics only if not already loaded
+    if (!orders || orders.length === 0) {
+      dispatch(fetchAllOrdersAsync());
+    }
+    if (!products || products.length === 0) {
+      dispatch(fetchAllProductsAsync());
+    }
+
     fetchProducts();
-  }, []);
+  }, [dispatch, orders, products]);
 
   return (
     <div className="dashboard-content-wrapper__main">
