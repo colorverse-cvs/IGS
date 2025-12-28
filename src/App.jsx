@@ -6,6 +6,7 @@ import FooterPage from "./pages/FooterPage";
 import { AdminPanelProvider, useAdminPanel } from "./contexts/AdminPanelContext";
 import { fetchProducts } from "./features/products/productSlice";
 import { initializeCart, fetchCartSummaryAsync } from "./features/cart/cartSlice";
+import { updateTokens, logout } from "./features/user/userSlice";
 
 function AppContent() {
   const { isAdminPanelOpen } = useAdminPanel();
@@ -30,6 +31,28 @@ function AppContent() {
       // dispatch(initializeCart(null)); // Optional, slice defaults to null
     }
   }, [user.isAuthenticated, user.profile?.id, dispatch]);
+
+  // Listen for token refresh events from apiClient.js
+  useEffect(() => {
+    const handleTokenRefreshed = (event) => {
+      const { token, refreshToken } = event.detail;
+      console.log('[App] Token refreshed, updating Redux store');
+      dispatch(updateTokens({ token, refreshToken }));
+    };
+
+    const handleTokenRefreshFailed = () => {
+      console.log('[App] Token refresh failed, logging out');
+      dispatch(logout());
+    };
+
+    window.addEventListener('tokenRefreshed', handleTokenRefreshed);
+    window.addEventListener('tokenRefreshFailed', handleTokenRefreshFailed);
+
+    return () => {
+      window.removeEventListener('tokenRefreshed', handleTokenRefreshed);
+      window.removeEventListener('tokenRefreshFailed', handleTokenRefreshFailed);
+    };
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen flex flex-col">
