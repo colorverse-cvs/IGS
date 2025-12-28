@@ -95,6 +95,7 @@ export default function Orders() {
           address: order.shippingAddress
             ? `${order.shippingAddress.line1 || ""}${order.shippingAddress.line2 ? ", " + order.shippingAddress.line2 : ""}, ${order.shippingAddress.city || ""}, ${order.shippingAddress.state || ""} - ${order.shippingAddress.postalCode || ""}, ${order.shippingAddress.country || ""}`
             : "Address not available",
+          rawItems: items,
           shippingAddress: order.shippingAddress || null,
         };
       });

@@ -341,9 +341,18 @@ export default function OrdersPage() {
                                 />
 
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-medium text-gray-900 truncate">
-                                    {product.name}
-                                  </div>
+                                  {it.product ? (
+                                    <div className="font-medium text-gray-900 truncate">
+                                      {product.name}
+                                    </div>
+                                  ) : (
+                                    <p className="font-medium text-gray-500">
+                                      {it.name}{" "}
+                                      <span className="text-xs">
+                                        (Product no longer available)
+                                      </span>
+                                    </p>
+                                  )}
                                   <div className="text-xs text-gray-500 mt-1">
                                     Material:{" "}
                                     {product.attributes?.material || "-"}
@@ -378,7 +387,11 @@ export default function OrdersPage() {
                                     </>
                                   ) : (
                                     <button
-                                      className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-sm cursor-pointer"
+                                      className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
+                                        ${it.product === null
+                                          ? "cursor-not-allowed opacity-50"
+                                          : "cursor-pointer hover:bg-purple-50"
+                                        }`}
                                       onClick={() =>
                                         navigate(`/product/${product._id}`)
                                       }
@@ -435,9 +448,18 @@ export default function OrdersPage() {
                           />
 
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-gray-900 text-sm">
-                              {product.name}
-                            </div>
+                            {it.product ? (
+                              <div className="font-medium text-gray-900 text-sm">
+                                {product.name}
+                              </div>
+                            ) : (
+                              <p className="font-medium text-gray-500">
+                                {it.name}{" "}
+                                <span className="text-xs">
+                                  (Product no longer available)
+                                </span>
+                              </p>
+                            )}
                             <div className="text-xs text-gray-500 mt-1">
                               Material: {product.attributes?.material || "-"} •
                               Size: {product.dimensions?.sizeCategory || "-"}
@@ -469,13 +491,16 @@ export default function OrdersPage() {
                             </div>
                           ) : (
                             <button
-                              className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-xs cursor-pointer"
-                              onClick={() =>
-                                navigate(`/product/${product._id}`)
-                              }
+                              onClick={() => navigate(`/product/${product._id}`)}
+                              className={`px-3 py-1 border rounded text-xs
+                              ${product?._id
+                                  ? "text-purple-600 border-purple-600 hover:bg-purple-50 cursor-pointer"
+                                  : "text-gray-400 border-gray-300 cursor-not-allowed opacity-50"
+                                }`}
                             >
                               View Order
                             </button>
+
                           )}
                         </div>
                       </div>
