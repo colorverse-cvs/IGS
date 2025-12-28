@@ -13,7 +13,7 @@ import AddressForm from "../components/AddressForm.jsx";
 import { addAddressAsync, updateAddressAsync } from "../features/user/userSlice";
 import CustomPopupModal from "../components/CustomPopupModal";
 
-import { removeFromCart, updateQty, removeItemFromCartAsync, clearCartAsync } from "../features/cart/cartSlice";
+import { removeFromCart, updateQty, removeItemFromCartAsync, clearCartAsync, updateCartItemQuantityAsync } from "../features/cart/cartSlice";
 
 /**
  * CheckoutPage Component
@@ -54,6 +54,31 @@ export default function CheckoutPage() {
       return next;
     });
   }, [items]);
+
+  // Load Razorpay script
+  React.useEffect(() => {
+    // Check if Razorpay script is already loaded
+    if (window.Razorpay) return;
+
+    // Load Razorpay script dynamically
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => {
+      console.log('Razorpay SDK loaded successfully');
+    };
+    script.onerror = () => {
+      console.error('Failed to load Razorpay SDK');
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup: remove script on unmount
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
 
   const payable = useMemo(
     () => subtotal,
@@ -232,7 +257,12 @@ export default function CheckoutPage() {
         theme: { color: "#3399cc" },
       };
 
-      // 3️⃣ Open Razorpay
+      // 3️⃣ Check if Razorpay is loaded
+      if (!window.Razorpay) {
+        throw new Error("Razorpay SDK not loaded. Please refresh the page and try again.");
+      }
+
+      // Open Razorpay
       const rzp = new window.Razorpay(options);
       rzp.open();
 
@@ -419,9 +449,9 @@ export default function CheckoutPage() {
                                     keepScroll();
                                     i.qty > 1
                                       ? dispatch(
-                                        updateQty({
-                                          id: i.id,
-                                          qty: i.qty - 1,
+                                        updateCartItemQuantityAsync({
+                                          productId: i.id,
+                                          quantity: i.qty - 1,
                                         })
                                       )
                                       : dispatch(removeItemFromCartAsync(i.id));
@@ -436,7 +466,10 @@ export default function CheckoutPage() {
                                   onClick={() => {
                                     keepScroll();
                                     dispatch(
-                                      updateQty({ id: i.id, qty: i.qty + 1 })
+                                      updateCartItemQuantityAsync({
+                                        productId: i.id,
+                                        quantity: i.qty + 1,
+                                      })
                                     );
                                   }}
                                 >
