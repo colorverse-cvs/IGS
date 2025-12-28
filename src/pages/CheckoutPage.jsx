@@ -36,7 +36,7 @@ export default function CheckoutPage() {
     () => items.reduce((s, i) => s + (i.listPrice || i.price) * i.qty, 0),
     [items]
   );
-  const discount = Math.max(0, mrpTotal - subtotal);
+  const discount = Number(Math.max(0, mrpTotal - subtotal).toFixed(2));
   const dispatch = useDispatch();
 
   /**

@@ -352,6 +352,7 @@ export default function ProductInfoPage() {
         price: product.price,
         image: imageSrc,
         mrp,
+        listPrice: mrp, // Add listPrice for discount calculation in checkout
         discount,
         material: selectedMaterial,
         size: selectedSize,
