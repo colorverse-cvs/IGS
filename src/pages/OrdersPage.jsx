@@ -111,7 +111,7 @@ export default function OrdersPage() {
     const colorMap = {
       delivered: "text-green-700 border-green-300",
       cancelled: "text-red-700 border-red-300",
-      placed: "text-green-700 border-green-300",
+      placed: "bg-blue-100 text-blue-600",
       processing: "text-yellow-700 border-yellow-300",
     };
 
@@ -297,7 +297,7 @@ export default function OrdersPage() {
                           : order.status === "cancelled"
                             ? "bg-red-100 text-red-600"
                             : order.status === "placed"
-                              ? "bg-green-100 text-green-600"
+                              ? "bg-blue-100 text-blue-600"
                               : order.status === "processing"
                                 ? "bg-blue-100 text-blue-600"
                                 : "bg-orange-100 text-orange-600"
@@ -411,7 +411,7 @@ export default function OrdersPage() {
                                   : order.status === "cancelled"
                                     ? "bg-red-100 text-red-600"
                                     : order.status === "placed"
-                                      ? "bg-green-100 text-green-600"
+                                      ? "bg-blue-100 text-blue-600"
                                       : order.status === "processing"
                                         ? "bg-blue-100 text-blue-600"
                                         : "bg-orange-100 text-orange-600"
