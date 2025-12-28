@@ -84,7 +84,7 @@ export default function OrdersPage() {
   const previousOrders = useMemo(
     () =>
       orders.filter(
-        (o) => ["shipped", "delivered", "cancelled"].includes(o.status) && matchesQuery(o)
+        (o) => ["shipped", "delivered", "cancelled", "returned"].includes(o.status) && matchesQuery(o)
       ),
     [orders, query]
   );
@@ -131,14 +131,18 @@ export default function OrdersPage() {
     if (activeTab === "previous") {
       return (
         <div className="flex flex-col gap-2">
-          <button className="px-3 py-1 border rounded text-sm">
+          {/* <button className="px-3 py-1 border rounded text-sm">
             Download Invoice
-          </button>
+          </button> */}
           <button
-            className="px-3 py-1 border rounded text-sm cursor-pointer"
+            className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
+                                        ${it.product === null
+                ? "cursor-not-allowed opacity-50"
+                : "cursor-pointer hover:bg-purple-50"
+              }`}
             onClick={() => navigate(`/product/${productId}`)}
           >
-            View Order Details
+            View Order
           </button>
         </div>
       );
@@ -147,7 +151,11 @@ export default function OrdersPage() {
     return (
       <div className="flex flex-col gap-2">
         <button
-          className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-sm cursor-pointer"
+          className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
+                                        ${it.product === null
+              ? "cursor-not-allowed opacity-50"
+              : "cursor-pointer hover:bg-purple-50"
+            }`}
           onClick={() => navigate(`/product/${productId}`)}
         >
           View Order
@@ -373,16 +381,20 @@ export default function OrdersPage() {
                                 <div className="flex flex-col gap-2 justify-center items-center">
                                   {activeTab === "previous" ? (
                                     <>
-                                      <button className="px-3 py-1 border rounded text-sm">
+                                      {/* <button className="px-3 py-1 border rounded text-sm">
                                         Download Invoice
-                                      </button>
+                                      </button> */}
                                       <button
-                                        className="px-3 py-1 border rounded text-sm cursor-pointer"
+                                        className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
+                                        ${it.product === null
+                                            ? "cursor-not-allowed opacity-50"
+                                            : "cursor-pointer hover:bg-purple-50"
+                                          }`}
                                         onClick={() =>
                                           navigate(`/product/${product._id}`)
                                         }
                                       >
-                                        View Order Details
+                                        View Order
                                       </button>
                                     </>
                                   ) : (
@@ -477,9 +489,9 @@ export default function OrdersPage() {
                         <div className="flex justify-between items-center mt-3">
                           {activeTab === "previous" ? (
                             <div className="flex gap-2">
-                              <button className="px-3 py-1 border rounded text-xs">
+                              {/* <button className="px-3 py-1 border rounded text-xs">
                                 Download Invoice
-                              </button>
+                              </button> */}
                               <button
                                 className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-xs cursor-pointer"
                                 onClick={() =>

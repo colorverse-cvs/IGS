@@ -589,7 +589,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 </label>
                 <input
                   type="text"
-                  value={loginIdentifier}
+                  value={loginIdentifier.trim()}
                   onChange={(e) => {
                     setLoginIdentifier(e.target.value);
                     if (loginIdentifierError) setLoginIdentifierError(""); // Clear error on type
