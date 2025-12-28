@@ -126,7 +126,7 @@ export default function FilterSidebar({
       ref={sidebarRef}
       className={`${isMobile
         ? "p-4"
-        : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88vh]"
+        : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88dvh]"
         } overflow-y-auto`}
     >
       {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}

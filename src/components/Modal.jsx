@@ -50,7 +50,7 @@ export default function Modal({
     >
       {/* Modal content box - click inside doesn't trigger backdrop onClick */}
       <div
-        className={`bg-white rounded-lg shadow-2xl transform transition-all max-h-[90vh] p-2 overflow-auto ${className || "max-w-lg w-full m-4"}`}
+        className={`bg-white rounded-lg shadow-2xl transform transition-all max-h-[90dvh] p-2 overflow-auto ${className || "max-w-lg w-full m-4"}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Optional header with title and close button */}

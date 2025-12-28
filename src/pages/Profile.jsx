@@ -264,7 +264,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="mx-auto py-6 px-4 md:px-15 lg:px-20 md:pb-6 pb-28 min-h-[30vh] xl:min-h-[70vh]">
+    <div className="mx-auto py-6 px-4 md:px-15 lg:px-20 md:pb-6 pb-28 min-h-[30dvh] xl:min-h-[70dvh]">
       {/* <div className="py-1">
         <Breadcrumb items={[{ label: "Home", link: "/" }, { label: "Profile" }]} />
       </div> */}

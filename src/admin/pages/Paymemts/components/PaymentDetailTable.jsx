@@ -83,7 +83,7 @@ export default function PaymentDetailTable({ data }) {
   return (
     <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
       <table className="min-w-full text-sm text-left">
-        <thead className="bg-white border-b">
+        <thead className="bg-white border-b border-gray-300">
           <tr>
             <th className="px-6 py-4 font-semibold text-gray-900">Transaction ID</th>
             <th className="px-6 py-4 font-semibold text-gray-900">Order ID</th>

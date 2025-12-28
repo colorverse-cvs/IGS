@@ -4,7 +4,6 @@ import { ChevronRight } from "lucide-react";
 import CarouselRow from "./CarouselRow";
 import ProductCard from "./ProductCard";
 
-
 export default function ProductSection({
   title,
   subtitle,
@@ -50,6 +49,7 @@ export default function ProductSection({
           <ProductCard product={product} onOpenProduct={onOpenProduct} />
         )}
         showIndicators={showIndicators}
+        scrollMode="step"
       />
     </section>
   );

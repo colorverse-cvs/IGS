@@ -273,7 +273,7 @@ export default function EditProductModal({
         </div>
 
 
-        <div className="max-h-[70vh] overflow-y-auto px-6 py-5 space-y-5">
+        <div className="max-h-[70dvh] overflow-y-auto px-6 py-5 space-y-5">
 
           {/* MULTIPLE IMAGES */}
           <div>

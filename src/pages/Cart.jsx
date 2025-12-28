@@ -98,7 +98,7 @@ export default function Cart({ isDrawer = false, onClose }) {
         </div>
       ) : (
         <div
-          className={`flex ${isDrawer ? "flex-col h-[90vh]" : "flex-col md:flex-row gap-8 relative"
+          className={`flex ${isDrawer ? "flex-col h-[90dvh]" : "flex-col md:flex-row gap-8 relative"
             }`}
         >
           {/* Cart Items */}

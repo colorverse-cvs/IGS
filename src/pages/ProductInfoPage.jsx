@@ -392,7 +392,7 @@ export default function ProductInfoPage() {
               {/* Left: Product Images */}
               <div className="flex flex-col w-full lg:justify-start lg:flex-col gap-4">
                 {/* Main Product Image */}
-                <div className="bg-gray-100 h-[60vh] rounded-lg flex items-center justify-center">
+                <div className="bg-gray-100 h-[60dvh] rounded-lg flex items-center justify-center">
                   <img
                     src={currentImage}
                     alt={title}

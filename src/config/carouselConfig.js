@@ -7,7 +7,7 @@
 export const CAROUSEL_DEFAULT_CONFIG = {
     // Autoplay Settings
     autoplay: true,
-    autoplayMs: 3000, // 3 seconds - standard for all carousels
+    autoplayMs: 4000, // 3 seconds - standard for all carousels
 
     // UI Controls
     showPrevNext: true, // Show prev/next arrow buttons

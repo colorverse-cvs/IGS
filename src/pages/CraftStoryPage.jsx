@@ -32,7 +32,7 @@ export default function CraftStoryPage({ categoryId }) {
     <section className="my-12">
       <div className="w-full">
         <div className="flex flex-col lg:flex-row gap-4">
-          <div className="relative h-[60vh] lg:w-[50%] w-full">
+          <div className="relative h-[60dvh] lg:w-[50%] w-full">
             {imageUrl ? (
               <img
                 src={imageUrl}

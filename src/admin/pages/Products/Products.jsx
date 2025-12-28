@@ -184,7 +184,7 @@ export default function Products() {
                   </button>
 
                   <button
-                    className="text-red-600 hover:bg-red-50 p-2 rounded-md cursor-pointer"
+                    className="text-red-600 hover:bg-red-50 p-1 rounded-md cursor-pointer"
                     onClick={() => {
                       setCurrentProduct(product);
                       setOpenDeleteProductModal(true);

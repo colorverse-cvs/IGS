@@ -48,7 +48,7 @@ export default function CustomerDetailTable({ data = [] }) {
 
   if (!data || data.length === 0) {
     return (
-      <p className="text-center text-gray-500 py-10 bg-white rounded-xl shadow border">
+      <p className="text-center text-gray-500 py-10 bg-white rounded-xl border border-gray-200 shadow-sm">
         No customers found
       </p>
     );

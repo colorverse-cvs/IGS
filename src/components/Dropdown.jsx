@@ -235,7 +235,7 @@ export default function Dropdown({
                 top: panelPosition.top,
                 left: panelPosition.left,
                 width: panelSize.width ? `${panelSize.width}px` : undefined,
-                maxWidth: "calc(100vw - 16px)",
+                maxWidth: "calc(100dvw - 16px)",
                 pointerEvents: "auto",
               };
             }

@@ -557,7 +557,7 @@ export default function FilterPage() {
               onClick={() => setIsFilterDrawerOpen(false)}
             />
             {/* Drawer */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl max-h-[85vh] overflow-hidden flex flex-col">
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl max-h-[85dvh] overflow-hidden flex flex-col">
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <div className="text-lg font-semibold text-gray-900">Filters</div>
                 <button
@@ -582,7 +582,7 @@ export default function FilterPage() {
         )}
 
         {/* Main Content */}
-        <div className="flex-1 p-4 lg:p-6 h-[88vh] overflow-y-auto relative">
+        <div className="flex-1 p-4 lg:p-6 h-[88dvh] overflow-y-auto relative">
           {status === 'loading' ? (
             <div className="text-center py-12">
               <p className="text-gray-600">Loading products...</p>
