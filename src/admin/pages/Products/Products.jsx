@@ -85,7 +85,7 @@ export default function Products() {
       <div className="md:hidden mb-4 space-y-3">
         <div className="flex gap-3">
           <button
-            className="flex-1 bg-purple-600 px-5 py-3 cursor-pointer text-white rounded-lg flex items-center justify-center gap-2 font-medium"
+            className="flex-1 bg-brand-600 px-5 py-3 cursor-pointer text-white rounded-lg flex items-center justify-center gap-2 font-medium"
             onClick={() => setAddProductModal(true)}
           >
             <span className="text-xl">+</span> Add Product
@@ -102,7 +102,7 @@ export default function Products() {
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               🔍

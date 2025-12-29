@@ -6,7 +6,7 @@ const cardsData = [
     value: 12,
     sub: "This week: 47",
     icon: ShoppingCart,
-    iconColor: "text-purple-600",
+    iconColor: "text-brand-600",
   },
   {
     title: "Today's Sales",
@@ -38,10 +38,20 @@ function AnalysisCard({ title, value, sub, icon: Icon, iconColor, subColor }) {
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 flex justify-between items-start">
       <div className="flex-1">
         <p className="text-xs md:text-sm text-gray-500 font-medium">{title}</p>
-        <p className="text-xl md:text-2xl font-semibold text-gray-900 mt-1 md:mt-2">{value}</p>
-        <p className={`text-xs md:text-sm mt-1 md:mt-2 ${subColor || "text-gray-400"}`}>{sub}</p>
+        <p className="text-xl md:text-2xl font-semibold text-gray-900 mt-1 md:mt-2">
+          {value}
+        </p>
+        <p
+          className={`text-xs md:text-sm mt-1 md:mt-2 ${
+            subColor || "text-gray-400"
+          }`}
+        >
+          {sub}
+        </p>
       </div>
-      <div className={`p-2 rounded-full bg-gray-50 flex-shrink-0 ml-2 ${iconColor}`}>
+      <div
+        className={`p-2 rounded-full bg-gray-50 flex-shrink-0 ml-2 ${iconColor}`}
+      >
         <Icon size={20} className="md:w-[22px] md:h-[22px]" />
       </div>
     </div>

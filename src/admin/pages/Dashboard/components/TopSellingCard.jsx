@@ -2,18 +2,18 @@ const lowStockDetails = [
   {
     id: "1",
     label: "Photo Frame",
-    itemSoldCount: "45 sold"
+    itemSoldCount: "45 sold",
   },
   {
     id: "2",
     label: "Teddy Bear",
-    itemSoldCount: "35 sold"
+    itemSoldCount: "35 sold",
   },
   {
     id: "3",
     label: "Customized Mug",
-    itemSoldCount: "20 sold"
-  }
+    itemSoldCount: "20 sold",
+  },
 ];
 
 export default function TopSellingCard() {
@@ -27,8 +27,7 @@ export default function TopSellingCard() {
         {lowStockDetails.map((item) => (
           <div key={item.id} className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              
-              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-purple-500 text-white font-semibold text-sm">
+              <div className="w-9 h-9 flex items-center justify-center rounded-full bg-brand-500 text-white font-semibold text-sm">
                 {item.id}
               </div>
 

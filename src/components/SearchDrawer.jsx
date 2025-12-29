@@ -2,7 +2,6 @@ import React from "react";
 import { X, Search, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/products/productSlice";
 
@@ -11,10 +10,12 @@ export default function SearchDrawer({ isOpen, onClose }) {
   const dispatch = useDispatch();
   const [query, setQuery] = React.useState("");
 
-  const { products: allProducts, status } = useSelector((state) => state.products);
+  const { products: allProducts, status } = useSelector(
+    (state) => state.products
+  );
 
   React.useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchProducts());
     }
   }, [status, dispatch]);
@@ -71,16 +72,18 @@ export default function SearchDrawer({ isOpen, onClose }) {
     <>
       {/* Backdrop overlay - click to close */}
       <div
-        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}
+        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
         onClick={onClose}
         aria-hidden={!isOpen}
       />
 
       {/* Drawer panel - slides in from right side */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         role="dialog"
         aria-modal="true"
         aria-label="Search products"
@@ -95,7 +98,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Explore collection"
-              className="w-full border border-gray-300 rounded-lg pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-1  focus:ring-purple-500"
+              className="w-full border border-gray-300 rounded-lg pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-1  focus:ring-brand-500"
             />
             <button
               onClick={onClose}

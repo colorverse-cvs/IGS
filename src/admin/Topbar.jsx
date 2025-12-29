@@ -14,7 +14,7 @@ export default function Topbar({ setActivePage }) {
   const dispatch = useDispatch();
 
   const handleDropdownClick = () => {
-    setIsPopupVisible(prev => !prev);
+    setIsPopupVisible((prev) => !prev);
   };
 
   // ✅ Close when clicking outside
@@ -52,7 +52,7 @@ export default function Topbar({ setActivePage }) {
         className="flex items-center gap-4 cursor-pointer select-none"
         onClick={handleDropdownClick}
       >
-        <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">
+        <div className="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center !font-bold">
           {initials}
         </div>
 
@@ -63,7 +63,7 @@ export default function Topbar({ setActivePage }) {
       {isPopupVisible && (
         <div
           ref={dropdownRef}
-          className="absolute top-16 right-8 w-40 rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 p-1 space-y-1 z-50"
+          className="absolute top-16 right-8 w-40 rounded-md shadow-lg bg-white ring-1 ring-brand-600 ring-opacity-5 p-1 space-y-1 z-50"
         >
           <button
             onClick={() => handleMyAccountClick()}

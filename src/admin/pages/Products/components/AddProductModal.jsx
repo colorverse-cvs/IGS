@@ -406,7 +406,10 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
         {/* FOOTER */}
         <div className="p-4 border-t border-gray-300 flex justify-end gap-3">
-          <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded-lg cursor-pointer">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 border border-gray-300 rounded-lg cursor-pointer"
+          >
             Cancel
           </button>
 
@@ -414,18 +417,18 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             disabled={!isFormValid || isLoading}
             onClick={handleAddNewProduct}
             className={`px-5 py-2 rounded-lg text-white cursor-pointer ${
-              isFormValid && !isLoading ? "bg-purple-600" : "bg-gray-300"
+              isFormValid && !isLoading ? "bg-brand-600" : "bg-gray-300"
             }`}
           >
             {isLoading ? "Adding..." : "Add Product"}
           </button>
         </div>
-      <div
-        className="block md:hidden"
-        style={{
-          height: "220px",
-        }}
-      />
+        <div
+          className="block md:hidden"
+          style={{
+            height: "220px",
+          }}
+        />
       </div>
     </div>
   );
@@ -441,7 +444,7 @@ function Input({ label, error, ...props }) {
         className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${
           error
             ? "border-red-500 focus:ring-red-400"
-            : "border-gray-300 focus:ring-purple-500"
+            : "border-gray-300 focus:ring-brand-500"
         }`}
       />
       {error && <ErrorText text={error} />}

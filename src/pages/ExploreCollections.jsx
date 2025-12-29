@@ -6,11 +6,11 @@ import { fetchProducts } from "../features/products/productSlice";
 
 /**
  * ExploreCollections Page Component
- * 
+ *
  * Displays a visual grid of category cards in a mosaic layout.
  * First row: 3 cards, Second row: 2 cards
  * Clicking a card navigates to the filter page with that category selected.
- * 
+ *
  * For beginners:
  * - Uses useNavigate hook from React Router to navigate between pages
  * - Fetches categories from API
@@ -20,13 +20,15 @@ import { fetchProducts } from "../features/products/productSlice";
 export default function ExploreCollections() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { products: allProducts, status } = useSelector((state) => state.products);
+  const { products: allProducts, status } = useSelector(
+    (state) => state.products
+  );
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
 
   // Fetch products if not already loaded
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchProducts());
     }
   }, [dispatch, status]);
@@ -40,7 +42,10 @@ export default function ExploreCollections() {
       "Home Decor": "home-decor",
       "Motivational Statues": "motivational",
     };
-    return categoryMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, "-");
+    return (
+      categoryMap[categoryName] ||
+      categoryName.toLowerCase().replace(/\s+/g, "-")
+    );
   };
 
   // Fetch categories
@@ -48,7 +53,8 @@ export default function ExploreCollections() {
     const fetchCategories = async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/v1/products/categories`);
-        if (!response.ok) throw new Error(`Categories Error: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`Categories Error: ${response.status}`);
         const result = await response.json();
         setCategories(result.data || []);
       } catch (error) {
@@ -63,10 +69,12 @@ export default function ExploreCollections() {
     if (allProducts.length === 0 || categories.length === 0) return;
 
     // Group products by category and create sections
-    const sectionsArray = categories.map(category => {
+    const sectionsArray = categories.map((category) => {
       // Find products in this category (using transformed products from Redux)
       const categoryProducts = allProducts.filter(
-        product => product.category === category.name || product.categoryName === category.name
+        (product) =>
+          product.category === category.name ||
+          product.categoryName === category.name
       );
 
       // Get first product image for category card
@@ -78,9 +86,11 @@ export default function ExploreCollections() {
       return {
         id: getCategorySlug(category.name),
         title: category.name,
-        subtitle: category.description || `Explore our collection of ${category.name.toLowerCase()}`,
+        subtitle:
+          category.description ||
+          `Explore our collection of ${category.name.toLowerCase()}`,
         imageURL: imageURL,
-        products: categoryProducts
+        products: categoryProducts,
       };
     });
 
@@ -93,7 +103,7 @@ export default function ExploreCollections() {
    */
   const goToCategory = (id) => navigate(`/filter?category=${id}`);
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <section>
         <div className="container mx-auto">
@@ -139,10 +149,14 @@ export default function ExploreCollections() {
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className={`absolute ${posClass} left-3 right-3 text-white text-left`}>
+        <div
+          className={`absolute ${posClass} left-3 right-3 text-white text-left`}
+        >
           <div className="text-xl pb-2 !font-[500]">{title}</div>
           {subtitle && (
-            <div className="text-sm opacity-90 line-clamp-2 leading-tight">{subtitle}</div>
+            <div className="text-sm opacity-90 line-clamp-2 leading-tight">
+              {subtitle}
+            </div>
           )}
         </div>
       </button>
@@ -156,7 +170,7 @@ export default function ExploreCollections() {
     <section>
       <div className="container mx-auto">
         <div className="text-left md:text-center pb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl text-gray-900 mb-4">
             Explore Our Curated Collections
           </h2>
           <p className="text-gray-600 text-sm">
@@ -174,8 +188,11 @@ export default function ExploreCollections() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {row1[0] && <CategoryCard section={row1[0]} overlay="top" />}
               {(() => {
-                const mavale = sections.find((s) => s.id === "mavale") || row1[1];
-                return mavale ? <CategoryCard section={mavale} overlay="bottom" /> : null;
+                const mavale =
+                  sections.find((s) => s.id === "mavale") || row1[1];
+                return mavale ? (
+                  <CategoryCard section={mavale} overlay="bottom" />
+                ) : null;
               })()}
               {row1[2] && <CategoryCard section={row1[2]} overlay="top" />}
             </div>
@@ -186,7 +203,6 @@ export default function ExploreCollections() {
             </div>
           </>
         )}
-
       </div>
     </section>
   );

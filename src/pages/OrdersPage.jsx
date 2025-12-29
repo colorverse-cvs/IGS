@@ -143,7 +143,7 @@ export default function OrdersPage() {
     return (
       <div className="flex flex-col gap-2">
         <button
-          className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-sm cursor-pointer"
+          className="px-3 py-1 text-brand-600 border border-brand-600 hover:bg-brand-50 rounded text-sm cursor-pointer"
           onClick={() => navigate(`/product/${productId}`)}
         >
           View Order
@@ -178,7 +178,7 @@ export default function OrdersPage() {
       <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-lg mx-auto py-6 px-4 md:px-15 lg:px-20">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <div className="text-xl font-bold">Your Orders</div>
+            <div className="text-xl !font-bold">Your Orders</div>
             <p className="text-sm text-gray-600">
               Track and manage your orders
             </p>
@@ -195,7 +195,7 @@ export default function OrdersPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`pb-2 capitalize transition-colors cursor-pointer ${
                   activeTab === tab
-                    ? "border-b-2 border-purple-500 text-purple-600 font-medium"
+                    ? "border-b-2 border-brand-500 text-brand-600 font-medium"
                     : "text-gray-600 hover:text-gray-800"
                 }`}
               >
@@ -211,7 +211,7 @@ export default function OrdersPage() {
               placeholder="Search orders..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               🔍
@@ -225,7 +225,7 @@ export default function OrdersPage() {
               onToggle={setIsOrdersDropdownOpen}
               align="left"
               trigger={(isOpen) => (
-                <button className="w-full text-left border border-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 bg-white flex items-center justify-between cursor-pointer">
+                <button className="w-full text-left border border-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500 bg-white flex items-center justify-between cursor-pointer">
                   <span>
                     {activeTab === "orders"
                       ? "All Orders"
@@ -250,7 +250,7 @@ export default function OrdersPage() {
                     setActiveTab(tab);
                     setIsOrdersDropdownOpen(false);
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg cursor-pointer"
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-700 first:rounded-t-lg last:rounded-b-lg cursor-pointer"
                 >
                   {tab === "orders"
                     ? "All Orders"
@@ -326,7 +326,9 @@ export default function OrdersPage() {
                           <tr className="px-4 py-4">
                             {/* Order ID */}
                             <td className="px-4 py-4 font-medium text-gray-900 w-[10%] xl:w-[14%] truncate">
-                              <div className="w-[130px] xl:w-auto truncate">{order._id}</div>
+                              <div className="w-[130px] xl:w-auto truncate">
+                                {order._id}
+                              </div>
                             </td>
 
                             {/* Product Details */}
@@ -350,7 +352,7 @@ export default function OrdersPage() {
                                     Size:{" "}
                                     {product.dimensions?.sizeCategory || "-"}
                                   </div>
-                                  <div className="text-purple-600 font-semibold mt-1">
+                                  <div className="text-brand-600 font-semibold mt-1">
                                     ₹{it.price}
                                   </div>
                                   <div className="text-[11px] text-gray-500 mt-1">
@@ -376,7 +378,7 @@ export default function OrdersPage() {
                                     </>
                                   ) : (
                                     <button
-                                      className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-sm cursor-pointer"
+                                      className="px-3 py-1 text-brand-600 border border-brand-600 hover:bg-brand-50 rounded text-sm cursor-pointer"
                                       onClick={() =>
                                         navigate(`/product/${product._id}`)
                                       }
@@ -439,7 +441,7 @@ export default function OrdersPage() {
                               Material: {product.attributes?.material || "-"} •
                               Size: {product.dimensions?.sizeCategory || "-"}
                             </div>
-                            <div className="text-purple-600 font-semibold text-sm mt-1">
+                            <div className="text-brand-600 font-semibold text-sm mt-1">
                               ₹{it.price} × {it.quantity}
                             </div>
                             <div className="text-[11px] text-gray-500 mt-1">
@@ -456,7 +458,7 @@ export default function OrdersPage() {
                                 Download Invoice
                               </button>
                               <button
-                                className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-xs cursor-pointer"
+                                className="px-3 py-1 text-brand-600 border border-brand-600 hover:bg-brand-50 rounded text-xs cursor-pointer"
                                 onClick={() =>
                                   navigate(`/product/${product._id}`)
                                 }
@@ -466,7 +468,7 @@ export default function OrdersPage() {
                             </div>
                           ) : (
                             <button
-                              className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-xs cursor-pointer"
+                              className="px-3 py-1 text-brand-600 border border-brand-600 hover:bg-brand-50 rounded text-xs cursor-pointer"
                               onClick={() =>
                                 navigate(`/product/${product._id}`)
                               }

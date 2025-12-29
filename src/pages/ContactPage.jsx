@@ -71,11 +71,11 @@ export default function ContactPage() {
   return (
     <main className="bg-white">
       {/* Contact Form Section */}
-      <section
-      >
+      <section>
         <div
           className="bg-no-repeat bg-cover bg-center py-[3rem] md:py-[5rem] px-4 md:px-15 lg:px-20"
-          style={{ backgroundImage: `url(${backgroundContact})` }}>
+          style={{ backgroundImage: `url(${backgroundContact})` }}
+        >
           {/* Outer white card */}
           <div className="bg-white rounded-2xl shadow-[0_18px_60px_rgba(0,0,0,0.15)] overflow-hidden grid grid-cols-1 md:grid-cols-[1.1fr_2fr] p-2.5">
             {/* Left contact info panel */}
@@ -84,7 +84,7 @@ export default function ContactPage() {
               style={{ backgroundImage: `url(${backgroundContactForm})` }}
             >
               <div>
-                <div className="text-4xl font-bold my-5">
+                <div className="text-4xl !font-semibold my-5">
                   Contact Information
                 </div>
                 <p className="text-sm text-white/80">
@@ -158,10 +158,13 @@ export default function ContactPage() {
                       type="text"
                       value={form.firstName}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                        const value = e.target.value.replace(
+                          /[^a-zA-Z\s]/g,
+                          ""
+                        );
                         setForm((prev) => ({ ...prev, firstName: value }));
                       }}
-                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
+                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-brand-500"
                     />
                     {errors.firstName && (
                       <p className="text-xs text-red-500 mt-1">
@@ -177,10 +180,13 @@ export default function ContactPage() {
                       type="text"
                       value={form.lastName}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                        const value = e.target.value.replace(
+                          /[^a-zA-Z\s]/g,
+                          ""
+                        );
                         setForm((prev) => ({ ...prev, lastName: value }));
                       }}
-                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
+                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-brand-500"
                     />
                     {errors.lastName && (
                       <p className="text-xs text-red-500 mt-1">
@@ -196,7 +202,7 @@ export default function ContactPage() {
                       type="text"
                       value={form.email}
                       onChange={handleChange("email")}
-                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
+                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-brand-500"
                       placeholder="you@example.com"
                     />
                     {errors.email && (
@@ -213,10 +219,12 @@ export default function ContactPage() {
                       type="tel"
                       value={form.phone}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        const value = e.target.value
+                          .replace(/\D/g, "")
+                          .slice(0, 10);
                         setForm((prev) => ({ ...prev, phone: value }));
                       }}
-                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500"
+                      className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-brand-500"
                       placeholder="+91 987 654 3210"
                     />
                     {errors.phone && (
@@ -263,7 +271,7 @@ export default function ContactPage() {
                     value={form.message}
                     onChange={handleChange("message")}
                     rows={4}
-                    className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-purple-500 resize-none"
+                    className="w-full border-0 border-b border-gray-300 rounded-none px-0 py-2 text-sm bg-transparent focus:outline-none focus:ring-0 focus:ring-brand-500 resize-none"
                     placeholder="Write your message..."
                   />
                   {errors.message && (
@@ -276,8 +284,9 @@ export default function ContactPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   {status !== "idle" && statusMessage && (
                     <p
-                      className={`text-xs ${status === "success" ? "text-green-600" : "text-red-600"
-                        }`}
+                      className={`text-xs ${
+                        status === "success" ? "text-green-600" : "text-red-600"
+                      }`}
                     >
                       {statusMessage}
                     </p>
@@ -301,15 +310,15 @@ export default function ContactPage() {
         className="flex justify-center  h-[350px] bg-cover bg-[center_80%]"
         style={{ backgroundImage: `url(${getInTouchBg})` }}
       >
-        <div className="inset-0 bg-purple-900/30" />
+        <div className="inset-0 bg-brand-900/30" />
         <div className="mx-auto text-center">
-          <h2 className="text-8xl md:text-[6rem] lg:text-[8rem] xl:text-[10rem] font-bold opacity-[50%] text-white/90 tracking-wide pt-[2rem]">
+          <h2 className="text-8xl md:text-[6rem] lg:text-[8rem] xl:text-[10rem] !font-semibold opacity-[50%] text-white/90 tracking-wide pt-[2rem]">
             Get In Touch
           </h2>
         </div>
       </section>
 
-      <section >
+      <section>
         {/* Testimonials strip (same component as About page) */}
         <TestimonialsPage items={testimonials} />
       </section>

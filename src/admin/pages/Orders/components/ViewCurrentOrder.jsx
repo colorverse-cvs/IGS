@@ -10,7 +10,6 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
   const downloadInvoicePDF = (order) => {
     const doc = new jsPDF();
 
-
     doc.setFontSize(16);
     doc.text(
       "Ishita Gallery shop Order Invoice",
@@ -39,19 +38,14 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
     //for print instead download
     doc.autoPrint();
     window.open(doc.output("bloburl"));
-
   };
-
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
-
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4 cursor-default">
-          <p className="text-lg font-semibold">
-            Order Details - {orderId}
-          </p>
+          <p className="text-lg font-semibold">Order Details - {orderId}</p>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-800 text-xl cursor-pointer"
@@ -116,13 +110,15 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
 
         {/* FOOTER BUTTONS */}
         <div className="flex gap-4">
-          <button className="flex-1 border border-gray-300 rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer"
-            onClick={() => downloadInvoicePDF(currentOrder)}>
+          <button
+            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 flex items-center justify-center gap-2 hover:bg-gray-50 cursor-pointer"
+            onClick={() => downloadInvoicePDF(currentOrder)}
+          >
             🖨 Print Invoice
           </button>
           <button
             onClick={onClose}
-            className="flex-1 bg-purple-700 text-white rounded-lg px-4 py-2 hover:bg-purple-800 cursor-pointer"
+            className="flex-1 bg-brand-700 text-white rounded-lg px-4 py-2 hover:bg-brand-800 cursor-pointer"
           >
             Close
           </button>

@@ -69,8 +69,8 @@ export default function Orders() {
           const quantity = item.quantity || 0;
 
           // Apply discount: finalPrice = basePrice - (basePrice * discount / 100)
-          const discountedPrice = basePrice - (basePrice * discount / 100);
-          return sum + (discountedPrice * quantity);
+          const discountedPrice = basePrice - (basePrice * discount) / 100;
+          return sum + discountedPrice * quantity;
         }, 0);
 
         return {
@@ -158,7 +158,7 @@ export default function Orders() {
               placeholder="Search orders..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               🔍
@@ -196,7 +196,9 @@ export default function Orders() {
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">{`ORD-${order.id.slice(-5)}`}</span>
+                      <span className="font-semibold text-sm">{`ORD-${order.id.slice(
+                        -5
+                      )}`}</span>
                       <span
                         className={`text-xs px-2 py-1 rounded-full ${order.statusColor}`}
                       >
@@ -223,7 +225,7 @@ export default function Orders() {
                 {/* ACTION BUTTONS - STACKED ON MOBILE */}
                 <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
                   <button
-                    className="flex items-center justify-center gap-2 text-purple-600 border border-purple-600 hover:bg-purple-50 px-3 py-2 rounded-md text-sm cursor-pointer"
+                    className="flex items-center justify-center gap-2 text-brand-600 border border-brand-600 hover:bg-brand-50 px-3 py-2 rounded-md text-sm cursor-pointer"
                     onClick={() => handleOpenViewOrderModal(order)}
                   >
                     <FaRegEye className="w-3 h-3" /> View

@@ -5,20 +5,20 @@ import CustomSearchDropdown from "./CustomSearchDropdown";
 import { validatePincode } from "../utils/helpers";
 /**
  * AddressForm Component - Delivery address input form
- * 
+ *
  * Props:
  * - onSubmit: function(addressObject) - called with complete form data
  * - onCancel: function() - called when user clicks cancel
  * - initial: object (optional) - pre-fill form with existing address data
  * - submitLabel: string (default: "Use this address") - button label
- * 
+ *
  * Features:
  * - Full address form with Indian states dropdown
  * - Validates mobile (10 digits) and pincode (6 digits)
  * - Address aliases (Home, Work, Other) for saving multiple addresses
  * - Set as default address option
  * - Displays validation errors inline
- * 
+ *
  * For beginners:
  * - Uses indianStates.json for state dropdown options
  * - onlyDigits() helper removes non-numeric characters from input
@@ -35,8 +35,12 @@ export default function AddressForm({
   // Initialize granular fields from API structure
   const [flat, setFlat] = useState(initial?.line1 || initial?.flat || "");
   const [area, setArea] = useState(initial?.line2 || initial?.area || "");
-  const [landmark, setLandmark] = useState(initial?.line3 || initial?.landmark || "");
-  const [pincode, setPincode] = useState(initial?.postalCode || initial?.pincode || "");
+  const [landmark, setLandmark] = useState(
+    initial?.line3 || initial?.landmark || ""
+  );
+  const [pincode, setPincode] = useState(
+    initial?.postalCode || initial?.pincode || ""
+  );
   const [city, setCity] = useState(initial?.city || "");
   const [state, setState] = useState(initial?.state || "");
 
@@ -130,7 +134,9 @@ export default function AddressForm({
       }
 
       try {
-        const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+        const res = await fetch(
+          `https://api.postalpincode.in/pincode/${pincode}`
+        );
         const data = await res.json();
 
         if (!data || data[0].Status !== "Success") {
@@ -162,7 +168,6 @@ export default function AddressForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
-
       <div>
         <label className="block text-sm font-medium mb-1 text-gray-500">
           Mobile Number *
@@ -172,11 +177,14 @@ export default function AddressForm({
           {/* <span className="px-2 text-gray-600">+91</span> */}
           <input
             type="tel"
-            className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${errors.mobile ? "border-red-500" : ""
-              }`}
+            className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition ${
+              errors.mobile ? "border-red-500" : ""
+            }`}
             placeholder="Enter 10 digits"
             value={mobile}
-            onChange={(e) => { handleMobileChange(e) }}
+            onChange={(e) => {
+              handleMobileChange(e);
+            }}
             inputMode="numeric"
             maxLength={10}
           />
@@ -192,7 +200,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
           value={flat}
           onChange={(e) => setFlat(e.target.value)}
         />
@@ -203,7 +211,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
           value={area}
           onChange={(e) => setArea(e.target.value)}
         />
@@ -214,7 +222,7 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
+          className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
           placeholder="Eg: Near Famous chowk"
           value={landmark}
           onChange={(e) => setLandmark(e.target.value)}
@@ -226,8 +234,9 @@ export default function AddressForm({
         </label>
         <input
           type="text"
-          className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${errors.pincode ? "border-red-500" : ""
-            }`}
+          className={`w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition ${
+            errors.pincode ? "border-red-500" : ""
+          }`}
           placeholder="6 digits [0-9]"
           value={pincode}
           onChange={(e) => setPincode(onlyDigits(e.target.value).slice(0, 6))}
@@ -244,7 +253,7 @@ export default function AddressForm({
           </label>
           <input
             type="text"
-            className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
+            className="w-full border rounded px-3 py-2 border-gray-200 focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
             value={city}
             onChange={(e) => {
               const value = e.target.value.replace(/[^a-zA-Z\s]/g, "");

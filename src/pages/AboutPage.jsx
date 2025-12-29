@@ -52,14 +52,18 @@ export default function AboutPage() {
   const { products, status } = useSelector((state) => state.products);
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchProducts());
     }
   }, [status, dispatch]);
 
-  const shivajiProducts = products.filter(
-    (product) => product.categoryId === "shivaji" || product.category?.toLowerCase().includes("shivaji")
-  ).slice(0, 4);
+  const shivajiProducts = products
+    .filter(
+      (product) =>
+        product.categoryId === "shivaji" ||
+        product.category?.toLowerCase().includes("shivaji")
+    )
+    .slice(0, 4);
 
   return (
     <main className="bg-white">
@@ -99,7 +103,7 @@ export default function AboutPage() {
                 {heroCards.map((card) => (
                   <div
                     key={card.id}
-                    className="rounded-lg border border-purple-100 overflow-hidden shadow-lg"
+                    className="rounded-lg border border-brand-100 overflow-hidden shadow-lg"
                   >
                     <img
                       src={card.image}
@@ -114,7 +118,7 @@ export default function AboutPage() {
           <div className="relative w-full flex flex-col items-center top-[10%]">
             <img
               src={RibbonImage}
-              alt="Purple ribbon"
+              alt="brand ribbon"
               className=" bottom-[-100px] w-[260px] sm:w-[340px] md:w-[70%] z-[9]"
             />
           </div>
@@ -146,7 +150,7 @@ export default function AboutPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                  <div className="text-3xl font-bold">{person.name}</div>
+                  <div className="text-3xl !font-medium">{person.name}</div>
                   <p className="text-sm text-white/80">{person.role}</p>
                   <p className="mt-3 text-sm leading-relaxed text-white/90">
                     {person.bio}

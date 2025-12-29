@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { api } from "../utils/api";
 import Breadcrumb from "../components/Breadcrumb.jsx";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import { APP_URL } from "../constant";
 import { addOrder } from "../features/orders/ordersSlice";
@@ -10,10 +10,18 @@ import { clearCart } from "../features/cart/cartSlice";
 import { Trash2 } from "lucide-react";
 import Modal from "../components/Modal.jsx";
 import AddressForm from "../components/AddressForm.jsx";
-import { addAddressAsync, updateAddressAsync } from "../features/user/userSlice";
+import {
+  addAddressAsync,
+  updateAddressAsync,
+} from "../features/user/userSlice";
 import CustomPopupModal from "../components/CustomPopupModal";
 
-import { removeFromCart, updateQty, removeItemFromCartAsync, clearCartAsync } from "../features/cart/cartSlice";
+import {
+  removeFromCart,
+  updateQty,
+  removeItemFromCartAsync,
+  clearCartAsync,
+} from "../features/cart/cartSlice";
 
 /**
  * CheckoutPage Component
@@ -55,10 +63,7 @@ export default function CheckoutPage() {
     });
   }, [items]);
 
-  const payable = useMemo(
-    () => subtotal,
-    [subtotal]
-  );
+  const payable = useMemo(() => subtotal, [subtotal]);
 
   const [open, setOpen] = useState({
     address: true,
@@ -112,7 +117,8 @@ export default function CheckoutPage() {
     });
   };
 
-  const allStepsVisited = visitedSteps.address && visitedSteps.review && visitedSteps.payment;
+  const allStepsVisited =
+    visitedSteps.address && visitedSteps.review && visitedSteps.payment;
 
   // Delivery ETA: 7 days from now
   const now = new Date();
@@ -170,7 +176,7 @@ export default function CheckoutPage() {
       const res = await fetch(`${APP_URL}/api/v1/cart/checkout`, {
         method: "POST",
         headers,
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -208,7 +214,10 @@ export default function CheckoutPage() {
         handler: async function (rzpResponse) {
           console.log("Razorpay response:", rzpResponse);
           try {
-            const verifyResult = await api.post("/api/v1/payments/verify", rzpResponse);
+            const verifyResult = await api.post(
+              "/api/v1/payments/verify",
+              rzpResponse
+            );
 
             // Check for success based on the new response structure
             if (verifyResult.success) {
@@ -238,10 +247,12 @@ export default function CheckoutPage() {
       // 3️⃣ Open Razorpay
       const rzp = new window.Razorpay(options);
       rzp.open();
-
     } catch (error) {
       console.error("Failed to place order:", error);
-      showPopup("Order Error", error.message || "Failed to place order. Please try again.");
+      showPopup(
+        "Order Error",
+        error.message || "Failed to place order. Please try again."
+      );
     }
   };
 
@@ -256,7 +267,6 @@ export default function CheckoutPage() {
 
     return cleaned;
   };
-
 
   // Sync address list from user profile if logged in; otherwise use sample JSON
   React.useEffect(() => {
@@ -275,12 +285,7 @@ export default function CheckoutPage() {
 
   // Address modal now opens only when user clicks "Add new address"
 
-  const Section = ({
-    title,
-    isOpen,
-    onToggle,
-    children,
-  }) => (
+  const Section = ({ title, isOpen, onToggle, children }) => (
     <div className="border border-gray-200 rounded-lg mb-4 overflow-hidden">
       <button
         type="button"
@@ -314,7 +319,7 @@ export default function CheckoutPage() {
       </div>
       <div className="py-6 px-4 md:px-15 lg:px-20">
         <div className="container mx-auto">
-          <div className="text-2xl font-bold mb-4">Secure Checkout</div>
+          <div className="text-2xl !font-semibold mb-4">Secure Checkout</div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left: Steps */}
             <div className="lg:col-span-2">
@@ -375,7 +380,6 @@ export default function CheckoutPage() {
                 </div>
               </Section>
 
-
               {/* Review Products */}
               <Section
                 title="Review Products"
@@ -390,9 +394,7 @@ export default function CheckoutPage() {
                     const lineTotal = i.price * i.qty + lineWrap;
                     return (
                       <React.Fragment key={i.id}>
-                        <div
-                          className="py-4 flex items-start gap-4 text-sm "
-                        >
+                        <div className="py-4 flex items-start gap-4 text-sm ">
                           <img
                             src={
                               i.image.startsWith("http")
@@ -422,11 +424,11 @@ export default function CheckoutPage() {
                                     keepScroll();
                                     i.qty > 1
                                       ? dispatch(
-                                        updateQty({
-                                          id: i.id,
-                                          qty: i.qty - 1,
-                                        })
-                                      )
+                                          updateQty({
+                                            id: i.id,
+                                            qty: i.qty - 1,
+                                          })
+                                        )
                                       : dispatch(removeItemFromCartAsync(i.id));
                                   }}
                                 >
@@ -519,7 +521,10 @@ export default function CheckoutPage() {
                   <img src="/assets/logos/razorpay-icon.png" alt="" />
                   <div className="flex flex-col items-start gap-5">
                     <p>Payment System : Razorpay</p>
-                    <p>After placing the order, you'll be redirected to Razorpay to complete payment.</p>
+                    <p>
+                      After placing the order, you'll be redirected to Razorpay
+                      to complete payment.
+                    </p>
                   </div>
                 </div>
               </Section>
@@ -535,7 +540,6 @@ export default function CheckoutPage() {
               >
                 Place Order
               </button>
-
             </div>
 
             {/* Right: Pricing Summary */}
@@ -564,7 +568,6 @@ export default function CheckoutPage() {
                     <span>₹{payable}</span>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
@@ -584,10 +587,12 @@ export default function CheckoutPage() {
               onSubmit={(newAddr) => {
                 if (user?.isAuthenticated) {
                   if (editAddress) {
-                    dispatch(updateAddressAsync({
-                      addressId: editAddress.id,
-                      addressData: { ...newAddr, id: undefined } // ensure no ID in payload if possible, or thunk handles it
-                    }));
+                    dispatch(
+                      updateAddressAsync({
+                        addressId: editAddress.id,
+                        addressData: { ...newAddr, id: undefined }, // ensure no ID in payload if possible, or thunk handles it
+                      })
+                    );
                   } else {
                     dispatch(addAddressAsync(newAddr));
                   }

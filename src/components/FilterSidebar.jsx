@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 
-
 export default function FilterSidebar({
   filters,
   onFiltersChange,
@@ -124,10 +123,11 @@ export default function FilterSidebar({
   return (
     <div
       ref={sidebarRef}
-      className={`${isMobile
-        ? "p-4"
-        : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88dvh]"
-        } overflow-y-auto`}
+      className={`${
+        isMobile
+          ? "p-4"
+          : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88dvh]"
+      } overflow-y-auto`}
     >
       {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}
       <style>{`
@@ -244,7 +244,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onResetFilters}
-            className="text-sm text-brand-600 hover:text-purple-700 flex items-center cursor-pointer"
+            className="text-sm text-brand-600 hover:text-brand-700 flex items-center cursor-pointer"
           >
             <X size={14} className="mr-1" />
             Reset filters
@@ -540,7 +540,7 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("minPrice", v);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-purple-300 focus:outline-none focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-brand-300 focus:outline-none focus:border-transparent"
                   min="100"
                   max="4000"
                   step="10"
@@ -559,7 +559,7 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("maxPrice", v);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-purple-300 focus:outline-none focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-brand-300 focus:outline-none focus:border-transparent"
                   min="0"
                   max="4000"
                   step="10"
@@ -652,7 +652,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onResetFilters}
-            className="text-sm text-brand-600 hover:text-purple-700 flex items-center w-[50%] justify-center border border-gray-300 hover:border-purple-500 rounded-lg px-4 py-3 cursor-pointer"
+            className="text-sm text-brand-600 hover:text-brand-700 flex items-center w-[50%] justify-center border border-gray-300 hover:border-brand-500 rounded-lg px-4 py-3 cursor-pointer"
           >
             <X size={14} className="mr-1" />
             Reset filters
@@ -660,7 +660,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition cursor-pointer"
+            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-brand-800 transition cursor-pointer"
           >
             Show Results
           </button>

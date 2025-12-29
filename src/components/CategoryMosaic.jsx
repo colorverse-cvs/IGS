@@ -8,13 +8,15 @@ import { fetchProducts } from "../features/products/productSlice";
 export default function CategoryMosaic() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { products: allProducts, status } = useSelector((state) => state.products);
+  const { products: allProducts, status } = useSelector(
+    (state) => state.products
+  );
   const [sections, setSections] = useState([]);
   const [categories, setCategories] = useState([]);
 
   // Fetch products if not already loaded
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchProducts());
     }
   }, [dispatch, status]);
@@ -28,7 +30,10 @@ export default function CategoryMosaic() {
       "Home Decor": "home-decor",
       "Motivational Statues": "motivational",
     };
-    return categoryMap[categoryName] || categoryName.toLowerCase().replace(/\s+/g, "-");
+    return (
+      categoryMap[categoryName] ||
+      categoryName.toLowerCase().replace(/\s+/g, "-")
+    );
   };
 
   // Fetch categories
@@ -36,7 +41,8 @@ export default function CategoryMosaic() {
     const fetchCategories = async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/v1/products/categories`);
-        if (!response.ok) throw new Error(`Categories Error: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`Categories Error: ${response.status}`);
         const result = await response.json();
         setCategories(result.data || []);
       } catch (error) {
@@ -51,10 +57,12 @@ export default function CategoryMosaic() {
     if (allProducts.length === 0 || categories.length === 0) return;
 
     // Group products by category and create sections
-    const sectionsArray = categories.map(category => {
+    const sectionsArray = categories.map((category) => {
       // Find products in this category (using transformed products from Redux)
       const categoryProducts = allProducts.filter(
-        product => product.category === category.name || product.categoryName === category.name
+        (product) =>
+          product.category === category.name ||
+          product.categoryName === category.name
       );
 
       // Get first product image for category card
@@ -66,9 +74,11 @@ export default function CategoryMosaic() {
       return {
         id: getCategorySlug(category.name),
         title: category.name,
-        subtitle: category.description || `Explore our collection of ${category.name.toLowerCase()}`,
+        subtitle:
+          category.description ||
+          `Explore our collection of ${category.name.toLowerCase()}`,
         imageURL: imageURL,
-        products: categoryProducts
+        products: categoryProducts,
       };
     });
 
@@ -77,7 +87,7 @@ export default function CategoryMosaic() {
 
   const goTo = (id) => navigate(`/filter?category=${id}`);
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <section>
         <div className="container mx-auto">
@@ -121,7 +131,7 @@ export default function CategoryMosaic() {
         <div
           className={`absolute ${posClass} left-3 right-3 text-white text-left`}
         >
-          <div className="text-md font-bold leading-tight">{title}</div>
+          <div className="text-md !font-semibold leading-tight">{title}</div>
           {subtitle && (
             <div className="text-sm opacity-90 line-clamp-2">{subtitle}</div>
           )}
@@ -137,7 +147,7 @@ export default function CategoryMosaic() {
     <section>
       <div className="container mx-auto">
         <div className="text-center py-12">
-          <h2 className="text-4xl md:text-5xl   font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl text-gray-900 mb-4">
             Explore Our Curated Collections
           </h2>
           <p className="text-gray-600 text-sm">
@@ -157,8 +167,11 @@ export default function CategoryMosaic() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {row1[0] && <Card section={row1[0]} overlay="top" />}
               {(() => {
-                const mavale = sections.find((s) => s.id === "mavale") || row1[1];
-                return mavale ? <Card section={mavale} overlay="bottom" /> : null;
+                const mavale =
+                  sections.find((s) => s.id === "mavale") || row1[1];
+                return mavale ? (
+                  <Card section={mavale} overlay="bottom" />
+                ) : null;
               })()}
               {row1[2] && <Card section={row1[2]} overlay="top" />}
             </div>

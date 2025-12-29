@@ -4,7 +4,12 @@ import { BASE_URL } from "../utils/constants";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import ProductMoreInfoPage from "./ProductMoreInfoPage";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, addToCartAsync, updateCartItemQuantityAsync, removeItemFromCartAsync } from "../features/cart/cartSlice";
+import {
+  addToCart,
+  addToCartAsync,
+  updateCartItemQuantityAsync,
+  removeItemFromCartAsync,
+} from "../features/cart/cartSlice";
 import { Star, Banknote, Truck, ShieldCheck, ShoppingCart } from "lucide-react";
 import aboutDefaults from "../data/aboutDefaults.json";
 import Breadcrumb from "../components/Breadcrumb.jsx";
@@ -12,7 +17,6 @@ import useAuth from "../hooks/useAuth";
 import AuthModal from "../components/AuthModal";
 import toast from "react-hot-toast";
 import { generateRatingAndReviews } from "../utils/ratingGenerator";
-
 
 export default function ProductInfoPage() {
   const { id } = useParams();
@@ -32,7 +36,9 @@ export default function ProductInfoPage() {
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  const cartItem = useSelector((state) => state.cart.items.find((item) => item.id === id));
+  const cartItem = useSelector((state) =>
+    state.cart.items.find((item) => item.id === id)
+  );
   const qtyInCart = cartItem ? cartItem.qty : 0;
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -44,7 +50,9 @@ export default function ProductInfoPage() {
   }, [id]);
 
   const handleCheckDelivery = async (pinOverride) => {
-    const pin = (typeof pinOverride === "string" ? pinOverride : pincode).replace(/\D/g, "");
+    const pin = (
+      typeof pinOverride === "string" ? pinOverride : pincode
+    ).replace(/\D/g, "");
 
     if (pin.length !== 6) {
       setPincodeStatus("invalid");
@@ -73,7 +81,6 @@ export default function ProductInfoPage() {
 
       setDeliveryEstimate(`By ${formatted}, 8am - 10pm`);
       setPincodeStatus("ok");
-
     } catch (error) {
       console.error("Pincode check failed:", error);
       setPincodeStatus("no-service");
@@ -83,8 +90,14 @@ export default function ProductInfoPage() {
 
   // Auto-fill pincode from user address
   useEffect(() => {
-    if (user?.isAuthenticated && user?.profile?.addresses?.length > 0 && !pincode) {
-      const defaultAddr = user.profile.addresses.find((a) => a.isDefault) || user.profile.addresses[0];
+    if (
+      user?.isAuthenticated &&
+      user?.profile?.addresses?.length > 0 &&
+      !pincode
+    ) {
+      const defaultAddr =
+        user.profile.addresses.find((a) => a.isDefault) ||
+        user.profile.addresses[0];
       if (defaultAddr?.postalCode) {
         setPincode(defaultAddr.postalCode);
         handleCheckDelivery(defaultAddr.postalCode);
@@ -101,13 +114,13 @@ export default function ProductInfoPage() {
     if (apiProduct.images && apiProduct.images.length > 0) {
       images = apiProduct.images.map((img) => {
         // If image is a string, use it directly
-        if (typeof img === 'string') {
-          return img.startsWith('http') ? img : `${BASE_URL}${img}`;
+        if (typeof img === "string") {
+          return img.startsWith("http") ? img : `${BASE_URL}${img}`;
         }
         // If image is an object with url property, extract the URL
-        if (img && typeof img === 'object' && img.url) {
+        if (img && typeof img === "object" && img.url) {
           const url = img.url;
-          return url.startsWith('http') ? url : `${BASE_URL}${url}`;
+          return url.startsWith("http") ? url : `${BASE_URL}${url}`;
         }
         // Fallback
         return img;
@@ -126,10 +139,16 @@ export default function ProductInfoPage() {
     if (apiProduct.discount && apiProduct.discount > 0) {
       // Use discount percentage directly from API to calculate selling price
       discountStr = `${Math.round(apiProduct.discount)}% Off`;
-      sellingPrice = Math.round(mrp - (mrp * apiProduct.discount / 100));
-    } else if (apiProduct.listPrice && apiProduct.price && apiProduct.listPrice > apiProduct.price) {
+      sellingPrice = Math.round(mrp - (mrp * apiProduct.discount) / 100);
+    } else if (
+      apiProduct.listPrice &&
+      apiProduct.price &&
+      apiProduct.listPrice > apiProduct.price
+    ) {
       // Calculate discount from listPrice and price
-      discountStr = `${Math.round(((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100)}% Off`;
+      discountStr = `${Math.round(
+        ((apiProduct.listPrice - apiProduct.price) / apiProduct.listPrice) * 100
+      )}% Off`;
       sellingPrice = apiProduct.price;
     }
 
@@ -150,19 +169,29 @@ export default function ProductInfoPage() {
       isCustomizable: apiProduct.isCustomizable || false,
       imageURL: images[0] || "https://via.placeholder.com/300",
       images: images,
-      material: apiProduct.attributes?.material || apiProduct.attributes?.primaryMaterial || "resin",
+      material:
+        apiProduct.attributes?.material ||
+        apiProduct.attributes?.primaryMaterial ||
+        "resin",
       primaryMaterial: apiProduct.attributes?.primaryMaterial,
-      size: apiProduct.dimensions?.sizeCategory || apiProduct.dimensions?.size || "medium",
+      size:
+        apiProduct.dimensions?.sizeCategory ||
+        apiProduct.dimensions?.size ||
+        "medium",
       sizeDescription: apiProduct.dimensions?.sizeDescription || "6 in - 10 in",
       category: categoryName,
       categoryId: categorySlug,
       categoryName: categoryName,
       weight: apiProduct.weight ? `${apiProduct.weight} gm` : null,
-      dimensions: apiProduct.dimensions?.sizeDescription || (
-        apiProduct.dimensions?.height && apiProduct.dimensions?.width
-          ? `H: ${apiProduct.dimensions.height} ${apiProduct.dimensions.unit || "cm"} x W: ${apiProduct.dimensions.width} ${apiProduct.dimensions.unit || "cm"}`
-          : null
-      ),
+      dimensions:
+        apiProduct.dimensions?.sizeDescription ||
+        (apiProduct.dimensions?.height && apiProduct.dimensions?.width
+          ? `H: ${apiProduct.dimensions.height} ${
+              apiProduct.dimensions.unit || "cm"
+            } x W: ${apiProduct.dimensions.width} ${
+              apiProduct.dimensions.unit || "cm"
+            }`
+          : null),
       finish: apiProduct.attributes?.finish,
       origin: apiProduct.attributes?.origin,
       description: apiProduct.description,
@@ -204,7 +233,10 @@ export default function ProductInfoPage() {
         // Set default material and size from product if available
         if (transformedProduct?.material) {
           // Normalize: "resin - high-density" -> "resin" to match option values
-          const normalized = transformedProduct.material.toLowerCase().split(' - ')[0].trim();
+          const normalized = transformedProduct.material
+            .toLowerCase()
+            .split(" - ")[0]
+            .trim();
           setSelectedMaterial(normalized);
         }
         if (transformedProduct?.size) {
@@ -225,8 +257,6 @@ export default function ProductInfoPage() {
     };
   }, [id]);
 
-
-
   if (loading) {
     return (
       <div className="text-center mt-10 text-gray-500">
@@ -241,7 +271,9 @@ export default function ProductInfoPage() {
     );
   }
 
-  const categorySlug = product.categoryId || (product.category || "").toLowerCase().replace(/\s+/g, "-");
+  const categorySlug =
+    product.categoryId ||
+    (product.category || "").toLowerCase().replace(/\s+/g, "-");
 
   const title = product.name || product.title || "Product";
   const imageSrc = product.imageURL || product.image;
@@ -261,9 +293,6 @@ export default function ProductInfoPage() {
 
   const currentImage = productImages[selectedImageIndex];
 
-
-
-
   const handleThumbnailClick = (index) => {
     setSelectedImageIndex(index);
   };
@@ -273,15 +302,15 @@ export default function ProductInfoPage() {
     Array.isArray(product.materials) && product.materials.length
       ? product.materials
       : [
-        { value: "marble", label: "Marble", description: "Hand-Carved" },
-        { value: "resin", label: "Resin", description: "High-Density" },
-      ]
+          { value: "marble", label: "Marble", description: "Hand-Carved" },
+          { value: "resin", label: "Resin", description: "High-Density" },
+        ]
   ).map((m) =>
     typeof m === "string"
       ? {
-        value: m.toLowerCase(),
-        label: m.charAt(0).toUpperCase() + m.slice(1).toLowerCase(),
-      }
+          value: m.toLowerCase(),
+          label: m.charAt(0).toUpperCase() + m.slice(1).toLowerCase(),
+        }
       : m
   );
 
@@ -290,11 +319,15 @@ export default function ProductInfoPage() {
     Array.isArray(product.sizes) && product.sizes.length
       ? product.sizes
       : [
-        { value: "small", label: "Small", description: "Under 6 in" },
-        { value: "medium", label: "Medium", description: "6 in - 10 in" },
-        { value: "large", label: "Large", description: "10 in - 15 in" },
-        { value: "x-large", label: "Extra Large", description: "Above 15 in" },
-      ]
+          { value: "small", label: "Small", description: "Under 6 in" },
+          { value: "medium", label: "Medium", description: "6 in - 10 in" },
+          { value: "large", label: "Large", description: "10 in - 15 in" },
+          {
+            value: "x-large",
+            label: "Extra Large",
+            description: "Above 15 in",
+          },
+        ]
   ).map((s) =>
     typeof s === "string"
       ? { value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }
@@ -406,10 +439,11 @@ export default function ProductInfoPage() {
                     <div
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
-                      className={`w-20 h-20 rounded-lg overflow-hidden border-1 cursor-pointer transition-all duration-200 ${index === selectedImageIndex
-                        ? "border-2 border-brand-700 shadow-2xl shadow-purple-500"
-                        : "border-gray-200"
-                        }`}
+                      className={`w-20 h-20 rounded-lg overflow-hidden border-1 cursor-pointer transition-all duration-200 ${
+                        index === selectedImageIndex
+                          ? "border-2 border-brand-700 shadow-2xl shadow-brand-500"
+                          : "border-gray-200"
+                      }`}
                     >
                       <img
                         src={img}
@@ -425,7 +459,7 @@ export default function ProductInfoPage() {
               <div className="space-y-6">
                 {/* Header */}
                 <div>
-                  <div className="text-3xl font-bold text-gray-900 mb-2">
+                  <div className="text-3xl !font-semibold text-gray-900 mb-2">
                     {title}
                   </div>
                   {product.description && (
@@ -448,7 +482,7 @@ export default function ProductInfoPage() {
                         className="
               w-18 lg:w-auto
               text-xs 
-              font-bold
+              !font-bold
               px-2 
               py-1 
               rounded-md 
@@ -489,7 +523,7 @@ export default function ProductInfoPage() {
                 {/* Pricing */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-bold text-brand-700">
+                    <span className="text-3xl !font-semibold text-brand-700">
                       ₹{getDiscountedPrice(mrp, discount)}
                     </span>
 
@@ -529,11 +563,11 @@ export default function ProductInfoPage() {
                         setPincodeStatus("idle");
                         setDeliveryEstimate("");
                       }}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 w-40"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500 w-40"
                     />
                     <button
                       onClick={handleCheckDelivery}
-                      className="cursor-pointer px-4 py-2 bg-brand-700 text-white text-md rounded-lg hover:bg-purple-800 transition"
+                      className="cursor-pointer px-4 py-2 bg-brand-700 text-white text-md rounded-lg hover:bg-brand-800 transition"
                     >
                       Verify
                     </button>
@@ -565,7 +599,11 @@ export default function ProductInfoPage() {
                     {materialOptions.map((option) => (
                       <label
                         key={option.value}
-                        className={`relative cursor-not-allowed p-3 border border-gray-300 rounded-xl transition-all shadow-sm opacity-50 ${selectedMaterial === option.value ? "shadow-lg" : "border-gray-300"}`}
+                        className={`relative cursor-not-allowed p-3 border border-gray-300 rounded-xl transition-all shadow-sm opacity-50 ${
+                          selectedMaterial === option.value
+                            ? "shadow-lg"
+                            : "border-gray-300"
+                        }`}
                       >
                         <input
                           type="radio"
@@ -574,7 +612,7 @@ export default function ProductInfoPage() {
                           checked={selectedMaterial === option.value}
                           disabled={true}
                           onChange={(e) => setSelectedMaterial(e.target.value)}
-                          className="absolute right-3 top-3 text-brand-600  focus:ring-1 focus:ring-purple-600 cursor-not-allowed focus:outline-none"
+                          className="absolute right-3 top-3 text-brand-600  focus:ring-1 focus:ring-brand-600 cursor-not-allowed focus:outline-none"
                         />
                         <div className="text-gray-900 font-medium">
                           {option.label}
@@ -591,17 +629,16 @@ export default function ProductInfoPage() {
 
                 {/* Size Selection */}
                 <div className="space-y-3">
-                  <p className="text-md font-semibold text-gray-900">
-                    Size
-                  </p>
+                  <p className="text-md font-semibold text-gray-900">Size</p>
                   <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
                     {sizeOptions.map((option) => (
                       <label
                         key={option.value}
-                        className={`relative cursor-not-allowed p-3 border border-gray-300 rounded-xl transition-all shadow-sm opacity-50 ${selectedSize === option.value
-                          ? "shadow-lg"
-                          : " border-gray-300"
-                          }`}
+                        className={`relative cursor-not-allowed p-3 border border-gray-300 rounded-xl transition-all shadow-sm opacity-50 ${
+                          selectedSize === option.value
+                            ? "shadow-lg"
+                            : " border-gray-300"
+                        }`}
                       >
                         <input
                           type="radio"
@@ -610,7 +647,7 @@ export default function ProductInfoPage() {
                           checked={selectedSize === option.value}
                           disabled={true}
                           onChange={(e) => setSelectedSize(e.target.value)}
-                          className="absolute right-3 top-3 text-brand-600 focus:ring-1 focus:ring-purple-600 cursor-not-allowed focus:outline-none"
+                          className="absolute right-3 top-3 text-brand-600 focus:ring-1 focus:ring-brand-600 cursor-not-allowed focus:outline-none"
                         />
                         <div className="font-medium text-gray-900">
                           {option.label}
@@ -630,7 +667,7 @@ export default function ProductInfoPage() {
                   {qtyInCart === 0 ? (
                     <button
                       onClick={handleAddToCart}
-                      className="cursor-pointer px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-purple-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
+                      className="cursor-pointer px-2 py-2 bg-white text-brand-700 border border-brand-700 rounded-lg hover:bg-brand-50 transition flex items-center gap-2 w-[46%] lg:w-auto"
                     >
                       Add to Cart <ShoppingCart size={15} />
                     </button>
@@ -640,7 +677,12 @@ export default function ProductInfoPage() {
                         type="button"
                         onClick={() => {
                           if (qtyInCart > 1) {
-                            dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: qtyInCart - 1 }));
+                            dispatch(
+                              updateCartItemQuantityAsync({
+                                productId: product.id,
+                                quantity: qtyInCart - 1,
+                              })
+                            );
                           } else {
                             dispatch(removeItemFromCartAsync(product.id));
                           }
@@ -654,7 +696,14 @@ export default function ProductInfoPage() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => dispatch(updateCartItemQuantityAsync({ productId: product.id, quantity: qtyInCart + 1 }))}
+                        onClick={() =>
+                          dispatch(
+                            updateCartItemQuantityAsync({
+                              productId: product.id,
+                              quantity: qtyInCart + 1,
+                            })
+                          )
+                        }
                         className="w-[35%] p-2 text-gray-700 hover:bg-gray-50 cursor-pointer"
                       >
                         +
@@ -664,7 +713,7 @@ export default function ProductInfoPage() {
 
                   <button
                     onClick={handleBuyNow}
-                    className="w-[50%] px-2 py-2 bg-brand-700 text-white rounded-lg hover:bg-purple-800 transition lg:w-auto cursor-pointer"
+                    className="w-[50%] px-2 py-2 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition lg:w-auto cursor-pointer"
                   >
                     Buy Now
                   </button>
@@ -698,21 +747,23 @@ export default function ProductInfoPage() {
 
                 {/* About This Item (exact two-column definition list) */}
                 <div className="pt-6 border-t border-gray-200">
-                  <p className="text-lg font-bold text-gray-900 mb-2">
+                  <p className="text-lg !font-semibold text-gray-900 mb-2">
                     About this item
                   </p>
                   <dl className="gap-x-6 bg-white border-b border-gray-200">
                     {aboutRows.map((row, i) => (
                       <div key={i} className="flex border-none">
                         <dt
-                          className={`py-2 px-4 text-sm text-gray-600 w-[30%] ${i === 0 ? "rounded-tl-lg" : ""
-                            }`}
+                          className={`py-2 px-4 text-sm text-gray-600 w-[30%] ${
+                            i === 0 ? "rounded-tl-lg" : ""
+                          }`}
                         >
                           {row.label}
                         </dt>
                         <dd
-                          className={`py-2 px-4 text-sm text-gray-900 w-[70%] ${i === 0 ? "rounded-tr-lg" : ""
-                            }`}
+                          className={`py-2 px-4 text-sm text-gray-900 w-[70%] ${
+                            i === 0 ? "rounded-tr-lg" : ""
+                          }`}
                         >
                           {row.value}
                         </dd>

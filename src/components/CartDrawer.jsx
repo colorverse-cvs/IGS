@@ -6,17 +6,17 @@ import Cart from "../pages/Cart.jsx";
 
 /**
  * CartDrawer Component - Slide-out shopping cart panel
- * 
+ *
  * Props:
  * - isOpen: boolean - whether the drawer is visible
  * - onClose: function - callback to close the drawer
- * 
+ *
  * Features:
  * - Renders the full Cart page inside a right-side slide-out panel
  * - Locks body scroll when drawer is open (prevents background scrolling)
  * - Supports nested modals (Payment Gateway modal can appear inside the drawer)
  * - Click outside (backdrop) to close the drawer
- * 
+ *
  * For beginners:
  * - This component wraps the Cart component in a modal drawer UI
  * - The backdrop helps users understand they can click outside to close
@@ -59,7 +59,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
       >
         {/* Drawer header with title and close button */}
         <div className="flex items-center justify-between p-4 xl:p-6 border-b border-gray-100">
-          <div className="text-2xl font-bold text-gray-900">
+          <div className="text-2xl !font-semibold text-gray-900">
             Your Shopping Cart
           </div>
           <button
