@@ -306,13 +306,16 @@ export default function Dropdown({
                     key={opt.value}
                     role="option"
                     aria-selected={value === opt.value}
-                    className={`px-3 py-2 text-sm text-gray-700 cursor-pointer ${
-                      idx === highlight
-                        ? "bg-brand-50 text-brand-700"
-                        : "hover:bg-brand-50 hover:text-brand-700"
-                    }`}
-                    onMouseEnter={() => setHighlight(idx)}
+                    aria-disabled={opt.disabled}
+                    className={`px-3 py-2 text-sm ${opt.disabled
+                        ? "text-gray-400 cursor-not-allowed opacity-50"
+                        : idx === highlight
+                          ? "bg-purple-50 text-brand-700 cursor-pointer"
+                          : "text-gray-700 cursor-pointer hover:bg-purple-50 hover:text-brand-700"
+                      }`}
+                    onMouseEnter={() => !opt.disabled && setHighlight(idx)}
                     onClick={() => {
+                      if (opt.disabled) return;
                       onChange?.(opt.value);
                       setOpen(false);
                     }}

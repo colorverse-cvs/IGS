@@ -1,22 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchAllOrdersAsync,
-  selectAdminOrders,
-} from "../../../store/adminSlice";
+import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectAdminOrders } from "../../../store/adminSlice";
 import { FaRegEye } from "react-icons/fa";
 import ViewCurrentOrder from "../../Orders/components/ViewCurrentOrder";
 
 export default function RecentOrderCard({ setActivePage }) {
-  const dispatch = useDispatch();
   const orders = useSelector(selectAdminOrders);
 
   const [isOpenViewOrderModal, setIsOpenViewOrderModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-
-  useEffect(() => {
-    dispatch(fetchAllOrdersAsync());
-  }, [dispatch]);
 
   const handleViewAllClick = () => {
     setActivePage("Orders");
@@ -47,12 +39,8 @@ export default function RecentOrderCard({ setActivePage }) {
       const profile = user.profile || {};
       const items = order.items || [];
 
-      const amountValue = items.reduce((sum, item) => {
-        const price = item.product?.price || 0;
-        const discount = item.product?.discount || 0;
-        const discountedPrice = price - (price * discount) / 100;
-        return sum + discountedPrice * item.quantity;
-      }, 0);
+      // Use total from API response directly
+      const amountValue = order.total || 0;
 
       const itemsSummary = items
         .map((item) => `${item.product?.name || "Item"} (x${item.quantity})`)
@@ -106,12 +94,6 @@ export default function RecentOrderCard({ setActivePage }) {
           : "N/A",
         paymentMethod: order.paymentMethod || "N/A",
         address: address,
-        // Pass original items array if ViewCurrentOrder needs to re-render them specifically
-        // But ViewCurrentOrder seems to take `currentOrder.items` which is expected to be a string or summary in previous usage?
-        // Let's re-check ViewCurrentOrder.
-        // It renders {currentOrder.items} inside a div.
-        // If it expects JSX it would be different.
-        // In Orders.jsx, items was a string summary. I'll stick to itemsSummary string.
       };
     });
   }, [orders]);

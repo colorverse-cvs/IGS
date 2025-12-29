@@ -1,4 +1,10 @@
 import jsPDF from "jspdf";
+import { APP_URL } from "../../../../constant";
+
+const formatOrderId = (id) => {
+  if (!id) return "";
+  return `ORD-${id.slice(-5).toUpperCase()}`;
+};
 
 export default function ViewCurrentOrder({ currentOrder, onClose }) {
   if (!currentOrder) return null;
@@ -45,7 +51,9 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
       <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4 cursor-default">
-          <p className="text-lg font-semibold">Order Details - {orderId}</p>
+          <p className="text-lg font-semibold">
+            Order Details - {formatOrderId(currentOrder.id)}
+          </p>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-800 text-xl cursor-pointer"
@@ -88,8 +96,54 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
         {/* ORDER ITEMS */}
         <div className="mb-6 cursor-default">
           <p className="font-semibold mb-2">Order Items</p>
-          <div className="bg-gray-50 rounded-lg p-4 text-sm">
-            {currentOrder.items}
+          <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-3">
+            {currentOrder.rawItems && Array.isArray(currentOrder.rawItems) ? (
+              currentOrder.rawItems.map((item, index) => {
+                const product = item.product;
+                return (
+                  <div key={index} className="flex gap-3 items-start border-b border-gray-100 last:border-0 pb-3 last:pb-0">
+                    {product && product.images?.[0]?.url ? (
+                      <img
+                        src={`${APP_URL}${product.images[0].url}`}
+                        alt={product.name}
+                        className="w-12 h-12 object-cover rounded-md flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center text-xs text-gray-400">
+                        N/A
+                      </div>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      {product ? (
+                        <p className="font-medium text-gray-900 truncate">
+                          {product.name}
+                        </p>
+                      ) : (
+                        <p className="font-medium text-gray-500">
+                          {item.name || "Unknown Item"}{" "}
+                          <span className="text-xs">
+                            (Product no longer available)
+                          </span>
+                        </p>
+                      )}
+                      <div className="flex gap-3 text-xs text-gray-500 mt-1">
+                        <span>Qty: {item.quantity}</span>
+                        <span>Price: ₹{item.price}</span>
+                        {product && (
+                          <>
+                            {product.attributes?.material && <span>Mat: {product.attributes.material}</span>}
+                            {product.dimensions?.sizeCategory && <span>Size: {product.dimensions.sizeCategory}</span>}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              currentOrder.items
+            )}
           </div>
         </div>
 
@@ -103,7 +157,7 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
             </div>
             <div className="flex justify-between font-semibold">
               <span>Total Amount:</span>
-              <span>₹{currentOrder.amount}</span>
+              <span>{currentOrder.amount}</span>
             </div>
           </div>
         </div>

@@ -10,14 +10,28 @@ import { AiFillPrinter } from "react-icons/ai";
 
 import Dropdown from "../../../components/Dropdown";
 import ViewCurrentOrder from "./components/ViewCurrentOrder";
+import { api } from "../../../utils/api";
+import toast from "react-hot-toast";
 
 const orderStatusValue = [
   "All Orders",
   "Pending",
-  "Packed",
+  "Placed",
   "Shipped",
   "Delivered",
   "Cancelled",
+  "Returned",
+];
+
+// Status options for updating orders (without "All Orders")
+// API expects lowercase values: pending, placed, shipped, delivered, cancelled, returned
+const statusUpdateOptions = [
+  { label: "Pending", value: "pending" },
+  { label: "Placed", value: "placed" },
+  { label: "Shipped", value: "shipped" },
+  { label: "Delivered", value: "delivered" },
+  { label: "Cancelled", value: "cancelled" },
+  { label: "Returned", value: "returned" },
 ];
 
 export default function Orders() {
@@ -31,6 +45,7 @@ export default function Orders() {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOpenViewOrderModal, setIsOpenViewOrderModal] = useState(false);
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
   useEffect(() => {
     if (hasFetched.current) return;
@@ -57,21 +72,7 @@ export default function Orders() {
           )
           .join(", ");
 
-        // Amount: Access total directly. If it seems to be in paise (e.g. > 100x expected), divide by 100.
-        // Based on the provided JSON: price=2000, total=200000. So total is in paise.
-        // const amountValue = order.total ? order.total / 100 : 0;
-        // Always calculate total with discount applied from items
-        // Don't use order.total as it doesn't include discount calculations
-        const amountValue = items.reduce((sum, item) => {
-          const product = item.product || {};
-          const basePrice = item.price || 0;
-          const discount = product.discount || 0;
-          const quantity = item.quantity || 0;
-
-          // Apply discount: finalPrice = basePrice - (basePrice * discount / 100)
-          const discountedPrice = basePrice - (basePrice * discount) / 100;
-          return sum + discountedPrice * quantity;
-        }, 0);
+        const amountValue = order.total || 0;
 
         return {
           ...order,
@@ -90,8 +91,12 @@ export default function Orders() {
           }),
           status: order.status || "Pending",
           statusColor: getStatusColor(order.status),
-          // Address might be missing in some API responses dependent on backend implementation of snapshotting
-          address: "Address details not available in summary",
+          // Format shipping address from API
+          address: order.shippingAddress
+            ? `${order.shippingAddress.line1 || ""}${order.shippingAddress.line2 ? ", " + order.shippingAddress.line2 : ""}, ${order.shippingAddress.city || ""}, ${order.shippingAddress.state || ""} - ${order.shippingAddress.postalCode || ""}, ${order.shippingAddress.country || ""}`
+            : "Address not available",
+          rawItems: items,
+          shippingAddress: order.shippingAddress || null,
         };
       });
 
@@ -121,6 +126,8 @@ export default function Orders() {
     switch (String(status).toLowerCase()) {
       case "pending":
         return "bg-orange-100 text-orange-600";
+      case "placed":
+        return "bg-blue-100 text-blue-600";
       case "packed":
         return "bg-blue-100 text-blue-600";
       case "shipped":
@@ -129,8 +136,80 @@ export default function Orders() {
         return "bg-green-100 text-green-600";
       case "cancelled":
         return "bg-red-100 text-red-600";
+      case "returned":
+        return "bg-yellow-100 text-yellow-600";
       default:
         return "bg-gray-100 text-gray-600";
+    }
+  }
+
+  /**
+   * Get allowed status transitions based on current status
+   * Status flow: pending -> placed -> shipped -> delivered
+   * Cancelled and Returned are terminal states
+   */
+  function getAllowedStatusOptions(currentStatus) {
+    const statusLower = String(currentStatus).toLowerCase();
+
+    // Define which statuses can transition to which
+    const allowedTransitions = {
+      pending: ["pending", "placed", "shipped", "delivered", "cancelled", "returned"],
+      placed: ["placed", "shipped", "delivered", "cancelled", "returned"],
+      shipped: ["shipped", "delivered", "returned"],
+      delivered: ["delivered", "returned"],
+      cancelled: ["cancelled"], // Terminal state
+      returned: ["returned"], // Terminal state
+    };
+
+    const allowed = allowedTransitions[statusLower] || [];
+
+    return statusUpdateOptions.map(option => ({
+      ...option,
+      disabled: !allowed.includes(option.value),
+    }));
+  }
+
+  async function handleStatusUpdate(orderId, newStatus) {
+    // Find the current order to check its status
+    const currentOrder = filteredOrders.find(order => order._id === orderId);
+
+    // Prevent API call if status is the same
+    if (currentOrder && currentOrder.status.toLowerCase() === newStatus.toLowerCase()) {
+      toast.error(`Cannot change status from ${newStatus} to ${newStatus}`);
+      return;
+    }
+
+    try {
+      setUpdatingOrderId(orderId);
+
+      // Call PATCH API to update order status
+      await api.patch(`/api/v1/orders/${orderId}/status`, {
+        status: newStatus,
+        reason: "" // Optional reason field
+      });
+
+      // Update local state to reflect the change
+      setFilteredOrders(prevOrders =>
+        prevOrders.map(order =>
+          order._id === orderId
+            ? {
+              ...order,
+              status: newStatus,
+              statusColor: getStatusColor(newStatus)
+            }
+            : order
+        )
+      );
+
+      // Also update the original orders in Redux if needed
+      dispatch(fetchAllOrdersAsync());
+
+      toast.success(`Order status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Failed to update order status:", error);
+      toast.error(error.message || "Failed to update order status");
+    } finally {
+      setUpdatingOrderId(null);
     }
   }
 
@@ -222,19 +301,39 @@ export default function Orders() {
                   </div>
                 </div>
 
-                {/* ACTION BUTTONS - STACKED ON MOBILE */}
-                <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
-                  <button
-                    className="flex items-center justify-center gap-2 text-brand-600 border border-brand-600 hover:bg-brand-50 px-3 py-2 rounded-md text-sm cursor-pointer"
-                    onClick={() => handleOpenViewOrderModal(order)}
-                  >
-                    <FaRegEye className="w-3 h-3" /> View
-                  </button>
+                {/* UPDATE STATUS DROPDOWN */}
+                <div className="mt-4 border-t border-gray-100 pt-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
 
-                  {/* <button className="flex items-center justify-center gap-2 border border-gray-100 px-3 py-2 rounded-md text-sm hover:bg-gray-50">
-                    <AiFillPrinter /> Print
-                  </button> */}
+                  {/* STATUS DROPDOWN */}
+                  <div className="flex flex-col">
+                    <label className="block text-xs text-gray-600 mb-2">
+                      Update Status
+                    </label>
+                    <Dropdown
+                      className="w-full sm:w-48 md:max-w-[200px]"
+                      options={getAllowedStatusOptions(order.status)}
+                      value={order.status}
+                      onChange={(newStatus) => handleStatusUpdate(order._id, newStatus)}
+                      placeholder="Select Status"
+                      disabled={updatingOrderId === order._id}
+                    />
+                    {updatingOrderId === order._id && (
+                      <p className="text-xs text-gray-500 mt-1">Updating...</p>
+                    )}
+                  </div>
+
+                  {/* ACTION BUTTONS */}
+                  <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+                    <button
+                      className="flex items-center justify-center gap-2 text-purple-600 border border-purple-600 hover:bg-purple-50 px-3 py-2 rounded-md text-sm"
+                      onClick={() => handleOpenViewOrderModal(order)}
+                    >
+                      <FaRegEye className="w-3 h-3" /> View
+                    </button>
+                  </div>
+
                 </div>
+
               </div>
             ))}
         </div>

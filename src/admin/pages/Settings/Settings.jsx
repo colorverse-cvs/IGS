@@ -46,7 +46,6 @@ export default function Settings() {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log(profile);
     if (profile) {
       // Find default address or use the first one
       const defaultAddr =

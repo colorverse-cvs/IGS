@@ -209,7 +209,20 @@ export const apiRequest = async (endpoint, options = {}) => {
 
         // Handle other non-OK responses
         if (!response.ok) {
-            const error = new Error(data.message || `Request failed with status ${response.status}`);
+            // Extract error message, handling nested message objects
+            let errorMessage = `Request failed with status ${response.status}`;
+
+            if (data.message) {
+                if (typeof data.message === 'object' && data.message.message) {
+                    // Handle nested message object: { message: { message: "...", error: "...", statusCode: ... } }
+                    errorMessage = data.message.message;
+                } else if (typeof data.message === 'string') {
+                    // Handle string message
+                    errorMessage = data.message;
+                }
+            }
+
+            const error = new Error(errorMessage);
             error.status = response.status;
             error.data = data;
             throw error;
