@@ -19,7 +19,7 @@ import { CAROUSEL_DEFAULT_CONFIG } from "../config/carouselConfig";
 export default function SlideshowStripe({
   items = [],
   autoplay = true,
-  autoplayMs = 4000,
+  autoplayMs = 3000,
   showPrevNext = true,
   showIndicators = true,
   className = "",

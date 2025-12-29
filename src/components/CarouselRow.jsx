@@ -89,7 +89,7 @@ export default function CarouselRow({
         lastTimeRef.current = 0;
       };
     } else if (scrollMode === "step") {
-      const intervalMs = autoplayMs || 4000;
+      const intervalMs = autoplayMs || 3000;
       const intervalId = setInterval(() => {
         scrollOffsetRef.current += widthPercent;
 

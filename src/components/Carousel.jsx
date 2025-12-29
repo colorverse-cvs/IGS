@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 export default function Carousel({
   items = [],
   autoplay = true,
-  autoplayMs = 4000,
+  autoplayMs = 3000,
   showPrevNext = true,
   showIndicators = true,
   className = "",

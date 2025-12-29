@@ -455,7 +455,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       // 4. Show success message
       toast.success("Account created! Please log in.", {
         style: { color: "green" },
-        duration: 4000,
+        duration: 3000,
       });
     } catch (err) {
       console.error("Signup error:", err);

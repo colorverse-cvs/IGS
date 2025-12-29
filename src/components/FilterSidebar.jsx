@@ -404,8 +404,8 @@ export default function FilterSidebar({
             //   if (!filters.minPrice && filters.minPrice !== 0) {
             //     handleFilterChange("minPrice", 0);
             //   }
-            //   if (!filters.maxPrice && filters.maxPrice !== 4000) {
-            //     handleFilterChange("maxPrice", 4000);
+            //   if (!filters.maxPrice && filters.maxPrice !== 3000) {
+            //     handleFilterChange("maxPrice", 3000);
             //   }
             // }
           }}
@@ -425,14 +425,14 @@ export default function FilterSidebar({
                 ₹
                 {filters.maxPrice !== undefined && filters.maxPrice !== ""
                   ? filters.maxPrice
-                  : 4000}
+                  : 3000}
               </span>
             </div>
             {/* Dual-handle Price Range Slider */}
             <div className="range-slider !m-0" data-disabled={false}>
               {(() => {
                 const min = 0;
-                const max = 4000;
+                const max = 3000;
                 const step = 50;
                 const curMin =
                   filters.minPrice !== undefined && filters.minPrice !== ""
@@ -441,7 +441,7 @@ export default function FilterSidebar({
                 const curMax =
                   filters.maxPrice !== undefined && filters.maxPrice !== ""
                     ? Number(filters.maxPrice)
-                    : 4000;
+                    : 3000;
                 const minPercent = Math.max(
                   0,
                   Math.min(100, (curMin / max) * 100)
@@ -542,7 +542,7 @@ export default function FilterSidebar({
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-brand-300 focus:outline-none focus:border-transparent"
                   min="100"
-                  max="4000"
+                  max="3000"
                   step="10"
                 />
               </div>
@@ -561,7 +561,7 @@ export default function FilterSidebar({
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-brand-300 focus:outline-none focus:border-transparent"
                   min="0"
-                  max="4000"
+                  max="3000"
                   step="10"
                 />
               </div>
