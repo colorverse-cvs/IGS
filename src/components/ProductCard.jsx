@@ -103,7 +103,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
               className="
               w-18 lg:w-auto
               text-xs 
-              !font-bold
+              !font-medium
               px-2 
               py-1 
               rounded-md 
@@ -123,7 +123,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
               className="
               w-18 lg:w-auto
               text-xs 
-              font-semibold 
+              !font-medium 
               px-2 
               py-1 
               rounded-md 
@@ -145,7 +145,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
       <div className="px-2 md:px-4 py-4 flex-grow flex flex-col justify-between min-h-[140px] min-w-0">
         {/* Product Title - Fixed height to prevent layout shifts */}
         <div className="w-full">
-          <div className="text-base !font-semibold text-gray-800 mb-2 overflow-hidden leading-5 truncate w-full">
+          <div className="text-base !font-medium text-gray-800 mb-2 overflow-hidden leading-5 truncate w-full">
             {name}
           </div>
         </div>
@@ -154,7 +154,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
         <div className="flex flex-col gap-1 mb-2">
           {/* Main Price (Already Discounted) */}
           <div className="flex items-center gap-2">
-            <span className="text-lg !font-semibold text-brand-700">
+            <span className="text-lg !font-medium text-brand-700">
               ₹{price}
             </span>
 
@@ -167,7 +167,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
 
             {/* Discount Percentage */}
             {discount && discount > 0 && (
-              <span className="text-xs font-semibold text-brand-600">
+              <span className="text-xs !font-medium text-brand-600">
                 {discount}% Off
               </span>
             )}
@@ -190,7 +190,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
           <div className="flex items-center md:justify-center">
             {qtyInCart === 0 ? (
               <button
-                className="cursor-pointer flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-brand-800 font-semibold text-xs 
+                className="cursor-pointer flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-brand-800 !font-medium text-xs 
                   transition-all duration-300 ease-out focus:outline-none focus:ring-1 focus:ring-brand-500 focus:ring-opacity-50
                   rounded-sm md:opacity-0 md:translate-y-1 md:pointer-events-none
                   md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm"

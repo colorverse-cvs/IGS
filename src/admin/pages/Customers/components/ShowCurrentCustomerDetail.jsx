@@ -9,7 +9,7 @@ export default function ShowCurrentCustomerDetail({
       <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4 cursor-default">
-          <p className="text-lg font-semibold">Customer Details</p>
+          <p className="text-lg !font-medium">Customer Details</p>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-800 text-xl cursor-pointer"
@@ -20,7 +20,7 @@ export default function ShowCurrentCustomerDetail({
 
         {/* CUSTOMER INFO */}
         <div className="mb-6 cursor-default">
-          <p className="font-semibold mb-2">Personal Information</p>
+          <p className="!font-medium mb-2">Personal Information</p>
           <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Name:</span>
@@ -54,7 +54,7 @@ export default function ShowCurrentCustomerDetail({
 
         {/* ORDER STATISTICS */}
         <div className="mb-8 cursor-default">
-          <p className="font-semibold mb-2">Order Statistics</p>
+          <p className="!font-medium mb-2">Order Statistics</p>
           <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-2">
             <div className="flex justify-between">
               <span>Total Orders:</span>
@@ -63,14 +63,14 @@ export default function ShowCurrentCustomerDetail({
               </span>
             </div>
 
-            <div className="flex justify-between font-semibold">
+            <div className="flex justify-between !font-medium">
               <span>Total Spent:</span>
               <span>
                 ₹{(currentCustomerDetail.totalSpent || 0).toLocaleString()}
               </span>
             </div>
 
-            <div className="flex justify-between font-semibold">
+            <div className="flex justify-between !font-medium">
               <span>Status:</span>
               <span>{currentCustomerDetail.Status}</span>
             </div>

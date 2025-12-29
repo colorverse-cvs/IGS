@@ -59,24 +59,24 @@ export default function CustomerDetailTable({ data = [] }) {
       <table className="min-w-full text-sm text-left">
         <thead className="bg-gray-50 border-b">
           <tr>
-            <th className="px-6 py-4 font-semibold text-gray-700">
+            <th className="px-6 py-4 !font-medium text-gray-700">
               Customer Name
             </th>
-            <th className="px-6 py-4 font-semibold text-gray-700">
+            <th className="px-6 py-4 !font-medium text-gray-700">
               Email Address
             </th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Mobile</th>
-            <th className="px-6 py-4 font-semibold text-gray-700 text-center">
+            <th className="px-6 py-4 !font-medium text-gray-700">Mobile</th>
+            <th className="px-6 py-4 !font-medium text-gray-700 text-center">
               Orders
             </th>
-            <th className="px-6 py-4 font-semibold text-gray-700">
+            <th className="px-6 py-4 !font-medium text-gray-700">
               Total Spent
             </th>
-            <th className="px-6 py-4 font-semibold text-gray-700">Join Date</th>
-            <th className="px-6 py-4 font-semibold text-gray-700 text-center">
+            <th className="px-6 py-4 !font-medium text-gray-700">Join Date</th>
+            <th className="px-6 py-4 !font-medium text-gray-700 text-center">
               Status
             </th>
-            <th className="px-6 py-4 font-semibold text-gray-700 text-center">
+            <th className="px-6 py-4 !font-medium text-gray-700 text-center">
               Actions
             </th>
           </tr>

@@ -22,7 +22,7 @@ export default function OrderPlacedPage() {
   return (
     <div className="min-h-[70dvh] flex flex-col items-center justify-center px-4 py-12 text-center">
       <img src={OrderSuccessfullyCart} />
-      <div className="text-xl md:text-2xl font-semibold text-brand-700 my-2">
+      <div className="text-xl md:text-2xl !font-medium text-brand-700 my-2">
         Your Order Has Been Placed Successfully!
       </div>
       <p className="text-gray-600 max-w-xl">

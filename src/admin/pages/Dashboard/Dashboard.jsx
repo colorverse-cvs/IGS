@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../../../utils/constants";
-import { fetchAllOrdersAsync, fetchAllProductsAsync, selectAdminOrders, selectAdminProducts } from "../../store/adminSlice";
+import {
+  fetchAllOrdersAsync,
+  fetchAllProductsAsync,
+  selectAdminOrders,
+  selectAdminProducts,
+} from "../../store/adminSlice";
 
 import DashboardAnalysisCards from "./components/DashboardAnalysisCards";
 import RecentOrderCard from "./components/RecentOrderCard";
@@ -55,7 +60,7 @@ export default function Dashboard({ setActivePage }) {
           {/* Desktop Header */}
           <div className="hidden md:flex dashboard-label-wrapper mb-4 px-2 py-3 items-center justify-between">
             <div>
-              <p className="text-xl font-semibold">Dashboard</p>
+              <p className="text-xl !font-medium">Dashboard</p>
               <p className="text-md text-gray-500">
                 Welcome back! Here's what's happening today.
               </p>

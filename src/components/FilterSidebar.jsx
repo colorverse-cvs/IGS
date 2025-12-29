@@ -238,7 +238,7 @@ export default function FilterSidebar({
 
       {!isMobile && (
         <div className="flex justify-between items-center mb-6">
-          <div className="text-lg font-semibold text-gray-900">
+          <div className="text-lg !font-medium text-gray-900">
             Filter Products
           </div>
           <button
@@ -660,7 +660,7 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onApplyFilters}
-            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-brand-800 transition cursor-pointer"
+            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg !font-medium hover:bg-brand-800 transition cursor-pointer"
           >
             Show Results
           </button>

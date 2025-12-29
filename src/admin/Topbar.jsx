@@ -60,7 +60,7 @@ export default function Topbar({ setActivePage }) {
         className="flex items-center gap-4 cursor-pointer select-none"
         onClick={handleDropdownClick}
       >
-        <div className="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center !font-bold">
+        <div className="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center !font-medium">
           {initials}
         </div>
 

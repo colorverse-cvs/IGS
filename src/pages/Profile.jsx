@@ -355,7 +355,7 @@ export default function Profile() {
 
       {tab === "profile" && (
         <div className="bg-white py-4 max-w-5xl">
-          <p className="text-2xl !font-semibold mb-4">Profile</p>
+          <p className="text-2xl !font-medium mb-4">Profile</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-gray-500 block text-sm mb-1">Name *</label>
@@ -547,7 +547,7 @@ export default function Profile() {
 
       {tab === "addresses" && (
         <div className="max-w-4xl">
-          <p className="text-2xl !font-semibold mb-4">Saved Addresses</p>
+          <p className="text-2xl !font-medium mb-4">Saved Addresses</p>
           <div className="space-y-4">
             {addresses.map((addr) => (
               <div
@@ -570,7 +570,7 @@ export default function Profile() {
                         </span>
                       )}
                       {addr.isDefault && (
-                        <span className="ml-2 text-xs bg-brand-50 px-2 py-0.5 rounded border border-brand-800 text-brand-900 !font-semibold ">
+                        <span className="ml-2 text-xs bg-brand-50 px-2 py-0.5 rounded border border-brand-800 text-brand-900 !font-medium ">
                           Default address
                         </span>
                       )}
@@ -596,7 +596,7 @@ export default function Profile() {
                     )}
                     <div className="mt-2 flex gap-3">
                       <button
-                        className="text-xs text-brand-700 !font-semibold cursor-pointer"
+                        className="text-xs text-brand-700 !font-medium cursor-pointer"
                         onClick={() => {
                           setEditAddress(addr);
                           setIsAddressModalOpen(true);
@@ -605,7 +605,7 @@ export default function Profile() {
                         Edit
                       </button>
                       <button
-                        className="text-xs text-brand-700 !font-semibold cursor-pointer"
+                        className="text-xs text-brand-700 !font-medium cursor-pointer"
                         onClick={() => {
                           const addressId = addr._id || addr.id;
                           dispatch(removeAddressAsync(addressId));
@@ -615,7 +615,7 @@ export default function Profile() {
                       </button>
                       {!addr.isDefault && (
                         <button
-                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold cursor-pointer"
+                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 !font-medium cursor-pointer"
                           onClick={() => {
                             const addressId = addr._id || addr.id;
                             dispatch(setDefaultAddressAsync(addressId));
@@ -670,7 +670,7 @@ export default function Profile() {
 
       {/* {tab === "orders" && (
         <div className="space-y-6">
-          <p className="text-2xl !font-semibold mb-4">Recent orders</p>
+          <p className="text-2xl !font-medium mb-4">Recent orders</p>
           {orders.map((order) => (
             <div key={order.id} className="border rounded-lg overflow-hidden">
               <div className="grid grid-cols-12 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-700">
@@ -698,7 +698,7 @@ export default function Profile() {
                         Material: {it.material || "-"} &nbsp; Size:{" "}
                         {it.size || "-"}
                       </div>
-                      <div className="text-brand-700 font-semibold">
+                      <div className="text-brand-700 !font-medium">
                         ₹{it.price}
                       </div>
                     </div>
@@ -726,7 +726,7 @@ export default function Profile() {
 
       {/* {tab === "payments" && (
         <div className="max-w-4xl">
-          <p className="text-2xl !font-semibold mb-4">Payment Options</p>
+          <p className="text-2xl !font-medium mb-4">Payment Options</p>
           <div className="space-y-3">
             {cards.map((c) => {
               const isOpen = openCardId === c.id;
@@ -745,7 +745,7 @@ export default function Profile() {
                         <div className="text-gray-600">{c.label}</div>
                       </div>
                       {billingCard?.id === c.id && (
-                        <span className="ml-2 px-2 py-1 text-xs rounded border-2 border-brand-300 bg-brand-50 text-brand-700 !font-bold">
+                        <span className="ml-2 px-2 py-1 text-xs rounded border-2 border-brand-300 bg-brand-50 text-brand-700 !font-medium">
                           Billing card
                         </span>
                       )}

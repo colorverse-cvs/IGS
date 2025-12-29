@@ -37,7 +37,7 @@ export default function CustomerDetailCard({ customers = [] }) {
         >
           <div>
             <p className="text-sm text-gray-500 font-medium">{card.title}</p>
-            <p className="text-2xl !font-semibold text-gray-900 mt-2">
+            <p className="text-2xl !font-medium text-gray-900 mt-2">
               {card.value.toLocaleString()}
             </p>
           </div>

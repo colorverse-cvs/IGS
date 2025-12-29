@@ -62,7 +62,7 @@ export default function ForgotPassword({ email, token, onSuccess }) {
     <div className="space-y-4">
       <div className="text-sm text-gray-600 mb-4">
         Enter a new password for{" "}
-        <span className="font-semibold">{email || "your account"}</span>
+        <span className="!font-medium">{email || "your account"}</span>
       </div>
 
       <div>
@@ -120,7 +120,7 @@ export default function ForgotPassword({ email, token, onSuccess }) {
       <button
         onClick={isSuccess ? onSuccess : handleSave}
         disabled={!isSuccess && (loading || !newPassword || !confirm)}
-        className={`w-full py-2.5 rounded text-sm font-semibold transition ${
+        className={`w-full py-2.5 rounded text-sm !font-medium transition ${
           isSuccess
             ? "bg-green-600 text-white hover:bg-green-700"
             : !loading && newPassword && confirm

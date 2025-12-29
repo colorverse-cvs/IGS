@@ -103,7 +103,7 @@ export default function RecentOrderCard({ setActivePage }) {
       <div className="bg-white rounded-xl shadow p-4 md:p-5 md:max-h-[500px] overflow-y-auto w-full">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <p className="text-lg font-semibold">Recent Orders</p>
+          <p className="text-lg !font-medium">Recent Orders</p>
           <button
             className="text-brand-600 font-medium hover:underline cursor-pointer text-sm"
             onClick={handleViewAllClick}
@@ -124,7 +124,7 @@ export default function RecentOrderCard({ setActivePage }) {
               >
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">
+                    <span className="!font-medium text-sm">
                       {" "}
                       {`ORD-${order.id.slice(-5)}`}
                     </span>
@@ -146,7 +146,7 @@ export default function RecentOrderCard({ setActivePage }) {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <p className="font-semibold text-sm">{order.amount}</p>
+                  <p className="!font-medium text-sm">{order.amount}</p>
                   <button
                     className="flex items-center gap-1 text-brand-600 border border-brand-600 px-3 py-1.5 rounded-md text-xs hover:bg-brand-50 cursor-pointer"
                     onClick={() => handleOpenViewOrderModal(order)}

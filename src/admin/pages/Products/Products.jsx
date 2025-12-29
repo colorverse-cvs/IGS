@@ -66,7 +66,7 @@ export default function Products() {
       {/* Desktop Header */}
       <div className="hidden md:flex product-label-top-wrapper flex-col sm:flex-row sm:items-center justify-between mb-4 p-4 gap-3">
         <div className="dashboard-label-wrapper">
-          <p className="text-xl font-semibold">Products</p>
+          <p className="text-xl !font-medium">Products</p>
           <p className="text-sm text-gray-500">
             Manage your gift shop inventory
           </p>
@@ -140,7 +140,7 @@ export default function Products() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2 flex-wrap">
-                      <p className="font-semibold text-sm leading-tight">
+                      <p className="!font-medium text-sm leading-tight">
                         {product.name}
                       </p>
 
@@ -161,7 +161,7 @@ export default function Products() {
                           ₹{product.listPrice}
                         </span>
                       )}
-                      <span className="text-green-600 font-semibold text-sm">
+                      <span className="text-green-600 !font-medium text-sm">
                         ₹{product.price}
                       </span>
                       <span className="text-gray-500 text-xs">

@@ -105,7 +105,7 @@ export default function Customers() {
       {/* Desktop Header - Hidden on Mobile */}
       <div className="hidden md:flex dashboard-label-wrapper mb-6 px-2 items-center justify-between">
         <div>
-          <p className="text-xl font-semibold">Customers</p>
+          <p className="text-xl !font-medium">Customers</p>
           <p className="text-md text-gray-500">View customer information</p>
         </div>
       </div>

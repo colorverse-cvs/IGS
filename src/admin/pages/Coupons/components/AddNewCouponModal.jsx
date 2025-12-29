@@ -11,7 +11,7 @@ export default function AddNewCouponModal({ onClose }) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white w-[800px] rounded-2xl shadow-xl p-6">
         <div className="flex items-center justify-between mb-6">
-          <p className="text-lg font-semibold text-gray-800">
+          <p className="text-lg !font-medium text-gray-800">
             Create New Coupon
           </p>
           <button

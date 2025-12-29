@@ -283,7 +283,7 @@ export default function CustomOrderModal({ isOpen, onClose }) {
           <button
             type="submit"
             disabled={status === "submitting"}
-            className="ml-auto inline-flex items-center justify-center px-6 py-3 rounded-md text-sm font-semibold text-white bg-brand-700 hover:bg-brand-900 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+            className="ml-auto inline-flex items-center justify-center px-6 py-3 rounded-md text-sm !font-medium text-white bg-brand-700 hover:bg-brand-900 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
             {status === "submitting" ? "Submitting..." : "Submit Form"}
           </button>

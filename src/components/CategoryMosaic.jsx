@@ -131,7 +131,7 @@ export default function CategoryMosaic() {
         <div
           className={`absolute ${posClass} left-3 right-3 text-white text-left`}
         >
-          <div className="text-md !font-semibold leading-tight">{title}</div>
+          <div className="text-md !font-medium leading-tight">{title}</div>
           {subtitle && (
             <div className="text-sm opacity-90 line-clamp-2">{subtitle}</div>
           )}

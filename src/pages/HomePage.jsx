@@ -47,7 +47,7 @@ export default function HomePage() {
           {/* Left Text Block */}
           <div className="flex flex-col justify-between w-full lg:w-[40%]">
             <div>
-              <h1 className="text-4xl md:text-5xl pb-4  xl:text-6xl !font-semibold leading-tight text-gray-900">
+              <h1 className="text-4xl md:text-5xl pb-4  xl:text-6xl !font-medium leading-tight text-gray-900">
                 Exquisite Statues for Every Space
               </h1>
               <p className="text-gray-600 text-sm">
@@ -77,7 +77,7 @@ export default function HomePage() {
                   </p>
                   <p className="text-sm">
                     4.0{" "}
-                    <span className="text-yellow-500 text-sm font-semibold">
+                    <span className="text-yellow-500 text-sm !font-medium">
                       ★
                     </span>{" "}
                     <span className="text-gray-600">(105)</span>

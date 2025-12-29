@@ -115,7 +115,7 @@ export default function Payments() {
       {/* Desktop Header - Hidden on Mobile */}
       <div className="hidden md:flex product-label-top-wrapper items-center justify-between mb-4 p-4 gap-3">
         <div>
-          <p className="text-xl font-semibold">Payments & Transactions</p>
+          <p className="text-xl !font-medium">Payments & Transactions</p>
           <p className="text-md text-gray-600">
             Track all payment transactions
           </p>
@@ -213,7 +213,7 @@ export default function Payments() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-500 mb-1">Amount</p>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-sm !font-medium text-gray-900">
                       ₹{payment.amount?.toLocaleString() || "0"}
                     </p>
                   </div>

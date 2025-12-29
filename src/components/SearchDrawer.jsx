@@ -135,7 +135,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
                         className="w-14 h-14 rounded object-cover flex-shrink-0"
                       />
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm font-semibold text-gray-900 truncate">
+                        <div className="text-sm !font-medium text-gray-900 truncate">
                           {p.name}
                         </div>
                         <div className="text-xs text-gray-500 truncate">
@@ -143,7 +143,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
                           {p.size ? `• ${p.size}` : ""}
                         </div>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-sm font-semibold text-gray-900">
+                          <span className="text-sm !font-medium text-gray-900">
                             ₹{p.price}
                           </span>
                           <span className="flex items-center text-yellow-500 text-xs">

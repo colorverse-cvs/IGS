@@ -12,7 +12,7 @@ export default function Sidebar({ setActivePage, activePage }) {
 
   return (
     <div className="w-50 lg:w-64 h-full bg-white border-r shadow-sm border-gray-200">
-      <div className="p-5 h-16 text-xl !font-semibold text-brand-700 border-b border-gray-200 py-3.5">
+      <div className="p-5 h-16 text-xl !font-medium text-brand-700 border-b border-gray-200 py-3.5">
         Gift Shop Admin
       </div>
 

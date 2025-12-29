@@ -147,7 +147,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                         Material: {item.material || "-"} &nbsp; Size:{" "}
                         {item.size || "-"}
                       </div>
-                      <div className="text-brand-700 font-semibold">
+                      <div className="text-brand-700 !font-medium">
                         ₹{item.price}
                       </div>
                       <div className="flex lg:flex-col justify-between">
@@ -241,7 +241,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                       <span>Size: {item.size || "-"}</span>
                     </div>
 
-                    <div className="text-brand-700 font-semibold">
+                    <div className="text-brand-700 !font-medium">
                       ₹{item.price}
                     </div>
 
@@ -328,14 +328,14 @@ export default function Cart({ isDrawer = false, onClose }) {
           {/* Checkout Section */}
           {isDrawer ? (
             <div className="bottom-0 bg-white py-4 px-4 border-t border-gray-400 shadow-lg z-10">
-              <div className="flex justify-between items-center text-xl !font-semibold mb-4">
+              <div className="flex justify-between items-center text-xl !font-medium mb-4">
                 <span>Total:</span>
                 <span className="text-brand-700">₹{grandTotal}</span>
               </div>
 
               <button
                 onClick={handleProceedToCheckout}
-                className="w-full px-4 py-3 bg-brand-600 text-white rounded-lg font-semibold hover:bg-brand-700 cursor-pointer"
+                className="w-full px-4 py-3 bg-brand-600 text-white rounded-lg !font-medium hover:bg-brand-700 cursor-pointer"
               >
                 Proceed to Checkout
               </button>
@@ -349,7 +349,7 @@ export default function Cart({ isDrawer = false, onClose }) {
             </div>
           ) : (
             <div className="md:w-1/4 bg-brand-50 p-6 rounded-xl shadow-lg h-fit sticky top-[15%]">
-              <div className="text-2xl !font-semibold text-gray-800 mb-4 border-b pb-2">
+              <div className="text-2xl !font-medium text-gray-800 mb-4 border-b pb-2">
                 Order Summary
               </div>
 
@@ -366,7 +366,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                   </div>
                 )}
 
-                <div className="flex justify-between !font-semibold text-lg pt-2 border-t border-gray-300">
+                <div className="flex justify-between !font-medium text-lg pt-2 border-t border-gray-300">
                   <span>Order Total</span>
                   <span className="text-brand-700">₹{grandTotal}</span>
                 </div>
@@ -374,7 +374,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
               <button
                 onClick={handleProceedToCheckout}
-                className="w-full mt-6 px-4 py-3 text-center bg-brand-700 text-white rounded-lg font-semibold hover:bg-brand-800 shadow-lg cursor-pointer"
+                className="w-full mt-6 px-4 py-3 text-center bg-brand-700 text-white rounded-lg !font-medium hover:bg-brand-800 shadow-lg cursor-pointer"
               >
                 Proceed to Checkout
               </button>

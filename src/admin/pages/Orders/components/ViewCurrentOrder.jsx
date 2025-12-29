@@ -51,7 +51,7 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
       <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-4 cursor-default">
-          <p className="text-lg font-semibold">
+          <p className="text-lg !font-medium">
             Order Details - {formatOrderId(currentOrder.id)}
           </p>
           <button
@@ -74,7 +74,7 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
 
         {/* CUSTOMER DETAILS */}
         <div className="mb-6 cursor-default">
-          <p className="font-semibold mb-2">Customer Details</p>
+          <p className="!font-medium mb-2">Customer Details</p>
           <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Name:</span>
@@ -95,67 +95,74 @@ export default function ViewCurrentOrder({ currentOrder, onClose }) {
 
         {/* ORDER ITEMS */}
         <div className="mb-6 cursor-default">
-          <p className="font-semibold mb-2">Order Items</p>
+          <p className="!font-medium mb-2">Order Items</p>
           <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-3">
-            {currentOrder.rawItems && Array.isArray(currentOrder.rawItems) ? (
-              currentOrder.rawItems.map((item, index) => {
-                const product = item.product;
-                return (
-                  <div key={index} className="flex gap-3 items-start border-b border-gray-100 last:border-0 pb-3 last:pb-0">
-                    {product && product.images?.[0]?.url ? (
-                      <img
-                        src={`${APP_URL}${product.images[0].url}`}
-                        alt={product.name}
-                        className="w-12 h-12 object-cover rounded-md flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center text-xs text-gray-400">
-                        N/A
-                      </div>
-                    )}
-
-                    <div className="flex-1 min-w-0">
-                      {product ? (
-                        <p className="font-medium text-gray-900 truncate">
-                          {product.name}
-                        </p>
+            {currentOrder.rawItems && Array.isArray(currentOrder.rawItems)
+              ? currentOrder.rawItems.map((item, index) => {
+                  const product = item.product;
+                  return (
+                    <div
+                      key={index}
+                      className="flex gap-3 items-start border-b border-gray-100 last:border-0 pb-3 last:pb-0"
+                    >
+                      {product && product.images?.[0]?.url ? (
+                        <img
+                          src={`${APP_URL}${product.images[0].url}`}
+                          alt={product.name}
+                          className="w-12 h-12 object-cover rounded-md flex-shrink-0"
+                        />
                       ) : (
-                        <p className="font-medium text-gray-500">
-                          {item.name || "Unknown Item"}{" "}
-                          <span className="text-xs">
-                            (Product no longer available)
-                          </span>
-                        </p>
+                        <div className="w-12 h-12 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center text-xs text-gray-400">
+                          N/A
+                        </div>
                       )}
-                      <div className="flex gap-3 text-xs text-gray-500 mt-1">
-                        <span>Qty: {item.quantity}</span>
-                        <span>Price: ₹{item.price}</span>
-                        {product && (
-                          <>
-                            {product.attributes?.material && <span>Mat: {product.attributes.material}</span>}
-                            {product.dimensions?.sizeCategory && <span>Size: {product.dimensions.sizeCategory}</span>}
-                          </>
+
+                      <div className="flex-1 min-w-0">
+                        {product ? (
+                          <p className="font-medium text-gray-900 truncate">
+                            {product.name}
+                          </p>
+                        ) : (
+                          <p className="font-medium text-gray-500">
+                            {item.name || "Unknown Item"}{" "}
+                            <span className="text-xs">
+                              (Product no longer available)
+                            </span>
+                          </p>
                         )}
+                        <div className="flex gap-3 text-xs text-gray-500 mt-1">
+                          <span>Qty: {item.quantity}</span>
+                          <span>Price: ₹{item.price}</span>
+                          {product && (
+                            <>
+                              {product.attributes?.material && (
+                                <span>Mat: {product.attributes.material}</span>
+                              )}
+                              {product.dimensions?.sizeCategory && (
+                                <span>
+                                  Size: {product.dimensions.sizeCategory}
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })
-            ) : (
-              currentOrder.items
-            )}
+                  );
+                })
+              : currentOrder.items}
           </div>
         </div>
 
         {/* ORDER SUMMARY */}
         <div className="mb-8 cursor-default">
-          <p className="font-semibold mb-2">Order Summary</p>
+          <p className="!font-medium mb-2">Order Summary</p>
           <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-2">
             <div className="flex justify-between">
               <span>Order Date:</span>
               <span className="font-medium">{currentOrder.date}</span>
             </div>
-            <div className="flex justify-between font-semibold">
+            <div className="flex justify-between !font-medium">
               <span>Total Amount:</span>
               <span>{currentOrder.amount}</span>
             </div>

@@ -250,9 +250,7 @@ export default function EditProductModal({
         <div className="p-6 border-b border-gray-200">
           {/* Top row: Title + Close */}
           <div className="flex items-center justify-between">
-            <p className="text-base font-semibold text-gray-900">
-              Edit Product
-            </p>
+            <p className="text-base !font-medium text-gray-900">Edit Product</p>
 
             <button
               onClick={onClose}

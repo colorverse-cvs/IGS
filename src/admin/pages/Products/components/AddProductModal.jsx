@@ -214,7 +214,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
         <div className="p-6 border-b border-gray-200">
           {/* Top row: Title + Close */}
           <div className="flex items-center justify-between">
-            <p className="text-base font-semibold text-gray-900">
+            <p className="text-base !font-medium text-gray-900">
               Add New Product
             </p>
 

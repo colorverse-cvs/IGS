@@ -175,7 +175,7 @@ export default function Settings() {
     <div className="space-y-6 md:space-y-8">
       {/* SHOP SETTINGS */}
       <div className="bg-white p-4 md:p-6 rounded-xl shadow space-y-5">
-        <p className="text-lg font-semibold">Shop Information</p>
+        <p className="text-lg !font-medium">Shop Information</p>
 
         {/* SHOP NAME */}
         <div>
@@ -304,7 +304,7 @@ export default function Settings() {
 
       {/* PASSWORD SETTINGS */}
       <div className="bg-white p-4 md:p-6 rounded-xl shadow space-y-5">
-        <p className="text-lg font-semibold">Change Admin Password</p>
+        <p className="text-lg !font-medium">Change Admin Password</p>
 
         {[
           {
@@ -373,13 +373,11 @@ export default function Settings() {
           <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
             <CheckCircle size={32} />
           </div>
-          <h3 className="text-xl !font-semibold text-gray-900 mb-2">
-            Success!
-          </h3>
+          <h3 className="text-xl !font-medium text-gray-900 mb-2">Success!</h3>
           <p className="text-gray-600 mb-6">{successMessage}</p>
           <button
             onClick={() => setShowSuccessModal(false)}
-            className="w-full bg-brand-600 text-white py-2.5 rounded-lg font-semibold hover:bg-brand-700 transition cursor-pointer"
+            className="w-full bg-brand-600 text-white py-2.5 rounded-lg !font-medium hover:bg-brand-700 transition cursor-pointer"
           >
             Great, thanks!
           </button>

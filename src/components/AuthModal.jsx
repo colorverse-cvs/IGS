@@ -690,7 +690,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 disabled={
                   !isLoginValid || loginLoading || loginDisabledTemporarily
                 }
-                className={`w-full py-2.5 rounded text-sm font-semibold transition ${
+                className={`w-full py-2.5 rounded text-sm !font-medium transition ${
                   isLoginValid && !loginLoading && !loginDisabledTemporarily
                     ? "bg-brand-600 text-white hover:bg-brand-700 cursor-pointer"
                     : "bg-gray-200 text-gray-500 cursor-not-allowed"
@@ -864,7 +864,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
               <button
                 type="submit"
                 disabled={!isSignupValid || signupLoading}
-                className={`w-full py-2.5 rounded text-sm font-semibold transition ${
+                className={`w-full py-2.5 rounded text-sm !font-medium transition ${
                   isSignupValid && !signupLoading
                     ? "bg-brand-600 text-white hover:bg-brand-700 cursor-pointer"
                     : "bg-gray-200 text-gray-500 cursor-not-allowed"

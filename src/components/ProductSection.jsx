@@ -33,7 +33,7 @@ export default function ProductSection({
           <h3>
             <Link
               to={`/filter?category=${getCategoryFilterId(title)}`}
-              className="flex items-center justify-center gap-2 text-3xl !font-semibold text-gray-900 mb-2 hover:text-brand-700"
+              className="flex items-center justify-center gap-2 text-3xl !font-medium text-gray-900 mb-2 hover:text-brand-700"
             >
               <span>{title}</span>{" "}
               <span>

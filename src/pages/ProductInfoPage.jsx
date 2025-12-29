@@ -460,7 +460,7 @@ export default function ProductInfoPage() {
               <div className="space-y-6">
                 {/* Header */}
                 <div>
-                  <div className="text-3xl !font-semibold text-gray-900 mb-2">
+                  <div className="text-3xl !font-medium text-gray-900 mb-2">
                     {title}
                   </div>
                   {product.description && (
@@ -483,7 +483,7 @@ export default function ProductInfoPage() {
                         className="
               w-18 lg:w-auto
               text-xs 
-              !font-bold
+              !font-medium
               px-2 
               py-1 
               rounded-md 
@@ -503,7 +503,7 @@ export default function ProductInfoPage() {
                         className="
               w-18 lg:w-auto
               text-xs 
-              font-semibold 
+              !font-medium 
               px-2 
               py-1 
               rounded-md 
@@ -524,7 +524,7 @@ export default function ProductInfoPage() {
                 {/* Pricing */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-3xl !font-semibold text-brand-700">
+                    <span className="text-3xl !font-medium text-brand-700">
                       ₹{getDiscountedPrice(mrp, discount)}
                     </span>
 
@@ -549,7 +549,7 @@ export default function ProductInfoPage() {
 
                 {/* Delivery Check */}
                 <div className="space-y-2">
-                  <p className="text-md font-semibold text-gray-900">
+                  <p className="text-md !font-medium text-gray-900">
                     Check Delivery
                   </p>
                   <div className="flex gap-2 items-center">
@@ -593,9 +593,7 @@ export default function ProductInfoPage() {
 
                 {/* Material Selection */}
                 <div className="space-y-3">
-                  <p className="text-md font-semibold text-gray-900">
-                    Material
-                  </p>
+                  <p className="text-md !font-medium text-gray-900">Material</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {materialOptions.map((option) => (
                       <label
@@ -630,7 +628,7 @@ export default function ProductInfoPage() {
 
                 {/* Size Selection */}
                 <div className="space-y-3">
-                  <p className="text-md font-semibold text-gray-900">Size</p>
+                  <p className="text-md !font-medium text-gray-900">Size</p>
                   <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
                     {sizeOptions.map((option) => (
                       <label
@@ -748,7 +746,7 @@ export default function ProductInfoPage() {
 
                 {/* About This Item (exact two-column definition list) */}
                 <div className="pt-6 border-t border-gray-200">
-                  <p className="text-lg !font-semibold text-gray-900 mb-2">
+                  <p className="text-lg !font-medium text-gray-900 mb-2">
                     About this item
                   </p>
                   <dl className="gap-x-6 bg-white border-b border-gray-200">

@@ -118,7 +118,7 @@ export default function Carousel({
       {(active.title || active.description) && (
         <div className="absolute top-6 left-6 text-white drop-shadow">
           {active.title && (
-            <p className="text-lg lg:text-xl font-semibold">{active.title}</p>
+            <p className="text-lg lg:text-xl !font-medium">{active.title}</p>
           )}
           {active.description && (
             <p className="text-sm opacity-90">{active.description}</p>
@@ -151,8 +151,9 @@ export default function Carousel({
             <button
               key={it.id || idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`h-2 rounded-full transition-all cursor-pointer ${idx === currentIndex ? "w-3.5 bg-brand-700" : "w-2 bg-gray-300"
-                }`}
+              className={`h-2 rounded-full transition-all cursor-pointer ${
+                idx === currentIndex ? "w-3.5 bg-brand-700" : "w-2 bg-gray-300"
+              }`}
               aria-label={`Go to slide ${idx + 1}`}
             />
           ))}

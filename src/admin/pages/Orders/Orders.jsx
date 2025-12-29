@@ -93,7 +93,15 @@ export default function Orders() {
           statusColor: getStatusColor(order.status),
           // Format shipping address from API
           address: order.shippingAddress
-            ? `${order.shippingAddress.line1 || ""}${order.shippingAddress.line2 ? ", " + order.shippingAddress.line2 : ""}, ${order.shippingAddress.city || ""}, ${order.shippingAddress.state || ""} - ${order.shippingAddress.postalCode || ""}, ${order.shippingAddress.country || ""}`
+            ? `${order.shippingAddress.line1 || ""}${
+                order.shippingAddress.line2
+                  ? ", " + order.shippingAddress.line2
+                  : ""
+              }, ${order.shippingAddress.city || ""}, ${
+                order.shippingAddress.state || ""
+              } - ${order.shippingAddress.postalCode || ""}, ${
+                order.shippingAddress.country || ""
+              }`
             : "Address not available",
           rawItems: items,
           shippingAddress: order.shippingAddress || null,
@@ -153,7 +161,14 @@ export default function Orders() {
 
     // Define which statuses can transition to which
     const allowedTransitions = {
-      pending: ["pending", "placed", "shipped", "delivered", "cancelled", "returned"],
+      pending: [
+        "pending",
+        "placed",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "returned",
+      ],
       placed: ["placed", "shipped", "delivered", "cancelled", "returned"],
       shipped: ["shipped", "delivered", "returned"],
       delivered: ["delivered", "returned"],
@@ -163,7 +178,7 @@ export default function Orders() {
 
     const allowed = allowedTransitions[statusLower] || [];
 
-    return statusUpdateOptions.map(option => ({
+    return statusUpdateOptions.map((option) => ({
       ...option,
       disabled: !allowed.includes(option.value),
     }));
@@ -171,10 +186,13 @@ export default function Orders() {
 
   async function handleStatusUpdate(orderId, newStatus) {
     // Find the current order to check its status
-    const currentOrder = filteredOrders.find(order => order._id === orderId);
+    const currentOrder = filteredOrders.find((order) => order._id === orderId);
 
     // Prevent API call if status is the same
-    if (currentOrder && currentOrder.status.toLowerCase() === newStatus.toLowerCase()) {
+    if (
+      currentOrder &&
+      currentOrder.status.toLowerCase() === newStatus.toLowerCase()
+    ) {
       toast.error(`Cannot change status from ${newStatus} to ${newStatus}`);
       return;
     }
@@ -185,18 +203,18 @@ export default function Orders() {
       // Call PATCH API to update order status
       await api.patch(`/api/v1/orders/${orderId}/status`, {
         status: newStatus,
-        reason: "" // Optional reason field
+        reason: "", // Optional reason field
       });
 
       // Update local state to reflect the change
-      setFilteredOrders(prevOrders =>
-        prevOrders.map(order =>
+      setFilteredOrders((prevOrders) =>
+        prevOrders.map((order) =>
           order._id === orderId
             ? {
-              ...order,
-              status: newStatus,
-              statusColor: getStatusColor(newStatus)
-            }
+                ...order,
+                status: newStatus,
+                statusColor: getStatusColor(newStatus),
+              }
             : order
         )
       );
@@ -275,7 +293,7 @@ export default function Orders() {
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">{`ORD-${order.id.slice(
+                      <span className="!font-medium text-sm">{`ORD-${order.id.slice(
                         -5
                       )}`}</span>
                       <span
@@ -296,14 +314,13 @@ export default function Orders() {
 
                   {/* AMOUNT + DATE */}
                   <div className="text-right">
-                    <p className="font-semibold text-sm">{order.amount}</p>
+                    <p className="!font-medium text-sm">{order.amount}</p>
                     <p className="text-xs text-gray-500">{order.date}</p>
                   </div>
                 </div>
 
                 {/* UPDATE STATUS DROPDOWN */}
                 <div className="mt-4 border-t border-gray-100 pt-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-
                   {/* STATUS DROPDOWN */}
                   <div className="flex flex-col">
                     <label className="block text-xs text-gray-600 mb-2">
@@ -313,7 +330,9 @@ export default function Orders() {
                       className="w-full sm:w-48 md:max-w-[200px]"
                       options={getAllowedStatusOptions(order.status)}
                       value={order.status}
-                      onChange={(newStatus) => handleStatusUpdate(order._id, newStatus)}
+                      onChange={(newStatus) =>
+                        handleStatusUpdate(order._id, newStatus)
+                      }
                       placeholder="Select Status"
                       disabled={updatingOrderId === order._id}
                     />
@@ -331,9 +350,7 @@ export default function Orders() {
                       <FaRegEye className="w-3 h-3" /> View
                     </button>
                   </div>
-
                 </div>
-
               </div>
             ))}
         </div>

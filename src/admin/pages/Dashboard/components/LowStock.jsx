@@ -7,7 +7,7 @@ export default function LowStockCard({ allProducts = [] }) {
   return (
     <div className="bg-white rounded-xl shadow p-6 md:max-h-[290px] overflow-auto">
       <div className="flex justify-between items-center mb-4">
-        <p className="text-sm font-semibold">Low stock alert</p>
+        <p className="text-sm !font-medium">Low stock alert</p>
       </div>
 
       <div className="space-y-4">
@@ -31,4 +31,3 @@ export default function LowStockCard({ allProducts = [] }) {
     </div>
   );
 }
-

@@ -84,7 +84,7 @@ export default function ContactPage() {
               style={{ backgroundImage: `url(${backgroundContactForm})` }}
             >
               <div>
-                <div className="text-4xl !font-semibold my-5">
+                <div className="text-4xl !font-medium my-5">
                   Contact Information
                 </div>
                 <p className="text-sm text-white/80">
@@ -294,7 +294,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={status === "submitting"}
-                    className="ml-auto inline-flex items-center justify-center px-6 py-3 rounded-md text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                    className="ml-auto inline-flex items-center justify-center px-6 py-3 rounded-md text-sm !font-medium text-white bg-[#7b21b0] hover:bg-[#6a199c] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {status === "submitting" ? "Sending..." : "Send Message"}
                   </button>
@@ -312,7 +312,7 @@ export default function ContactPage() {
       >
         <div className="inset-0 bg-brand-900/30" />
         <div className="mx-auto text-center">
-          <h2 className="text-8xl md:text-[6rem] lg:text-[8rem] xl:text-[10rem] !font-semibold opacity-[50%] text-white/90 tracking-wide pt-[2rem]">
+          <h2 className="text-8xl md:text-[6rem] lg:text-[8rem] xl:text-[10rem] !font-medium opacity-[50%] text-white/90 tracking-wide pt-[2rem]">
             Get In Touch
           </h2>
         </div>

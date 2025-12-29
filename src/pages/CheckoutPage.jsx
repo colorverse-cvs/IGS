@@ -16,7 +16,13 @@ import {
 } from "../features/user/userSlice";
 import CustomPopupModal from "../components/CustomPopupModal";
 
-import { removeFromCart, updateQty, removeItemFromCartAsync, clearCartAsync, updateCartItemQuantityAsync } from "../features/cart/cartSlice";
+import {
+  removeFromCart,
+  updateQty,
+  removeItemFromCartAsync,
+  clearCartAsync,
+  updateCartItemQuantityAsync,
+} from "../features/cart/cartSlice";
 
 /**
  * CheckoutPage Component
@@ -64,14 +70,14 @@ export default function CheckoutPage() {
     if (window.Razorpay) return;
 
     // Load Razorpay script dynamically
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     script.onload = () => {
-      console.log('Razorpay SDK loaded successfully');
+      console.log("Razorpay SDK loaded successfully");
     };
     script.onerror = () => {
-      console.error('Failed to load Razorpay SDK');
+      console.error("Failed to load Razorpay SDK");
     };
     document.body.appendChild(script);
 
@@ -83,10 +89,7 @@ export default function CheckoutPage() {
     };
   }, []);
 
-  const payable = useMemo(
-    () => subtotal,
-    [subtotal]
-  );
+  const payable = useMemo(() => subtotal, [subtotal]);
 
   const [open, setOpen] = useState({
     address: true,
@@ -188,7 +191,6 @@ export default function CheckoutPage() {
         },
       };
 
-
       // 1️⃣ Create order (backend) with manual fetch to handle error statuses manually
       // Use fetch instead of api.post to get raw response first for error handling
       const token = localStorage.getItem("token");
@@ -220,7 +222,6 @@ export default function CheckoutPage() {
         }
         throw new Error(data.message || "Failed to create order");
       }
-
 
       // 2️⃣ Razorpay options
       const options = {
@@ -266,7 +267,9 @@ export default function CheckoutPage() {
 
       // 3️⃣ Check if Razorpay is loaded
       if (!window.Razorpay) {
-        throw new Error("Razorpay SDK not loaded. Please refresh the page and try again.");
+        throw new Error(
+          "Razorpay SDK not loaded. Please refresh the page and try again."
+        );
       }
 
       // Open Razorpay
@@ -317,7 +320,7 @@ export default function CheckoutPage() {
         onClick={onToggle}
         className="w-full flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
       >
-        <span className="font-semibold text-gray-800 flex items-center gap-2">
+        <span className="!font-medium text-gray-800 flex items-center gap-2">
           {title}
         </span>
       </button>
@@ -344,7 +347,7 @@ export default function CheckoutPage() {
       </div>
       <div className="py-6 px-4 md:px-15 lg:px-20">
         <div className="container mx-auto">
-          <div className="text-2xl !font-semibold mb-4">Secure Checkout</div>
+          <div className="text-2xl !font-medium mb-4">Secure Checkout</div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left: Steps */}
             <div className="lg:col-span-2">
@@ -437,7 +440,7 @@ export default function CheckoutPage() {
                               Material: {i.material || "-"} &nbsp; Size:{" "}
                               {i.size || "-"}
                             </div>
-                            <div className="text-brand-700 font-semibold">
+                            <div className="text-brand-700 !font-medium">
                               ₹{i.price}
                             </div>
                             <div className="flex gap-5 py-2">
@@ -449,11 +452,11 @@ export default function CheckoutPage() {
                                     keepScroll();
                                     i.qty > 1
                                       ? dispatch(
-                                        updateCartItemQuantityAsync({
-                                          productId: i.id,
-                                          quantity: i.qty - 1,
-                                        })
-                                      )
+                                          updateCartItemQuantityAsync({
+                                            productId: i.id,
+                                            quantity: i.qty - 1,
+                                          })
+                                        )
                                       : dispatch(removeItemFromCartAsync(i.id));
                                   }}
                                 >
@@ -508,7 +511,7 @@ export default function CheckoutPage() {
                             </label> */}
                             <div className="text-xs text-gray-500 mt-1">
                               Estimated Delivery –{" "}
-                              <span className="font-semibold">
+                              <span className="!font-medium">
                                 By {formatEta(etaExact)}, 8am - 10pm
                               </span>
                             </div>
@@ -518,7 +521,7 @@ export default function CheckoutPage() {
                         <div className="text-right font-medium">
                           <div>
                             Subtotal (<span>{i.qty}</span> item):{" "}
-                            <span className="text-brand-700 font-semibold">
+                            <span className="text-brand-700 !font-medium">
                               ₹{lineTotal}
                             </span>
                           </div>
@@ -573,7 +576,7 @@ export default function CheckoutPage() {
             {/* Right: Pricing Summary */}
             <div>
               <div className="border border-gray-200 rounded-lg p-4 sticky top-2/12 bg-white shadow">
-                <div className="font-semibold mb-3 text-gray-800">
+                <div className="!font-medium mb-3 text-gray-800">
                   Pricing Details
                 </div>
                 <div className="text-sm space-y-2">
@@ -591,7 +594,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <hr />
-                  <div className="flex justify-between font-semibold">
+                  <div className="flex justify-between !font-medium">
                     <span>Total Amount:</span>
                     <span>₹{payable}</span>
                   </div>

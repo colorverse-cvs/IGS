@@ -283,7 +283,7 @@ export default function Navbar() {
                       onToggle={setIsProductsDropdownOpen}
                       align="left"
                       trigger={(isOpen) => (
-                        <button className="text-gray-700 hover:text-brand-700 hover:!font-semibold lg:px-3 lg:py-3 text-sm font-medium transition flex items-center gap-1 cursor-pointer">
+                        <button className="text-gray-700 hover:text-brand-700 hover:!font-medium lg:px-3 lg:py-3 text-sm font-medium transition flex items-center gap-1 cursor-pointer">
                           {link.name}
                           <ChevronDown
                             size={16}
@@ -310,7 +310,7 @@ export default function Navbar() {
                   <Link
                     key={link.name}
                     to={link.path}
-                    className="text-gray-700 hover:text-brand-700 lg:px-3 lg:py-3 text-sm font-medium transition hover:!font-semibold"
+                    className="text-gray-700 hover:text-brand-700 lg:px-3 lg:py-3 text-sm font-medium transition hover:!font-medium"
                   >
                     {link.name}
                   </Link>
@@ -337,7 +337,7 @@ export default function Navbar() {
                 >
                   <ShoppingCart size={20} />
                   {totalItems > 0 && (
-                    <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1.5 text-xs !font-semibold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-brand-600 rounded-circle min-w-4 h-4 cursor-pointer">
+                    <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1.5 text-xs !font-medium leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-brand-600 rounded-circle min-w-4 h-4 cursor-pointer">
                       {totalItems > 99 ? "99+" : totalItems}
                     </span>
                   )}
@@ -353,7 +353,7 @@ export default function Navbar() {
                     <button className="flex items-center gap-2 px-3 py-2 transition">
                       <span className="flex flex-col items-start text-gray-700 cursor-pointer hover:text-brand-700">
                         <span className="text-xs font-medium">Hey,</span>
-                        <span className="flex items-center gap-1 !text-sm !font-semibold">
+                        <span className="flex items-center gap-1 !text-sm !font-medium">
                           {user.profile.name}
                           <ChevronDown
                             size={16}
@@ -494,7 +494,7 @@ export default function Navbar() {
                     <button className="flex items-center gap-2 px-3 py-2 transition">
                       <span className="flex flex-col items-start text-gray-700 cursor-pointer">
                         <span className="text-xs font-medium">Hey,</span>
-                        <span className="cursor-pointer flex items-center gap-1 !text-sm !font-semibold">
+                        <span className="cursor-pointer flex items-center gap-1 !text-sm !font-medium">
                           {user.profile.name}
                           <ChevronDown
                             size={16}
@@ -592,7 +592,7 @@ export default function Navbar() {
                     <button className="p-2 rounded-lg hover:bg-gray-100 transition cursor-pointer">
                       <User
                         size={20}
-                        className="text-brand-700 hover:!font-bold"
+                        className="text-brand-700 hover:!font-medium"
                       />
                     </button>
                   )}
@@ -768,7 +768,7 @@ export default function Navbar() {
                 <div className="relative">
                   <ShoppingCart size={24} />
                   {totalItems > 0 && (
-                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs !font-semibold text-white bg-brand-700 rounded-full min-w-5 h-5 ">
+                    <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs !font-medium text-white bg-brand-700 rounded-full min-w-5 h-5 ">
                       {totalItems > 99 ? "99+" : totalItems}
                     </span>
                   )}
@@ -819,7 +819,7 @@ export default function Navbar() {
         aria-label="Mobile menu"
       >
         <div className="flex justify-between items-center p-5">
-          <div className="text-lg font-semibold text-gray-700">Menu</div>
+          <div className="text-lg !font-medium text-gray-700">Menu</div>
           <button
             onClick={toggleMenu}
             className="p-2 rounded-full text-gray-500 hover:text-brand-700 hover:bg-brand-50 transition cursor-pointer"
@@ -839,7 +839,7 @@ export default function Navbar() {
               onClick={() =>
                 setIsMobileProductsDropdownOpen(!isMobileProductsDropdownOpen)
               }
-              className="w-full text-left text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 px-3 py-2 rounded-lg transition flex justify-between items-center cursor-pointer"
+              className="w-full text-left text-sm !font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-700 px-3 py-2 rounded-lg transition flex justify-between items-center cursor-pointer"
             >
               Products{" "}
               <ChevronDown
@@ -873,7 +873,7 @@ export default function Navbar() {
                 key={link.name}
                 to={link.path}
                 onClick={toggleMenu}
-                className="block text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 px-3 py-2 rounded-lg transition"
+                className="block text-sm !font-medium text-gray-700 hover:bg-brand-50 hover:text-brand-700 px-3 py-2 rounded-lg transition"
               >
                 {link.name}
               </Link>
@@ -888,7 +888,7 @@ export default function Navbar() {
                 toggleMenu();
                 toggleCart();
               }}
-              className="flex items-center text-brand-700 font-semibold hover:text-brand-900 transition text-sm cursor-pointer"
+              className="flex items-center text-brand-700 !font-medium hover:text-brand-900 transition text-sm cursor-pointer"
             >
               View Cart ({totalItems})
             </button>
@@ -901,7 +901,7 @@ export default function Navbar() {
                 setAuthTab("signup");
                 setIsAuthOpen(true);
               }}
-              className="w-full text-center px-4 py-3 text-sm !font-semibold text-white bg-brand-700 rounded-lg hover:bg-brand-800 transition cursor-pointer"
+              className="w-full text-center px-4 py-3 text-sm !font-medium text-white bg-brand-700 rounded-lg hover:bg-brand-800 transition cursor-pointer"
             >
               Sign Up
             </button>
