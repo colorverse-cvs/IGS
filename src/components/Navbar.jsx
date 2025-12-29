@@ -589,7 +589,7 @@ export default function Navbar() {
                   onToggle={setIsProfileDropdownOpen}
                   align="right"
                   trigger={(isOpen) => (
-                    <button className="p-2 rounded-lg hover:bg-gray-100 transition cursor-pointer">
+                    <button className="p-2 rounded-lg bg-gray-50 border border-gray-200 transition cursor-pointer">
                       <User
                         size={20}
                         className="text-brand-700 hover:!font-medium"
