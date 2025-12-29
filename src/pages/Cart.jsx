@@ -319,7 +319,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                   onClick={handleClearCart}
                   className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
                 >
-                  <X size={16} className="mr-2" /> Clear All Items
+                  <X size={16} className="mr-2 hover:scale-110 transition-transform" /> Clear All Items
                 </button>
               </div>
             )}

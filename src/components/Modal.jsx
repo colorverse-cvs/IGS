@@ -61,10 +61,10 @@ export default function Modal({
             <div className="text-xl !font-medium text-gray-900">{title}</div>
             <button
               onClick={onClose}
-              className="absolute right-1 top-1 md:right-5 md:top-5 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition cursor-pointer"
+              className="absolute right-1 top-1 md:right-5 md:top-5 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 cursor-pointer"
               aria-label="Close modal"
             >
-              <X size={24} />
+              <X size={24} className="hover:scale-110 transition-transform" />
             </button>
           </div>
         )}

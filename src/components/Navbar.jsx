@@ -250,7 +250,7 @@ export default function Navbar() {
           Shows: Logo, navigation links, product dropdown, search, auth buttons, cart icon
           Features: Sticky positioning with glass blur effect on scroll */}
       <nav
-        className={`hidden lg:block sticky top-0 z-30 border-b transition-colors ${
+        className={`hidden lg:block sticky top-0 z-60 border-b transition-colors ${
           isScrolled
             ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
             : "bg-white border-gray-100"
@@ -451,7 +451,7 @@ export default function Navbar() {
           Shows: Logo on left, search and auth on right (on md+), responsive bottom search
           Features: Sticky positioning with blur effect on scroll */}
       <nav
-        className={`lg:hidden fixed top-0 left-0 right-0 z-40 border-b border-gray-200 ${
+        className={`lg:hidden fixed top-0 left-0 right-0 z-50 border-b border-gray-200 ${
           isScrolled
             ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
             : "bg-white border-gray-100"
@@ -822,10 +822,10 @@ export default function Navbar() {
           <div className="text-lg !font-medium text-gray-700">Menu</div>
           <button
             onClick={toggleMenu}
-            className="p-2 rounded-full text-gray-500 hover:text-brand-700 hover:bg-brand-50 transition cursor-pointer"
+            className="p-2 rounded-full text-gray-500 hover:text-brand-700 hover:bg-brand-50 cursor-pointer"
             aria-label="Close menu"
           >
-            <X size={24} />
+            <X size={24} className="hover:scale-110 transition-transform" />
           </button>
         </div>
 

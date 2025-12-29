@@ -246,7 +246,7 @@ export default function FilterSidebar({
             onClick={onResetFilters}
             className="text-sm text-brand-600 hover:text-brand-700 flex items-center cursor-pointer"
           >
-            <X size={14} className="mr-1" />
+            <X size={14} className="mr-1 hover:scale-110 transition-transform" />
             Reset filters
           </button>
         </div>
@@ -654,7 +654,7 @@ export default function FilterSidebar({
             onClick={onResetFilters}
             className="text-sm text-brand-600 hover:text-brand-700 flex items-center w-[50%] justify-center border border-gray-300 hover:border-brand-500 rounded-lg px-4 py-3 cursor-pointer"
           >
-            <X size={14} className="mr-1" />
+            <X size={14} className="mr-1 hover:scale-110 transition-transform" />
             Reset filters
           </button>
           <button

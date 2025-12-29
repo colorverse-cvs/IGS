@@ -254,10 +254,10 @@ export default function EditProductModal({
 
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              className="text-gray-500 hover:text-gray-700 cursor-pointer"
               aria-label="Close"
             >
-              <X size={18} />
+              <X size={18} className="hover:scale-110 transition-transform" />
             </button>
           </div>
 
@@ -307,7 +307,7 @@ export default function EditProductModal({
                     className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1 cursor-pointer"
                     aria-label="Remove image"
                   >
-                    <X size={14} />
+                    <X size={14} className="hover:scale-110 transition-transform" />
                   </button>
                 </div>
               ))}

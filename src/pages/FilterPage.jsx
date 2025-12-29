@@ -456,7 +456,7 @@ export default function FilterPage() {
                   className="p-2 text-gray-400 hover:text-gray-600 cursor-pointer"
                   aria-label="Close"
                 >
-                  <X size={24} />
+                  <X size={24} className="hover:scale-110 transition-transform" />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto">

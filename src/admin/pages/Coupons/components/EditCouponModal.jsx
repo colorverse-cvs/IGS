@@ -16,9 +16,9 @@ export default function EditCouponModal({ onClose }) {
           </p>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-800 cursor-pointer"
+            className="text-gray-500 hover:text-gray-800 cursor-pointer "
           >
-            <X />
+            <X className="hover:scale-110 transition-transform" />
           </button>
         </div>
 

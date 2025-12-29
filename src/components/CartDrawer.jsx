@@ -64,10 +64,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="cursor-pointer p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
+            className="cursor-pointer p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
             aria-label="Close cart"
           >
-            <X size={24} />
+            <X size={24} className="hover:scale-110 transition-transform" />
           </button>
         </div>
 
