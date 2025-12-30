@@ -7,17 +7,17 @@ import {
 
 /**
  * RelatedCategoryPage Component
- * 
+ *
  * Displays a carousel of related products from the same category.
  * Uses responsive design: shows carousel on mobile/tablet, static grid on desktop if items are few.
- * 
+ *
  * For beginners:
  * - Responsive carousel that adapts to screen size
  * - Desktop (lg+): Shows static grid if items <= 4, otherwise shows carousel
  * - Tablet/Mobile: Always shows carousel
  * - Supports drag/touch gestures for navigation
  * - Auto-plays through items at configured intervals
- * 
+ *
  * @param {Array} items - Array of product objects to display
  */
 export default function RelatedCategoryPage({ items = [] }) {
@@ -137,7 +137,7 @@ export default function RelatedCategoryPage({ items = [] }) {
   return (
     <section className="py-12 px-4 md:px-15 lg:px-20">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-800 pb-10 text-center">
+        <h2 className="text-3xl text-gray-800 pb-10 text-center">
           Statues You Might Also Like
         </h2>
 

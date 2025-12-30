@@ -34,7 +34,7 @@ export default function RecentOrderCard({ setActivePage }) {
     if (!orders) return [];
 
     // Taking first 4
-    return orders.slice(0, 4).map(order => {
+    return orders.slice(0, 4).map((order) => {
       const user = order.user || {};
       const profile = user.profile || {};
       const items = order.items || [];
@@ -43,23 +43,33 @@ export default function RecentOrderCard({ setActivePage }) {
       const amountValue = order.total || 0;
 
       const itemsSummary = items
-        .map(item => `${item.product?.name || 'Item'} (x${item.quantity})`)
+        .map((item) => `${item.product?.name || "Item"} (x${item.quantity})`)
         .join(", ");
 
       const getStatusColor = (status) => {
         switch (String(status).toLowerCase()) {
-          case 'pending': return "bg-orange-100 text-orange-600";
-          case 'packed': return "bg-blue-100 text-blue-600";
-          case 'shipped': return "bg-indigo-100 text-indigo-600";
-          case 'delivered': return "bg-green-100 text-green-600";
-          case 'cancelled': return "bg-red-100 text-red-600";
-          default: return "bg-gray-100 text-gray-600";
+          case "pending":
+            return "bg-orange-100 text-orange-600";
+          case "packed":
+            return "bg-blue-100 text-blue-600";
+          case "shipped":
+            return "bg-indigo-100 text-indigo-600";
+          case "delivered":
+            return "bg-green-100 text-green-600";
+          case "cancelled":
+            return "bg-red-100 text-red-600";
+          default:
+            return "bg-gray-100 text-gray-600";
         }
       };
 
       // Address formatting
       const address = order.shippingAddress
-        ? `${order.shippingAddress.line1 || ''}, ${order.shippingAddress.line2 || ''}, ${order.shippingAddress.city || ''}, ${order.shippingAddress.state || ''} - ${order.shippingAddress.pincode || ''}`
+        ? `${order.shippingAddress.line1 || ""}, ${
+            order.shippingAddress.line2 || ""
+          }, ${order.shippingAddress.city || ""}, ${
+            order.shippingAddress.state || ""
+          } - ${order.shippingAddress.pincode || ""}`
         : "Address details not available";
 
       return {
@@ -67,14 +77,21 @@ export default function RecentOrderCard({ setActivePage }) {
         fullId: order._id || "N/A", // Keep full ID for modal/invoice
         status: order.status || "Pending",
         statusColor: getStatusColor(order.status),
-        customer: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || "Guest",
+        customer:
+          `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+          user.email ||
+          "Guest",
         mobileNumber: profile.mobile || user.mobile || "N/A",
         items: itemsSummary || "No items",
         amount: `₹${amountValue.toLocaleString()}`, // Display with symbol in card
         rawAmount: amountValue.toLocaleString(), // Raw for modal (it adds symbol)
-        date: order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-IN", {
-          year: 'numeric', month: 'short', day: 'numeric'
-        }) : "N/A",
+        date: order.createdAt
+          ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+          : "N/A",
         paymentMethod: order.paymentMethod || "N/A",
         address: address,
       };
@@ -86,9 +103,9 @@ export default function RecentOrderCard({ setActivePage }) {
       <div className="bg-white rounded-xl shadow p-4 md:p-5 md:max-h-[500px] overflow-y-auto w-full">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <p className="text-lg font-semibold">Recent Orders</p>
+          <p className="text-lg !font-medium">Recent Orders</p>
           <button
-            className="text-purple-600 font-medium hover:underline cursor-pointer text-sm"
+            className="text-brand-600 font-medium hover:underline cursor-pointer text-sm"
             onClick={handleViewAllClick}
           >
             View All
@@ -107,7 +124,10 @@ export default function RecentOrderCard({ setActivePage }) {
               >
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm"> {`ORD-${order.id.slice(-5)}`}</span>
+                    <span className="!font-medium text-sm">
+                      {" "}
+                      {`ORD-${order.id.slice(-5)}`}
+                    </span>
                     <span
                       className={`text-xs px-2 py-1 rounded-full ${order.statusColor}`}
                     >
@@ -120,13 +140,15 @@ export default function RecentOrderCard({ setActivePage }) {
                   <p className="text-sm text-gray-700 font-medium pt-1">
                     {order.customer}
                   </p>
-                  <p className="text-xs text-gray-500 line-clamp-1">{order.items}</p>
+                  <p className="text-xs text-gray-500 line-clamp-1">
+                    {order.items}
+                  </p>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <p className="font-semibold text-sm">{order.amount}</p>
+                  <p className="!font-medium text-sm">{order.amount}</p>
                   <button
-                    className="flex items-center gap-1 text-purple-600 border border-purple-600 px-3 py-1.5 rounded-md text-xs hover:bg-purple-50"
+                    className="flex items-center gap-1 text-brand-600 border border-brand-600 px-3 py-1.5 rounded-md text-xs hover:bg-brand-50 cursor-pointer"
                     onClick={() => handleOpenViewOrderModal(order)}
                   >
                     <FaRegEye className="w-3 h-3" /> View

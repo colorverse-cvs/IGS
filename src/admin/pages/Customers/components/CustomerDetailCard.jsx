@@ -7,10 +7,14 @@ export default function CustomerDetailCard({ customers = [] }) {
     const currentYear = now.getFullYear();
 
     const total = customers.length;
-    const active = customers.filter(c => String(c.Status).toLowerCase() === "active").length;
-    const vip = customers.filter(c => String(c.Status).toLowerCase() === "vip").length;
+    const active = customers.filter(
+      (c) => String(c.Status).toLowerCase() === "active"
+    ).length;
+    const vip = customers.filter(
+      (c) => String(c.Status).toLowerCase() === "vip"
+    ).length;
 
-    const newThisMonth = customers.filter(c => {
+    const newThisMonth = customers.filter((c) => {
       if (!c.rawDate) return false;
       const d = new Date(c.rawDate);
       return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
@@ -32,10 +36,8 @@ export default function CustomerDetailCard({ customers = [] }) {
           className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6"
         >
           <div>
-            <p className="text-sm text-gray-500 font-medium">
-              {card.title}
-            </p>
-            <p className="text-2xl font-bold text-gray-900 mt-2">
+            <p className="text-sm text-gray-500 font-medium">{card.title}</p>
+            <p className="text-2xl !font-medium text-gray-900 mt-2">
               {card.value.toLocaleString()}
             </p>
           </div>

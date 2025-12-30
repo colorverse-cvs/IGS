@@ -20,7 +20,6 @@ import Dropdown from "../components/Dropdown";
 import CustomCalendar from "../components/CustomCalendar";
 import { ChevronDown } from "lucide-react";
 
-
 export default function Profile() {
   const user = useSelector((s) => s.user);
   const orders = useSelector((s) => s.orders?.orders || []);
@@ -60,7 +59,9 @@ export default function Profile() {
 
   // Profile form state
   const [name, setName] = React.useState(user?.profile?.name || "");
-  const [firstName, setFirstName] = React.useState(user?.profile?.firstName || "");
+  const [firstName, setFirstName] = React.useState(
+    user?.profile?.firstName || ""
+  );
   const [lastName, setLastName] = React.useState(user?.profile?.lastName || "");
   const [mobile, setMobile] = React.useState(user?.profile?.mobile || "");
   const [email, setEmail] = React.useState(user?.profile?.email || "");
@@ -264,17 +265,18 @@ export default function Profile() {
   };
 
   return (
-    <div className="mx-auto py-6 px-4 md:px-15 lg:px-20 md:pb-6 pb-28 min-h-[30vh] xl:min-h-[70vh]">
+    <div className="mx-auto py-6 px-4 md:px-15 lg:px-20 md:pb-6 pb-28 min-h-[30dvh] xl:min-h-[70dvh]">
       {/* <div className="py-1">
         <Breadcrumb items={[{ label: "Home", link: "/" }, { label: "Profile" }]} />
       </div> */}
       {/* Tabs - Desktop View */}
       <div className="hidden md:flex gap-6 text-sm mb-6">
         <button
-          className={`${tab === "profile"
-            ? "border-b-2 border-brand-700 text-brand-700"
-            : "text-gray-600"
-            }`}
+          className={`${
+            tab === "profile"
+              ? "border-b-2 border-brand-700 text-brand-700 cursor-pointer"
+              : "text-gray-600"
+          }`}
           onClick={() => setTab("profile")}
         >
           Your Profile
@@ -289,10 +291,11 @@ export default function Profile() {
           Recent Orders
         </button> */}
         <button
-          className={`${tab === "addresses"
-            ? "border-b-2 border-brand-700 text-brand-700"
-            : "text-gray-600"
-            }`}
+          className={`${
+            tab === "addresses"
+              ? "border-b-2 border-brand-700 text-brand-700 cursor-pointer"
+              : "text-gray-600"
+          }`}
           onClick={() => setTab("addresses")}
         >
           Saved Addresses
@@ -311,10 +314,11 @@ export default function Profile() {
       {/* Tabs - Mobile View (Sticky Bottom) */}
       <div className="md:hidden fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 flex gap-2 px-2 py-2 z-40 overflow-x-auto">
         <button
-          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "profile"
-            ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
-            : "bg-white text-gray-600 border border-gray-300"
-            }`}
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 cursor-pointer ${
+            tab === "profile"
+              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+              : "bg-white text-gray-600 border border-gray-300"
+          }`}
           onClick={() => setTab("profile")}
         >
           Profile
@@ -329,10 +333,11 @@ export default function Profile() {
           Orders
         </button> */}
         <button
-          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 ${tab === "addresses"
-            ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
-            : "bg-white text-gray-600 border border-gray-300"
-            }`}
+          className={`px-3 py-2 rounded text-xs font-medium transition whitespace-nowrap flex-shrink-0 cursor-pointer ${
+            tab === "addresses"
+              ? "bg-gray-100 text-gray-900 border-2 border-gray-200"
+              : "bg-white text-gray-600 border border-gray-300"
+          }`}
           onClick={() => setTab("addresses")}
         >
           Saved Addresses
@@ -350,13 +355,14 @@ export default function Profile() {
 
       {tab === "profile" && (
         <div className="bg-white py-4 max-w-5xl">
-          <p className="text-2xl font-bold mb-4">Profile</p>
+          <p className="text-2xl !font-medium mb-4">Profile</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-gray-500 block text-sm mb-1">Name *</label>
               <input
-                className={`w-full border rounded px-3 py-2 ${profileErrors.name ? "border-red-500" : "border-gray-200"
-                  } bg-gray-50 cursor-not-allowed`}
+                className={`w-full border rounded px-3 py-2 ${
+                  profileErrors.name ? "border-red-500" : "border-gray-200"
+                } bg-gray-50 cursor-not-allowed`}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
@@ -374,8 +380,9 @@ export default function Profile() {
                 Mobile Number *
               </label>
               <input
-                className={`w-full border rounded px-3 py-2 ${profileErrors.mobile ? "border-red-500" : "border-gray-200"
-                  } bg-gray-50 cursor-not-allowed`}
+                className={`w-full border rounded px-3 py-2 ${
+                  profileErrors.mobile ? "border-red-500" : "border-gray-200"
+                } bg-gray-50 cursor-not-allowed`}
                 value={mobile}
                 onChange={(e) =>
                   setMobile(onlyDigits(e.target.value).slice(0, 10))
@@ -394,8 +401,9 @@ export default function Profile() {
             <div>
               <label className="text-gray-500 block text-sm mb-1">Email</label>
               <input
-                className={`w-full border rounded px-3 py-2 ${profileErrors.email ? "border-red-500" : "border-gray-200"
-                  } bg-gray-50 cursor-not-allowed`}
+                className={`w-full border rounded px-3 py-2 ${
+                  profileErrors.email ? "border-red-500" : "border-gray-200"
+                } bg-gray-50 cursor-not-allowed`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="demo@email.com"
@@ -459,8 +467,9 @@ export default function Profile() {
                     Name *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${profileErrors.name ? "border-red-500" : "border-gray-200"
-                      }`}
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500 transition ${
+                      profileErrors.name ? "border-red-500" : "border-gray-200"
+                    }`}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your name"
@@ -471,10 +480,11 @@ export default function Profile() {
                     Mobile Number *
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${profileErrors.mobile
-                      ? "border-red-500"
-                      : "border-gray-200"
-                      }`}
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500 transition ${
+                      profileErrors.mobile
+                        ? "border-red-500"
+                        : "border-gray-200"
+                    }`}
                     value={mobile}
                     onChange={(e) =>
                       setMobile(onlyDigits(e.target.value).slice(0, 10))
@@ -488,8 +498,9 @@ export default function Profile() {
                     Email
                   </label>
                   <input
-                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 transition ${profileErrors.email ? "border-red-500" : "border-gray-200"
-                      }`}
+                    className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500 transition ${
+                      profileErrors.email ? "border-red-500" : "border-gray-200"
+                    }`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="demo@email.com"
@@ -536,7 +547,7 @@ export default function Profile() {
 
       {tab === "addresses" && (
         <div className="max-w-4xl">
-          <p className="text-2xl font-bold mb-4">Saved Addresses</p>
+          <p className="text-2xl !font-medium mb-4">Saved Addresses</p>
           <div className="space-y-4">
             {addresses.map((addr) => (
               <div
@@ -559,13 +570,23 @@ export default function Profile() {
                         </span>
                       )}
                       {addr.isDefault && (
-                        <span className="ml-2 text-xs bg-brand-50 px-2 py-0.5 rounded border border-brand-800 text-brand-900 font-extrabold ">
+                        <span className="ml-2 text-xs bg-brand-50 px-2 py-0.5 rounded border border-brand-800 text-brand-900 !font-medium ">
                           Default address
                         </span>
                       )}
                     </div>
                     <div className="text-gray-600">
-                      Delivery address: {addr.addressLine || [addr.line1, addr.line2, addr.city, addr.state, addr.postalCode ? `- ${addr.postalCode}` : ""].filter(Boolean).join(", ")}
+                      Delivery address:{" "}
+                      {addr.addressLine ||
+                        [
+                          addr.line1,
+                          addr.line2,
+                          addr.city,
+                          addr.state,
+                          addr.postalCode ? `- ${addr.postalCode}` : "",
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
                     </div>
                     <div className="text-gray-600">
                       Mobile number: {addr.mobile || addr.phone}
@@ -575,7 +596,7 @@ export default function Profile() {
                     )}
                     <div className="mt-2 flex gap-3">
                       <button
-                        className="text-xs text-brand-700 cursor-pointer"
+                        className="text-xs text-brand-700 !font-medium cursor-pointer"
                         onClick={() => {
                           setEditAddress(addr);
                           setIsAddressModalOpen(true);
@@ -584,7 +605,7 @@ export default function Profile() {
                         Edit
                       </button>
                       <button
-                        className="text-xs text-brand-700 cursor-pointer"
+                        className="text-xs text-brand-700 !font-medium cursor-pointer"
                         onClick={() => {
                           const addressId = addr._id || addr.id;
                           dispatch(removeAddressAsync(addressId));
@@ -594,7 +615,7 @@ export default function Profile() {
                       </button>
                       {!addr.isDefault && (
                         <button
-                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 font-semibold cursor-pointer"
+                          className="ml-auto text-xs border border-gray-300 text-gray-700 rounded px-2 py-1 !font-medium cursor-pointer"
                           onClick={() => {
                             const addressId = addr._id || addr.id;
                             dispatch(setDefaultAddressAsync(addressId));
@@ -630,10 +651,12 @@ export default function Profile() {
               onSubmit={(a) => {
                 if (editAddress) {
                   const addressId = editAddress._id || editAddress.id;
-                  dispatch(updateAddressAsync({
-                    addressId: addressId,
-                    addressData: a
-                  }));
+                  dispatch(
+                    updateAddressAsync({
+                      addressId: addressId,
+                      addressData: a,
+                    })
+                  );
                 } else {
                   // creating new address via API
                   dispatch(addAddressAsync(a));
@@ -645,10 +668,9 @@ export default function Profile() {
         </div>
       )}
 
-
       {/* {tab === "orders" && (
         <div className="space-y-6">
-          <p className="text-2xl font-bold mb-4">Recent orders</p>
+          <p className="text-2xl !font-medium mb-4">Recent orders</p>
           {orders.map((order) => (
             <div key={order.id} className="border rounded-lg overflow-hidden">
               <div className="grid grid-cols-12 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-700">
@@ -676,7 +698,7 @@ export default function Profile() {
                         Material: {it.material || "-"} &nbsp; Size:{" "}
                         {it.size || "-"}
                       </div>
-                      <div className="text-brand-700 font-semibold">
+                      <div className="text-brand-700 !font-medium">
                         ₹{it.price}
                       </div>
                     </div>
@@ -702,10 +724,9 @@ export default function Profile() {
         </div>
       )} */}
 
-
       {/* {tab === "payments" && (
         <div className="max-w-4xl">
-          <p className="text-2xl font-bold mb-4">Payment Options</p>
+          <p className="text-2xl !font-medium mb-4">Payment Options</p>
           <div className="space-y-3">
             {cards.map((c) => {
               const isOpen = openCardId === c.id;
@@ -724,7 +745,7 @@ export default function Profile() {
                         <div className="text-gray-600">{c.label}</div>
                       </div>
                       {billingCard?.id === c.id && (
-                        <span className="ml-2 px-2 py-1 text-xs rounded border-2 border-brand-300 bg-brand-50 text-brand-700 font-bold">
+                        <span className="ml-2 px-2 py-1 text-xs rounded border-2 border-brand-300 bg-brand-50 text-brand-700 !font-medium">
                           Billing card
                         </span>
                       )}
@@ -964,7 +985,6 @@ export default function Profile() {
           </Modal>
         </div>
       )} */}
-
     </div>
   );
 }

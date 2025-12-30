@@ -17,7 +17,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   const materialType = useMemo(
     () => [
       { type: "Marble", subType: "Hand-carved" },
-      { type: "Resin", subType: "High-Density" }
+      { type: "Resin", subType: "High-Density" },
     ],
     []
   );
@@ -27,7 +27,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       { type: "Small", value: "small", subType: "Under 6 in" },
       { type: "Medium", value: "medium", subType: "6 in - 10 in" },
       { type: "Large", value: "large", subType: "10 in - 15 in" },
-      { type: "Extra Large", value: "x-large", subType: "Above 15 in" }
+      { type: "Extra Large", value: "x-large", subType: "Above 15 in" },
     ],
     []
   );
@@ -42,14 +42,14 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     dimensions: {
       sizeCategory: "",
       height: "",
-      width: ""
+      width: "",
     },
     attributes: {
       primaryMaterial: "",
       origin: "",
       finish: "",
-      material: ""
-    }
+      material: "",
+    },
   });
 
   /* ---------------- FETCH CATEGORIES ---------------- */
@@ -83,21 +83,21 @@ export default function AddProductModal({ onClose, onProductAdded }) {
         ...prev,
         dimensions: {
           ...prev.dimensions,
-          [name]: allowOnlyNumbers(value)
-        }
+          [name]: allowOnlyNumbers(value),
+        },
       }));
     } else if (["primaryMaterial", "origin", "finish"].includes(name)) {
       setFormData((prev) => ({
         ...prev,
         attributes: {
           ...prev.attributes,
-          [name]: value
-        }
+          [name]: value,
+        },
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: numericFields.includes(name) ? allowOnlyNumbers(value) : value
+        [name]: numericFields.includes(name) ? allowOnlyNumbers(value) : value,
       }));
     }
 
@@ -126,7 +126,8 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   const validateForm = () => {
     const newErrors = {};
 
-    if (files.length === 0) newErrors.image = "At least one product image is required";
+    if (files.length === 0)
+      newErrors.image = "At least one product image is required";
     if (!formData.name.trim()) newErrors.name = "Product name is required";
     if (!prodCategory) newErrors.category = "Category is required";
     if (!formData.listPrice) newErrors.listPrice = "List Price is required";
@@ -173,7 +174,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       // Calculate discounted price from listPrice and discount percentage
       const listPrice = Number(formData.listPrice);
       const discountPercent = Number(formData.discount || 0);
-      const discountedPrice = listPrice - (listPrice * discountPercent / 100);
+      const discountedPrice = listPrice - (listPrice * discountPercent) / 100;
 
       formDataToSend.append("name", formData.name);
       formDataToSend.append("description", formData.description);
@@ -190,7 +191,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
       const res = await fetch(`${BASE_URL}/api/v1/products`, {
         method: "POST",
-        body: formDataToSend
+        body: formDataToSend,
       });
 
       const data = await res.json();
@@ -208,42 +209,46 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   /* ---------------- UI ---------------- */
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50">
-      <div className="bg-white w-full md:w-[800px] rounded-t-2xl md:rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
-
+      <div className="bg-white w-full md:w-[800px] rounded-t-2xl md:rounded-2xl shadow-xl flex flex-col max-h-[90dvh]">
         {/* HEADER */}
         <div className="p-6 border-b border-gray-200">
           {/* Top row: Title + Close */}
           <div className="flex items-center justify-between">
-            <p className="text-base font-semibold text-gray-900">
+            <p className="text-base !font-medium text-gray-900">
               Add New Product
             </p>
 
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              className="text-gray-500 hover:text-gray-700 cursor-pointer"
               aria-label="Close"
             >
-              <X size={18} />
+              <X size={18} className="hover:scale-110 transition-transform" />
             </button>
           </div>
 
           {/* Warning below title */}
           <div className="mt-2 flex items-start gap-2">
             <span className="text-sm text-red-600">
-              <strong>Warning:</strong> Please fill all details before adding the product.
+              <strong>Warning:</strong> Please fill all details before adding
+              the product.
             </span>
           </div>
         </div>
 
-
         {/* BODY */}
-        <div className="p-6 overflow-y-auto space-y-5 max-h-[70vh]">
-
+        <div className="p-6 overflow-y-auto space-y-5 max-h-[70dvh]">
           {/* MULTIPLE IMAGES */}
           <div>
             <label className="text-sm mb-2 block">Product Images</label>
 
-            <input type="file" hidden ref={fileInputRef} multiple onChange={handleFileChange} />
+            <input
+              type="file"
+              hidden
+              ref={fileInputRef}
+              multiple
+              onChange={handleFileChange}
+            />
 
             {/* Upload Box */}
             <div
@@ -257,12 +262,15 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-6 gap-3 mt-3">
               {previews.map((img, index) => (
                 <div key={index} className="relative w-20 h-20">
-                  <img src={img} className="w-full h-full object-cover rounded-xl" />
+                  <img
+                    src={img}
+                    className="w-full h-full object-cover rounded-xl"
+                  />
                   <button
                     onClick={() => handleRemoveImage(index)}
-                    className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1  "
+                    className="absolute top-2 right-2 bg-white rounded-full shadow p-1 cursor-pointer"
                   >
-                    <X size={14} />
+                    <X size={14} className="hover:scale-110 transition-transform" />
                   </button>
                 </div>
               ))}
@@ -271,12 +279,39 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             {errors.image && <ErrorText text={errors.image} />}
           </div>
 
-          <Input required label="Product Name" name="name" value={formData.name} onChange={handleChange} error={errors.name} />
-          <Input label="Description" name="description" value={formData.description} onChange={handleChange} />
+          <Input
+            required
+            label="Product Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            error={errors.name}
+          />
+          <Input
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+          />
 
-          <Input label="Primary Material" name="primaryMaterial" value={formData.attributes.primaryMaterial} onChange={handleChange} />
-          <Input label="Finish" name="finish" value={formData.attributes.finish} onChange={handleChange} />
-          <Input label="Origin" name="origin" value={formData.attributes.origin} onChange={handleChange} />
+          <Input
+            label="Primary Material"
+            name="primaryMaterial"
+            value={formData.attributes.primaryMaterial}
+            onChange={handleChange}
+          />
+          <Input
+            label="Finish"
+            name="finish"
+            value={formData.attributes.finish}
+            onChange={handleChange}
+          />
+          <Input
+            label="Origin"
+            name="origin"
+            value={formData.attributes.origin}
+            onChange={handleChange}
+          />
 
           {/* DROPDOWNS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -301,7 +336,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
               onChange={(val) =>
                 setFormData((prev) => ({
                   ...prev,
-                  attributes: { ...prev.attributes, material: val }
+                  attributes: { ...prev.attributes, material: val },
                 }))
               }
             />
@@ -316,38 +351,84 @@ export default function AddProductModal({ onClose, onProductAdded }) {
               onChange={(val) =>
                 setFormData((prev) => ({
                   ...prev,
-                  dimensions: { ...prev.dimensions, sizeCategory: val }
+                  dimensions: { ...prev.dimensions, sizeCategory: val },
                 }))
               }
             />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Input required label="Price (₹)" name="listPrice" value={formData.listPrice} onChange={handleChange} error={errors.listPrice} />
-            <Input label="Discount (%)" name="discount" value={formData.discount} onChange={handleChange} />
-            <Input required label="Stock" name="stock" value={formData.stock} onChange={handleChange} error={errors.stock} />
+            <Input
+              required
+              label="Price (₹)"
+              name="listPrice"
+              value={formData.listPrice}
+              onChange={handleChange}
+              error={errors.listPrice}
+            />
+            <Input
+              label="Discount (%)"
+              name="discount"
+              value={formData.discount}
+              onChange={handleChange}
+            />
+            <Input
+              required
+              label="Stock"
+              name="stock"
+              value={formData.stock}
+              onChange={handleChange}
+              error={errors.stock}
+            />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Input label="Height (cm)" name="height" value={formData.dimensions.height} onChange={handleChange} />
-            <Input label="Width (cm)" name="width" value={formData.dimensions.width} onChange={handleChange} />
-            <Input label="Weight (gm)" name="weight" value={formData.weight} onChange={handleChange} />
+            <Input
+              label="Height (cm)"
+              name="height"
+              value={formData.dimensions.height}
+              onChange={handleChange}
+            />
+            <Input
+              label="Width (cm)"
+              name="width"
+              value={formData.dimensions.width}
+              onChange={handleChange}
+            />
+            <Input
+              label="Weight (gm)"
+              name="weight"
+              value={formData.weight}
+              onChange={handleChange}
+            />
           </div>
         </div>
 
         {/* FOOTER */}
         <div className="p-4 border-t border-gray-300 flex justify-end gap-3">
-          <button onClick={onClose} className="px-5 py-2 border rounded-lg">Cancel</button>
+          <button
+            onClick={onClose}
+            className="px-5 py-2 border border-gray-300 rounded-lg cursor-pointer"
+          >
+            Cancel
+          </button>
 
           <button
             disabled={!isFormValid || isLoading}
             onClick={handleAddNewProduct}
-            className={`px-5 py-2 rounded-lg text-white ${isFormValid && !isLoading ? "bg-purple-600" : "bg-gray-300"
-              }`}
+            className={`px-5 py-2 rounded-lg text-white cursor-pointer ${
+              isFormValid && !isLoading ? "bg-brand-600" : "bg-gray-300"
+            }`}
           >
             {isLoading ? "Adding..." : "Add Product"}
           </button>
         </div>
+        <div
+          className="block md:hidden"
+          style={{
+            height: "220px",
+          }}
+        />
       </div>
     </div>
   );
@@ -360,10 +441,11 @@ function Input({ label, error, ...props }) {
       <label className="text-sm mb-1 block">{label}</label>
       <input
         {...props}
-        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${error
-          ? "border-red-500 focus:ring-red-400"
-          : "border-gray-300 focus:ring-purple-500"
-          }`}
+        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${
+          error
+            ? "border-red-500 focus:ring-red-400"
+            : "border-gray-300 focus:ring-brand-500"
+        }`}
       />
       {error && <ErrorText text={error} />}
     </div>

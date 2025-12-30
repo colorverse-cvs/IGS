@@ -14,6 +14,7 @@ export default function CarouselRow({
   enableDrag = true,
   className = "",
   gapClass = "px-1",
+  scrollMode = "continuous", // 'continuous' or 'step'
 }) {
   const normalizedItems = Array.isArray(items) ? items : [];
 
@@ -53,47 +54,73 @@ export default function CarouselRow({
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* -------------------- Seamless Auto Scroll -------------------- */
+  /* -------------------- Auto Scroll -------------------- */
   React.useEffect(() => {
     if (!autoplay || normalizedItems.length <= itemsPerView || isPaused) return;
 
-    const scrollSpeed = 0.005; // 🔥 slower & smoother
+    if (scrollMode === "continuous") {
+      const scrollSpeed = 0.005; // 🔥 slower & smoother
 
-    const animate = (time) => {
-      if (!lastTimeRef.current) lastTimeRef.current = time;
-      const delta = time - lastTimeRef.current;
-      lastTimeRef.current = time;
+      const animate = (time) => {
+        if (!lastTimeRef.current) lastTimeRef.current = time;
+        const delta = time - lastTimeRef.current;
+        lastTimeRef.current = time;
 
-      scrollOffsetRef.current += scrollSpeed * delta;
+        scrollOffsetRef.current += scrollSpeed * delta;
 
-      const singleSetWidth = normalizedItems.length * widthPercent;
+        const singleSetWidth = normalizedItems.length * widthPercent;
 
-      // seamless reset (no jump)
-      if (scrollOffsetRef.current >= singleSetWidth) {
-        scrollOffsetRef.current -= singleSetWidth;
-      }
+        // seamless reset (no jump)
+        if (scrollOffsetRef.current >= singleSetWidth) {
+          scrollOffsetRef.current -= singleSetWidth;
+        }
 
-      if (trackRef.current) {
-        trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
-      }
+        if (trackRef.current) {
+          trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
+        }
+
+        animationFrameRef.current = requestAnimationFrame(animate);
+      };
 
       animationFrameRef.current = requestAnimationFrame(animate);
-    };
 
-    animationFrameRef.current = requestAnimationFrame(animate);
+      return () => {
+        cancelAnimationFrame(animationFrameRef.current);
+        lastTimeRef.current = 0;
+      };
+    } else if (scrollMode === "step") {
+      const intervalMs = autoplayMs || 3000;
+      const intervalId = setInterval(() => {
+        scrollOffsetRef.current += widthPercent;
 
-    return () => {
-      cancelAnimationFrame(animationFrameRef.current);
-      lastTimeRef.current = 0;
-    };
-  }, [autoplay, isPaused, normalizedItems.length, itemsPerView, widthPercent]);
+        const singleSetWidth = normalizedItems.length * widthPercent;
+
+        // loop back to start
+        if (scrollOffsetRef.current >= singleSetWidth) {
+          scrollOffsetRef.current = 0;
+        }
+
+        if (trackRef.current) {
+          trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
+        }
+      }, intervalMs);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [
+    autoplay,
+    isPaused,
+    normalizedItems.length,
+    itemsPerView,
+    widthPercent,
+    scrollMode,
+    autoplayMs,
+  ]);
 
   /* -------------------- Click to Pause -------------------- */
   const handleClick = () => {
     if (
-      Math.abs(
-        dragStateRef.current.startX - dragStateRef.current.currentX
-      ) < 5
+      Math.abs(dragStateRef.current.startX - dragStateRef.current.currentX) < 5
     ) {
       setIsPaused((p) => !p);
     }
@@ -125,8 +152,7 @@ export default function CarouselRow({
     const delta = dragStateRef.current.startX - clientX;
     const deltaPercent = (delta / containerWidth) * 100;
 
-    scrollOffsetRef.current =
-      dragStateRef.current.startOffset + deltaPercent;
+    scrollOffsetRef.current = dragStateRef.current.startOffset + deltaPercent;
 
     if (trackRef.current) {
       trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
@@ -147,9 +173,7 @@ export default function CarouselRow({
 
   if (!normalizedItems.length) {
     return (
-      <div className="text-center text-gray-500 py-8">
-        No items available
-      </div>
+      <div className="text-center text-gray-500 py-8">No items available</div>
     );
   }
 
@@ -163,7 +187,9 @@ export default function CarouselRow({
         className="overflow-hidden select-none cursor-grab active:cursor-grabbing"
         style={{ touchAction: "none" }}
         onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => !dragStateRef.current.dragging && setIsPaused(false)}
+        onMouseLeave={() =>
+          !dragStateRef.current.dragging && setIsPaused(false)
+        }
         onClick={handleClick}
         onMouseDown={onPointerDown}
         onMouseMove={onPointerMove}
@@ -175,7 +201,11 @@ export default function CarouselRow({
         <div
           ref={trackRef}
           className="flex will-change-transform"
-          style={{ transition: dragStateRef.current.dragging ? "none" : "transform 0.1s linear" }}
+          style={{
+            transition: dragStateRef.current.dragging
+              ? "none"
+              : "transform 0.1s linear",
+          }}
         >
           {displayItems.map((item, idx) => (
             <div
@@ -205,7 +235,7 @@ export default function CarouselRow({
                   trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
                 }
               }}
-              className="h-2 w-2 rounded-full bg-gray-300 hover:bg-brand-700"
+              className="h-2 w-2 rounded-full bg-gray-300 hover:bg-brand-700 cursor-pointer"
             />
           ))}
         </div>

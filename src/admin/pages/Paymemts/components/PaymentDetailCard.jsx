@@ -1,11 +1,14 @@
 // Helper to count by status
 const countByStatus = (payments, status) => {
-  return payments.filter(p => String(p.status).toLowerCase() === status.toLowerCase()).length;
+  return payments.filter(
+    (p) => String(p.status).toLowerCase() === status.toLowerCase()
+  ).length;
 };
 
 export default function PaymentDetailCard({ payments = [] }) {
   const total = payments.length;
-  const success = countByStatus(payments, "success") || countByStatus(payments, "succeeded");
+  const success =
+    countByStatus(payments, "success") || countByStatus(payments, "succeeded");
   const failed = countByStatus(payments, "failed");
   const refunded = countByStatus(payments, "refunded");
 
@@ -13,22 +16,22 @@ export default function PaymentDetailCard({ payments = [] }) {
     {
       title: "Total Transactions",
       value: total.toLocaleString(),
-      color: "text-gray-900"
+      color: "text-gray-900",
     },
     {
       title: "Success",
       value: success.toLocaleString(),
-      color: "text-green-600"
+      color: "text-green-600",
     },
     {
       title: "Failed",
       value: failed.toLocaleString(),
-      color: "text-red-600"
+      color: "text-red-600",
     },
     {
       title: "Refunded",
       value: refunded.toLocaleString(),
-      color: "text-gray-600"
+      color: "text-gray-600",
     },
   ];
 
@@ -42,7 +45,11 @@ export default function PaymentDetailCard({ payments = [] }) {
           <p className="text-xs md:text-sm text-gray-500 font-medium mb-1">
             {card.title}
           </p>
-          <p className={`text-lg md:text-xl font-semibold ${card.color || "text-gray-900"}`}>
+          <p
+            className={`text-lg md:text-xl !font-medium ${
+              card.color || "text-gray-900"
+            }`}
+          >
             {card.value}
           </p>
         </div>

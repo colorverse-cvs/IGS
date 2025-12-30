@@ -52,14 +52,18 @@ export default function AboutPage() {
   const { products, status } = useSelector((state) => state.products);
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchProducts());
     }
   }, [status, dispatch]);
 
-  const shivajiProducts = products.filter(
-    (product) => product.categoryId === "shivaji" || product.category?.toLowerCase().includes("shivaji")
-  ).slice(0, 4);
+  const shivajiProducts = products
+    .filter(
+      (product) =>
+        product.categoryId === "shivaji" ||
+        product.category?.toLowerCase().includes("shivaji")
+    )
+    .slice(0, 4);
 
   return (
     <main className="bg-white">
@@ -79,7 +83,7 @@ export default function AboutPage() {
               />
             </div>
             <div className="bg-white w-full rounded-2xl shadow-[0_30px_90px_rgba(103,25,165,0.25)] px-[10%] lg:px-[15%] py-12 text-center">
-              <h1 className="text-4xl md:text-5xl font-semibold text-gray-900">
+              <h1 className="text-4xl md:text-5xl !font-medium text-gray-900">
                 Where Art Meets Legacy
               </h1>
               <p className="mt-4 text-gray-600 w-[80%] mx-auto text-sm md:text-base leading-relaxed">
@@ -90,7 +94,7 @@ export default function AboutPage() {
               <button
                 type="button"
                 onClick={() => navigate("/filter")}
-                className="cursor-pointer mt-6 inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] transition"
+                className="cursor-pointer mt-6 inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm !font-medium text-white bg-[#7b21b0] hover:bg-[#6a199c] transition"
               >
                 Explore Collection
               </button>
@@ -99,7 +103,7 @@ export default function AboutPage() {
                 {heroCards.map((card) => (
                   <div
                     key={card.id}
-                    className="rounded-lg border border-purple-100 overflow-hidden shadow-lg"
+                    className="rounded-lg border border-brand-100 overflow-hidden shadow-lg"
                   >
                     <img
                       src={card.image}
@@ -114,7 +118,7 @@ export default function AboutPage() {
           <div className="relative w-full flex flex-col items-center top-[10%]">
             <img
               src={RibbonImage}
-              alt="Purple ribbon"
+              alt="brand ribbon"
               className=" bottom-[-100px] w-[260px] sm:w-[340px] md:w-[70%] z-[9]"
             />
           </div>
@@ -124,7 +128,7 @@ export default function AboutPage() {
       <section className="px-4 md:px-15 lg:px-20 py-20 bg-gradient-to-b from-[#faf1ff] to-white">
         <div className="container mx-auto w-full">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-semibold text-gray-900">
+            <h2 className="text-3xl md:text-4xl !font-medium text-gray-900">
               Meet the Minds Behind the Craft
             </h2>
             <p className="mt-3 text-gray-600 mx-auto text-sm md:text-base">
@@ -146,7 +150,7 @@ export default function AboutPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                  <div className="text-3xl font-bold">{person.name}</div>
+                  <div className="text-3xl !font-medium">{person.name}</div>
                   <p className="text-sm text-white/80">{person.role}</p>
                   <p className="mt-3 text-sm leading-relaxed text-white/90">
                     {person.bio}
@@ -161,7 +165,7 @@ export default function AboutPage() {
       <section className="bg-[#f4e6ff] py-20 px-4 md:px-15 lg:px-20">
         <div className="container mx-auto w-full">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-semibold text-gray-900">
+            <h2 className="text-3xl md:text-4xl !font-medium text-gray-900">
               Where Tradition Meets Creation
             </h2>
             <p className="mt-3 text-gray-600 text-sm md:text-base mx-auto">
@@ -182,7 +186,7 @@ export default function AboutPage() {
             <button
               type="button"
               onClick={() => navigate("/filter?category=shivaji")}
-              className="cursor-pointer inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm font-semibold text-white bg-[#7b21b0] hover:bg-[#6a199c] transition"
+              className="cursor-pointer inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm !font-medium text-white bg-[#7b21b0] hover:bg-[#6a199c] transition"
             >
               Explore more
             </button>

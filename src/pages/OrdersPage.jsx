@@ -84,7 +84,10 @@ export default function OrdersPage() {
   const previousOrders = useMemo(
     () =>
       orders.filter(
-        (o) => ["shipped", "delivered", "cancelled", "returned"].includes(o.status) && matchesQuery(o)
+        (o) =>
+          ["shipped", "delivered", "cancelled", "returned"].includes(
+            o.status
+          ) && matchesQuery(o)
       ),
     [orders, query]
   );
@@ -93,8 +96,8 @@ export default function OrdersPage() {
     activeTab === "orders"
       ? filteredAll
       : activeTab === "current"
-        ? currentOrders
-        : previousOrders;
+      ? currentOrders
+      : previousOrders;
 
   /* -------------------- UI Helpers -------------------- */
 
@@ -117,8 +120,9 @@ export default function OrdersPage() {
 
     return (
       <span
-        className={`text-xs px-2 py-1 rounded border ${colorMap[s] || colorMap.placed
-          }`}
+        className={`text-xs px-2 py-1 rounded border ${
+          colorMap[s] || colorMap.placed
+        }`}
       >
         {labelMap[s]}
       </span>
@@ -136,10 +140,11 @@ export default function OrdersPage() {
           </button> */}
           <button
             className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
-                                        ${it.product === null
-                ? "cursor-not-allowed opacity-50"
-                : "cursor-pointer hover:bg-purple-50"
-              }`}
+                                        ${
+                                          it.product === null
+                                            ? "cursor-not-allowed opacity-50"
+                                            : "cursor-pointer hover:bg-purple-50"
+                                        }`}
             onClick={() => navigate(`/product/${productId}`)}
           >
             View Order
@@ -152,10 +157,11 @@ export default function OrdersPage() {
       <div className="flex flex-col gap-2">
         <button
           className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
-                                        ${it.product === null
-              ? "cursor-not-allowed opacity-50"
-              : "cursor-pointer hover:bg-purple-50"
-            }`}
+                                        ${
+                                          it.product === null
+                                            ? "cursor-not-allowed opacity-50"
+                                            : "cursor-pointer hover:bg-purple-50"
+                                        }`}
           onClick={() => navigate(`/product/${productId}`)}
         >
           View Order
@@ -190,7 +196,7 @@ export default function OrdersPage() {
       <div className="product-detail-wrapper space-y-6 bg-white p-4 rounded-lg mx-auto py-6 px-4 md:px-15 lg:px-20">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <div className="text-xl font-bold">Your Orders</div>
+            <div className="text-xl !font-medium">Your Orders</div>
             <p className="text-sm text-gray-600">
               Track and manage your orders
             </p>
@@ -205,10 +211,11 @@ export default function OrdersPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 capitalize transition-colors ${activeTab === tab
-                  ? "border-b-2 border-purple-500 text-purple-600 font-medium"
-                  : "text-gray-600 hover:text-gray-800"
-                  }`}
+                className={`pb-2 capitalize transition-colors ${
+                  activeTab === tab
+                    ? "border-b-2 border-purple-500 text-purple-600 font-medium"
+                    : "text-gray-600 hover:text-gray-800"
+                }`}
               >
                 {tab === "orders"
                   ? "All Orders"
@@ -222,7 +229,7 @@ export default function OrdersPage() {
               placeholder="Search orders..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               🔍
@@ -236,18 +243,19 @@ export default function OrdersPage() {
               onToggle={setIsOrdersDropdownOpen}
               align="left"
               trigger={(isOpen) => (
-                <button className="w-full text-left border border-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 bg-white flex items-center justify-between cursor-pointer">
+                <button className="w-full text-left border border-gray-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500 bg-white flex items-center justify-between cursor-pointer">
                   <span>
                     {activeTab === "orders"
                       ? "All Orders"
                       : activeTab.charAt(0).toUpperCase() +
-                      activeTab.slice(1) +
-                      " Orders"}
+                        activeTab.slice(1) +
+                        " Orders"}
                   </span>
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
-                      }`}
+                    className={`transition-transform ${
+                      isOpen ? "rotate-180" : "rotate-0"
+                    }`}
                   />
                 </button>
               )}
@@ -260,7 +268,7 @@ export default function OrdersPage() {
                     setActiveTab(tab);
                     setIsOrdersDropdownOpen(false);
                   }}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 first:rounded-t-lg last:rounded-b-lg"
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-700 first:rounded-t-lg last:rounded-b-lg cursor-pointer"
                 >
                   {tab === "orders"
                     ? "All Orders"
@@ -291,7 +299,7 @@ export default function OrdersPage() {
                 <div className="lg:hidden px-4 py-3 border-b border-gray-100">
                   <div className="flex justify-between items-start">
                     <div className="w-[70%]">
-                      <div className="font-semibold text-sm text-gray-900 truncate">
+                      <div className="!font-medium text-sm text-gray-900 truncate">
                         {formatOrderId(order._id)}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
@@ -300,20 +308,21 @@ export default function OrdersPage() {
                     </div>
                     <div className="text-right w-[30%]">
                       <span
-                        className={`text-xs px-2 py-1 rounded-full inline-block mb-1 ${order.status === "delivered"
-                          ? "bg-green-100 text-green-600"
-                          : order.status === "cancelled"
+                        className={`text-xs px-2 py-1 rounded-full inline-block mb-1 ${
+                          order.status === "delivered"
+                            ? "bg-green-100 text-green-600"
+                            : order.status === "cancelled"
                             ? "bg-red-100 text-red-600"
                             : order.status === "placed"
-                              ? "bg-blue-100 text-blue-600"
-                              : order.status === "processing"
-                                ? "bg-blue-100 text-blue-600"
-                                : "bg-orange-100 text-orange-600"
-                          }`}
+                            ? "bg-blue-100 text-blue-600"
+                            : order.status === "processing"
+                            ? "bg-blue-100 text-blue-600"
+                            : "bg-orange-100 text-orange-600"
+                        }`}
                       >
                         {order.status || "Pending"}
                       </span>
-                      <div className="text-sm font-semibold text-gray-900 mt-1 px-2 py-1 text-end">
+                      <div className="text-sm !font-medium text-gray-900 mt-1 px-2 py-1 text-end">
                         ₹{order.total}
                       </div>
                     </div>
@@ -327,8 +336,9 @@ export default function OrdersPage() {
                   return (
                     <div
                       key={it._id}
-                      className={`${index > 0 ? "border-t border-gray-100" : ""
-                        }`}
+                      className={`${
+                        index > 0 ? "border-t border-gray-100" : ""
+                      }`}
                     >
                       {/* Desktop Table Row */}
                       <table className="hidden lg:table w-full text-sm border-collapse">
@@ -336,7 +346,9 @@ export default function OrdersPage() {
                           <tr className="px-4 py-4">
                             {/* Order ID */}
                             <td className="px-4 py-4 font-medium text-gray-900 w-[10%] xl:w-[14%] truncate">
-                              <div className="w-[130px] xl:w-auto truncate">{formatOrderId(order._id)}</div>
+                              <div className="w-[130px] xl:w-auto truncate">
+                                {formatOrderId(order._id)}
+                              </div>
                             </td>
 
                             {/* Product Details */}
@@ -369,7 +381,7 @@ export default function OrdersPage() {
                                     Size:{" "}
                                     {product.dimensions?.sizeCategory || "-"}
                                   </div>
-                                  <div className="text-purple-600 font-semibold mt-1">
+                                  <div className="text-brand-600 !font-medium mt-1">
                                     ₹{it.price}
                                   </div>
                                   <div className="text-[11px] text-gray-500 mt-1">
@@ -386,10 +398,11 @@ export default function OrdersPage() {
                                       </button> */}
                                       <button
                                         className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
-                                        ${it.product === null
+                                        ${
+                                          it.product === null
                                             ? "cursor-not-allowed opacity-50"
                                             : "cursor-pointer hover:bg-purple-50"
-                                          }`}
+                                        }`}
                                         onClick={() =>
                                           navigate(`/product/${product._id}`)
                                         }
@@ -400,9 +413,10 @@ export default function OrdersPage() {
                                   ) : (
                                     <button
                                       className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
-                                        ${it.product === null
-                                          ? "cursor-not-allowed opacity-50"
-                                          : "cursor-pointer hover:bg-purple-50"
+                                        ${
+                                          it.product === null
+                                            ? "cursor-not-allowed opacity-50"
+                                            : "cursor-pointer hover:bg-purple-50"
                                         }`}
                                       onClick={() =>
                                         navigate(`/product/${product._id}`)
@@ -418,16 +432,17 @@ export default function OrdersPage() {
                             {/* Status */}
                             <td className="px-4 py-4 w-[8%]">
                               <span
-                                className={`text-xs px-2 py-1 rounded-full ${order.status === "delivered"
-                                  ? "bg-green-100 text-green-600"
-                                  : order.status === "cancelled"
+                                className={`text-xs px-2 py-1 rounded-full ${
+                                  order.status === "delivered"
+                                    ? "bg-green-100 text-green-600"
+                                    : order.status === "cancelled"
                                     ? "bg-red-100 text-red-600"
                                     : order.status === "placed"
-                                      ? "bg-blue-100 text-blue-600"
-                                      : order.status === "processing"
-                                        ? "bg-blue-100 text-blue-600"
-                                        : "bg-orange-100 text-orange-600"
-                                  }`}
+                                    ? "bg-blue-100 text-blue-600"
+                                    : order.status === "processing"
+                                    ? "bg-blue-100 text-blue-600"
+                                    : "bg-orange-100 text-orange-600"
+                                }`}
                               >
                                 {order.status || "Pending"}
                               </span>
@@ -444,7 +459,7 @@ export default function OrdersPage() {
                             </td>
 
                             {/* Total */}
-                            <td className="px-4 py-4 font-semibold text-gray-900 w-[8%]">
+                            <td className="px-4 py-4 !font-medium text-gray-900 w-[8%]">
                               ₹{Number(Math.max(0, order.total).toFixed(2))}
                             </td>
                           </tr>
@@ -476,7 +491,7 @@ export default function OrdersPage() {
                               Material: {product.attributes?.material || "-"} •
                               Size: {product.dimensions?.sizeCategory || "-"}
                             </div>
-                            <div className="text-purple-600 font-semibold text-sm mt-1">
+                            <div className="text-brand-600 !font-medium text-sm mt-1">
                               ₹{it.price} × {it.quantity}
                             </div>
                             <div className="text-[11px] text-gray-500 mt-1">
@@ -493,7 +508,7 @@ export default function OrdersPage() {
                                 Download Invoice
                               </button> */}
                               <button
-                                className="px-3 py-1 text-purple-600 border border-purple-600 hover:bg-purple-50 rounded text-xs cursor-pointer"
+                                className="px-3 py-1 text-brand-600 border border-brand-600 hover:bg-brand-50 rounded text-xs cursor-pointer"
                                 onClick={() =>
                                   navigate(`/product/${product._id}`)
                                 }
@@ -503,16 +518,18 @@ export default function OrdersPage() {
                             </div>
                           ) : (
                             <button
-                              onClick={() => navigate(`/product/${product._id}`)}
+                              onClick={() =>
+                                navigate(`/product/${product._id}`)
+                              }
                               className={`px-3 py-1 border rounded text-xs
-                              ${product?._id
+                              ${
+                                product?._id
                                   ? "text-purple-600 border-purple-600 hover:bg-purple-50 cursor-pointer"
                                   : "text-gray-400 border-gray-300 cursor-not-allowed opacity-50"
-                                }`}
+                              }`}
                             >
                               View Order
                             </button>
-
                           )}
                         </div>
                       </div>

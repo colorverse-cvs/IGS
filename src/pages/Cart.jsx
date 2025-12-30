@@ -38,7 +38,8 @@ export default function Cart({ isDrawer = false, onClose }) {
   const wrapTotal = React.useMemo(
     () =>
       items.reduce(
-        (sum, item) => sum + (wrapMap[item.id] ? WRAP_FEE_PER_UNIT * item.qty : 0),
+        (sum, item) =>
+          sum + (wrapMap[item.id] ? WRAP_FEE_PER_UNIT * item.qty : 0),
         0
       ),
     [items, wrapMap]
@@ -79,38 +80,51 @@ export default function Cart({ isDrawer = false, onClose }) {
         onConfirm={() => dispatch(clearCartAsync())}
       />
       {!isDrawer && (
-        <h2 className="text-4xl text-center font-extrabold text-gray-900 py-2">
+        <h2 className="text-4xl text-center text-gray-900 py-2">
           Shopping Cart 🛒
         </h2>
       )}
 
       {items.length === 0 ? (
         <div
-          className={`${isDrawer
-            ? "text-center flex flex-col items-center"
-            : "py-8 bg-white rounded-xl text-center justify-items-center"
-            }`}
+          className={`${
+            isDrawer
+              ? "text-center flex flex-col items-center"
+              : "py-8 bg-white rounded-xl text-center justify-items-center"
+          }`}
         >
-          <img src={EmptyShoppingCart} className="w-[200px] lg:w-[300px]" alt="" />
+          <img
+            src={EmptyShoppingCart}
+            className="w-[200px] lg:w-[300px]"
+            alt=""
+          />
           <p className="text-xl text-gray-600 mb-4">
             Your cart seems kind of empty.
           </p>
         </div>
       ) : (
         <div
-          className={`flex ${isDrawer ? "flex-col h-[90vh]" : "flex-col md:flex-row gap-8 relative"
-            }`}
+          className={`flex ${
+            isDrawer
+              ? "flex-col h-[90dvh]"
+              : "flex-col md:flex-row gap-8 relative"
+          }`}
         >
           {/* Cart Items */}
           <div
-            className={`${isDrawer
-              ? "flex-1 overflow-y-auto p-4"
-              : "md:w-3/4 bg-white pt-0 p-2 md:p-6 rounded-xl shadow-lg"
-              } space-y-6`}
+            className={`${
+              isDrawer
+                ? "flex-1 overflow-y-auto p-4"
+                : "md:w-3/4 bg-white pt-0 p-2 md:p-6 rounded-xl shadow-lg"
+            } space-y-6`}
           >
             {items.map((item) => {
-              const lineWrap = wrapMap[item.id] ? WRAP_FEE_PER_UNIT * item.qty : 0;
-              const imageUrl = item.image?.startsWith("http") ? item.image : `${APP_URL}${item.image}`;
+              const lineWrap = wrapMap[item.id]
+                ? WRAP_FEE_PER_UNIT * item.qty
+                : 0;
+              const imageUrl = item.image?.startsWith("http")
+                ? item.image
+                : `${APP_URL}${item.image}`;
 
               /* Drawer Layout */
               if (isDrawer) {
@@ -119,36 +133,47 @@ export default function Cart({ isDrawer = false, onClose }) {
                     key={item.id}
                     className="border border-gray-100 hover:shadow-lg p-2 rounded-lg flex items-start gap-4 text-sm"
                   >
-                    <img src={imageUrl} alt={item.title} className="w-28 h-28 rounded object-cover" />
+                    <img
+                      src={imageUrl}
+                      alt={item.title}
+                      className="w-28 h-28 rounded object-cover"
+                    />
 
                     <div className="min-w-0">
-                      <div className="font-medium text-gray-900">{item.title}</div>
-                      <div className="text-gray-500">
-                        Material: {item.material || "-"} &nbsp; Size: {item.size || "-"}
+                      <div className="font-medium text-gray-900">
+                        {item.title}
                       </div>
-                      <div className="text-brand-700 font-semibold">₹{item.price}</div>
+                      <div className="text-gray-500">
+                        Material: {item.material || "-"} &nbsp; Size:{" "}
+                        {item.size || "-"}
+                      </div>
+                      <div className="text-brand-700 !font-medium">
+                        ₹{item.price}
+                      </div>
                       <div className="flex lg:flex-col justify-between">
                         <div className="flex items-center gap-2 border border-gray-300 rounded mt-2 w-fit">
                           <button
                             type="button"
-                            className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                            className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
                             onClick={() =>
                               item.qty > 1
                                 ? dispatch(
-                                  updateCartItemQuantityAsync({
-                                    productId: item.id,
-                                    quantity: item.qty - 1,
-                                  })
-                                )
+                                    updateCartItemQuantityAsync({
+                                      productId: item.id,
+                                      quantity: item.qty - 1,
+                                    })
+                                  )
                                 : dispatch(removeFromCart(item.id))
                             }
                           >
                             -
                           </button>
-                          <span className="text-sm font-medium w-4 text-center">{item.qty}</span>
+                          <span className="text-sm font-medium w-4 text-center">
+                            {item.qty}
+                          </span>
                           <button
                             type="button"
-                            className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                            className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
                             onClick={() =>
                               dispatch(
                                 updateCartItemQuantityAsync({
@@ -164,10 +189,12 @@ export default function Cart({ isDrawer = false, onClose }) {
 
                         <button
                           type="button"
-                          className="text-red-600 text-xs pt-2"
+                          className="text-red-600 text-xs pt-2 cursor-pointer"
                           onClick={() => handleRemoveItem(item.id)}
                         >
-                          <span className="hidden lg:block text-start">Remove from cart</span>
+                          <span className="hidden lg:block text-start">
+                            Remove from cart
+                          </span>
                           <span className="lg:hidden">
                             <Trash2 size={20} className="text-red" />
                           </span>
@@ -198,31 +225,39 @@ export default function Cart({ isDrawer = false, onClose }) {
                   key={item.id}
                   className="py-4 flex items-start gap-4 text-sm border border-gray-100 hover:shadow-lg rounded-lg p-2"
                 >
-                  <img src={imageUrl} alt={item.title} className="w-28 h-28 rounded object-cover" />
+                  <img
+                    src={imageUrl}
+                    alt={item.title}
+                    className="w-28 h-28 rounded object-cover"
+                  />
 
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-gray-900 truncate">{item.title}</div>
+                    <div className="font-medium text-gray-900 truncate">
+                      {item.title}
+                    </div>
 
                     <div className="text-gray-500 flex flex-col gap-1">
                       <span>Material: {item.material || "-"}</span>
                       <span>Size: {item.size || "-"}</span>
                     </div>
 
-                    <div className="text-brand-700 font-semibold">₹{item.price}</div>
+                    <div className="text-brand-700 !font-medium">
+                      ₹{item.price}
+                    </div>
 
                     <div className="flex items-center gap-5 py-2">
                       <div className="flex items-center gap-2 border border-gray-300 rounded">
                         <button
                           type="button"
-                          className="px-2"
+                          className="px-2 cursor-pointer"
                           onClick={() =>
                             item.qty > 1
                               ? dispatch(
-                                updateCartItemQuantityAsync({
-                                  productId: item.id,
-                                  quantity: item.qty - 1,
-                                })
-                              )
+                                  updateCartItemQuantityAsync({
+                                    productId: item.id,
+                                    quantity: item.qty - 1,
+                                  })
+                                )
                               : dispatch(removeFromCart(item.id))
                           }
                         >
@@ -233,7 +268,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
                         <button
                           type="button"
-                          className="px-2"
+                          className="px-2 cursor-pointer"
                           onClick={() =>
                             dispatch(
                               updateCartItemQuantityAsync({
@@ -249,7 +284,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
                       <button
                         type="button"
-                        className="text-red-600 text-xs"
+                        className="text-red-600 text-xs cursor-pointer"
                         onClick={() => handleRemoveItem(item.id)}
                       >
                         <span className="hidden lg:block">Remove</span>
@@ -282,9 +317,9 @@ export default function Cart({ isDrawer = false, onClose }) {
               <div className="pt-4 flex justify-end">
                 <button
                   onClick={handleClearCart}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
                 >
-                  <X size={16} className="mr-2" /> Clear All Items
+                  <X size={16} className="mr-2 hover:scale-110 transition-transform" /> Clear All Items
                 </button>
               </div>
             )}
@@ -293,28 +328,28 @@ export default function Cart({ isDrawer = false, onClose }) {
           {/* Checkout Section */}
           {isDrawer ? (
             <div className="bottom-0 bg-white py-4 px-4 border-t border-gray-400 shadow-lg z-10">
-              <div className="flex justify-between items-center text-xl font-bold mb-4">
+              <div className="flex justify-between items-center text-xl !font-medium mb-4">
                 <span>Total:</span>
                 <span className="text-brand-700">₹{grandTotal}</span>
               </div>
 
               <button
                 onClick={handleProceedToCheckout}
-                className="w-full px-4 py-3 bg-brand-600 text-white rounded-lg font-semibold hover:bg-purple-700"
+                className="w-full px-4 py-3 bg-brand-600 text-white rounded-lg !font-medium hover:bg-brand-700 cursor-pointer"
               >
                 Proceed to Checkout
               </button>
 
               <button
                 onClick={handleClearCart}
-                className="w-full mt-2 text-sm text-gray-500 hover:text-gray-900"
+                className="w-full mt-2 text-sm text-gray-500 hover:text-gray-900 cursor-pointer"
               >
                 Clear cart
               </button>
             </div>
           ) : (
-            <div className="md:w-1/4 bg-gray-50 p-6 rounded-xl shadow-lg h-fit sticky top-[15%]">
-              <div className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
+            <div className="md:w-1/4 bg-brand-50 p-6 rounded-xl shadow-lg h-fit sticky top-[15%]">
+              <div className="text-2xl !font-medium text-gray-800 mb-4 border-b pb-2">
                 Order Summary
               </div>
 
@@ -331,7 +366,7 @@ export default function Cart({ isDrawer = false, onClose }) {
                   </div>
                 )}
 
-                <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-300">
+                <div className="flex justify-between !font-medium text-lg pt-2 border-t border-gray-300">
                   <span>Order Total</span>
                   <span className="text-brand-700">₹{grandTotal}</span>
                 </div>
@@ -339,7 +374,7 @@ export default function Cart({ isDrawer = false, onClose }) {
 
               <button
                 onClick={handleProceedToCheckout}
-                className="w-full mt-6 px-4 py-3 text-center bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 shadow-lg"
+                className="w-full mt-6 px-4 py-3 text-center bg-brand-700 text-white rounded-lg !font-medium hover:bg-brand-800 shadow-lg cursor-pointer"
               >
                 Proceed to Checkout
               </button>

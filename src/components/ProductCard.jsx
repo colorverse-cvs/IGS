@@ -20,7 +20,8 @@ const ProductCard = ({ product, onOpenProduct }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
 
   // Generate rating and reviews based on product ID
-  const { rating: generatedRating, reviews: generatedReviews } = generateRatingAndReviews(product.id);
+  const { rating: generatedRating, reviews: generatedReviews } =
+    generateRatingAndReviews(product.id);
 
   const {
     id,
@@ -84,7 +85,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
       h-full
       w-full
       min-w-0
-      focus:outline-none focus:ring-1 focus:ring-purple-500
+      focus:outline-none focus:ring-1 focus:ring-brand-500
     "
     >
       {/* --- Image and Tag Section --- */}
@@ -102,7 +103,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
               className="
               w-18 lg:w-auto
               text-xs 
-              font-bold
+              !font-medium
               px-2 
               py-1 
               rounded-md 
@@ -122,7 +123,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
               className="
               w-18 lg:w-auto
               text-xs 
-              font-semibold 
+              !font-medium 
               px-2 
               py-1 
               rounded-md 
@@ -144,7 +145,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
       <div className="px-2 md:px-4 py-4 flex-grow flex flex-col justify-between min-h-[140px] min-w-0">
         {/* Product Title - Fixed height to prevent layout shifts */}
         <div className="w-full">
-          <div className="text-base font-extrabold text-gray-800 mb-2 overflow-hidden leading-5 truncate w-full">
+          <div className="text-base !font-medium text-gray-800 mb-2 overflow-hidden leading-5 truncate w-full">
             {name}
           </div>
         </div>
@@ -153,7 +154,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
         <div className="flex flex-col gap-1 mb-2">
           {/* Main Price (Already Discounted) */}
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-brand-700">
+            <span className="text-lg !font-medium text-brand-700">
               ₹{price}
             </span>
 
@@ -166,7 +167,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
 
             {/* Discount Percentage */}
             {discount && discount > 0 && (
-              <span className="text-xs font-semibold text-brand-600">
+              <span className="text-xs !font-medium text-brand-600">
                 {discount}% Off
               </span>
             )}
@@ -189,8 +190,8 @@ const ProductCard = ({ product, onOpenProduct }) => {
           <div className="flex items-center md:justify-center">
             {qtyInCart === 0 ? (
               <button
-                className="cursor-pointer flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-purple-800 font-semibold text-xs 
-                  transition-all duration-300 ease-out focus:outline-none focus:ring-1 focus:ring-purple-500 focus:ring-opacity-50
+                className="cursor-pointer flex items-center justify-center py-2 px-3 text-white bg-brand-700 hover:bg-brand-800 !font-medium text-xs 
+                  transition-all duration-300 ease-out focus:outline-none focus:ring-1 focus:ring-brand-500 focus:ring-opacity-50
                   rounded-sm md:opacity-0 md:translate-y-1 md:pointer-events-none
                   md:group-hover:opacity-100 md:group-hover:translate-y-0 md:group-hover:pointer-events-auto gap-2 md:text-sm"
                 onClick={(e) => {
@@ -208,20 +209,29 @@ const ProductCard = ({ product, onOpenProduct }) => {
             "
               >
                 <button
-                  className="px-3 py-1"
+                  className="px-3 py-1 cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     if (qtyInCart > 1) {
                       // Use API thunk for quantity update
-                      import("../features/cart/cartSlice").then(({ updateCartItemQuantityAsync }) => {
-                        dispatch(updateCartItemQuantityAsync({ productId: id, quantity: qtyInCart - 1 }));
-                      });
+                      import("../features/cart/cartSlice").then(
+                        ({ updateCartItemQuantityAsync }) => {
+                          dispatch(
+                            updateCartItemQuantityAsync({
+                              productId: id,
+                              quantity: qtyInCart - 1,
+                            })
+                          );
+                        }
+                      );
                     } else {
                       // Use API thunk for removal
-                      import("../features/cart/cartSlice").then(({ removeItemFromCartAsync }) => {
-                        dispatch(removeItemFromCartAsync(id));
-                      });
+                      import("../features/cart/cartSlice").then(
+                        ({ removeItemFromCartAsync }) => {
+                          dispatch(removeItemFromCartAsync(id));
+                        }
+                      );
                     }
                   }}
                   aria-label="Decrease quantity"
@@ -230,14 +240,21 @@ const ProductCard = ({ product, onOpenProduct }) => {
                 </button>
                 <span className="px-2 select-none text-sm">{qtyInCart}</span>
                 <button
-                  className="px-3 py-1"
+                  className="px-3 py-1 cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     // Use API thunk for quantity update
-                    import("../features/cart/cartSlice").then(({ updateCartItemQuantityAsync }) => {
-                      dispatch(updateCartItemQuantityAsync({ productId: id, quantity: qtyInCart + 1 }));
-                    });
+                    import("../features/cart/cartSlice").then(
+                      ({ updateCartItemQuantityAsync }) => {
+                        dispatch(
+                          updateCartItemQuantityAsync({
+                            productId: id,
+                            quantity: qtyInCart + 1,
+                          })
+                        );
+                      }
+                    );
                   }}
                   aria-label="Increase quantity"
                 >
@@ -255,7 +272,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
       <>
         <button
           type="button"
-          className="text-left w-full"
+          className="text-left w-full cursor-pointer"
           onClick={() => onOpenProduct(product)}
         >
           {content}

@@ -66,7 +66,7 @@ export default function Products() {
       {/* Desktop Header */}
       <div className="hidden md:flex product-label-top-wrapper flex-col sm:flex-row sm:items-center justify-between mb-4 p-4 gap-3">
         <div className="dashboard-label-wrapper">
-          <p className="text-xl font-semibold">Products</p>
+          <p className="text-xl !font-medium">Products</p>
           <p className="text-sm text-gray-500">
             Manage your gift shop inventory
           </p>
@@ -85,7 +85,7 @@ export default function Products() {
       <div className="md:hidden mb-4 space-y-3">
         <div className="flex gap-3">
           <button
-            className="flex-1 bg-purple-600 px-5 py-3 cursor-pointer text-white rounded-lg flex items-center justify-center gap-2 font-medium"
+            className="flex-1 bg-brand-600 px-5 py-3 cursor-pointer text-white rounded-lg flex items-center justify-center gap-2 font-medium"
             onClick={() => setAddProductModal(true)}
           >
             <span className="text-xl">+</span> Add Product
@@ -102,7 +102,7 @@ export default function Products() {
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               🔍
@@ -140,7 +140,7 @@ export default function Products() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2 flex-wrap">
-                      <p className="font-semibold text-sm leading-tight">
+                      <p className="!font-medium text-sm leading-tight">
                         {product.name}
                       </p>
 
@@ -161,7 +161,7 @@ export default function Products() {
                           ₹{product.listPrice}
                         </span>
                       )}
-                      <span className="text-green-600 font-semibold text-sm">
+                      <span className="text-green-600 !font-medium text-sm">
                         ₹{product.price}
                       </span>
                       <span className="text-gray-500 text-xs">
@@ -184,7 +184,7 @@ export default function Products() {
                   </button>
 
                   <button
-                    className="text-red-600 hover:bg-red-50 p-2 rounded-md cursor-pointer"
+                    className="text-red-600 hover:bg-red-50 p-1 rounded-md cursor-pointer"
                     onClick={() => {
                       setCurrentProduct(product);
                       setOpenDeleteProductModal(true);

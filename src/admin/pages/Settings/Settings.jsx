@@ -1,7 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Upload, Eye, EyeOff } from "lucide-react";
-import { fetchUserProfileAsync, updateProfileAsync, forgotPasswordAsync, resetPasswordAsync } from "../../../features/user/userSlice";
+import {
+  fetchUserProfileAsync,
+  updateProfileAsync,
+  forgotPasswordAsync,
+  resetPasswordAsync,
+} from "../../../features/user/userSlice";
 import Modal from "../../../components/Modal";
 import { CheckCircle } from "lucide-react";
 import { BASE_URL } from "../../../utils/constants";
@@ -20,19 +25,19 @@ export default function Settings() {
     shopName: "",
     contact: "",
     email: "",
-    address: ""
+    address: "",
   });
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState({
     current: false,
     new: false,
-    confirm: false
+    confirm: false,
   });
 
   // Populate data on mount and when profile updates
@@ -43,7 +48,8 @@ export default function Settings() {
   useEffect(() => {
     if (profile) {
       // Find default address or use the first one
-      const defaultAddr = profile.addresses?.find(a => a.isDefault) || profile.addresses?.[0];
+      const defaultAddr =
+        profile.addresses?.find((a) => a.isDefault) || profile.addresses?.[0];
       let formattedAddress = "";
       if (defaultAddr) {
         formattedAddress = [
@@ -52,15 +58,17 @@ export default function Settings() {
           defaultAddr.line3,
           defaultAddr.city,
           defaultAddr.state,
-          defaultAddr.pincode
-        ].filter(Boolean).join(", ");
+          defaultAddr.pincode,
+        ]
+          .filter(Boolean)
+          .join(", ");
       }
 
       setFormData({
         shopName: profile.name || "",
         contact: profile.mobile || "",
         email: profile.email || "",
-        address: formattedAddress
+        address: formattedAddress,
       });
     }
   }, [profile]);
@@ -82,7 +90,7 @@ export default function Settings() {
   const handlePasswordChange = (e) => {
     setPasswordData({
       ...passwordData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -90,10 +98,12 @@ export default function Settings() {
     setIsSaving(true);
     try {
       // updateProfileAsync expects { name, mobile }
-      const resultAction = await dispatch(updateProfileAsync({
-        name: formData.shopName,
-        mobile: formData.contact
-      }));
+      const resultAction = await dispatch(
+        updateProfileAsync({
+          name: formData.shopName,
+          mobile: formData.contact,
+        })
+      );
 
       if (updateProfileAsync.fulfilled.match(resultAction)) {
         setSuccessMessage("Shop settings have been updated successfully.");
@@ -119,10 +129,12 @@ export default function Settings() {
         const resetToken = forgotAction.payload;
 
         // Step 2: Use token to reset password
-        const resetAction = await dispatch(resetPasswordAsync({
-          token: resetToken,
-          newPassword: passwordData.newPassword
-        }));
+        const resetAction = await dispatch(
+          resetPasswordAsync({
+            token: resetToken,
+            newPassword: passwordData.newPassword,
+          })
+        );
 
         if (resetPasswordAsync.fulfilled.match(resetAction)) {
           setSuccessMessage("Password has been updated successfully.");
@@ -130,7 +142,7 @@ export default function Settings() {
           setPasswordData({
             currentPassword: "",
             newPassword: "",
-            confirmPassword: ""
+            confirmPassword: "",
           });
         } else {
           toast.error(resetAction.payload || "Failed to reset password");
@@ -149,10 +161,7 @@ export default function Settings() {
   const phoneValid = formData.contact.length === 10;
 
   const isShopFormValid =
-    formData.shopName &&
-    phoneValid &&
-    emailValid &&
-    formData.address;
+    formData.shopName && phoneValid && emailValid && formData.address;
 
   const passwordMatch =
     passwordData.newPassword === passwordData.confirmPassword;
@@ -164,20 +173,21 @@ export default function Settings() {
 
   return (
     <div className="space-y-6 md:space-y-8">
-
       {/* SHOP SETTINGS */}
       <div className="bg-white p-4 md:p-6 rounded-xl shadow space-y-5">
-        <p className="text-lg font-semibold">Shop Information</p>
+        <p className="text-lg !font-medium">Shop Information</p>
 
         {/* SHOP NAME */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Shop Name</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">
+            Shop Name
+          </label>
           <input
             type="text"
             name="shopName"
             value={formData.shopName}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-brand-500 focus:outline-none"
           />
           {!formData.shopName && (
             <p className="text-red-500 text-xs mt-1">Shop name is required</p>
@@ -187,42 +197,52 @@ export default function Settings() {
         {/* CONTACT & EMAIL */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Contact Number</label>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+              Contact Number
+            </label>
             <input
               type="text"
               name="contact"
               maxLength={10}
               value={formData.contact}
               onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-brand-500 focus:outline-none"
             />
             {!phoneValid && formData.contact && (
-              <p className="text-red-500 text-xs mt-1">Enter valid 10 digit number</p>
+              <p className="text-red-500 text-xs mt-1">
+                Enter valid 10 digit number
+              </p>
             )}
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+              Email
+            </label>
             <input
               type="email"
               name="email"
               value={formData.email}
               readOnly
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-brand-500 focus:outline-none"
             />
-            <p className="text-gray-400 text-[10px] mt-1 italic">Email cannot be changed directly</p>
+            <p className="text-gray-400 text-[10px] mt-1 italic">
+              Email cannot be changed directly
+            </p>
           </div>
         </div>
 
         {/* ADDRESS */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Address</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">
+            Address
+          </label>
           <textarea
             name="address"
             rows="3"
             value={formData.address}
             onChange={handleChange}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-purple-500 focus:outline-none resize-none"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-1 focus:ring-brand-500 focus:outline-none resize-none"
           />
           {!formData.address && (
             <p className="text-red-500 text-xs mt-1">Address is required</p>
@@ -231,7 +251,9 @@ export default function Settings() {
 
         {/* LOGO */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">Shop Logo</label>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">
+            Shop Logo
+          </label>
           <div className="flex justify-start mt-2">
             <input
               type="file"
@@ -242,10 +264,14 @@ export default function Settings() {
             />
             <div
               onClick={openFileDialog}
-              className="w-24 h-24 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-xl cursor-pointer hover:border-purple-400 transition"
+              className="w-24 h-24 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-xl cursor-pointer hover:border-brand-400 transition"
             >
               {preview ? (
-                <img src={preview} className="w-full h-full object-cover rounded-xl" alt="Shop logo" />
+                <img
+                  src={preview}
+                  className="w-full h-full object-cover rounded-xl"
+                  alt="Shop logo"
+                />
               ) : (
                 <div className="flex flex-col items-center justify-center text-gray-400">
                   <Upload className="w-6 h-6 mb-1" />
@@ -256,7 +282,7 @@ export default function Settings() {
           </div>
           <button
             onClick={openFileDialog}
-            className="mt-2 text-sm text-purple-600 hover:text-purple-700 font-medium"
+            className="mt-2 text-sm text-brand-600 hover:text-brand-700 font-medium cursor-pointer"
           >
             Upload Logo
           </button>
@@ -265,8 +291,12 @@ export default function Settings() {
         <button
           onClick={handleSaveShopSettings}
           disabled={!isShopFormValid || isSaving}
-          className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all
-          ${isShopFormValid && !isSaving ? "bg-purple-700 hover:bg-purple-800" : "bg-gray-400 cursor-not-allowed"}`}
+          className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all cursor-pointer 
+          ${
+            isShopFormValid && !isSaving
+              ? "bg-brand-700 hover:bg-brand-800"
+              : "bg-gray-400 cursor-not-allowed"
+          }`}
         >
           {isSaving ? "Saving..." : "Save Shop Settings"}
         </button>
@@ -274,32 +304,46 @@ export default function Settings() {
 
       {/* PASSWORD SETTINGS */}
       <div className="bg-white p-4 md:p-6 rounded-xl shadow space-y-5">
-        <p className="text-lg font-semibold">Change Admin Password</p>
+        <p className="text-lg !font-medium">Change Admin Password</p>
 
         {[
-          { key: "currentPassword", label: "Current Password", show: "current" },
+          {
+            key: "currentPassword",
+            label: "Current Password",
+            show: "current",
+          },
           { key: "newPassword", label: "New Password", show: "new" },
-          { key: "confirmPassword", label: "Confirm Password", show: "confirm" }
+          {
+            key: "confirmPassword",
+            label: "Confirm Password",
+            show: "confirm",
+          },
         ].map((item) => (
           <div key={item.key} className="relative">
-            <label className="text-sm font-medium text-gray-700 mb-1 block">{item.label}</label>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
+              {item.label}
+            </label>
             <input
               type={showPassword[item.show] ? "text" : "password"}
               name={item.key}
               value={passwordData[item.key]}
               onChange={handlePasswordChange}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 pr-10 focus:ring-1 focus:ring-purple-500 outline-none"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 pr-10 focus:ring-1 focus:ring-brand-500 outline-none"
             />
             <span
               onClick={() =>
                 setShowPassword({
                   ...showPassword,
-                  [item.show]: !showPassword[item.show]
+                  [item.show]: !showPassword[item.show],
                 })
               }
               className="absolute right-3 top-9 cursor-pointer text-gray-500 hover:text-gray-700"
             >
-              {showPassword[item.show] ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword[item.show] ? (
+                <EyeOff size={18} />
+              ) : (
+                <Eye size={18} />
+              )}
             </span>
           </div>
         ))}
@@ -307,8 +351,12 @@ export default function Settings() {
         <button
           onClick={handleUpdatePassword}
           disabled={!isPasswordValid || isSaving}
-          className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all
-          ${isPasswordValid && !isSaving ? "bg-purple-700 hover:bg-purple-800" : "bg-gray-400 cursor-not-allowed"}`}
+          className={`w-full md:w-auto px-5 py-2 rounded-lg text-white font-medium transition-all cursor-pointer 
+          ${
+            isPasswordValid && !isSaving
+              ? "bg-brand-700 hover:bg-brand-800"
+              : "bg-gray-400 cursor-not-allowed"
+          }`}
         >
           {isSaving ? "Updating..." : "Update Password"}
         </button>
@@ -325,11 +373,11 @@ export default function Settings() {
           <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
             <CheckCircle size={32} />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Success!</h3>
+          <h3 className="text-xl !font-medium text-gray-900 mb-2">Success!</h3>
           <p className="text-gray-600 mb-6">{successMessage}</p>
           <button
             onClick={() => setShowSuccessModal(false)}
-            className="w-full bg-brand-600 text-white py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition"
+            className="w-full bg-brand-600 text-white py-2.5 rounded-lg !font-medium hover:bg-brand-700 transition cursor-pointer"
           >
             Great, thanks!
           </button>

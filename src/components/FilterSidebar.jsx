@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 
-
 export default function FilterSidebar({
   filters,
   onFiltersChange,
@@ -82,7 +81,7 @@ export default function FilterSidebar({
       <button
         type="button"
         onClick={() => toggleSection(section)}
-        className="flex justify-between items-center w-full text-left font-medium text-gray-900 mb-3"
+        className="flex justify-between items-center w-full text-left font-medium text-gray-900 mb-3 cursor-pointer"
       >
         {title}
         {expandedSections[section] ? (
@@ -124,10 +123,11 @@ export default function FilterSidebar({
   return (
     <div
       ref={sidebarRef}
-      className={`${isMobile
-        ? "p-4"
-        : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88vh]"
-        } overflow-y-auto`}
+      className={`${
+        isMobile
+          ? "p-4"
+          : "xl:w-70 w-70 bg-white py-6 px-4 border-r border-gray-200 h-[88dvh]"
+      } overflow-y-auto`}
     >
       {/* Inline styles for checkboxes, radio buttons, and custom dual-range slider */}
       <style>{`
@@ -238,15 +238,15 @@ export default function FilterSidebar({
 
       {!isMobile && (
         <div className="flex justify-between items-center mb-6">
-          <div className="text-lg font-semibold text-gray-900">
+          <div className="text-lg !font-medium text-gray-900">
             Filter Products
           </div>
           <button
             type="button"
             onClick={onResetFilters}
-            className="text-sm text-brand-600 hover:text-purple-700 flex items-center"
+            className="text-sm text-brand-600 hover:text-brand-700 flex items-center cursor-pointer"
           >
-            <X size={14} className="mr-1" />
+            <X size={14} className="mr-1 hover:scale-110 transition-transform" />
             Reset filters
           </button>
         </div>
@@ -404,8 +404,8 @@ export default function FilterSidebar({
             //   if (!filters.minPrice && filters.minPrice !== 0) {
             //     handleFilterChange("minPrice", 0);
             //   }
-            //   if (!filters.maxPrice && filters.maxPrice !== 4000) {
-            //     handleFilterChange("maxPrice", 4000);
+            //   if (!filters.maxPrice && filters.maxPrice !== 3000) {
+            //     handleFilterChange("maxPrice", 3000);
             //   }
             // }
           }}
@@ -425,14 +425,14 @@ export default function FilterSidebar({
                 ₹
                 {filters.maxPrice !== undefined && filters.maxPrice !== ""
                   ? filters.maxPrice
-                  : 4000}
+                  : 3000}
               </span>
             </div>
             {/* Dual-handle Price Range Slider */}
             <div className="range-slider !m-0" data-disabled={false}>
               {(() => {
                 const min = 0;
-                const max = 4000;
+                const max = 3000;
                 const step = 50;
                 const curMin =
                   filters.minPrice !== undefined && filters.minPrice !== ""
@@ -441,7 +441,7 @@ export default function FilterSidebar({
                 const curMax =
                   filters.maxPrice !== undefined && filters.maxPrice !== ""
                     ? Number(filters.maxPrice)
-                    : 4000;
+                    : 3000;
                 const minPercent = Math.max(
                   0,
                   Math.min(100, (curMin / max) * 100)
@@ -540,9 +540,9 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("minPrice", v);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-purple-300 focus:outline-none focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-brand-300 focus:outline-none focus:border-transparent"
                   min="100"
-                  max="4000"
+                  max="3000"
                   step="10"
                 />
               </div>
@@ -559,9 +559,9 @@ export default function FilterSidebar({
                       e.target.value === "" ? "" : parseInt(e.target.value, 10);
                     handleFilterChange("maxPrice", v);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-purple-300 focus:outline-none focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm placeholder-gray-500 focus:ring-1 focus:ring-brand-300 focus:outline-none focus:border-transparent"
                   min="0"
-                  max="4000"
+                  max="3000"
                   step="10"
                 />
               </div>
@@ -652,15 +652,15 @@ export default function FilterSidebar({
           <button
             type="button"
             onClick={onResetFilters}
-            className="text-sm text-brand-600 hover:text-purple-700 flex items-center w-[50%] justify-center border border-gray-300 hover:border-purple-500 rounded-lg px-4 py-3"
+            className="text-sm text-brand-600 hover:text-brand-700 flex items-center w-[50%] justify-center border border-gray-300 hover:border-brand-500 rounded-lg px-4 py-3 cursor-pointer"
           >
-            <X size={14} className="mr-1" />
+            <X size={14} className="mr-1 hover:scale-110 transition-transform" />
             Reset filters
           </button>
           <button
             type="button"
             onClick={onApplyFilters}
-            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg font-semibold hover:bg-purple-800 transition"
+            className="w-[50%] px-4 py-3 bg-brand-700 text-white rounded-lg !font-medium hover:bg-brand-800 transition cursor-pointer"
           >
             Show Results
           </button>

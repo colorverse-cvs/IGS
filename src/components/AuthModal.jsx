@@ -3,8 +3,15 @@ import Modal from "./Modal";
 import ForgotPassword from "./ForgotPassword";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
-import { login, signup, fetchUserProfileAsync } from "../features/user/userSlice";
-import { initializeCart, fetchCartSummaryAsync } from "../features/cart/cartSlice";
+import {
+  login,
+  signup,
+  fetchUserProfileAsync,
+} from "../features/user/userSlice";
+import {
+  initializeCart,
+  fetchCartSummaryAsync,
+} from "../features/cart/cartSlice";
 import toast from "react-hot-toast";
 import logo from "/assets/images/ishita-gallery-logo.jpg";
 import { Eye, EyeOff, X } from "lucide-react";
@@ -42,7 +49,7 @@ const validEmailDomains = [
   "edu.in",
   "ac.in",
   "gov.in",
-  "nic.in"
+  "nic.in",
 ];
 
 const isValidDomain = (email) => {
@@ -66,7 +73,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     return () => (document.body.style.overflow = "unset");
   }, [isOpen]);
 
-
   // Login
   const [loginIdentifier, setLoginIdentifier] = React.useState("");
   const [loginIdentifierError, setLoginIdentifierError] = React.useState(""); // New state for inline error
@@ -74,7 +80,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [showLoginPassword, setShowLoginPassword] = React.useState(false);
   const [loginError, setLoginError] = React.useState("");
   const [loginLoading, setLoginLoading] = React.useState(false);
-  const [loginDisabledTemporarily, setLoginDisabledTemporarily] = React.useState(false);
+  const [loginDisabledTemporarily, setLoginDisabledTemporarily] =
+    React.useState(false);
 
   // Signup
   const [name, setName] = React.useState("");
@@ -96,7 +103,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [resetToken, setResetToken] = React.useState("");
 
   // Email conflict popup
-  const [showEmailConflictPopup, setShowEmailConflictPopup] = React.useState(false);
+  const [showEmailConflictPopup, setShowEmailConflictPopup] =
+    React.useState(false);
 
   /* -------------------------
      Helpers
@@ -128,7 +136,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     if (!mobileRegex.test(mobile)) e.mobile = "Enter a 10-digit mobile number";
     if (!strongPasswordRegex.test(password))
       e.password = "Min 8 chars with letters and numbers";
-    if (password !== confirmPassword) e.confirmPassword = "Passwords do not match";
+    if (password !== confirmPassword)
+      e.confirmPassword = "Passwords do not match";
     setSignupErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -200,14 +209,15 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       payload.user,
       payload.data?.user,
       payload.data,
-      payload
+      payload,
     ];
 
-    const u = candidates.find(c => c && (c.email || c.id || c._id)) || {};
+    const u = candidates.find((c) => c && (c.email || c.id || c._id)) || {};
 
     let profile = null;
     if (u.profile) {
-      if (Array.isArray(u.profile) && u.profile.length > 0) profile = u.profile[0];
+      if (Array.isArray(u.profile) && u.profile.length > 0)
+        profile = u.profile[0];
       else if (typeof u.profile === "object") {
         if (u.profile["0"]) profile = u.profile["0"];
         else profile = u.profile;
@@ -236,7 +246,11 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     const dob = profile?.dob || u.dob || "";
     const gender = profile?.gender || u.gender || "Male";
 
-    const token = payload.accessToken || payload.token || payload.data?.token || payload.data?.accessToken;
+    const token =
+      payload.accessToken ||
+      payload.token ||
+      payload.data?.token ||
+      payload.data?.accessToken;
     const refreshToken = payload.refreshToken || payload.data?.refreshToken;
 
     return {
@@ -251,7 +265,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     };
   };
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginError("");
@@ -261,9 +274,12 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     const normalizedIdentifier = loginIdentifier.toLowerCase();
 
     // Improved validation for Login
-    if (normalizedIdentifier.includes('@')) {
+    if (normalizedIdentifier.includes("@")) {
       // Treat as email
-      if (!emailRegex.test(normalizedIdentifier) || !isValidDomain(normalizedIdentifier)) {
+      if (
+        !emailRegex.test(normalizedIdentifier) ||
+        !isValidDomain(normalizedIdentifier)
+      ) {
         setLoginIdentifierError("Email is not correct");
         return;
       }
@@ -284,7 +300,9 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
     try {
       const payload = {
-        email: emailRegex.test(normalizedIdentifier) ? normalizedIdentifier : "",
+        email: emailRegex.test(normalizedIdentifier)
+          ? normalizedIdentifier
+          : "",
         password: loginPassword,
         role: "customer",
       };
@@ -301,7 +319,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
       if (!res.ok) {
         // Handle nested message object from 401 response
-        const errorMsg = data?.message?.message || data?.message || "Login failed";
+        const errorMsg =
+          data?.message?.message || data?.message || "Login failed";
         setLoginError(errorMsg);
         toast.error(errorMsg);
 
@@ -317,7 +336,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
       if (normalized.token) {
         localStorage.setItem("token", normalized.token);
-        if (normalized.refreshToken) localStorage.setItem("refreshToken", normalized.refreshToken);
+        if (normalized.refreshToken)
+          localStorage.setItem("refreshToken", normalized.refreshToken);
       }
 
       dispatch(
@@ -349,7 +369,6 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       });
       resetAllForms();
       onClose?.();
-
     } catch (err) {
       console.error(err);
       setLoginError("Something went wrong. Try again.");
@@ -397,7 +416,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       if (!res.ok) {
         // Check for 409 Conflict (Email already exists)
         if (res.status === 409 || json.statusCode === 409) {
-          const errorMessage = json.message?.message || json.message || "Email already exists";
+          const errorMessage =
+            json.message?.message || json.message || "Email already exists";
 
           // Save email for prefilling login
           const existingEmail = email;
@@ -435,9 +455,8 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       // 4. Show success message
       toast.success("Account created! Please log in.", {
         style: { color: "green" },
-        duration: 4000
+        duration: 3000,
       });
-
     } catch (err) {
       console.error("Signup error:", err);
       setApiMessage("Network error. Please try again.");
@@ -472,7 +491,10 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         setResetOpen(true);
       } else {
         // User not found or error occurred
-        const errorMessage = data.message?.message || data.message || "User not found. Please check your email.";
+        const errorMessage =
+          data.message?.message ||
+          data.message ||
+          "User not found. Please check your email.";
         toast.error(errorMessage);
       }
     } catch (err) {
@@ -538,21 +560,27 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             resetAllForms();
             onClose?.();
           }}
-          className="absolute top-2 right-3 z-10 p-2 text-gray-400 hover:text-gray-600 bg-gray-25 hover:bg-gray-100 rounded-full transition-all"
+          className="absolute top-2 right-3 z-10 p-2 text-gray-400 hover:text-gray-600 bg-gray-25 hover:bg-gray-100 rounded-full "
           aria-label="Close modal"
         >
-          <X size={24} className="cursor-pointer" />
+          <X size={24} className="cursor-pointer hover:scale-110 transition-transform" />
         </button>
 
         {/* Left Side - Form */}
         <div className="p-10 lg:p-16 flex flex-col">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <img src={logo} alt="Ishita Gallery" className="h-16 object-contain" />
+            <img
+              src={logo}
+              alt="Ishita Gallery"
+              className="h-16 object-contain"
+            />
           </div>
 
           {/* Welcome Text */}
-          <h2 className="text-2xl font-bold text-center mb-6">Welcome to Ishita Gallery</h2>
+          <h2 className="text-2xl text-center mb-6">
+            Welcome to Ishita Gallery
+          </h2>
 
           {/* Tabs */}
           <div className="flex justify-center mb-6">
@@ -560,20 +588,22 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
               <button
                 type="button"
                 onClick={() => setTab("login")}
-                className={`pb-2 text-sm font-medium transition ${tab === "login"
-                  ? "border-b-2 border-brand-600 text-brand-600 -mb-[2px]"
-                  : "text-gray-600 hover:text-gray-900 cursor-pointer"
-                  }`}
+                className={`pb-2 text-sm font-medium transition ${
+                  tab === "login"
+                    ? "border-b-2 border-brand-600 text-brand-600 -mb-[2px]"
+                    : "text-gray-600 hover:text-gray-900 cursor-pointer"
+                }`}
               >
                 Log In
               </button>
               <button
                 type="button"
                 onClick={() => setTab("signup")}
-                className={`cursor-pointer pb-2 text-sm font-medium transition ${tab === "signup"
-                  ? "border-b-2 border-brand-600 text-brand-600 -mb-[2px]"
-                  : "text-gray-600 hover:text-gray-900"
-                  }`}
+                className={`cursor-pointer pb-2 text-sm font-medium transition ${
+                  tab === "signup"
+                    ? "border-b-2 border-brand-600 text-brand-600 -mb-[2px]"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
               >
                 Sign Up
               </button>
@@ -595,10 +625,18 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     if (loginIdentifierError) setLoginIdentifierError(""); // Clear error on type
                   }}
                   placeholder="john@gmail.com"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${loginIdentifierError ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"}`}
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${
+                    loginIdentifierError
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-brand-500"
+                  }`}
                   autoComplete="username"
                 />
-                {loginIdentifierError && <p className="text-xs text-red-600 mt-1">{loginIdentifierError}</p>}
+                {loginIdentifierError && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {loginIdentifierError}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -611,20 +649,26 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500 transition"
                     autoComplete="current-password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowLoginPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                   >
-                    {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showLoginPassword ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}
                   </button>
                 </div>
               </div>
 
-              {loginError && <p className="text-sm text-red-600">{loginError}</p>}
+              {loginError && (
+                <p className="text-sm text-red-600">{loginError}</p>
+              )}
 
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center gap-2 text-gray-700">
@@ -635,7 +679,7 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   type="button"
                   onClick={handleForgotPasswordClick}
                   disabled={resetLoading}
-                  className="text-brand-600 hover:underline disabled:opacity-50"
+                  className="text-brand-600 hover:underline disabled:opacity-50 cursor-pointer"
                 >
                   {resetLoading ? "Verifying..." : "Forgot password?"}
                 </button>
@@ -643,13 +687,20 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
               <button
                 type="submit"
-                disabled={!isLoginValid || loginLoading || loginDisabledTemporarily}
-                className={`w-full py-2.5 rounded text-sm font-semibold transition ${isLoginValid && !loginLoading && !loginDisabledTemporarily
-                  ? "bg-brand-600 text-white hover:bg-purple-700"
-                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  }`}
+                disabled={
+                  !isLoginValid || loginLoading || loginDisabledTemporarily
+                }
+                className={`w-full py-2.5 rounded text-sm !font-medium transition ${
+                  isLoginValid && !loginLoading && !loginDisabledTemporarily
+                    ? "bg-brand-600 text-white hover:bg-brand-700 cursor-pointer"
+                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
               >
-                {loginLoading ? "Logging in..." : loginDisabledTemporarily ? "Retry" : "Log In"}
+                {loginLoading
+                  ? "Logging in..."
+                  : loginDisabledTemporarily
+                  ? "Retry"
+                  : "Log In"}
               </button>
 
               {/* <div className="flex items-center gap-3 my-4">
@@ -659,13 +710,15 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
               </div> */}
 
               {/* <OAuthButtons /> */}
-
             </form>
           )}
 
           {/* Signup Form */}
           {tab === "signup" && (
-            <form onSubmit={handleSignup} className="space-y-4 flex-1 overflow-y-auto px-1">
+            <form
+              onSubmit={handleSignup}
+              className="space-y-4 flex-1 overflow-y-auto px-1"
+            >
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Name <span className="text-red-500">*</span>
@@ -674,10 +727,17 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter Name"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.name ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                    }`}
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${
+                    signupErrors.name
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-brand-500"
+                  }`}
                 />
-                {signupErrors.name && <p className="text-xs text-red-600 mt-1">{signupErrors.name}</p>}
+                {signupErrors.name && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {signupErrors.name}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -686,13 +746,22 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                 </label>
                 <input
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  onChange={(e) =>
+                    setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
+                  }
                   placeholder="Enter Whatsapp Mobile"
                   inputMode="numeric"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.mobile ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                    }`}
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${
+                    signupErrors.mobile
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-brand-500"
+                  }`}
                 />
-                {signupErrors.mobile && <p className="text-xs text-red-600 mt-1">{signupErrors.mobile}</p>}
+                {signupErrors.mobile && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {signupErrors.mobile}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -703,10 +772,17 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter Email"
-                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                    }`}
+                  className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${
+                    signupErrors.email
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-brand-500"
+                  }`}
                 />
-                {signupErrors.email && <p className="text-xs text-red-600 mt-1">{signupErrors.email}</p>}
+                {signupErrors.email && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {signupErrors.email}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -719,18 +795,29 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min 8 chars, letters & numbers"
-                    className={`w-full border rounded px-3 py-2 text-sm placeholder:w-[90%] truncate focus:outline-none focus:ring-1 transition ${signupErrors.password ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                      }`}
+                    className={`w-full border rounded px-3 py-2 text-sm placeholder:w-[90%] truncate focus:outline-none focus:ring-1 transition ${
+                      signupErrors.password
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-brand-500"
+                    }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowSignupPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                   >
-                    {showSignupPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showSignupPassword ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}
                   </button>
                 </div>
-                {signupErrors.password && <p className="text-xs text-red-600 mt-1">{signupErrors.password}</p>}
+                {signupErrors.password && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {signupErrors.password}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -743,29 +830,45 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${signupErrors.confirmPassword ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-purple-500"
-                      }`}
+                    className={`w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 transition ${
+                      signupErrors.confirmPassword
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-brand-500"
+                    }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowSignupConfirm((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                   >
-                    {showSignupConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showSignupConfirm ? (
+                      <EyeOff size={16} />
+                    ) : (
+                      <Eye size={16} />
+                    )}
                   </button>
                 </div>
-                {signupErrors.confirmPassword && <p className="text-xs text-red-600 mt-1">{signupErrors.confirmPassword}</p>}
+                {signupErrors.confirmPassword && (
+                  <p className="text-xs text-red-600 mt-1">
+                    {signupErrors.confirmPassword}
+                  </p>
+                )}
               </div>
 
-              {apiMessage && <p className="text-sm text-center text-gray-700">{apiMessage}</p>}
+              {apiMessage && (
+                <p className="text-sm text-center text-gray-700">
+                  {apiMessage}
+                </p>
+              )}
 
               <button
                 type="submit"
                 disabled={!isSignupValid || signupLoading}
-                className={`w-full py-2.5 rounded text-sm font-semibold transition ${isSignupValid && !signupLoading
-                  ? "bg-brand-600 text-white hover:bg-purple-700"
-                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  }`}
+                className={`w-full py-2.5 rounded text-sm !font-medium transition ${
+                  isSignupValid && !signupLoading
+                    ? "bg-brand-600 text-white hover:bg-brand-700 cursor-pointer"
+                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }`}
               >
                 {signupLoading ? "Creating account..." : "Create account"}
               </button>
@@ -783,7 +886,11 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
 
         {/* Right Side - Product Gallery - Replaced with Banner */}
         <div className="hidden lg:block h-full relative overflow-hidden rounded-r-lg">
-          <img src={authBanner} alt="Auth Banner" className="w-full h-full object-cover" />
+          <img
+            src={authBanner}
+            alt="Auth Banner"
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
 
@@ -805,7 +912,9 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
             setResetToken("");
             setResetOpen(false);
             setTab("login");
-            toast.success("Password reset successfully! Please login with your new password.");
+            toast.success(
+              "Password reset successfully! Please login with your new password."
+            );
           }}
         />
       </Modal>
@@ -828,4 +937,3 @@ export default function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     </Modal>
   );
 }
-

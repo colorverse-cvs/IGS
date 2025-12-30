@@ -10,12 +10,14 @@ export default function TestimonialsPage({ items = [] }) {
       <div className="px-4">
         <div className="container mx-auto">
           <div className="mb-8 flex flex-col items-center text-center md:px-15 lg:px-20">
-            <h2 className="text-4xl md:text-5xl leading-tight font-serif font-semibold text-gray-900 mb-4">
+            <h2 className="text-4xl md:text-5xl leading-tight font-serif !font-medium text-gray-900 mb-4">
               Experiences Shared by Our Clients
             </h2>
             <p className="text-sm text-gray-700 max-w-md">
-              Hear from happy customers who transformed their spaces beautifully using our statues, sharing their experiences, stories, and satisfaction with the quality,
-              design, and impact of our creations.
+              Hear from happy customers who transformed their spaces beautifully
+              using our statues, sharing their experiences, stories, and
+              satisfaction with the quality, design, and impact of our
+              creations.
             </p>
           </div>
 
@@ -35,7 +37,7 @@ export default function TestimonialsPage({ items = [] }) {
                     />
                   </div>
                   <div>
-                    <div className="text-base font-semibold text-gray-900">
+                    <div className="text-base !font-medium text-gray-900">
                       {t.name}
                     </div>
                     {t.role && (

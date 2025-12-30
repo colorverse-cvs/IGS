@@ -11,7 +11,6 @@ import testimonials from "../data/testimonials.json";
 import CustomOrderModal from "../components/CustomOrderModal.jsx";
 // import useAuth from "../hooks/useAuth";
 
-
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,7 +47,7 @@ export default function HomePage() {
           {/* Left Text Block */}
           <div className="flex flex-col justify-between w-full lg:w-[40%]">
             <div>
-              <h1 className="text-4xl md:text-5xl pb-4  xl:text-6xl font-bold leading-tight text-gray-900">
+              <h1 className="text-4xl md:text-5xl pb-4  xl:text-6xl !font-medium leading-tight text-gray-900">
                 Exquisite Statues for Every Space
               </h1>
               <p className="text-gray-600 text-sm">
@@ -59,13 +58,13 @@ export default function HomePage() {
               <div className="flex flex-col md:flex-row flex-wrap gap-4 py-5">
                 <button
                   onClick={() => navigate("/filter")}
-                  className="cursor-pointer bg-brand-900 text-white py-1 px-4 rounded-md font-medium hover:bg-purple-800 transition"
+                  className="cursor-pointer bg-brand-900 text-white py-1 px-4 rounded-md font-medium hover:bg-brand-800 transition"
                 >
                   Explore Collection
                 </button>
                 <button
                   onClick={() => setIsCustomOrderModalOpen(true)}
-                  className="cursor-pointer border-2 border-brand-700 text-brand-700  py-1 px-4 rounded-md font-medium hover:bg-purple-50 transition"
+                  className="cursor-pointer border-2 border-brand-700 text-brand-700  py-1 px-4 rounded-md font-medium hover:bg-brand-50 transition"
                 >
                   Custom Order
                 </button>
@@ -78,7 +77,7 @@ export default function HomePage() {
                   </p>
                   <p className="text-sm">
                     4.0{" "}
-                    <span className="text-yellow-500 text-sm font-semibold">
+                    <span className="text-yellow-500 text-sm !font-medium">
                       ★
                     </span>{" "}
                     <span className="text-gray-600">(105)</span>

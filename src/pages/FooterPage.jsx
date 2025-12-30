@@ -1,14 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Instagram, MapPin, Phone, Mailbox, Facebook, Linkedin } from "lucide-react";
+import {
+  Instagram,
+  MapPin,
+  Phone,
+  Mailbox,
+  Facebook,
+  Linkedin,
+} from "lucide-react";
 import IshitaGalleryLogo from "/assets/images/watermark-ishita-gallery-logo.png";
 
 /**
  * FooterPage Component
- * 
+ *
  * Displays the footer section that appears at the bottom of every page.
  * Contains company information, navigation links, social media links, and copyright.
- * 
+ *
  * For beginners:
  * - Uses React Router's Link component for navigation
  * - Links to placeholder pages are defined in routes.jsx
@@ -20,7 +27,7 @@ export default function FooterPage() {
       <div className="px-4 md:px-15 lg:px-20">
         <div className="container mx-auto flex flex-col md:flex-row py-14 gap-10">
           <div className="w-full">
-            <div className="text-2xl font-semibold w-[50%]">
+            <div className="text-2xl !font-medium w-[50%]">
               <img src={IshitaGalleryLogo} alt="Ishita Gallery Logo" />
             </div>
             <p className="mt-6 text-base leading-7 max-w-xl opacity-90">
@@ -45,7 +52,7 @@ export default function FooterPage() {
           </div>
           <div className="w-full flex flex-row flex-wrap justify-starts xl:justify-end align-bottom gap-5">
             <div className="w-[45%] lg:w-[25%]">
-              <div className="font-semibold text-lg mb-4">Company</div>
+              <div className="!font-medium text-lg mb-4">Company</div>
               <ul className="space-y-3 text-sm opacity-90">
                 <li>
                   <Link to="/about">About Us</Link>
@@ -65,15 +72,15 @@ export default function FooterPage() {
               </ul>
             </div>
             <div className="w-[45%] lg:w-[25%]">
-              <div className="font-semibold text-lg mb-4">Categories</div>
+              <div className="!font-medium text-lg mb-4">Categories</div>
               <ul className="space-y-3 text-sm opacity-90">
                 <li>
                   <Link to="/filter?category=shivaji">
-                    Chhatrapati Shivaji Maharaj Statues</Link>
+                    Chhatrapati Shivaji Maharaj Statues
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/filter?category=mavale">
-                    Mavale Statues</Link>
+                  <Link to="/filter?category=mavale">Mavale Statues</Link>
                 </li>
                 <li>
                   <Link to="/filter?category=god-statues">God Statues</Link>
@@ -97,7 +104,7 @@ export default function FooterPage() {
               </ul>
             </div>
             <div className="w-[45%] lg:w-[25%]">
-              <div className="font-semibold text-lg mb-4">Support</div>
+              <div className="!font-medium text-lg mb-4">Support</div>
               <ul className="space-y-3 text-sm opacity-90">
                 <li>Privacy Policy</li>
                 <li>Terms of Service</li>
@@ -115,22 +122,38 @@ export default function FooterPage() {
             <div>© 2024 Ishita Gallery. All rights reserved.</div>
             <div className="flex items-center gap-3 text-lg">
               <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
-                <a target="_blank" href="https://facebook.com/" rel="noopener noreferrer">
+                <a
+                  target="_blank"
+                  href="https://facebook.com/"
+                  rel="noopener noreferrer"
+                >
                   <Facebook className="p-1" />
                 </a>
               </span>
               <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
-                <a target="_blank" href="https://instagram.com/" rel="noopener noreferrer">
+                <a
+                  target="_blank"
+                  href="https://instagram.com/"
+                  rel="noopener noreferrer"
+                >
                   <Instagram className="p-1" />
                 </a>
               </span>
               <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
-                <a target="_blank" href="https://x.com/" rel="noopener noreferrer">
+                <a
+                  target="_blank"
+                  href="https://x.com/"
+                  rel="noopener noreferrer"
+                >
                   𝕏
                 </a>
               </span>
               <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
-                <a target="_blank" href="https://linkedin.com/" rel="noopener noreferrer">
+                <a
+                  target="_blank"
+                  href="https://linkedin.com/"
+                  rel="noopener noreferrer"
+                >
                   <Linkedin className="p-1" />
                 </a>
               </span>
@@ -138,11 +161,7 @@ export default function FooterPage() {
           </div>
         </div>
       </div>
-      <div
-        className="lg:hidden"
-        style={{ height: "66px" }}
-      />
+      <div className="lg:hidden" style={{ height: "66px" }} />
     </footer>
   );
 }
-

@@ -55,8 +55,8 @@ export default function Dropdown({
   const isFormMode = options.length > 0 && onChange !== undefined;
   const normalized = isFormMode
     ? options.map((opt) =>
-      typeof opt === "string" ? { value: opt, label: opt } : opt
-    )
+        typeof opt === "string" ? { value: opt, label: opt } : opt
+      )
     : [];
 
   const selected = isFormMode
@@ -117,7 +117,7 @@ export default function Dropdown({
     });
   }, [open, align]);
 
-  // Click outside to close
+  // Click outside or scroll to close
   useEffect(() => {
     const onDocClick = (e) => {
       if (!wrapperRef.current) return;
@@ -125,10 +125,19 @@ export default function Dropdown({
         setOpen(false);
       }
     };
+    const onScroll = () => {
+      setOpen(false);
+    };
     if (open) {
       document.addEventListener("mousedown", onDocClick);
+      document.addEventListener("scroll", onScroll, true); // true for capture phase
+      window.addEventListener("scroll", onScroll, true);
     }
-    return () => document.removeEventListener("mousedown", onDocClick);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("scroll", onScroll, true);
+    };
   }, [open, setOpen]);
 
   // Escape key to close
@@ -150,8 +159,8 @@ export default function Dropdown({
 
   const visible = isFormMode
     ? normalized.filter((o) =>
-      o.label.toLowerCase().includes(filter.toLowerCase())
-    )
+        o.label.toLowerCase().includes(filter.toLowerCase())
+      )
     : [];
 
   const onKeyDown = (e) => {
@@ -196,16 +205,20 @@ export default function Dropdown({
           aria-labelledby={id}
           onClick={() => !disabled && setOpen((v) => !v)}
           disabled={disabled}
-          className={`w-full text-left border rounded px-3 py-2 border-gray-200 flex items-center justify-between bg-white ${disabled ? "opacity-60 cursor-not-allowed bg-gray-50" : "cursor-pointer"
-            }`}
+          className={`w-full text-left border rounded gap-2 px-3 py-1.5 border-gray-200 flex items-center justify-between bg-white ${
+            disabled
+              ? "opacity-60 cursor-not-allowed bg-gray-50"
+              : "cursor-pointer"
+          }`}
         >
           <span className="truncate text-sm text-gray-700">
             {selected ? selected.label : placeholder}
           </span>
           <ChevronDown
             size={16}
-            className={`ml-2 transition-transform ${open ? "rotate-180" : "rotate-0"
-              }`}
+            className={`transition-transform ${
+              open ? "rotate-180" : "rotate-0"
+            }`}
           />
         </button>
       )}
@@ -227,15 +240,16 @@ export default function Dropdown({
       {open && (
         <div
           ref={panelRef}
-          className={`${isFormMode ? "absolute" : "fixed"
-            } rounded-md shadow-lg bg-white ring-1 ring-purple-600 ring-opacity-5 z-50`}
+          className={`${
+            isFormMode ? "absolute" : "fixed"
+          } rounded-md shadow-lg bg-white ring-1 ring-brand-600 ring-opacity-5 z-50`}
           style={(() => {
             if (!isFormMode) {
               return {
                 top: panelPosition.top,
                 left: panelPosition.left,
                 width: panelSize.width ? `${panelSize.width}px` : undefined,
-                maxWidth: "calc(100vw - 16px)",
+                maxWidth: "calc(100dvw - 16px)",
                 pointerEvents: "auto",
               };
             }
@@ -270,7 +284,7 @@ export default function Dropdown({
         >
           {/* Form Mode: List of options */}
           {isFormMode && (
-            <div className="p-2">
+            <div className="py-1">
               {searchable && (
                 <input
                   type="text"

@@ -65,7 +65,7 @@ export default function Inventory() {
             placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500 transition focus:border-transparent"
+            className="w-full border border-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand-500 transition focus:border-transparent"
           />
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
             🔍

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { api } from "../utils/api";
 import Breadcrumb from "../components/Breadcrumb.jsx";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import { APP_URL } from "../constant";
 import { addOrder } from "../features/orders/ordersSlice";
@@ -10,10 +10,19 @@ import { clearCart } from "../features/cart/cartSlice";
 import { Trash2 } from "lucide-react";
 import Modal from "../components/Modal.jsx";
 import AddressForm from "../components/AddressForm.jsx";
-import { addAddressAsync, updateAddressAsync } from "../features/user/userSlice";
+import {
+  addAddressAsync,
+  updateAddressAsync,
+} from "../features/user/userSlice";
 import CustomPopupModal from "../components/CustomPopupModal";
 
-import { removeFromCart, updateQty, removeItemFromCartAsync, clearCartAsync, updateCartItemQuantityAsync } from "../features/cart/cartSlice";
+import {
+  removeFromCart,
+  updateQty,
+  removeItemFromCartAsync,
+  clearCartAsync,
+  updateCartItemQuantityAsync,
+} from "../features/cart/cartSlice";
 
 /**
  * CheckoutPage Component
@@ -61,14 +70,14 @@ export default function CheckoutPage() {
     if (window.Razorpay) return;
 
     // Load Razorpay script dynamically
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     script.onload = () => {
-      console.log('Razorpay SDK loaded successfully');
+      console.log("Razorpay SDK loaded successfully");
     };
     script.onerror = () => {
-      console.error('Failed to load Razorpay SDK');
+      console.error("Failed to load Razorpay SDK");
     };
     document.body.appendChild(script);
 
@@ -80,10 +89,7 @@ export default function CheckoutPage() {
     };
   }, []);
 
-  const payable = useMemo(
-    () => subtotal,
-    [subtotal]
-  );
+  const payable = useMemo(() => subtotal, [subtotal]);
 
   const [open, setOpen] = useState({
     address: true,
@@ -137,7 +143,8 @@ export default function CheckoutPage() {
     });
   };
 
-  const allStepsVisited = visitedSteps.address && visitedSteps.review && visitedSteps.payment;
+  const allStepsVisited =
+    visitedSteps.address && visitedSteps.review && visitedSteps.payment;
 
   // Delivery ETA: 7 days from now
   const now = new Date();
@@ -184,7 +191,6 @@ export default function CheckoutPage() {
         },
       };
 
-
       // 1️⃣ Create order (backend) with manual fetch to handle error statuses manually
       // Use fetch instead of api.post to get raw response first for error handling
       const token = localStorage.getItem("token");
@@ -194,7 +200,7 @@ export default function CheckoutPage() {
       const res = await fetch(`${APP_URL}/api/v1/cart/checkout`, {
         method: "POST",
         headers,
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -217,7 +223,6 @@ export default function CheckoutPage() {
         throw new Error(data.message || "Failed to create order");
       }
 
-
       // 2️⃣ Razorpay options
       const options = {
         key: data.keyId,
@@ -230,7 +235,10 @@ export default function CheckoutPage() {
 
         handler: async function (rzpResponse) {
           try {
-            const verifyResult = await api.post("/api/v1/payments/verify", rzpResponse);
+            const verifyResult = await api.post(
+              "/api/v1/payments/verify",
+              rzpResponse
+            );
 
             // Check for success based on the new response structure
             if (verifyResult.success) {
@@ -259,16 +267,20 @@ export default function CheckoutPage() {
 
       // 3️⃣ Check if Razorpay is loaded
       if (!window.Razorpay) {
-        throw new Error("Razorpay SDK not loaded. Please refresh the page and try again.");
+        throw new Error(
+          "Razorpay SDK not loaded. Please refresh the page and try again."
+        );
       }
 
       // Open Razorpay
       const rzp = new window.Razorpay(options);
       rzp.open();
-
     } catch (error) {
       console.error("Failed to place order:", error);
-      showPopup("Order Error", error.message || "Failed to place order. Please try again.");
+      showPopup(
+        "Order Error",
+        error.message || "Failed to place order. Please try again."
+      );
     }
   };
 
@@ -283,7 +295,6 @@ export default function CheckoutPage() {
 
     return cleaned;
   };
-
 
   // Sync address list from user profile if logged in; otherwise use sample JSON
   React.useEffect(() => {
@@ -302,19 +313,14 @@ export default function CheckoutPage() {
 
   // Address modal now opens only when user clicks "Add new address"
 
-  const Section = ({
-    title,
-    isOpen,
-    onToggle,
-    children,
-  }) => (
+  const Section = ({ title, isOpen, onToggle, children }) => (
     <div className="border border-gray-200 rounded-lg mb-4 overflow-hidden">
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100"
+        className="w-full flex justify-between items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 cursor-pointer"
       >
-        <span className="font-semibold text-gray-800 flex items-center gap-2">
+        <span className="!font-medium text-gray-800 flex items-center gap-2">
           {title}
         </span>
       </button>
@@ -341,7 +347,7 @@ export default function CheckoutPage() {
       </div>
       <div className="py-6 px-4 md:px-15 lg:px-20">
         <div className="container mx-auto">
-          <div className="text-2xl font-bold mb-4">Secure Checkout</div>
+          <div className="text-2xl !font-medium mb-4">Secure Checkout</div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left: Steps */}
             <div className="lg:col-span-2">
@@ -393,7 +399,7 @@ export default function CheckoutPage() {
                   ))}
                   <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
                     <button
-                      className="text-sm text-brand-700"
+                      className="text-sm text-brand-700 cursor-pointer"
                       onClick={() => setIsAddressModalOpen(true)}
                     >
                       Add new address
@@ -401,7 +407,6 @@ export default function CheckoutPage() {
                   </div>
                 </div>
               </Section>
-
 
               {/* Review Products */}
               <Section
@@ -417,9 +422,7 @@ export default function CheckoutPage() {
                     const lineTotal = i.price * i.qty + lineWrap;
                     return (
                       <React.Fragment key={i.id}>
-                        <div
-                          className="py-4 flex items-start gap-4 text-sm "
-                        >
+                        <div className="py-4 flex items-start gap-4 text-sm ">
                           <img
                             src={
                               i.image.startsWith("http")
@@ -437,23 +440,23 @@ export default function CheckoutPage() {
                               Material: {i.material || "-"} &nbsp; Size:{" "}
                               {i.size || "-"}
                             </div>
-                            <div className="text-brand-700 font-semibold">
+                            <div className="text-brand-700 !font-medium">
                               ₹{i.price}
                             </div>
                             <div className="flex gap-5 py-2">
                               <div className="flex items-center gap-2 border border-gray-200 rounded">
                                 <button
                                   type="button"
-                                  className="px-2"
+                                  className="px-2 cursor-pointer"
                                   onClick={() => {
                                     keepScroll();
                                     i.qty > 1
                                       ? dispatch(
-                                        updateCartItemQuantityAsync({
-                                          productId: i.id,
-                                          quantity: i.qty - 1,
-                                        })
-                                      )
+                                          updateCartItemQuantityAsync({
+                                            productId: i.id,
+                                            quantity: i.qty - 1,
+                                          })
+                                        )
                                       : dispatch(removeItemFromCartAsync(i.id));
                                   }}
                                 >
@@ -462,7 +465,7 @@ export default function CheckoutPage() {
                                 <span>{i.qty}</span>
                                 <button
                                   type="button"
-                                  className="px-2"
+                                  className="px-2 cursor-pointer"
                                   onClick={() => {
                                     keepScroll();
                                     dispatch(
@@ -478,7 +481,7 @@ export default function CheckoutPage() {
                               </div>
                               <button
                                 type="button"
-                                className="text-red-600 text-xs"
+                                className="text-red-600 text-xs cursor-pointer"
                                 onClick={() => {
                                   keepScroll();
                                   dispatch(removeItemFromCartAsync(i.id));
@@ -508,7 +511,7 @@ export default function CheckoutPage() {
                             </label> */}
                             <div className="text-xs text-gray-500 mt-1">
                               Estimated Delivery –{" "}
-                              <span className="font-semibold">
+                              <span className="!font-medium">
                                 By {formatEta(etaExact)}, 8am - 10pm
                               </span>
                             </div>
@@ -518,7 +521,7 @@ export default function CheckoutPage() {
                         <div className="text-right font-medium">
                           <div>
                             Subtotal (<span>{i.qty}</span> item):{" "}
-                            <span className="text-brand-700 font-semibold">
+                            <span className="text-brand-700 !font-medium">
                               ₹{lineTotal}
                             </span>
                           </div>
@@ -549,14 +552,17 @@ export default function CheckoutPage() {
                   <img src="/assets/logos/razorpay-icon.png" alt="" />
                   <div className="flex flex-col items-start gap-5">
                     <p>Payment System : Razorpay</p>
-                    <p>After placing the order, you'll be redirected to Razorpay to complete payment.</p>
+                    <p>
+                      After placing the order, you'll be redirected to Razorpay
+                      to complete payment.
+                    </p>
                   </div>
                 </div>
               </Section>
 
               <button
                 onClick={() => handlePlaceOrder()}
-                className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full mt-4 px-4 py-2 bg-brand-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 disabled={
                   items.length === 0 ||
                   (currentStep === 1 && !selectedAddress) ||
@@ -565,13 +571,12 @@ export default function CheckoutPage() {
               >
                 Place Order
               </button>
-
             </div>
 
             {/* Right: Pricing Summary */}
             <div>
               <div className="border border-gray-200 rounded-lg p-4 sticky top-2/12 bg-white shadow">
-                <div className="font-semibold mb-3 text-gray-800">
+                <div className="!font-medium mb-3 text-gray-800">
                   Pricing Details
                 </div>
                 <div className="text-sm space-y-2">
@@ -589,12 +594,11 @@ export default function CheckoutPage() {
                   </div>
 
                   <hr />
-                  <div className="flex justify-between font-semibold">
+                  <div className="flex justify-between !font-medium">
                     <span>Total Amount:</span>
                     <span>₹{payable}</span>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
@@ -614,10 +618,12 @@ export default function CheckoutPage() {
               onSubmit={(newAddr) => {
                 if (user?.isAuthenticated) {
                   if (editAddress) {
-                    dispatch(updateAddressAsync({
-                      addressId: editAddress.id,
-                      addressData: { ...newAddr, id: undefined } // ensure no ID in payload if possible, or thunk handles it
-                    }));
+                    dispatch(
+                      updateAddressAsync({
+                        addressId: editAddress.id,
+                        addressData: { ...newAddr, id: undefined }, // ensure no ID in payload if possible, or thunk handles it
+                      })
+                    );
                   } else {
                     dispatch(addAddressAsync(newAddr));
                   }

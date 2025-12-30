@@ -2,7 +2,6 @@ import React from "react";
 import { X, Search, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/products/productSlice";
 
@@ -11,10 +10,12 @@ export default function SearchDrawer({ isOpen, onClose }) {
   const dispatch = useDispatch();
   const [query, setQuery] = React.useState("");
 
-  const { products: allProducts, status } = useSelector((state) => state.products);
+  const { products: allProducts, status } = useSelector(
+    (state) => state.products
+  );
 
   React.useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchProducts());
     }
   }, [status, dispatch]);
@@ -71,16 +72,18 @@ export default function SearchDrawer({ isOpen, onClose }) {
     <>
       {/* Backdrop overlay - click to close */}
       <div
-        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"
-          }`}
+        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
         onClick={onClose}
         aria-hidden={!isOpen}
       />
 
       {/* Drawer panel - slides in from right side */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         role="dialog"
         aria-modal="true"
         aria-label="Search products"
@@ -95,14 +98,14 @@ export default function SearchDrawer({ isOpen, onClose }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Explore collection"
-              className="w-full border border-gray-300 rounded-lg pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-1  focus:ring-purple-500"
+              className="w-full border border-gray-300 rounded-lg pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-1  focus:ring-brand-500"
             />
             <button
               onClick={onClose}
-              className="cursor-pointer absolute right-2 p-2 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+              className="cursor-pointer absolute right-2 p-2 rounded-full text-gray-500 hover:text-gray-700"
               aria-label="Close search"
             >
-              <X size={18} />
+              <X size={18} className="hover:scale-110 transition-transform" />
             </button>
           </div>
         </div>
@@ -122,7 +125,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
                 <li key={p.id}>
                   <button
                     onClick={() => handleClick(p)}
-                    className="w-full text-left"
+                    className="w-full text-left cursor-pointer"
                   >
                     {/* Product result card */}
                     <div className="border border-gray-100 hover:shadow-lg rounded-lg p-2 flex items-start gap-3">
@@ -132,7 +135,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
                         className="w-14 h-14 rounded object-cover flex-shrink-0"
                       />
                       <div className="min-w-0 flex-1">
-                        <div className="text-sm font-semibold text-gray-900 truncate">
+                        <div className="text-sm !font-medium text-gray-900 truncate">
                           {p.name}
                         </div>
                         <div className="text-xs text-gray-500 truncate">
@@ -140,7 +143,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
                           {p.size ? `• ${p.size}` : ""}
                         </div>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-sm font-semibold text-gray-900">
+                          <span className="text-sm !font-medium text-gray-900">
                             ₹{p.price}
                           </span>
                           <span className="flex items-center text-yellow-500 text-xs">

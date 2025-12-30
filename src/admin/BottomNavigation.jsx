@@ -1,4 +1,13 @@
-import { HiHome, HiCube, HiClipboardList, HiOfficeBuilding, HiUsers, HiCreditCard, HiTag, HiCog } from "react-icons/hi";
+import {
+  HiHome,
+  HiCube,
+  HiClipboardList,
+  HiOfficeBuilding,
+  HiUsers,
+  HiCreditCard,
+  HiTag,
+  HiCog,
+} from "react-icons/hi";
 
 export default function BottomNavigation({ activePage, setActivePage }) {
   const menuItems = [
@@ -17,7 +26,7 @@ export default function BottomNavigation({ activePage, setActivePage }) {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activePage === item.name;
-          
+
           return (
             <button
               key={item.name}
@@ -27,11 +36,15 @@ export default function BottomNavigation({ activePage, setActivePage }) {
                 e.stopPropagation();
                 setActivePage(item.name);
               }}
-              className={`flex flex-col items-center justify-center gap-1 px-2 py-1 transition-colors ${
-                isActive ? "text-purple-600" : "text-gray-500"
+              className={`flex flex-col items-center justify-center gap-1 px-2 py-1 transition-colors cursor-pointer ${
+                isActive ? "text-brand-600" : "text-gray-500"
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? "text-purple-600" : "text-gray-500"}`} />
+              <Icon
+                className={`w-5 h-5 ${
+                  isActive ? "text-brand-600" : "text-gray-500"
+                }`}
+              />
               <span className="text-[10px] font-medium">{item.label}</span>
             </button>
           );
@@ -40,4 +53,3 @@ export default function BottomNavigation({ activePage, setActivePage }) {
     </div>
   );
 }
-

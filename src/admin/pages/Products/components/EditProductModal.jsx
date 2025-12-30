@@ -71,7 +71,10 @@ export default function EditProductModal({
     weight: existingProduct?.weight || "",
 
     dimensions: {
-      sizeCategory: existingProduct?.dimensions?.sizeCategory || existingProduct?.dimensions?.size || "",
+      sizeCategory:
+        existingProduct?.dimensions?.sizeCategory ||
+        existingProduct?.dimensions?.size ||
+        "",
       height: existingProduct?.dimensions?.height || "",
       width: existingProduct?.dimensions?.width || "",
     },
@@ -195,7 +198,7 @@ export default function EditProductModal({
       // Calculate discounted price from listPrice and discount percentage
       const listPrice = Number(formData.listPrice);
       const discountPercent = Number(formData.discount || 0);
-      const discountedPrice = listPrice - (listPrice * discountPercent / 100);
+      const discountedPrice = listPrice - (listPrice * discountPercent) / 100;
 
       form.append("name", formData.name);
       form.append("description", formData.description);
@@ -223,13 +226,10 @@ export default function EditProductModal({
 
       form.append("categoryId", selected._id);
 
-      await fetch(
-        `${BASE_URL}/api/v1/products/${existingProduct._id}`,
-        {
-          method: "PATCH",
-          body: form,
-        }
-      );
+      await fetch(`${BASE_URL}/api/v1/products/${existingProduct._id}`, {
+        method: "PATCH",
+        body: form,
+      });
 
       onUpdated?.();
       onClose();
@@ -246,38 +246,36 @@ export default function EditProductModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50">
       <div className="bg-white w-full md:w-[850px] rounded-t-2xl md:rounded-2xl shadow-xl">
-
         {/* HEADER */}
         <div className="p-6 border-b border-gray-200">
           {/* Top row: Title + Close */}
           <div className="flex items-center justify-between">
-            <p className="text-base font-semibold text-gray-900">
-              Edit Product
-            </p>
+            <p className="text-base !font-medium text-gray-900">Edit Product</p>
 
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 transition"
+              className="text-gray-500 hover:text-gray-700 cursor-pointer"
               aria-label="Close"
             >
-              <X size={18} />
+              <X size={18} className="hover:scale-110 transition-transform" />
             </button>
           </div>
 
           {/* Warning below title */}
           <div className="mt-2 flex items-start gap-2">
             <span className="text-sm text-red-600">
-              <strong>Warning:</strong> Please fill all details before editing the product.
+              <strong>Warning:</strong> Please fill all details before editing
+              the product.
             </span>
           </div>
         </div>
 
-
-        <div className="max-h-[70vh] overflow-y-auto px-6 py-5 space-y-5">
-
+        <div className="max-h-[70dvh] overflow-y-auto px-6 py-5 space-y-5">
           {/* MULTIPLE IMAGES */}
           <div>
-            <label className="block mb-2 text-sm font-medium">Product Images</label>
+            <label className="block mb-2 text-sm font-medium">
+              Product Images
+            </label>
 
             <input
               type="file"
@@ -289,7 +287,7 @@ export default function EditProductModal({
 
             <div
               onClick={openFileDialog}
-              className="w-24 h-24 border-2 border-dashed border-purple-500 rounded-xl flex items-center justify-center cursor-pointer"
+              className="w-24 h-24 border-2 border-dashed border-brand-500 rounded-xl flex items-center justify-center cursor-pointer"
             >
               <Upload />
             </div>
@@ -309,12 +307,11 @@ export default function EditProductModal({
                     className="absolute -top-2 -right-2 bg-white rounded-full shadow p-1 cursor-pointer"
                     aria-label="Remove image"
                   >
-                    <X size={14} />
+                    <X size={14} className="hover:scale-110 transition-transform" />
                   </button>
                 </div>
               ))}
             </div>
-
           </div>
 
           {/* INPUTS */}
@@ -414,15 +411,19 @@ export default function EditProductModal({
 
         {/* FOOTER BUTTONS */}
         <div className="flex justify-end gap-3 border-t border-gray-200 p-4">
-          <button onClick={onClose} className="px-5 py-2 border border-gray-300 rounded-lg">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 border border-gray-300 rounded-lg"
+          >
             Cancel
           </button>
 
           <button
             disabled={!isFormValid || isLoading}
             onClick={handleSaveChanges}
-            className={`px-5 py-2 rounded-lg text-white ${isFormValid && !isLoading ? "bg-purple-600" : "bg-gray-300"
-              }`}
+            className={`px-5 py-2 rounded-lg text-white cursor-pointer ${
+              isFormValid && !isLoading ? "bg-brand-600" : "bg-gray-300"
+            }`}
           >
             {isLoading ? "Saving..." : "Save Changes"}
           </button>
@@ -455,11 +456,11 @@ function Input({ label, error, ...props }) {
       <input
         {...props}
         className={`w-full px-3 py-2 rounded-lg border
-          ${error
-            ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-            : "border-gray-300 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:outline-none"
-          }`
-        }
+          ${
+            error
+              ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+              : "border-gray-300 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:outline-none"
+          }`}
       />
       {error && <p className="text-red-500 text-xs">{error}</p>}
     </div>
@@ -481,4 +482,3 @@ function DropdownField({ label, options, value, onChange, error }) {
     </div>
   );
 }
-
