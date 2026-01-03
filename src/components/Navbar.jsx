@@ -411,7 +411,7 @@ export default function Navbar() {
                         },
                       });
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer last:rounded-b-lg"
                   >
                     <LogOut size={16} />
                     Sign out
@@ -549,7 +549,7 @@ export default function Navbar() {
                         },
                       });
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer last:rounded-b-lg"
                   >
                     <LogOut size={16} />
                     Sign out
@@ -640,7 +640,7 @@ export default function Navbar() {
                         },
                       });
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 flex items-center gap-2 cursor-pointer last:rounded-b-lg"
                   >
                     <LogOut size={16} />
                     Sign out
