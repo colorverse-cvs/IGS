@@ -251,7 +251,7 @@ export default function Navbar() {
           Features: Sticky positioning with glass blur effect on scroll */}
       <nav
         className={`hidden lg:block sticky top-0 z-60 border-b transition-colors ${
-          isScrolled
+          isScrolled || isProductsDropdownOpen
             ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
             : "bg-white border-gray-100"
         }`}
