@@ -32,7 +32,7 @@ export default function OrderPlacedPage() {
       </p>
       <div className="mt-6 flex gap-3">
         <button
-          className="p-2 md:px-4 py-2 border rounded cursor-pointer"
+          className="p-2 md:px-4 py-2 border rounded cursor-pointer border-gray-300"
           onClick={() => navigate("/")}
         >
           Go to home

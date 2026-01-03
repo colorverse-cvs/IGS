@@ -139,11 +139,11 @@ export default function OrdersPage() {
             Download Invoice
           </button> */}
           <button
-            className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
+            className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
                                         ${
                                           it.product === null
                                             ? "cursor-not-allowed opacity-50"
-                                            : "cursor-pointer hover:bg-purple-50"
+                                            : "cursor-pointer hover:bg-brand-50"
                                         }`}
             onClick={() => navigate(`/product/${productId}`)}
           >
@@ -156,11 +156,11 @@ export default function OrdersPage() {
     return (
       <div className="flex flex-col gap-2">
         <button
-          className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
+          className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
                                         ${
                                           it.product === null
                                             ? "cursor-not-allowed opacity-50"
-                                            : "cursor-pointer hover:bg-purple-50"
+                                            : "cursor-pointer hover:bg-brand-50"
                                         }`}
           onClick={() => navigate(`/product/${productId}`)}
         >
@@ -213,7 +213,7 @@ export default function OrdersPage() {
                 onClick={() => setActiveTab(tab)}
                 className={`pb-2 capitalize transition-colors ${
                   activeTab === tab
-                    ? "border-b-2 border-purple-500 text-purple-600 font-medium"
+                    ? "border-b-2 border-brand-500 text-brand-600 font-medium"
                     : "text-gray-600 hover:text-gray-800"
                 }`}
               >
@@ -397,11 +397,11 @@ export default function OrdersPage() {
                                         Download Invoice
                                       </button> */}
                                       <button
-                                        className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
+                                        className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
                                         ${
                                           it.product === null
                                             ? "cursor-not-allowed opacity-50"
-                                            : "cursor-pointer hover:bg-purple-50"
+                                            : "cursor-pointer hover:bg-brand-50"
                                         }`}
                                         onClick={() =>
                                           navigate(`/product/${product._id}`)
@@ -412,11 +412,11 @@ export default function OrdersPage() {
                                     </>
                                   ) : (
                                     <button
-                                      className={`px-3 py-1 text-purple-600 border border-purple-600 rounded text-sm
+                                      className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
                                         ${
                                           it.product === null
                                             ? "cursor-not-allowed opacity-50"
-                                            : "cursor-pointer hover:bg-purple-50"
+                                            : "cursor-pointer hover:bg-brand-50"
                                         }`}
                                       onClick={() =>
                                         navigate(`/product/${product._id}`)
@@ -524,7 +524,7 @@ export default function OrdersPage() {
                               className={`px-3 py-1 border rounded text-xs
                               ${
                                 product?._id
-                                  ? "text-purple-600 border-purple-600 hover:bg-purple-50 cursor-pointer"
+                                  ? "text-brand-600 border-brand-600 hover:bg-brand-50 cursor-pointer"
                                   : "text-gray-400 border-gray-300 cursor-not-allowed opacity-50"
                               }`}
                             >

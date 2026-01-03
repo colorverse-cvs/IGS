@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { ChevronDown } from "lucide-react";
+import { lockBodyScroll, unlockBodyScroll } from "../utils/bodyScrollLock";
 
 /**
  * Dropdown - Unified dropdown component for forms and navigation
@@ -117,7 +118,7 @@ export default function Dropdown({
     });
   }, [open, align]);
 
-  // Click outside or scroll to close
+  // Click outside to close
   useEffect(() => {
     const onDocClick = (e) => {
       if (!wrapperRef.current) return;
@@ -125,18 +126,11 @@ export default function Dropdown({
         setOpen(false);
       }
     };
-    const onScroll = () => {
-      setOpen(false);
-    };
     if (open) {
       document.addEventListener("mousedown", onDocClick);
-      document.addEventListener("scroll", onScroll, true); // true for capture phase
-      window.addEventListener("scroll", onScroll, true);
     }
     return () => {
       document.removeEventListener("mousedown", onDocClick);
-      document.removeEventListener("scroll", onScroll, true);
-      window.removeEventListener("scroll", onScroll, true);
     };
   }, [open, setOpen]);
 
@@ -153,9 +147,15 @@ export default function Dropdown({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [open, setOpen]);
 
+  // Prevent background scroll when dropdown is open
   useEffect(() => {
-    if (open && isFormMode) setHighlight(0);
-  }, [open, filter, isFormMode]);
+    if (open) {
+      lockBodyScroll();
+      return () => {
+        unlockBodyScroll();
+      };
+    }
+  }, [open]);
 
   const visible = isFormMode
     ? normalized.filter((o) =>
@@ -228,10 +228,10 @@ export default function Dropdown({
         <div
           className="fixed inset-0 z-40"
           onClick={() => setOpen(false)}
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0)",
-            pointerEvents: "auto",
-          }}
+          // style={{
+          //   backgroundColor: "rgba(0, 0, 0, 0.1)",
+          //   pointerEvents: "auto",
+          // }}
           aria-label="Close dropdown overlay"
         />
       )}
@@ -240,6 +240,7 @@ export default function Dropdown({
       {open && (
         <div
           ref={panelRef}
+          onScroll={(e) => e.stopPropagation()}
           className={`${
             isFormMode ? "absolute" : "fixed"
           } rounded-md shadow-lg bg-white ring-1 ring-brand-600 ring-opacity-5 z-50`}
@@ -284,7 +285,7 @@ export default function Dropdown({
         >
           {/* Form Mode: List of options */}
           {isFormMode && (
-            <div className="py-1">
+            <div className="">
               {searchable && (
                 <input
                   type="text"
@@ -300,6 +301,7 @@ export default function Dropdown({
                 aria-activedescendant={visible[highlight]?.value}
                 tabIndex={-1}
                 className="max-h-56 overflow-auto"
+                onScroll={(e) => e.stopPropagation()}
               >
                 {visible.map((opt, idx) => (
                   <li
@@ -307,12 +309,15 @@ export default function Dropdown({
                     role="option"
                     aria-selected={value === opt.value}
                     aria-disabled={opt.disabled}
-                    className={`px-3 py-2 text-sm ${opt.disabled
+                    className={`px-3 py-2 text-sm ${
+                      opt.disabled
                         ? "text-gray-400 cursor-not-allowed opacity-50"
                         : idx === highlight
-                          ? "bg-purple-50 text-brand-700 cursor-pointer"
-                          : "text-gray-700 cursor-pointer hover:bg-purple-50 hover:text-brand-700"
-                      }`}
+                        ? "bg-brand-50 text-brand-700 cursor-pointer"
+                        : "text-gray-700 cursor-pointer hover:bg-brand-50 hover:text-brand-700"
+                    } ${idx === 0 ? "rounded-t-lg" : ""} ${
+                      idx === visible.length - 1 ? "rounded-b-lg" : ""
+                    }`}
                     onMouseEnter={() => !opt.disabled && setHighlight(idx)}
                     onClick={() => {
                       if (opt.disabled) return;
@@ -335,7 +340,7 @@ export default function Dropdown({
           {/* Navigation Mode: Custom children */}
           {!isFormMode && children && (
             <div
-              className="py-1"
+              className=""
               onClick={(e) => {
                 // Prevent clicks inside the panel from closing the dropdown
                 e.stopPropagation();
