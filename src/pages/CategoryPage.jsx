@@ -113,7 +113,7 @@ const CategoryPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl text-gray-800 mb-6 border-b pb-2">
+      <h2 className="text-3xl text-gray-800 mb-6 border-b border-gray-300 pb-2">
         {categoryName || "All Products"} Collection
       </h2>
 

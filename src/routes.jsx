@@ -1,5 +1,6 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import HomePage from "./pages/HomePage";
 import CollectionPage from "./pages/CollectionPage";
 import AboutPage from "./pages/AboutPage";
@@ -14,6 +15,8 @@ import CategoryPage from "./pages/CategoryPage";
 import FilterPage from "./pages/FilterPage";
 import ProductMoreInfoPage from "./pages/ProductMoreInfoPage";
 import AdminPanelMain from "./admin/MainPanel";
+import AuthModal from "./components/AuthModal";
+import NotFoundPage from "./pages/NotFoundPage";
 
 /**
  * Routes Component - Application Routing Configuration
@@ -27,6 +30,23 @@ import AdminPanelMain from "./admin/MainPanel";
  * - element={<ComponentName />} is the React component to render for that route
  * - Routes wraps all Route components and handles navigation
  */
+
+/**
+ * ProtectedRoute Component - Protects routes that require authentication
+ *
+ * If user is authenticated, renders the children component.
+ * If not, renders the AuthModal for login/signup.
+ */
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+
+  if (!isAuthenticated) {
+    return <AuthModal isOpen={true} onClose={() => navigate("/")} />;
+  }
+
+  return children;
+};
 
 /**
  * Placeholder component for pages that haven't been built yet
@@ -61,16 +81,48 @@ export default function RoutesMap() {
       <Route path="/categories/:categorySlug" element={<CategoryPage />} />
       <Route path="/filter" element={<FilterPage />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/order-placed" element={<OrderPlacedPage />} />
-      <Route path="/orders" element={<OrdersPage />} />
-      <Route path="/profile" element={<Profile />} />
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute>
+            {" "}
+            <CheckoutPage />{" "}
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/order-placed"
+        element={
+          <ProtectedRoute>
+            {" "}
+            <OrderPlacedPage />{" "}
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/orders"
+        element={
+          <ProtectedRoute>
+            {" "}
+            <OrdersPage />{" "}
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            {" "}
+            <Profile />{" "}
+          </ProtectedRoute>
+        }
+      />
       <Route path="/about" element={<AboutPage />} />
       {/* <Route path="/customization" element={Placeholder("Customization")} /> */}
       <Route path="/faq" element={Placeholder("FAQ")} />
       <Route path="/contact" element={<ContactPage />} />
-      <Route path="/contact" element={Placeholder("Contact")} />
       <Route path="/admin" element={<AdminPanelMain />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
