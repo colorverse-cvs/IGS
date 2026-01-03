@@ -94,7 +94,7 @@ export default function DashboardAnalysisCards() {
         value: todayOrders.length,
         sub: `This week: ${weekOrders.length}`,
         icon: ShoppingCart,
-        iconColor: "text-purple-600",
+        iconColor: "text-brand-600",
       },
       {
         title: "Today's Sales",
