@@ -89,6 +89,11 @@ export default function Orders() {
             month: "short",
             day: "numeric",
           }),
+          time: new Date(order.createdAt).toLocaleTimeString("en-IN", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          }),
           status: order.status || "Pending",
           statusColor: getStatusColor(order.status),
           // Format shipping address from API
@@ -316,6 +321,7 @@ export default function Orders() {
                   <div className="text-right">
                     <p className="!font-medium text-sm">{order.amount}</p>
                     <p className="text-xs text-gray-500">{order.date}</p>
+                    <p className="text-xs text-gray-400">{order.time}</p>
                   </div>
                 </div>
 

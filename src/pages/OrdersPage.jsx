@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import {
   fetchOrdersAsync,
   updateOrderStatus,
+  cancelOrderAsync,
 } from "../features/orders/ordersSlice";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 import Dropdown from "../components/Dropdown.jsx";
@@ -18,6 +19,15 @@ const formatDate = (iso) => {
     day: "2-digit",
     month: "short",
     year: "numeric",
+  });
+};
+
+const formatTime = (iso) => {
+  if (!iso) return "";
+  return new Date(iso).toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
   });
 };
 
@@ -96,8 +106,8 @@ export default function OrdersPage() {
     activeTab === "orders"
       ? filteredAll
       : activeTab === "current"
-      ? currentOrders
-      : previousOrders;
+        ? currentOrders
+        : previousOrders;
 
   /* -------------------- UI Helpers -------------------- */
 
@@ -120,9 +130,8 @@ export default function OrdersPage() {
 
     return (
       <span
-        className={`text-xs px-2 py-1 rounded border ${
-          colorMap[s] || colorMap.placed
-        }`}
+        className={`text-xs px-2 py-1 rounded border ${colorMap[s] || colorMap.placed
+          }`}
       >
         {labelMap[s]}
       </span>
@@ -131,6 +140,7 @@ export default function OrdersPage() {
 
   const ActionButtons = ({ order, item }) => {
     const productId = item.product?._id;
+    const canCancel = ["pending", "placed", "processing"].includes(order.status);
 
     if (activeTab === "previous") {
       return (
@@ -140,11 +150,10 @@ export default function OrdersPage() {
           </button> */}
           <button
             className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
-                                        ${
-                                          it.product === null
-                                            ? "cursor-not-allowed opacity-50"
-                                            : "cursor-pointer hover:bg-brand-50"
-                                        }`}
+                                        ${it.product === null
+                ? "cursor-not-allowed opacity-50"
+                : "cursor-pointer hover:bg-brand-50"
+              }`}
             onClick={() => navigate(`/product/${productId}`)}
           >
             View Order
@@ -157,28 +166,22 @@ export default function OrdersPage() {
       <div className="flex flex-col gap-2">
         <button
           className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
-                                        ${
-                                          it.product === null
-                                            ? "cursor-not-allowed opacity-50"
-                                            : "cursor-pointer hover:bg-brand-50"
-                                        }`}
+                                        ${it.product === null
+              ? "cursor-not-allowed opacity-50"
+              : "cursor-pointer hover:bg-brand-50"
+            }`}
           onClick={() => navigate(`/product/${productId}`)}
         >
           View Order
         </button>
-        {/* <button
-          className="px-3 py-1 border rounded text-sm text-red-600 cursor-pointer"
-          onClick={() =>
-            dispatch(
-              updateOrderStatus({
-                id: order._id,
-                status: "cancelled",
-              })
-            )
-          }
-        >
-          Cancel Order
-        </button> */}
+        {canCancel && (
+          <button
+            className="px-3 py-1 border rounded text-sm text-red-600 border-red-600 hover:bg-red-50 cursor-pointer"
+            onClick={() => dispatch(cancelOrderAsync(order._id))}
+          >
+            Cancel Order
+          </button>
+        )}
       </div>
     );
   };
@@ -211,11 +214,10 @@ export default function OrdersPage() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 capitalize transition-colors ${
-                  activeTab === tab
-                    ? "border-b-2 border-brand-500 text-brand-600 font-medium"
-                    : "text-gray-600 hover:text-gray-800"
-                }`}
+                className={`pb-2 capitalize transition-colors ${activeTab === tab
+                  ? "border-b-2 border-brand-500 text-brand-600 font-medium"
+                  : "text-gray-600 hover:text-gray-800"
+                  }`}
               >
                 {tab === "orders"
                   ? "All Orders"
@@ -248,14 +250,13 @@ export default function OrdersPage() {
                     {activeTab === "orders"
                       ? "All Orders"
                       : activeTab.charAt(0).toUpperCase() +
-                        activeTab.slice(1) +
-                        " Orders"}
+                      activeTab.slice(1) +
+                      " Orders"}
                   </span>
                   <ChevronDown
                     size={16}
-                    className={`transition-transform ${
-                      isOpen ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
+                      }`}
                   />
                 </button>
               )}
@@ -308,17 +309,16 @@ export default function OrdersPage() {
                     </div>
                     <div className="text-right w-[30%]">
                       <span
-                        className={`text-xs px-2 py-1 rounded-full inline-block mb-1 ${
-                          order.status === "delivered"
-                            ? "bg-green-100 text-green-600"
-                            : order.status === "cancelled"
+                        className={`text-xs px-2 py-1 rounded-full inline-block mb-1 ${order.status === "delivered"
+                          ? "bg-green-100 text-green-600"
+                          : order.status === "cancelled"
                             ? "bg-red-100 text-red-600"
                             : order.status === "placed"
-                            ? "bg-blue-100 text-blue-600"
-                            : order.status === "processing"
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-orange-100 text-orange-600"
-                        }`}
+                              ? "bg-blue-100 text-blue-600"
+                              : order.status === "processing"
+                                ? "bg-blue-100 text-blue-600"
+                                : "bg-orange-100 text-orange-600"
+                          }`}
                       >
                         {order.status || "Pending"}
                       </span>
@@ -336,9 +336,8 @@ export default function OrdersPage() {
                   return (
                     <div
                       key={it._id}
-                      className={`${
-                        index > 0 ? "border-t border-gray-100" : ""
-                      }`}
+                      className={`${index > 0 ? "border-t border-gray-100" : ""
+                        }`}
                     >
                       {/* Desktop Table Row */}
                       <table className="hidden lg:table w-full text-sm border-collapse">
@@ -398,11 +397,10 @@ export default function OrdersPage() {
                                       </button> */}
                                       <button
                                         className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
-                                        ${
-                                          it.product === null
+                                        ${it.product === null
                                             ? "cursor-not-allowed opacity-50"
                                             : "cursor-pointer hover:bg-brand-50"
-                                        }`}
+                                          }`}
                                         onClick={() =>
                                           navigate(`/product/${product._id}`)
                                         }
@@ -411,19 +409,28 @@ export default function OrdersPage() {
                                       </button>
                                     </>
                                   ) : (
-                                    <button
-                                      className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
-                                        ${
-                                          it.product === null
+                                    <>
+                                      <button
+                                        className={`px-3 py-1 text-brand-600 border border-brand-600 rounded text-sm
+                                        ${it.product === null
                                             ? "cursor-not-allowed opacity-50"
                                             : "cursor-pointer hover:bg-brand-50"
-                                        }`}
-                                      onClick={() =>
-                                        navigate(`/product/${product._id}`)
-                                      }
-                                    >
-                                      View Order
-                                    </button>
+                                          }`}
+                                        onClick={() =>
+                                          navigate(`/product/${product._id}`)
+                                        }
+                                      >
+                                        View Order
+                                      </button>
+                                      {["pending", "placed", "processing"].includes(order.status) && (
+                                        <button
+                                          className="px-3 py-1 border rounded text-sm text-red-600 border-red-600 hover:bg-red-50 cursor-pointer"
+                                          onClick={() => dispatch(cancelOrderAsync(order._id))}
+                                        >
+                                          Cancel Order
+                                        </button>
+                                      )}
+                                    </>
                                   )}
                                 </div>
                               </div>
@@ -432,17 +439,16 @@ export default function OrdersPage() {
                             {/* Status */}
                             <td className="px-4 py-4 w-[8%]">
                               <span
-                                className={`text-xs px-2 py-1 rounded-full ${
-                                  order.status === "delivered"
-                                    ? "bg-green-100 text-green-600"
-                                    : order.status === "cancelled"
+                                className={`text-xs px-2 py-1 rounded-full ${order.status === "delivered"
+                                  ? "bg-green-100 text-green-600"
+                                  : order.status === "cancelled"
                                     ? "bg-red-100 text-red-600"
                                     : order.status === "placed"
-                                    ? "bg-blue-100 text-blue-600"
-                                    : order.status === "processing"
-                                    ? "bg-blue-100 text-blue-600"
-                                    : "bg-orange-100 text-orange-600"
-                                }`}
+                                      ? "bg-blue-100 text-blue-600"
+                                      : order.status === "processing"
+                                        ? "bg-blue-100 text-blue-600"
+                                        : "bg-orange-100 text-orange-600"
+                                  }`}
                               >
                                 {order.status || "Pending"}
                               </span>
@@ -450,7 +456,8 @@ export default function OrdersPage() {
 
                             {/* Date */}
                             <td className="px-4 py-4 text-gray-600 w-[12%]">
-                              {formatDate(order.createdAt)}
+                              <div>{formatDate(order.createdAt)}</div>
+                              <div className="text-xs text-gray-500 mt-1">{formatTime(order.createdAt)}</div>
                             </td>
 
                             {/* Quantity */}
@@ -517,19 +524,28 @@ export default function OrdersPage() {
                               </button>
                             </div>
                           ) : (
-                            <button
-                              onClick={() =>
-                                navigate(`/product/${product._id}`)
-                              }
-                              className={`px-3 py-1 border rounded text-xs
-                              ${
-                                product?._id
-                                  ? "text-brand-600 border-brand-600 hover:bg-brand-50 cursor-pointer"
-                                  : "text-gray-400 border-gray-300 cursor-not-allowed opacity-50"
-                              }`}
-                            >
-                              View Order
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() =>
+                                  navigate(`/product/${product._id}`)
+                                }
+                                className={`px-3 py-1 border rounded text-xs
+                              ${product?._id
+                                    ? "text-brand-600 border-brand-600 hover:bg-brand-50 cursor-pointer"
+                                    : "text-gray-400 border-gray-300 cursor-not-allowed opacity-50"
+                                  }`}
+                              >
+                                View Order
+                              </button>
+                              {["pending", "placed", "processing"].includes(order.status) && (
+                                <button
+                                  className="px-3 py-1 border rounded text-xs text-red-600 border-red-600 hover:bg-red-50 cursor-pointer"
+                                  onClick={() => dispatch(cancelOrderAsync(order._id))}
+                                >
+                                  Cancel Order
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
