@@ -72,6 +72,12 @@ const ordersSlice = createSlice({
     builder
       .addCase(fetchOrdersAsync.fulfilled, (state, action) => {
         state.orders = action.payload;
+      })
+      .addCase(cancelOrderAsync.fulfilled, (state, action) => {
+        const order = state.orders.find((o) => o._id === action.payload.orderId);
+        if (order) {
+          order.status = 'cancelled';
+        }
       });
   },
 });
@@ -91,4 +97,21 @@ export const fetchOrdersAsync = createAsyncThunk(
     }
   }
 );
+
+export const cancelOrderAsync = createAsyncThunk(
+  'orders/cancelOrderAsync',
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await import('../../utils/api').then(m =>
+        m.api.patch(`/api/v1/orders/${orderId}/cancel`)
+      );
+
+      return { orderId, data: response.data || response };
+    } catch (error) {
+      console.error('Cancel order failed:', error);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export default ordersSlice.reducer;
