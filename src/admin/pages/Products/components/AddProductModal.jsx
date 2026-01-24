@@ -49,6 +49,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       origin: "",
       finish: "",
       material: "",
+      color: "",
     },
   });
 
@@ -86,7 +87,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           [name]: allowOnlyNumbers(value),
         },
       }));
-    } else if (["primaryMaterial", "origin", "finish"].includes(name)) {
+    } else if (["primaryMaterial", "origin", "finish", "color"].includes(name)) {
       setFormData((prev) => ({
         ...prev,
         attributes: {
@@ -312,6 +313,12 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             value={formData.attributes.origin}
             onChange={handleChange}
           />
+          <Input
+            label="Color"
+            name="color"
+            value={formData.attributes.color}
+            onChange={handleChange}
+          />
 
           {/* DROPDOWNS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -416,9 +423,8 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           <button
             disabled={!isFormValid || isLoading}
             onClick={handleAddNewProduct}
-            className={`px-5 py-2 rounded-lg text-white cursor-pointer ${
-              isFormValid && !isLoading ? "bg-brand-600" : "bg-gray-300"
-            }`}
+            className={`px-5 py-2 rounded-lg text-white cursor-pointer ${isFormValid && !isLoading ? "bg-brand-600" : "bg-gray-300"
+              }`}
           >
             {isLoading ? "Adding..." : "Add Product"}
           </button>
@@ -441,11 +447,10 @@ function Input({ label, error, ...props }) {
       <label className="text-sm mb-1 block">{label}</label>
       <input
         {...props}
-        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${
-          error
-            ? "border-red-500 focus:ring-red-400"
-            : "border-gray-300 focus:ring-brand-500"
-        }`}
+        className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${error
+          ? "border-red-500 focus:ring-red-400"
+          : "border-gray-300 focus:ring-brand-500"
+          }`}
       />
       {error && <ErrorText text={error} />}
     </div>

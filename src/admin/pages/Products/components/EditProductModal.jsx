@@ -87,6 +87,7 @@ export default function EditProductModal({
         existingProduct?.attributes?.material ||
         existingProduct?.material ||
         "",
+      color: existingProduct?.attributes?.color || "",
     },
   });
 
@@ -221,6 +222,7 @@ export default function EditProductModal({
           primaryMaterial: formData.attributes.primaryMaterial,
           finish: formData.attributes.finish,
           origin: formData.attributes.origin,
+          color: formData.attributes.color,
         })
       );
 
@@ -343,6 +345,13 @@ export default function EditProductModal({
             error={errors.origin}
           />
 
+          <Input
+            label="Color"
+            name="color"
+            value={formData.attributes.color}
+            onChange={handleAttributeChange}
+          />
+
           {/* DROPDOWNS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <DropdownField
@@ -421,9 +430,8 @@ export default function EditProductModal({
           <button
             disabled={!isFormValid || isLoading}
             onClick={handleSaveChanges}
-            className={`px-5 py-2 rounded-lg text-white cursor-pointer ${
-              isFormValid && !isLoading ? "bg-brand-600" : "bg-gray-300"
-            }`}
+            className={`px-5 py-2 rounded-lg text-white cursor-pointer ${isFormValid && !isLoading ? "bg-brand-600" : "bg-gray-300"
+              }`}
           >
             {isLoading ? "Saving..." : "Save Changes"}
           </button>
@@ -456,10 +464,9 @@ function Input({ label, error, ...props }) {
       <input
         {...props}
         className={`w-full px-3 py-2 rounded-lg border
-          ${
-            error
-              ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-              : "border-gray-300 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:outline-none"
+          ${error
+            ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+            : "border-gray-300 focus:border-violet-500 focus:ring-1 focus:ring-violet-500 focus:outline-none"
           }`}
       />
       {error && <p className="text-red-500 text-xs">{error}</p>}
