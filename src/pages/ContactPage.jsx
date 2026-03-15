@@ -125,7 +125,7 @@ export default function ContactPage() {
                     <Instagram className="p-1" />
                   </a>
                 </span>
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
+                {/* <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
                   <a
                     target="_blank"
                     href="https://x.com/"
@@ -133,16 +133,20 @@ export default function ContactPage() {
                   >
                     𝕏
                   </a>
-                </span>
+                </span> */}
                 <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
-                  <a
-                    target="_blank"
-                    href="https://linkedin.com/"
-                    rel="noopener noreferrer"
-                  >
-                    <Linkedin className="p-1" />
-                  </a>
-                </span>
+                <a
+                  target="_blank"
+                  href="https://x.com/"
+                  rel="noopener noreferrer"
+                    className="w-4 h-4"
+                >
+                  <img
+                    src="../assets/images/whatsapp_icon.png"
+                    alt="WhatsApp"
+                  />
+                </a>
+              </span>
               </div>
             </div>
 
