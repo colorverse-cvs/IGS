@@ -94,7 +94,7 @@ export default function HomePage() {
                   autoplay={true}
                   showPrevNext={false}
                   showIndicators={false}
-                  className="w-full h-[150px] lg:h-full"
+                  className="w-full h-full"
                 />
               </div>
               <div className="relative rounded-2xl overflow-hidden w-full object-cover">
@@ -104,7 +104,7 @@ export default function HomePage() {
                   autoplay={true}
                   showPrevNext={false}
                   showIndicators={false}
-                  className="w-full h-[150px] lg:h-full"
+                  className="w-full h-full"
                 />
               </div>
             </div>
@@ -116,7 +116,7 @@ export default function HomePage() {
               autoplayMs={carouselData.autoplayMs}
               showPrevNext={carouselData.showPrevNext}
               showIndicators={carouselData.showIndicators}
-              className="w-full h-[500px] md:h-full"
+              className="w-full sm:h-full  md:h-full"
             />
           </div>
         </section>

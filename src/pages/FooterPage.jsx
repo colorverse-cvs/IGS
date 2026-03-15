@@ -38,15 +38,16 @@ export default function FooterPage() {
             <div className="mt-8 space-y-3 text-sm opacity-90">
               <div className="flex items-center gap-3">
                 <MapPin size={20} />
-                Andheri West, Mumbai, Maharashtra
+                Ishita Gallery Gift Shop, Rahata, Tal - Rahata , Dist - Ahilyanagar
               </div>
               <div className="flex items-center gap-3">
                 <Phone size={20} />
-                +91 987 654 3210
+                +91 955 259 5404
               </div>
               <div className="flex items-center gap-3">
                 <Mailbox size={20} />
-                info@ishitagallery.com
+                ishitagalleryofficial@gmail.com
+ 
               </div>
             </div>
           </div>
@@ -133,7 +134,7 @@ export default function FooterPage() {
               <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
                 <a
                   target="_blank"
-                  href="https://instagram.com/"
+                  href="https://instagram.com/ishita_gallery_official"
                   rel="noopener noreferrer"
                 >
                   <Instagram className="p-1" />
@@ -142,7 +143,20 @@ export default function FooterPage() {
               <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
                 <a
                   target="_blank"
-                  href="https://x.com/"
+                  href="https://wa.me/919552595404"
+                  rel="noopener noreferrer"
+                    className="w-4 h-4"
+                >
+                  <img
+                    src="../assets/images/whatsapp_icon.png"
+                    alt="WhatsApp"
+                  />
+                </a>
+              </span>
+              {/* <span className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-white/40">
+                <a
+                  target="_blank"
+                  href="https://wa.me/919552595404"
                   rel="noopener noreferrer"
                 >
                   𝕏
@@ -156,7 +170,7 @@ export default function FooterPage() {
                 >
                   <Linkedin className="p-1" />
                 </a>
-              </span>
+              </span> */}
             </div>
           </div>
         </div>
