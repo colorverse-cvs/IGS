@@ -303,6 +303,7 @@ export default function ProductInfoPage() {
       : [
         { value: "marble", label: "Marble", description: "Hand-Carved" },
         { value: "resin", label: "Resin", description: "High-Density" },
+        { value: "handmade craft", label: "Handmade Craft", description: "Hand-Made" },
       ]
   ).map((m) =>
     typeof m === "string"

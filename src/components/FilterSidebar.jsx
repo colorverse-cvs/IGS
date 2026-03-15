@@ -336,6 +336,16 @@ export default function FilterSidebar({
           }
           onChange={(checked) => handleMultiSelectChange("material", "resin")}
         />
+        <CheckboxOption
+          value="handmade craft"
+          label="Handmade Craft"
+          checked={
+            Array.isArray(filters.material)
+              ? filters.material.includes("handmade craft")
+              : filters.material === "handmadeCraft"
+          }
+          onChange={(checked) => handleMultiSelectChange("material", "handmade craft")}
+        />
       </FilterSection>
 
       {/* Size */}
@@ -585,7 +595,7 @@ export default function FilterSidebar({
         {/* Multi-select discounts */}
         <CheckboxOption
           value="10"
-          label="10% off or more"
+          label="Upto 10% off"
           checked={
             Array.isArray(filters.discount)
               ? filters.discount.includes("10")
@@ -595,7 +605,7 @@ export default function FilterSidebar({
         />
         <CheckboxOption
           value="20"
-          label="20% off or more"
+          label="Upto 20% off"
           checked={
             Array.isArray(filters.discount)
               ? filters.discount.includes("20")
@@ -605,7 +615,7 @@ export default function FilterSidebar({
         />
         <CheckboxOption
           value="30"
-          label="30% off or more"
+          label="Upto 30% off"
           checked={
             Array.isArray(filters.discount)
               ? filters.discount.includes("30")
@@ -615,7 +625,7 @@ export default function FilterSidebar({
         />
         <CheckboxOption
           value="40"
-          label="40% off or more"
+          label="Upto 40% off"
           checked={
             Array.isArray(filters.discount)
               ? filters.discount.includes("40")
@@ -625,7 +635,7 @@ export default function FilterSidebar({
         />
         <CheckboxOption
           value="50"
-          label="50% off or more"
+          label="Upto 50% off"
           checked={
             Array.isArray(filters.discount)
               ? filters.discount.includes("50")
@@ -635,7 +645,7 @@ export default function FilterSidebar({
         />
         <CheckboxOption
           value="60"
-          label="60% off or more"
+          label="Upto 60% off"
           checked={
             Array.isArray(filters.discount)
               ? filters.discount.includes("60")

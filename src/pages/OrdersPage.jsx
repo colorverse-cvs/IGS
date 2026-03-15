@@ -154,7 +154,11 @@ export default function OrdersPage() {
                 ? "cursor-not-allowed opacity-50"
                 : "cursor-pointer hover:bg-brand-50"
               }`}
-            onClick={() => navigate(`/product/${productId}`)}
+            onClick={() => {
+              if (it.product) {
+                navigate(`/product/${productId}`);
+              }
+            }}
           >
             View Order
           </button>
@@ -170,7 +174,11 @@ export default function OrdersPage() {
               ? "cursor-not-allowed opacity-50"
               : "cursor-pointer hover:bg-brand-50"
             }`}
-          onClick={() => navigate(`/product/${productId}`)}
+          onClick={() => {
+            if (it.product) {
+              navigate(`/product/${productId}`);
+            }
+          }}
         >
           View Order
         </button>
@@ -401,9 +409,11 @@ export default function OrdersPage() {
                                             ? "cursor-not-allowed opacity-50"
                                             : "cursor-pointer hover:bg-brand-50"
                                           }`}
-                                        onClick={() =>
-                                          navigate(`/product/${product._id}`)
-                                        }
+                                          onClick={() => {
+                                            if (it.product) {
+                                              navigate(`/product/${product._id}`);
+                                            }
+                                          }}
                                       >
                                         View Order
                                       </button>
@@ -416,9 +426,11 @@ export default function OrdersPage() {
                                             ? "cursor-not-allowed opacity-50"
                                             : "cursor-pointer hover:bg-brand-50"
                                           }`}
-                                        onClick={() =>
-                                          navigate(`/product/${product._id}`)
-                                        }
+                                          onClick={() => {
+                                            if (it.product) {
+                                              navigate(`/product/${product._id}`);
+                                            }
+                                          }}
                                       >
                                         View Order
                                       </button>
@@ -526,9 +538,12 @@ export default function OrdersPage() {
                           ) : (
                             <div className="flex gap-2">
                               <button
-                                onClick={() =>
-                                  navigate(`/product/${product._id}`)
-                                }
+
+                                onClick={() => {
+                                  if (it.product) {
+                                    navigate(`/product/${product._id}`);
+                                  }
+                                }}
                                 className={`px-3 py-1 border rounded text-xs
                               ${product?._id
                                     ? "text-brand-600 border-brand-600 hover:bg-brand-50 cursor-pointer"

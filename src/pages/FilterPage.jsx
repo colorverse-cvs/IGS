@@ -195,19 +195,20 @@ export default function FilterPage() {
       }
     }
 
-    // Discount filter - OR within discount (10% OR 20%), AND with other filters
-    // Shows only products with exact discount percentage match
+    //Discount filter
     if (filters.discount) {
       const selected = Array.isArray(filters.discount)
         ? filters.discount
         : [filters.discount];
-      const discountValues = selected.map((s) => parseInt(s));
+
+      const discountValues = selected.map(Number);
+
       filtered = filtered.filter((product) => {
-        const discountMatch = (product.discount || "").match(/(\d+)%/);
-        if (!discountMatch) return false;
-        const productDiscount = parseInt(discountMatch[1]);
-        // Match exact discount percentage only
-        return discountValues.includes(productDiscount);
+        return discountValues.some((value) => {
+          const min = value - 9;
+          const max = value;
+          return product.discount >= min && product.discount <= max;
+        });
       });
     }
 
