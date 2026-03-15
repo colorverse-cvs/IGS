@@ -125,8 +125,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="px-4 md:px-15 lg:px-20 py-20 bg-gradient-to-b from-[#faf1ff] to-white">
-        <div className="container mx-auto w-full">
+      <section className="py-20 bg-gradient-to-b from-[#faf1ff] to-white">
+        <div className="w-full">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl !font-medium text-gray-900">
               Meet the Minds Behind the Craft
@@ -137,7 +137,7 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {artisans.map((person) => (
               <article
                 key={person.id}
@@ -157,7 +157,35 @@ export default function AboutPage() {
                   </p>
                 </div>
               </article>
-            ))}
+            ))}  
+          </div>
+          Old code commented out to replace with new design */}
+          <div className="profile_outer_container relative overflow-x-hidden">
+            <div className="profile_inner_container flex flex-col md:flex-row items-center gap-8 px-4 md:px-15 lg:px-20 py-2">
+              <div className="profile_picture z-[9] w-full md:w-[50%] xl:w-[30%] h-[100%]">
+                <img
+                  src="../../assets/images/1AU.png"
+                  alt="Shital Kulkarni"
+                  className="profile_image object-cover w-[100%] h-[100%] rounded-full"
+                />
+              </div>
+              <div className="profile_content z-[9] text-white text-center md:text-left pb-3 w-full md:w-[50%] xl:w-[70%]">
+                <h3 className="profile_name text-2xl !font-medium">
+                  Shital Kulkarni
+                </h3>
+                <p className="profile_role text-sm text-white/80">
+                  Founder & CEO
+                </p>
+                <p className="profile_bio mt-3 text-[0.75em] xl:text-sm leading-relaxed text-white/90">
+                  A visionary entrepreneur with a passion for innovation and
+                  growth, Shital Kulkarni founded the company with the goal of
+                  delivering quality products and creating meaningful customer
+                  experiences. Her leadership focuses on building a strong
+                  brand, empowering teams, and driving sustainable success.
+                </p>
+              </div>
+              <div className="profile-spacer-color h-[60dvh] md:h-[35dvh] lg:h-[40dvh] xl:h-[30dvh] w-[100dvw] bg-brand-800 absolute left-0 bottom-0 md:bottom-[initial] top-50%"></div>
+            </div>
           </div>
         </div>
       </section>
