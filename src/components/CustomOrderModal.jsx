@@ -218,6 +218,7 @@ export default function CustomOrderModal({ isOpen, onClose }) {
               options={[
                 { value: "Resin", label: "Resin" },
                 { value: "Marble", label: "Marble" },
+                { value: "HandmadeCraft", label: "Handmade Craft" },
               ]}
               value={form.material}
               onChange={(value) =>

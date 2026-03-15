@@ -53,6 +53,7 @@ export default function EditProductModal({
   const materialType = [
     { type: "Marble", subType: "Hand-carved" },
     { type: "Resin", subType: "High-Density" },
+    { type: "Handmade Craft", subType: null }
   ];
 
   const sizeOptions = [
@@ -364,7 +365,7 @@ export default function EditProductModal({
 
             <DropdownField
               label="Material Type"
-              options={materialType.map((m) => `${m.type} - ${m.subType}`)}
+              options={materialType.map((m) => m.subType ? `${m.type} - ${m.subType}` : m.type)}
               value={formData.attributes.material}
               onChange={(val) =>
                 setFormData((prev) => ({

@@ -18,6 +18,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     () => [
       { type: "Marble", subType: "Hand-carved" },
       { type: "Resin", subType: "High-Density" },
+      { type: "Handmade Craft", subType: null }
     ],
     []
   );
@@ -338,7 +339,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
             <DropdownField
               label="Material Type"
-              options={materialType.map((m) => `${m.type} - ${m.subType}`)}
+              options={materialType.map((m) => m.subType ? `${m.type} - ${m.subType}` : m.type)}
               value={formData.attributes.material}
               onChange={(val) =>
                 setFormData((prev) => ({
