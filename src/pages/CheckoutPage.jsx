@@ -217,7 +217,7 @@ export default function CheckoutPage() {
           } else if (data.message.error) {
             errorMsg = data.message.error;
           }
-          showPopup("Order Failed", errorMsg);
+          showPopup("Item Unavailable", "This product is no longer available. Please remove it from your cart to continue.");
           return;
         }
         throw new Error(data.message || "Failed to create order");

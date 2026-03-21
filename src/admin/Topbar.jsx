@@ -73,18 +73,19 @@ export default function Topbar({ setActivePage }) {
           ref={dropdownRef}
           className="absolute top-16 right-8 w-40 rounded-md shadow-lg bg-white ring-1 ring-brand-600 ring-opacity-5 p-1 space-y-1 z-50"
         >
-          <button
-            onClick={() => handleMyAccountClick()}
-            className="block w-full text-left px-3 py-2 rounded hover:bg-gray-50 cursor-pointer"
-          >
-            My Account
-          </button>
 
           <button
             onClick={handleGoToHome}
             className="block w-full text-left px-3 py-2 rounded hover:bg-gray-50 cursor-pointer"
           >
             Go To Home
+          </button>
+
+          <button
+            onClick={() => handleMyAccountClick()}
+            className="block w-full text-left px-3 py-2 rounded hover:bg-gray-50 cursor-pointer"
+          >
+            My Account
           </button>
 
           <button
