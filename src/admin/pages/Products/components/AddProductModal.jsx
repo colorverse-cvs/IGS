@@ -131,9 +131,19 @@ export default function AddProductModal({ onClose, onProductAdded }) {
     if (files.length === 0)
       newErrors.image = "At least one product image is required";
     if (!formData.name.trim()) newErrors.name = "Product name is required";
+    if (!formData.description.trim()) newErrors.description = "Description is required";
     if (!prodCategory) newErrors.category = "Category is required";
+    if (!formData.attributes.material) newErrors.materialType = "Material type is required";
+    if (!formData.dimensions.sizeCategory) newErrors.size = "Size is required";
     if (!formData.listPrice) newErrors.listPrice = "List Price is required";
     if (!formData.stock) newErrors.stock = "Stock is required";
+    if (!formData.dimensions.height) newErrors.height = "Height is required";
+    if (!formData.dimensions.width) newErrors.width = "Width is required";
+    if (!formData.weight) newErrors.weight = "Weight is required";
+    if (!formData.attributes.primaryMaterial.trim()) newErrors.primaryMaterial = "Primary Material is required";
+    if (!formData.attributes.finish.trim()) newErrors.finish = "Finish is required";
+    if (!formData.attributes.origin.trim()) newErrors.origin = "Origin is required";
+    if (!formData.attributes.color.trim()) newErrors.color = "Color is required";
 
     setErrors(newErrors);
 
@@ -143,9 +153,19 @@ export default function AddProductModal({ onClose, onProductAdded }) {
   const isFormValid =
     files.length > 0 &&
     formData.name.trim() &&
+    formData.description.trim() &&
     prodCategory &&
+    formData.attributes.material &&
+    formData.dimensions.sizeCategory &&
     formData.listPrice &&
-    formData.stock;
+    formData.stock &&
+    formData.dimensions.height &&
+    formData.dimensions.width &&
+    formData.weight &&
+    formData.attributes.primaryMaterial.trim() &&
+    formData.attributes.finish.trim() &&
+    formData.attributes.origin.trim() &&
+    formData.attributes.color.trim();
 
   /* ---------------- SKU GENERATOR ---------------- */
   const generateSKU = (name) => {
@@ -230,19 +250,21 @@ export default function AddProductModal({ onClose, onProductAdded }) {
           </div>
 
           {/* Warning below title */}
-          <div className="mt-2 flex items-start gap-2">
-            <span className="text-sm text-red-600">
-              <strong>Warning:</strong> Please fill all details before adding
-              the product.
-            </span>
-          </div>
+          {!isFormValid && (
+            <div className="mt-2 flex items-start gap-2">
+              <span className="text-sm text-red-600">
+                <strong>Warning:</strong> Please fill all details before adding
+                the product.
+              </span>
+            </div>
+          )}
         </div>
 
         {/* BODY */}
         <div className="p-6 overflow-y-auto space-y-5 max-h-[70dvh]">
           {/* MULTIPLE IMAGES */}
           <div>
-            <label className="text-sm mb-2 block">Product Images</label>
+            <label className="text-sm mb-2 block">Product Images <span className="text-red-500">*</span></label>
 
             <input
               type="file"
@@ -290,41 +312,51 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             error={errors.name}
           />
           <Input
+            required
             label="Description"
             name="description"
             value={formData.description}
             onChange={handleChange}
+            error={errors.description}
           />
 
           <Input
+            required
             label="Primary Material"
             name="primaryMaterial"
             value={formData.attributes.primaryMaterial}
             onChange={handleChange}
+            error={errors.primaryMaterial}
           />
           <Input
+            required
             label="Finish"
             name="finish"
             value={formData.attributes.finish}
             onChange={handleChange}
+            error={errors.finish}
           />
           <Input
+            required
             label="Origin"
             name="origin"
             value={formData.attributes.origin}
             onChange={handleChange}
+            error={errors.origin}
           />
           <Input
+            required
             label="Color"
             name="color"
             value={formData.attributes.color}
             onChange={handleChange}
+            error={errors.color}
           />
 
           {/* DROPDOWNS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-sm mb-1 block">Category</label>
+              <label className="text-sm mb-1 block">Category <span className="text-red-500">*</span></label>
               <Dropdown
                 options={categories.map((c) => c.name)}
                 value={prodCategory}
@@ -338,6 +370,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
             </div>
 
             <DropdownField
+              required
               label="Material Type"
               options={materialType.map((m) => m.subType ? `${m.type} - ${m.subType}` : m.type)}
               value={formData.attributes.material}
@@ -347,9 +380,11 @@ export default function AddProductModal({ onClose, onProductAdded }) {
                   attributes: { ...prev.attributes, material: val },
                 }))
               }
+              error={errors.materialType}
             />
 
             <DropdownField
+              required
               label="Size"
               options={sizeOptions.map((s) => ({
                 label: `${s.type} - ${s.subType}`,
@@ -362,6 +397,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
                   dimensions: { ...prev.dimensions, sizeCategory: val },
                 }))
               }
+              error={errors.size}
             />
           </div>
 
@@ -392,22 +428,28 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <Input
+              required
               label="Height (cm)"
               name="height"
               value={formData.dimensions.height}
               onChange={handleChange}
+              error={errors.height}
             />
             <Input
+              required
               label="Width (cm)"
               name="width"
               value={formData.dimensions.width}
               onChange={handleChange}
+              error={errors.width}
             />
             <Input
+              required
               label="Weight (gm)"
               name="weight"
               value={formData.weight}
               onChange={handleChange}
+              error={errors.weight}
             />
           </div>
         </div>
@@ -442,10 +484,12 @@ export default function AddProductModal({ onClose, onProductAdded }) {
 }
 
 /* ---- INPUT / DROPDOWN / ERROR ---- */
-function Input({ label, error, ...props }) {
+function Input({ label, required, error, ...props }) {
   return (
     <div>
-      <label className="text-sm mb-1 block">{label}</label>
+      <label className="text-sm mb-1 block">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
       <input
         {...props}
         className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${error
@@ -458,16 +502,19 @@ function Input({ label, error, ...props }) {
   );
 }
 
-function DropdownField({ label, options, value, onChange }) {
+function DropdownField({ label, required, options, value, onChange, error }) {
   return (
     <div>
-      <label className="text-sm mb-1 block">{label}</label>
+      <label className="text-sm mb-1 block">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
       <Dropdown
         options={options}
         value={value}
         onChange={onChange}
         placeholder={`Select ${label}`}
       />
+      {error && <ErrorText text={error} />}
     </div>
   );
 }

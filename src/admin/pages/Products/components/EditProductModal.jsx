@@ -37,9 +37,27 @@ export default function EditProductModal({
     setImages((prev) => [...prev, ...newImages]);
   };
 
+  // const removeImage = (index) => {
+  //   setImages((prev) => prev.filter((_, i) => i !== index));
+  // };
+
   const removeImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
+  setImages((prev) => {
+    const imgToRemove = prev[index];
+
+    // ✅ Track only existing images (not new uploads)
+    if (imgToRemove?.url && !imgToRemove?.file) {
+      // remove BASE_URL prefix before sending to backend
+      const relativeUrl = imgToRemove.url.replace(BASE_URL, "");
+
+      setRemovedImages((prevRemoved) => [
+        ...new Set([...prevRemoved, relativeUrl]),
+      ]);
+    }
+
+    return prev.filter((_, i) => i !== index);
+  });
+};
 
   /* -------------------------------------------
       CATEGORY + FORM STATES
@@ -91,6 +109,8 @@ export default function EditProductModal({
       color: existingProduct?.attributes?.color || "",
     },
   });
+  const [removedImages, setRemovedImages] = useState([]);
+
 
   const allowOnlyNumbers = (val) => val.replace(/[^0-9.]/g, "");
 
@@ -155,7 +175,7 @@ export default function EditProductModal({
     return e;
   }, [formData, prodCategory]);
 
-  const isFormValid = Object.keys(errors).length === 0;
+  const isFormValid = Object.keys(errors).length === 0 && images.length > 0;
 
   /* -------------------------------------------
       FETCH CATEGORIES
@@ -194,6 +214,10 @@ export default function EditProductModal({
       /* MULTIPLE NEW IMAGES */
       images.forEach((img) => {
         if (img.file) form.append("images", img.file);
+      });
+
+      removedImages.forEach((url) => {
+        form.append("removedImages", url);
       });
 
       /* TEXT FIELDS */
@@ -265,19 +289,21 @@ export default function EditProductModal({
           </div>
 
           {/* Warning below title */}
-          <div className="mt-2 flex items-start gap-2">
-            <span className="text-sm text-red-600">
-              <strong>Warning:</strong> Please fill all details before editing
-              the product.
-            </span>
-          </div>
+          {!isFormValid && (
+            <div className="mt-2 flex items-start gap-2">
+              <span className="text-sm text-red-600">
+                <strong>Warning:</strong> Please fill all details before editing
+                the product.
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="max-h-[70dvh] overflow-y-auto px-6 py-5 space-y-5">
           {/* MULTIPLE IMAGES */}
           <div>
             <label className="block mb-2 text-sm font-medium">
-              Product Images
+              Product Images <span className="text-red-500">*</span>
             </label>
 
             <input
@@ -318,11 +344,12 @@ export default function EditProductModal({
           </div>
 
           {/* INPUTS */}
-          {renderInput("Product Name", "name")}
-          {renderInput("Description", "description")}
+          {renderInput("Product Name", "name", true)}
+          {renderInput("Description", "description", true)}
 
           {/* ATTRIBUTES */}
           <Input
+            required
             label="Primary Material"
             name="primaryMaterial"
             value={formData.attributes.primaryMaterial}
@@ -331,6 +358,7 @@ export default function EditProductModal({
           />
 
           <Input
+            required
             label="Finish"
             name="finish"
             value={formData.attributes.finish}
@@ -339,6 +367,7 @@ export default function EditProductModal({
           />
 
           <Input
+            required
             label="Origin"
             name="origin"
             value={formData.attributes.origin}
@@ -356,6 +385,7 @@ export default function EditProductModal({
           {/* DROPDOWNS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <DropdownField
+              required
               label="Category"
               options={categories.map((c) => c.name)}
               value={prodCategory}
@@ -364,6 +394,7 @@ export default function EditProductModal({
             />
 
             <DropdownField
+              required
               label="Material Type"
               options={materialType.map((m) => m.subType ? `${m.type} - ${m.subType}` : m.type)}
               value={formData.attributes.material}
@@ -377,6 +408,7 @@ export default function EditProductModal({
             />
 
             <DropdownField
+              required
               label="Size"
               options={sizeOptions.map((s) => ({
                 label: `${s.type} - ${s.subType}`,
@@ -395,11 +427,12 @@ export default function EditProductModal({
 
           {/* NUMBERS */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {renderInput("Price (₹)", "listPrice")}
-            {renderInput("Discount (%)", "discount")}
-            {renderInput("Stock", "stock")}
+            {renderInput("Price (₹)", "listPrice", true)}
+            {renderInput("Discount (%)", "discount", false)}
+            {renderInput("Stock", "stock", true)}
 
             <Input
+              required
               label="Height (cm)"
               name="height"
               value={formData.dimensions.height}
@@ -408,6 +441,7 @@ export default function EditProductModal({
             />
 
             <Input
+              required
               label="Width (cm)"
               name="width"
               value={formData.dimensions.width}
@@ -415,7 +449,7 @@ export default function EditProductModal({
               error={errors.width}
             />
 
-            {renderInput("Weight", "weight")}
+            {renderInput("Weight", "weight", true)}
           </div>
         </div>
 
@@ -444,9 +478,10 @@ export default function EditProductModal({
   /* -------------------------------------------
       HELPERS
   ------------------------------------------- */
-  function renderInput(label, name) {
+  function renderInput(label, name, required = false) {
     return (
       <Input
+        required={required}
         label={label}
         name={name}
         value={formData[name]}
@@ -458,10 +493,12 @@ export default function EditProductModal({
 }
 
 /* INPUT COMPONENT */
-function Input({ label, error, ...props }) {
+function Input({ label, required, error, ...props }) {
   return (
     <div>
-      <label className="text-sm mb-1 block">{label}</label>
+      <label className="text-sm mb-1 block">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
       <input
         {...props}
         className={`w-full px-3 py-2 rounded-lg border
@@ -476,10 +513,12 @@ function Input({ label, error, ...props }) {
 }
 
 /* DROPDOWN COMPONENT */
-function DropdownField({ label, options, value, onChange, error }) {
+function DropdownField({ label, required, options, value, onChange, error }) {
   return (
     <div>
-      <label className="text-sm mb-1 block">{label}</label>
+      <label className="text-sm mb-1 block">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
       <Dropdown
         options={options}
         value={value}
