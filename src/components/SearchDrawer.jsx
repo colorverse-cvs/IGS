@@ -81,7 +81,7 @@ export default function SearchDrawer({ isOpen, onClose }) {
 
       {/* Drawer panel - slides in from right side */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-50 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-80 md:w-80 lg:w-80 bg-white z-999 shadow-2xl transition-transform duration-500 ease-out flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
