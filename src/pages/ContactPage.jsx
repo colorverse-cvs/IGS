@@ -93,15 +93,15 @@ export default function ContactPage() {
                 <div className="text-sm flex flex-col gap-10 my-10">
                   <div className="flex items-center gap-3">
                     <Phone size={18} />
-                    <span>+91 987 654 3210</span>
+                    <span>+91 955 259 5404</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail size={18} />
-                    <span>info@ishitagallery.com</span>
+                    <span>ishitagalleryofficial@gmail.com</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin size={18} className="mt-1" />
-                    <span>Andheri West, Mumbai, Maharashtra</span>
+                    <span>Ishita Gallery Gift Shop, Rahata, Tal - Rahata , Dist - Ahilyanagar</span>
                   </div>
                 </div>
               </div>
