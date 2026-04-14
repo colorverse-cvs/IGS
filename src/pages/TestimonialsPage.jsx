@@ -45,9 +45,14 @@ export default function TestimonialsPage({ items = [] }) {
                     )}
                   </div>
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed mb-4">
-                  {t.text}
-                </p>
+                <div className="mb-4">
+                  <div
+                    className="text-sm text-gray-700 leading-relaxed line-clamp-3 h-[4rem] overflow-hidden cursor-pointer"
+                    title={t.text}
+                  >
+                    {t.text}
+                  </div>
+                </div>
                 <div
                   className="text-yellow-500 text-lg"
                   aria-label={`${t.stars} star rating`}

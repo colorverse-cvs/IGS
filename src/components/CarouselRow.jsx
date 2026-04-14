@@ -19,12 +19,12 @@ export default function CarouselRow({
   const normalizedItems = Array.isArray(items) ? items : [];
 
   const [viewportWidth, setViewportWidth] = React.useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
+    typeof window !== "undefined" ? window.innerWidth : 1200,
   );
 
   const responsive = React.useMemo(
     () => getResponsiveSettings(viewportWidth, config),
-    [viewportWidth, config]
+    [viewportWidth, config],
   );
 
   const itemsPerView = Math.max(1, responsive.itemsPerView || 1);
@@ -38,6 +38,8 @@ export default function CarouselRow({
   const scrollOffsetRef = React.useRef(0);
 
   const [isPaused, setIsPaused] = React.useState(false);
+
+  const [cursor, setCursor] = React.useState("cursor-default");
 
   // Drag state
   const dragStateRef = React.useRef({
@@ -139,7 +141,7 @@ export default function CarouselRow({
       startOffset: scrollOffsetRef.current,
     };
 
-    setIsPaused(true);
+    setCursor("cursor-grabbing");
   };
 
   const onPointerMove = (e) => {
@@ -169,6 +171,8 @@ export default function CarouselRow({
         setIsPaused(false);
       }
     }, 150);
+
+    setCursor("cursor-grab");
   };
 
   if (!normalizedItems.length) {
@@ -178,18 +182,30 @@ export default function CarouselRow({
   }
 
   /* -------------------- Duplicate Items -------------------- */
-  const displayItems = [...normalizedItems];
+  const displayItems = [
+    ...normalizedItems,
+    ...normalizedItems,
+    ...normalizedItems,
+    ...normalizedItems,
+    ...normalizedItems,
+  ];
 
   return (
     <div className={`relative ${className}`}>
       <div
         ref={containerRef}
-        className="overflow-hidden select-none cursor-grab active:cursor-grabbing"
+        className={`overflow-hidden select-none ${cursor}`}
         style={{ touchAction: "none" }}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() =>
-          !dragStateRef.current.dragging && setIsPaused(false)
-        }
+        onMouseEnter={() => {
+          setIsPaused(true);
+          setCursor("cursor-grab");
+        }}
+        onMouseLeave={() => {
+          if (!dragStateRef.current.dragging) {
+            setIsPaused(false);
+            setCursor("cursor-default");
+          }
+        }}
         onClick={handleClick}
         onMouseDown={onPointerDown}
         onMouseMove={onPointerMove}
