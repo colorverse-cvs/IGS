@@ -1,71 +1,121 @@
 [
   {
     "id": "tst-001",
-    "name": "Rahul Patil",
-    "avatar": "https://i.pravatar.cc/40?img=5",
-    "text": "The idol looks premium and very well finished. Packaging was secure and delivery on time.",
-    "stars": 4
+    "name": "Shilpa Gadekar",
+    "text": "Very nice gift articles n statues. I got very nice experience. Ma'am is very helpful. Thank you 😊",
+    "stars": 5
   },
   {
     "id": "tst-002",
-    "name": "Neha Kulkarni",
-    "avatar": "https://i.pravatar.cc/40?img=6",
-    "text": "Loved the detailing and traditional touch. Would definitely recommend to friends and family.",
+    "name": "Nitin Patil",
+    "text": "The only place in Rahat where you can find idols of Maharaj and idols of many gods and goddesses, as well as unseen gift articles, which everyone should definitely visit at least once, is Ishita Gallery.",
     "stars": 5
   },
   {
     "id": "tst-003",
-    "name": "Amit Deshmukh",
-    "avatar": "https://i.pravatar.cc/40?img=7",
-    "text": "Good quality and craftsmanship. The size was slightly smaller than expected but overall satisfied.",
-    "stars": 3
+    "name": "Sunita Thakur",
+    "text": "Very amazing purchasing experience, loved the unique collection 🙏✨",
+    "stars": 5
   },
   {
     "id": "tst-004",
-    "name": "Pooja Nair",
-    "avatar": "https://i.pravatar.cc/40?img=8",
-    "text": "Very elegant design and smooth finish. It enhanced the beauty of our living room.",
+    "name": "Rushikesh nawale",
+    "text": "I live in Rishikesh and my best friend Pushpak Sheth gifted me a very beautiful, intricate and quality frame of Ganpati Bappa from Ishita Gallery for my wedding. The frame work is very fine, attractive and of good quality.",
     "stars": 5
   },
   {
     "id": "tst-005",
-    "name": "Rohit Verma",
-    "avatar": "https://i.pravatar.cc/40?img=9",
-    "text": "Nicely crafted statue with good attention to detail. Delivery was prompt.",
+    "name": "Samarth Sonawane",
+    "text": "That was really amazing experience, where it had varieties for each of the age group and gender too. Highly recommended, must visit...",
     "stars": 4
   },
   {
     "id": "tst-006",
-    "name": "Sneha Joshi",
-    "avatar": "https://i.pravatar.cc/40?img=10",
-    "text": "Authentic look and premium feel. Perfect choice for festive decoration.",
+    "name": "rahul ambre",
+    "text": "There is an amazing collection of idols of gods, statues of kings and warriors, decorative items and gift items here. The finishing and quality of each item is very good. The layout of the shop, lighting and background make all the items stand out even more. If you want to buy a gift or want something special for your home decor, this shop is definitely worth a visit. Highly recommended!",
     "stars": 5
   },
   {
     "id": "tst-007",
-    "name": "Kunal Mehta",
-    "avatar": "https://i.pravatar.cc/40?img=11",
-    "text": "Product quality is good, though I expected a bit more weight. Still looks amazing.",
+    "name": "KALYAN YADAV",
+    "text": "Best experience I ever had with Ishita Gallery, This Share Market Bull I have purchased from Ishita Gallery.",
     "stars": 3
   },
   {
     "id": "tst-008",
-    "name": "Shweta Pawar",
-    "avatar": "https://i.pravatar.cc/40?img=12",
-    "text": "Excellent craftsmanship and finishing. Everyone who visited our home loved it.",
+    "name": "Bhushan Waghmare",
+    "text": "This 4 inch Vitthal idol is really beautiful and captivating!The design of the idol is very attractive, especially the form of the name looks very unique and nice. The fine carvings on the idol and the color scheme (black and yellow) make the appearance of Vitthal stand out more.The idol looks strong and durable. This is a great choice to keep in the puja room or in the car.I really liked this idol. This is a must-have idol for every Warkari or Vitthal devotee.You should definitely visit the shop once.",
     "stars": 5
   },
   {
     "id": "tst-009",
-    "name": "Vikas Malhotra",
-    "avatar": "https://i.pravatar.cc/40?img=13",
-    "text": "Very good traditional artwork with modern appeal. Value for money.",
+    "name": "Sohan Waghmare",
+    "text": "This statue is very attractive and beautiful!The statue depicts the nativity scene of Mother Mary, Saint Joseph and baby Jesus very beautifully. The color scheme is vibrant and bright and every little detail is painted with great care. The lantern in Joseph's hand and the embroidery on the clothes are especially eye-catching.The quality of the statue is excellent and it feels durable. This is an excellent choice for Christmas decoration or to create a peaceful and positive atmosphere at home.I really liked this statue. Highly recommended to everyone. You should definitely visit the shop once.",
     "stars": 4
   },
   {
     "id": "tst-010",
+    "name": "PAWAR ATHARV",
+    "text": "I am Dr. Atharva Pawar, residing in Akole. Today I ordered a Tirupati Balaji idol online from Ishita Gallery. The idol is very beautiful, attractive and of good quality. What is special is that I got the delivery in a very short time.",
+    "stars": 5
+  },
+  {
+    "id": "tst-011",
+    "name": "PAWAR ATHARV",
+    "text": "मी डॉ. अथर्व पवार, राहणार अकोले. आज इशिता गॅलरी मधून तिरुपती बालाजीची मूर्ती ऑनलाइन ऑर्डर केली होती. मूर्ती खूपच सुंदर, आकर्षक आणि दर्जेदार आहे. विशेष म्हणजे मला अतिशय कमी वेळेत डिलिव्हरी मिळाली.त्यांची सेवा, पॅकिंग आणि ग्राहकांशी संवाद—सगळंच उत्कृष्ट आहे. आपणही एकदा नक्की इशिता गॅलरीला भेट द्या, तुम्हाला नक्कीच आवडेल! धन्यवाद 🙏✨",
+    "stars": 5
+  },
+  {
+    "id": "tst-012",
+    "name": "Darshan Waghmare",
+    "text": "आज मी इशिता गॅलरी मधून येशू ख्रिस्ताची सुंदर मूर्ती घेतली. अतिशय मनमोहक आणि शांतीचा अनुभव देणारी मूर्ती आहे. आता ख्रिसमस जवळ आला आहे, त्यामुळे तुम्हीही जरूर इशिता गॅलरीला भेट द्या आणि येशू ख्रिस्त बाळाची आकर्षक मूर्ती घ्या. उत्कृष्ट काम, उत्तम सेवा आणि खूप सुंदर कलेक्शन – Highly Recommended!",
+    "stars": 5
+  },
+  {
+    "id": "tst-013",
+    "name": "Amol Jagtap",
+    "text": "I recently visited Ishita Gallery and had an amazing experience. The collection is truly unique and divine to elegant spiritual showpieces, every item is made with excellent detailing and high-quality finishing.The shop has a premium feel, and all products are neatly displayed. The staff is polite, helpful, and knowledgeable, making the shopping experience even better. Whether you want home décor, gifting items, or spiritual idols, this is the best place to visit..",
+    "stars": 5
+  },
+  {
+    "id": "tst-014",
+    "name": "Maithili Surgude",
+    "text": "मी मैथिली, पुण्यामध्ये राहणारी. Instgram वर मी Ishita Gallery चे Reels अनेकदा पाहत होते आणि ते मला खूप वेळा Suggest होत होते. लगेच मी त्यांच्याशी Contact केला आणि मला बाळ गणेशची मूर्ती हवी असल्याचं सांगितलं. त्यांनी मला कोणताही विलंब न करत पुण्यातच मूर्ती Home Delivery करून दिली. मूर्तीची गुणवत्ता, डिझाईन आणि नाजूक काम खूपच भारी आहे. त्यांची होम डिलिव्हरी सर्व्हिस पण उत्तम आहे—वेळेवर, सुरक्षित आणि विश्वासू. जर तुम्हालाही सुंदर आणि दर्जेदार मूर्ती हव्यात, तर नक्की Ishita Gallery शी Contact करा आणि तेथून खरेदी करा. पूर्णपणे समाधानकारक अनुभव",
+    "stars": 5
+  },
+  {
+    "id": "tst-015",
+    "name": "Tanmay Malwade",
+    "text": "इशिता गॅलरीमधून आज मच्छिंद्रनाथांची अतिशय सुंदर मूर्ती घेतली. मूर्तीवरील कोरीव काम इतकं छान आहे की पाहताच भक्तीभाव जागृत होतो. देवाचं खरं रूप जणू मूर्तीत साकार झाल्यासारखं वाटलं. इशिता गॅलरीचं कलेक्शन आणि त्यांची सेवा खरंच प्रशंसनीय आहे मनापासून धन्यवाद..",
+    "stars": 5
+  },
+  {
+    "id": "tst-016",
+    "name": "sharayu kulkarni",
+    "text": "Quality आणि finishing अप्रतिम! माझ्या कॅफे मध्ये एक वेगळीच शोभा आली.! 🚩” “Packaging आणि delivery दोन्ही perfect. मूर्ती बघून मन भरून आलं. जय भवानी, जय शिवाजी!”",
+    "stars": 5
+  },
+  {
+    "id": "tst-017",
+    "name": "S&K Milk and milk product Rahata",
+    "text": "इशिता गॅलरी – एक अप्रतिम अनुभव मी पुष्पक सोमवंशी, S&K Milk Products चा मालक. माझ्या शॉपसाठी इशिता गॅलरीमधून कोल्हापूरची महालक्ष्मी देवीची अत्यंत सुंदर, आकर्षक आणि अत्यंत सूक्ष्म कोरीव काम असलेली मूर्ती घेण्याचा योग आला. मूर्ती हातात घेतल्याक्षणीच तिच्या भव्यतेने आणि कलात्मकतेने मन पूर्णपणे भारावून गेलं.महालक्ष्मी देवीची मूर्ती म्हणजे फक्त एक शोपीस नाही, तर आपल्या शॉपमधील पवित्रता, समृद्धी आणि सकारात्मक ऊर्जा वाढवणारे दिव्य अस्तित्व आहे — आणि इशिता गॅलरीने दिलेली ही मूर्ती त्या प्रत्येक अपेक्षेपेक्षा कितीतरी अधिक आहे.कोरीव कामातील बारीकसारीक तपशील, चेहऱ्यावरील शांतता, रंगकामाची गुणवत्ता आणि एकूणच फिनिशिंग — सर्व काही परफेक्ट.याशिवाय, इशिता गॅलरीचे मालक अत्यंत नम्र, मदतशील आहे. योग्य मार्गदर्शन, वेळेवर सेवा आणि दर्जेदार वस्तू उपलब्ध करून देणं ही त्यांची खासियत आहे. माझा अनुभव १००% समाधानकारक..😍इशिता गॅलरी — दर्जा, विश्वास आणि सुंदर कलाकुसरीचं उत्तम ठिकाण. ❤️ मी मनापासून शिफारस करतो की देव-देवता मूर्ती, गिफ्ट किंवा होम/शॉप डेकोरेशनसाठी तुम्ही एकदा नक्की इथे भेट द्या.",
+    "stars": 5
+  },
+  {
+    "id": "tst-018",
+    "name": "Ghansham Gadekar",
+    "text": "आज इशिता गॅलरी राहाता येथून आणलेली श्री स्वामी समर्थांची Murti… घरात आणताच एक वेगळीच सकारात्मक ऊर्जा जाणवली 🙏 जय स्वामी समर्थ 🔱 Thank you Ishita Gallery 😊",
+    "stars": 5
+  },
+  {
+    "id": "tst-019",
+    "name": "Tejas Gadekar",
+    "text": "इशिता गॅलरीमधून आज माझ्या मित्राने मला राधा कृष्णांची अतिशय सुंदर फ्रेम गिफ्ट दिली. फ्रेम पाहताच एका सजीव अनुभूतीची जाणीव झाली. मन खरंच प्रसन्न झालं! धन्यवाद पुष्पक शेठ घनश्याम आणि तन्मय.🤗 Thank you For Ishita gallery Rahata.",
+    "stars": 5
+  },
+  {
+    "id": "tst-020",
     "name": "Anjali Singh",
-    "avatar": "https://i.pravatar.cc/40?img=14",
     "text": "Beautifully designed and carefully packed. A great addition to our prayer room.",
     "stars": 5
   }
