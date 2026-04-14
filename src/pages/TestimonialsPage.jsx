@@ -29,13 +29,13 @@ export default function TestimonialsPage({ items = [] }) {
             renderItem={(t) => (
               <div className="bg-brand-100 backdrop-blur rounded-xl p-5 h-full transition-all duration-200 ease-out hover:bg-white group">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="relative border border-gray-200 rounded-md transition-all duration-200 ease-out group-hover:shadow-lg group-hover:scale-102 group-hover:-translate-y-1">
+                  {/* <div className="relative border border-gray-200 rounded-md transition-all duration-200 ease-out group-hover:shadow-lg group-hover:scale-102 group-hover:-translate-y-1">
                     <img
                       src={t.avatar}
                       alt={t.name}
                       className="w-9 h-9 rounded-md transition-transform duration-200 ease-out group-hover:scale-105"
                     />
-                  </div>
+                  </div> */}
                   <div>
                     <div className="text-base !font-medium text-gray-900">
                       {t.name}
