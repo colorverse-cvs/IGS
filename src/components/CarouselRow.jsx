@@ -92,18 +92,35 @@ export default function CarouselRow({
       };
     } else if (scrollMode === "step") {
       const intervalMs = autoplayMs || 3000;
+
+      // Start at the 2nd copy so we can always go forward AND backward without a jump
+      if (scrollOffsetRef.current === 0) {
+        const singleSetWidth = normalizedItems.length * widthPercent;
+        scrollOffsetRef.current = singleSetWidth;
+        if (trackRef.current) {
+          trackRef.current.style.transition = "none";
+          trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
+        }
+      }
+
       const intervalId = setInterval(() => {
+        const singleSetWidth = normalizedItems.length * widthPercent;
         scrollOffsetRef.current += widthPercent;
 
-        const singleSetWidth = normalizedItems.length * widthPercent;
-
-        // loop back to start
-        if (scrollOffsetRef.current >= singleSetWidth) {
-          scrollOffsetRef.current = 0;
+        if (trackRef.current) {
+          trackRef.current.style.transition = "transform 0.5s cubic-bezier(0.4,0,0.2,1)";
+          trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
         }
 
-        if (trackRef.current) {
-          trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
+        // When we've consumed 2 full copies ahead, silently jump back by one copy
+        if (scrollOffsetRef.current >= singleSetWidth * 3) {
+          setTimeout(() => {
+            scrollOffsetRef.current -= singleSetWidth;
+            if (trackRef.current) {
+              trackRef.current.style.transition = "none";
+              trackRef.current.style.transform = `translateX(-${scrollOffsetRef.current}%)`;
+            }
+          }, 520); // slightly after the CSS transition ends (500ms)
         }
       }, intervalMs);
 

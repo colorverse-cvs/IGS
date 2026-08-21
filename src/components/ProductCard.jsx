@@ -89,7 +89,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
     "
     >
       {/* --- Image and Tag Section --- */}
-      <div className="relative h-40 md:h-60 w-full bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center border-1 border-gray-200 transition-all duration-200 ease-out  group-hover:-translate-y-1 group-hover:shadow-sm">
+      <div className="relative aspect-square w-full bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center border-1 border-gray-200 transition-all duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-sm">
         <img
           src={imageURL}
           alt={name}

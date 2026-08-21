@@ -9,6 +9,7 @@ import CustomizationWorksPage from "./CustomizationWorksPage.jsx";
 import TestimonialsPage from "./TestimonialsPage.jsx";
 import testimonials from "../data/testimonials.json";
 import CustomOrderModal from "../components/CustomOrderModal.jsx";
+import ScrollingAnnouncement from "../components/ScrollingAnnouncement.jsx";
 // import useAuth from "../hooks/useAuth";
 
 export default function HomePage() {
@@ -121,6 +122,15 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+      <ScrollingAnnouncement
+        messages={[
+          "🔥 Hurry Up! Limited Time Offer",
+          "⚡ Limited Stock — Order Before It's Gone",
+          "🎁 Free Shipping on Orders Above ₹999",
+          "✨ Handcrafted with Love & Devotion",
+          "🛕 Exclusive Festive Deals Available Now",
+        ]}
+      />
       <div>
         <CollectionPage />
       </div>
