@@ -122,7 +122,7 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-      <ScrollingAnnouncement
+      {/* <ScrollingAnnouncement
         messages={[
           "🔥 Hurry Up! Limited Time Offer",
           "⚡ Limited Stock — Order Before It's Gone",
@@ -130,7 +130,7 @@ export default function HomePage() {
           "✨ Handcrafted with Love & Devotion",
           "🛕 Exclusive Festive Deals Available Now",
         ]}
-      />
+      /> */}
       <div>
         <CollectionPage />
       </div>
