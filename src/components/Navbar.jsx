@@ -119,7 +119,7 @@ export default function Navbar() {
         path: "/orders",
       },
       { to: "/cart", label: "Wishlist", path: "/cart" },
-      // { to: "/admin", label: "Admin Panel", path: "/admin" },
+      { to: "/admin", label: "Admin Panel", path: "/admin" },
     ];
 
     // Only add Admin Panel link if user is admin
