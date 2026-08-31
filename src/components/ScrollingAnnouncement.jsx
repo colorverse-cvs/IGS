@@ -8,47 +8,52 @@ const DEFAULT_MESSAGES = [
   "🛕 Exclusive Festive Deals Available Now",
 ];
 
+// How many times to repeat the text within EACH half of the track.
+// 8 repetitions × 2 halves = 16× the text length — enough for any viewport.
+const FILL_REPEAT = 8;
+
 export default function ScrollingAnnouncement({
   messages = DEFAULT_MESSAGES,
   separator = "✦",
-  speedSeconds = 30,
+  speedSeconds = 180,
   bgClass = "bg-brand-800",
   textClass = "text-white",
+  height,          // e.g. "40px", "3rem", "2.5rem" — leave undefined for auto
 }) {
-  // Build one strip: messages joined by separator
-  const strip = messages
-    .map((m) => `${m}`)
-    .join(`   ${separator}   `);
+  // Build a single segment: all messages joined by the separator + trailing sep
+  const segment = messages.join(`   ${separator}   `) + `   ${separator}   `;
 
-  // We duplicate the strip so the seam is invisible
-  const fullContent = `${strip}   ${separator}   `;
+  // Repeat the segment FILL_REPEAT times to make each half wide enough
+  const halfContent = Array(FILL_REPEAT).fill(segment).join("");
 
   return (
     <div
-      className={`w-full overflow-hidden ${bgClass} ${textClass} py-2.5 select-none`}
-      aria-label="Announcement banner"
+      className={`w-full overflow-hidden flex items-center ${bgClass} ${textClass} select-none`}
+      style={height ? { height } : { paddingTop: "0.625rem", paddingBottom: "0.625rem" }}
+      aria-label="Promotional announcement"
     >
       <style>{`
-        @keyframes igs-marquee {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        @keyframes igs-rtl {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
         }
-        .igs-marquee-track {
-          display: flex;
+
+        .igs-strip-track {
+          display: inline-flex;
+          width: max-content;
           white-space: nowrap;
           will-change: transform;
-          animation: igs-marquee ${speedSeconds}s linear infinite;
+          animation: igs-rtl ${speedSeconds}s linear infinite;
         }
-        .igs-marquee-track:hover {
+
+        .igs-strip-track:hover {
           animation-play-state: paused;
         }
       `}</style>
 
-      <div className="igs-marquee-track text-sm font-medium tracking-wide">
-        {/* Two identical copies — when the first scrolls fully off-screen
-            the second is already in view, making the loop seamless */}
-        <span className="px-6">{fullContent}</span>
-        <span className="px-6">{fullContent}</span>
+      <div className="igs-strip-track text-sm font-medium tracking-wide">
+        <span>{halfContent}</span>
+        <span aria-hidden="true">{halfContent}</span>
       </div>
     </div>
   );

@@ -2,11 +2,11 @@ export default function Sidebar({ setActivePage, activePage }) {
   const menuItems = [
     "Dashboard",
     "Products",
+    "Customize Marketing",
     "Orders",
     "Inventory",
     "Customers",
     "Payments",
-    // "Coupons",
     "Settings",
   ];
 
@@ -27,10 +27,9 @@ export default function Sidebar({ setActivePage, activePage }) {
             }}
             className={`
               mx-3 px-4 py-2 rounded-lg cursor-pointer transition
-              ${
-                activePage === item
-                  ? "bg-brand-600 text-white"
-                  : "text-gray-600 hover:bg-brand-50"
+              ${activePage === item
+                ? "bg-brand-600 text-white"
+                : "text-gray-600 hover:bg-brand-50"
               }
             `}
           >

@@ -10,6 +10,7 @@ import TestimonialsPage from "./TestimonialsPage.jsx";
 import testimonials from "../data/testimonials.json";
 import CustomOrderModal from "../components/CustomOrderModal.jsx";
 import ScrollingAnnouncement from "../components/ScrollingAnnouncement.jsx";
+import { getActiveBanners } from "../utils/marketingStorage";
 // import useAuth from "../hooks/useAuth";
 
 export default function HomePage() {
@@ -122,7 +123,7 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-      {/* <ScrollingAnnouncement
+      <ScrollingAnnouncement
         messages={[
           "🔥 Hurry Up! Limited Time Offer",
           "⚡ Limited Stock — Order Before It's Gone",
@@ -130,7 +131,26 @@ export default function HomePage() {
           "✨ Handcrafted with Love & Devotion",
           "🛕 Exclusive Festive Deals Available Now",
         ]}
-      /> */}
+        speedSeconds={180}
+        height="100px"
+      />
+      {/* ── Active marketing banner — above Featured Collections ── */}
+      {(() => {
+        const activeBanners = getActiveBanners();
+        if (!activeBanners.length) return null;
+        return (
+          <div className="px-4 md:px-15 lg:px-20 pt-6">
+            <div className="container mx-auto">
+              <img
+                src={activeBanners[0].preview}
+                alt="Promotional banner"
+                className="w-full rounded-2xl object-cover shadow-sm"
+                style={{ maxHeight: "400px" }}
+              />
+            </div>
+          </div>
+        );
+      })()}
       <div>
         <CollectionPage />
       </div>

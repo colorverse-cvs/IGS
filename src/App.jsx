@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import RoutesMap from "./routes";
 import Navbar from "./components/Navbar";
 import FooterPage from "./pages/FooterPage";
+import ScrollingAnnouncement from "./components/ScrollingAnnouncement";
 import { AdminPanelProvider, useAdminPanel } from "./contexts/AdminPanelContext";
 import { fetchProducts } from "./features/products/productSlice";
 import { initializeCart, fetchCartSummaryAsync } from "./features/cart/cartSlice";
 import { updateTokens, logout } from "./features/user/userSlice";
+import { getActiveStripTexts } from "./utils/marketingStorage";
 
 function AppContent() {
   const { isAdminPanelOpen } = useAdminPanel();
@@ -54,19 +56,16 @@ function AppContent() {
     };
   }, [dispatch]);
 
-  // clear console every 10 seconds
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     console.clear();
-  //   }, 10000); // 10 seconds
-
-  //   return () => clearInterval(interval);
-  // }, []);
+  // Read active strip texts from localStorage (set by admin panel)
+  const activeStripTexts = getActiveStripTexts();
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      {/* Strip announcement bar — shown below navbar when admin has active strips */}
+      {!isAdminPanelOpen && activeStripTexts.length > 0 && (
+        <ScrollingAnnouncement messages={activeStripTexts} />
+      )}
       <main>
         <RoutesMap />
       </main>
