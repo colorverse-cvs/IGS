@@ -10,14 +10,22 @@ import TestimonialsPage from "./TestimonialsPage.jsx";
 import testimonials from "../data/testimonials.json";
 import CustomOrderModal from "../components/CustomOrderModal.jsx";
 import ScrollingAnnouncement from "../components/ScrollingAnnouncement.jsx";
-import { getActiveBanners } from "../utils/marketingStorage";
+import { fetchBannerImage } from "../utils/marketingApi";
 // import useAuth from "../hooks/useAuth";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isCustomOrderModalOpen, setIsCustomOrderModalOpen] = useState(false);
+  const [bannerUrl, setBannerUrl] = useState(null);
   // const { isAuthenticated, user } = useAuth();
+
+  // Load the marketing banner from the backend (public GET)
+  useEffect(() => {
+    fetchBannerImage()
+      .then((data) => setBannerUrl(data?.imageUrl ?? null))
+      .catch(() => setBannerUrl(null));
+  }, []);
 
   // console.log("HomePage Auth Status:", { isAuthenticated, user });
 
@@ -135,22 +143,18 @@ export default function HomePage() {
         height="100px"
       />
       {/* ── Active marketing banner — above Featured Collections ── */}
-      {(() => {
-        const activeBanners = getActiveBanners();
-        if (!activeBanners.length) return null;
-        return (
-          <div className="px-4 md:px-15 lg:px-20 pt-6">
-            <div className="container mx-auto">
-              <img
-                src={activeBanners[0].preview}
-                alt="Promotional banner"
-                className="w-full rounded-2xl object-cover shadow-sm"
-                style={{ maxHeight: "400px" }}
-              />
-            </div>
+      {bannerUrl && (
+        <div className="px-4 md:px-15 lg:px-20 pt-6">
+          <div className="container mx-auto">
+            <img
+              src={bannerUrl}
+              alt="Promotional banner"
+              className="w-full rounded-2xl object-cover shadow-sm"
+              style={{ maxHeight: "400px" }}
+            />
           </div>
-        );
-      })()}
+        </div>
+      )}
       <div>
         <CollectionPage />
       </div>

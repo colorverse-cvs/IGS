@@ -5,9 +5,10 @@ import {
     Trash2,
     X,
     AlertCircle,
+    Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { loadMarketingItems, saveMarketingItems } from "../../../utils/marketingStorage";
+import { uploadBannerImage, deleteBannerImage, fetchBannerImage } from "../../../utils/marketingApi";
 
 /* ─────────────────────────────────
    Banner dimension requirements
@@ -18,20 +19,8 @@ const BANNER_REQUIRED_HEIGHT = 400;
 /* ─────────────────────────────────
    Unique ID helper
 ───────────────────────────────── */
-let _id = Date.now(); // seed from timestamp to avoid collisions on reload
+let _id = Date.now();
 const uid = () => String(++_id);
-
-/* ─────────────────────────────────
-   Convert File → base64 data-URL
-───────────────────────────────── */
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
 
 /* ─────────────────────────────────
    Validate image pixel dimensions
@@ -56,23 +45,43 @@ function validateImageDimensions(file, reqW, reqH) {
    MAIN COMPONENT
 ───────────────────────────────── */
 export default function CustomizeMarketing() {
-    /* ── Banner state ── */
+    /* ── Banner upload state ── */
     const [bannerFile, setBannerFile] = useState(null);
-    const [bannerPreview, setBannerPreview] = useState(null);
+    const [bannerPreview, setBannerPreview] = useState(null); // blob URL for local preview
     const [bannerError, setBannerError] = useState("");
     const [isValidating, setIsValidating] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const bannerInputRef = useRef(null);
 
-    /* ── Strip texts state ── */
+    /* ── Live banner from API ── */
+    const [currentBannerUrl, setCurrentBannerUrl] = useState(null);
+    const [currentBannerName, setCurrentBannerName] = useState(null);
+    const [deletingBanner, setDeletingBanner] = useState(false);
+
+    /* ── Strip state (in-memory only, no persistence) ── */
     const [stripTexts, setStripTexts] = useState(["", ""]);
+    const [strips, setStrips] = useState([]); // { id, name, texts }
+    const [deletingStripId, setDeletingStripId] = useState(null);
 
-    /* ── Recent items (loaded from localStorage on mount) ── */
-    const [items, setItems] = useState(() => loadMarketingItems());
-
-    /* ── Persist to localStorage whenever items change ── */
+    /* ── Fetch live banner on mount ── */
     useEffect(() => {
-        saveMarketingItems(items);
-    }, [items]);
+        fetchBannerImage()
+            .then((data) => {
+                setCurrentBannerUrl(data?.imageUrl ?? null);
+                setCurrentBannerName(data?.imageFilename ?? null);
+            })
+            .catch(() => {
+                setCurrentBannerUrl(null);
+                setCurrentBannerName(null);
+            });
+    }, []);
+
+    /* ── Revoke blob URL on unmount / change ── */
+    useEffect(() => {
+        return () => {
+            if (bannerPreview) URL.revokeObjectURL(bannerPreview);
+        };
+    }, [bannerPreview]);
 
     /* ────────────────────────
        Banner handlers
@@ -85,7 +94,6 @@ export default function CustomizeMarketing() {
         setBannerError("");
         setIsValidating(true);
 
-        // 1. Validate dimensions
         const { valid, actual } = await validateImageDimensions(
             file,
             BANNER_REQUIRED_WIDTH,
@@ -103,35 +111,49 @@ export default function CustomizeMarketing() {
             return;
         }
 
-        // 2. Convert to base64 for localStorage persistence
-        try {
-            const base64 = await fileToBase64(file);
-            setBannerFile(file);
-            setBannerPreview(base64);
-        } catch {
-            setBannerError("Failed to read the image file. Please try again.");
-        } finally {
-            setIsValidating(false);
-        }
-    }, []);
+        // Use blob URL for local preview (no base64 / no localStorage)
+        if (bannerPreview) URL.revokeObjectURL(bannerPreview);
+        setBannerFile(file);
+        setBannerPreview(URL.createObjectURL(file));
+        setIsValidating(false);
+    }, [bannerPreview]);
 
-    const handleAddBanner = () => {
-        if (!bannerFile || !bannerPreview) {
+    const handleAddBanner = async () => {
+        if (!bannerFile) {
             toast.error("Please upload a valid banner image first.");
             return;
         }
-        const newItem = {
-            id: uid(),
-            type: "banner",
-            name: bannerFile.name.replace(/\.[^/.]+$/, "") || "Banner",
-            preview: bannerPreview, // base64 — safe for localStorage
-            active: true,
-        };
-        setItems((prev) => [newItem, ...prev]);
-        setBannerFile(null);
-        setBannerPreview(null);
-        setBannerError("");
-        toast.success("Banner added and saved!");
+
+        setIsUploading(true);
+        try {
+            const { imageUrl, imageFilename } = await uploadBannerImage(bannerFile);
+            setCurrentBannerUrl(imageUrl);
+            setCurrentBannerName(imageFilename);
+            // Clean up local preview
+            if (bannerPreview) URL.revokeObjectURL(bannerPreview);
+            setBannerFile(null);
+            setBannerPreview(null);
+            setBannerError("");
+            toast.success("Banner uploaded and saved!");
+        } catch (err) {
+            toast.error(err.message || "Failed to upload banner. Please try again.");
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleDeleteBanner = async () => {
+        setDeletingBanner(true);
+        try {
+            await deleteBannerImage();
+            setCurrentBannerUrl(null);
+            setCurrentBannerName(null);
+            toast.success("Banner removed.");
+        } catch (err) {
+            toast.error(err.message || "Failed to delete banner.");
+        } finally {
+            setDeletingBanner(false);
+        }
     };
 
     /* ────────────────────────
@@ -151,33 +173,28 @@ export default function CustomizeMarketing() {
             toast.error("Please enter at least one strip text.");
             return;
         }
-        const newItem = {
+        const newStrip = {
             id: uid(),
-            type: "strip",
             name: nonEmpty.join(" | "),
-            preview: null,
-            active: true,
             texts: nonEmpty,
         };
-        setItems((prev) => [newItem, ...prev]);
+        setStrips((prev) => [newStrip, ...prev]);
         setStripTexts(["", ""]);
-        toast.success("Strip added and saved!");
+        toast.success("Strip added!");
     };
 
-    /* ────────────────────────
-       Recent item actions
-    ──────────────────────── */
-    const deleteItem = (id) => {
-        setItems((prev) => prev.filter((item) => item.id !== id));
-        toast.success("Removed.");
+    const deleteStrip = (id) => {
+        setDeletingStripId(id);
+        setTimeout(() => {
+            setStrips((prev) => prev.filter((s) => s.id !== id));
+            setDeletingStripId(null);
+            toast.success("Strip removed.");
+        }, 150);
     };
-
-
 
     /* ─── derived ─── */
-    const firstBanner = items.find((i) => i.type === "banner" && i.preview);
-    const bannerItems = items.filter((i) => i.type === "banner");
-    const stripItems = items.filter((i) => i.type === "strip");
+    const hasBanner = !!currentBannerUrl;
+    const hasStrips = strips.length > 0;
 
     return (
         <div className="space-y-6">
@@ -205,7 +222,7 @@ export default function CustomizeMarketing() {
 
                         {/* Upload area */}
                         <div
-                            onClick={() => !isValidating && bannerInputRef.current?.click()}
+                            onClick={() => !isValidating && !isUploading && bannerInputRef.current?.click()}
                             className={`border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 transition-all
                                 ${isValidating ? "border-brand-300 bg-brand-25 cursor-wait" : "border-gray-200 cursor-pointer hover:border-brand-400 hover:bg-brand-25"}
                                 ${bannerError ? "border-red-300 bg-red-50" : ""}`}
@@ -226,6 +243,7 @@ export default function CustomizeMarketing() {
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
+                                            if (bannerPreview) URL.revokeObjectURL(bannerPreview);
                                             setBannerFile(null);
                                             setBannerPreview(null);
                                             setBannerError("");
@@ -273,11 +291,20 @@ export default function CustomizeMarketing() {
                     {/* Add Banner button */}
                     <button
                         onClick={handleAddBanner}
-                        disabled={isValidating}
+                        disabled={isValidating || isUploading}
                         className="w-full py-3 bg-brand-700 hover:bg-brand-800 disabled:bg-gray-400 text-white text-sm font-medium rounded-b-xl flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:cursor-not-allowed"
                     >
-                        <Plus size={16} />
-                        Add Banner
+                        {isUploading ? (
+                            <>
+                                <Loader2 size={16} className="animate-spin" />
+                                Uploading…
+                            </>
+                        ) : (
+                            <>
+                                <Plus size={16} />
+                                Add Banner
+                            </>
+                        )}
                     </button>
                 </div>
 
@@ -345,11 +372,11 @@ export default function CustomizeMarketing() {
                 <div>
                     <p className="text-base !font-medium text-gray-900">Recent</p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                        Manage your recently created banners and strips.
+                        Manage your active banner and strips.
                     </p>
                 </div>
 
-                {items.length === 0 ? (
+                {!hasBanner && !hasStrips ? (
                     <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-12 text-center">
                         <ImageIcon className="w-10 h-10 text-gray-200 mx-auto mb-3" />
                         <p className="text-sm text-gray-400">
@@ -359,44 +386,55 @@ export default function CustomizeMarketing() {
                 ) : (
                     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
 
-                        {/* Hero banner image preview */}
-                        {firstBanner && (
-                            <div className="w-full h-48 md:h-64 overflow-hidden">
-                                <img
-                                    src={firstBanner.preview}
-                                    alt="Latest banner"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        )}
-
                         {/* ── Banner sub-section ── */}
-                        {bannerItems.length > 0 && (
+                        {hasBanner && (
                             <div>
+                                {/* Hero preview */}
+                                <div className="w-full h-48 md:h-64 overflow-hidden">
+                                    <img
+                                        src={currentBannerUrl}
+                                        alt="Active banner"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+
                                 <div className="px-5 pt-4 pb-2">
                                     <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                                        Banners
+                                        Banner
                                     </p>
                                 </div>
-                                <div className="divide-y divide-gray-100">
-                                    {bannerItems.map((item) => (
-                                        <RecentRow
-                                            key={item.id}
-                                            item={item}
-                                            onDelete={deleteItem}
-                                        />
-                                    ))}
+
+                                {/* Single banner row */}
+                                <div className="flex items-center justify-between px-5 py-3.5 gap-4 hover:bg-gray-50 transition-colors">
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-medium text-gray-800 truncate">
+                                            {currentBannerName || "Active Banner"}
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-0.5">Type: Banner</p>
+                                    </div>
+                                    <button
+                                        onClick={handleDeleteBanner}
+                                        disabled={deletingBanner}
+                                        className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-red-50 hover:border-red-200 text-red-500 hover:text-red-700 transition-all cursor-pointer flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {deletingBanner ? (
+                                            <Loader2 size={13} className="animate-spin" />
+                                        ) : (
+                                            <Trash2 size={13} />
+                                        )}
+                                        <span>{deletingBanner ? "Deleting…" : "Delete"}</span>
+                                    </button>
                                 </div>
                             </div>
                         )}
 
                         {/* Gray divider */}
-                        {bannerItems.length > 0 && stripItems.length > 0 && (
+                        {hasBanner && hasStrips && (
                             <hr className="border-gray-200 mx-5 my-1" />
                         )}
 
                         {/* ── Strip sub-section ── */}
-                        {stripItems.length > 0 && (
+                        {hasStrips && (
                             <div>
                                 <div className="px-5 pt-4 pb-2">
                                     <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
@@ -404,12 +442,28 @@ export default function CustomizeMarketing() {
                                     </p>
                                 </div>
                                 <div className="divide-y divide-gray-100">
-                                    {stripItems.map((item) => (
-                                        <RecentRow
-                                            key={item.id}
-                                            item={item}
-                                            onDelete={deleteItem}
-                                        />
+                                    {strips.map((strip) => (
+                                        <div
+                                            key={strip.id}
+                                            className="flex items-center justify-between px-5 py-3.5 gap-4 hover:bg-gray-50 transition-colors"
+                                        >
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-medium text-gray-800 truncate">{strip.name}</p>
+                                                <p className="text-xs text-gray-400 mt-0.5">Type: Strip</p>
+                                            </div>
+                                            <button
+                                                onClick={() => deleteStrip(strip.id)}
+                                                disabled={deletingStripId === strip.id}
+                                                className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-red-50 hover:border-red-200 text-red-500 hover:text-red-700 transition-all cursor-pointer flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {deletingStripId === strip.id ? (
+                                                    <Loader2 size={13} className="animate-spin" />
+                                                ) : (
+                                                    <Trash2 size={13} />
+                                                )}
+                                                <span>{deletingStripId === strip.id ? "Removing…" : "Delete"}</span>
+                                            </button>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -417,30 +471,6 @@ export default function CustomizeMarketing() {
                     </div>
                 )}
             </div>
-        </div>
-    );
-}
-
-/* ─────────────────────────────────
-   Recent row — Delete only
-───────────────────────────────── */
-function RecentRow({ item, onDelete }) {
-    return (
-        <div className="flex items-center justify-between px-5 py-3.5 gap-4 hover:bg-gray-50 transition-colors">
-            <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5 capitalize">
-                    Type: {item.type === "banner" ? "Banner" : "Strip"}
-                </p>
-            </div>
-
-            <button
-                onClick={() => onDelete(item.id)}
-                className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-red-50 hover:border-red-200 text-red-500 hover:text-red-700 transition-all cursor-pointer flex-shrink-0"
-            >
-                <Trash2 size={13} />
-                <span>Delete</span>
-            </button>
         </div>
     );
 }
