@@ -250,16 +250,14 @@ export default function Navbar() {
           Shows: Logo, navigation links, product dropdown, search, auth buttons, cart icon
           Features: Sticky positioning with glass blur effect on scroll */}
       <nav
-        className={`hidden lg:block sticky top-0 z-60 border-b transition-colors ${
-          isScrolled || isProductsDropdownOpen
-            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
-            : "bg-white border-gray-100"
-        }`}
+        className={`hidden lg:block sticky top-0 z-60 border-b transition-colors ${isScrolled || isProductsDropdownOpen
+          ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+          : "bg-white border-gray-100"
+          }`}
       >
         <div
-          className={`mx-auto px-4 md:px-15 lg:px-20 max-w-7xl lg:max-w-full ${
-            isAdminPanelOpen ? "hidden" : ""
-          }`}
+          className={`mx-auto px-4 md:px-15 lg:px-20 max-w-7xl lg:max-w-full ${isAdminPanelOpen ? "hidden" : ""
+            }`}
         >
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo/Brand */}
@@ -287,9 +285,8 @@ export default function Navbar() {
                           {link.name}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform ${
-                              isOpen ? "rotate-180" : "rotate-0"
-                            }`}
+                            className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
+                              }`}
                           />
                         </button>
                       )}
@@ -357,9 +354,8 @@ export default function Navbar() {
                           {user.profile.name}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform ${
-                              isOpen ? "rotate-180" : "rotate-0"
-                            }`}
+                            className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
+                              }`}
                           />
                         </span>
                       </span>
@@ -389,9 +385,8 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 cursor-pointer  hover:text-brand-700 ${
-                        idx === 0 ? "first:rounded-t-lg" : ""
-                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 cursor-pointer  hover:text-brand-700 ${idx === 0 ? "first:rounded-t-lg" : ""
+                        } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
                       {item.label}
                     </button>
@@ -451,16 +446,14 @@ export default function Navbar() {
           Shows: Logo on left, search and auth on right (on md+), responsive bottom search
           Features: Sticky positioning with blur effect on scroll */}
       <nav
-        className={`lg:hidden fixed top-0 left-0 right-0 z-50 border-b border-gray-200 ${
-          isScrolled
-            ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
-            : "bg-white border-gray-100"
-        }`}
+        className={`lg:hidden fixed top-0 left-0 right-0 z-50 border-b border-gray-200 ${isScrolled
+          ? "backdrop-blur supports-[backdrop-filter]:bg-white/50 bg-white/50 border-gray-200 shadow-sm"
+          : "bg-white border-gray-100"
+          }`}
       >
         <div
-          className={`py-3 px-4 md:px-15 lg:px-20 ${
-            isAdminPanelOpen ? "hidden" : ""
-          }`}
+          className={`py-3 px-4 md:px-15 lg:px-20 ${isAdminPanelOpen ? "hidden" : ""
+            }`}
         >
           {/* Top Navbar Row */}
           <div className="flex justify-between items-center h-14">
@@ -498,9 +491,8 @@ export default function Navbar() {
                           {user.profile.name}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform ${
-                              isOpen ? "rotate-180" : "rotate-0"
-                            }`}
+                            className={`transition-transform ${isOpen ? "rotate-180" : "rotate-0"
+                              }`}
                           />
                         </span>
                       </span>
@@ -529,9 +521,8 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 cursor-pointer hover:text-brand-700 ${
-                        idx === 0 ? "first:rounded-t-lg" : ""
-                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 cursor-pointer hover:text-brand-700 ${idx === 0 ? "first:rounded-t-lg" : ""
+                        } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
                       {item.label}
                     </button>
@@ -619,9 +610,8 @@ export default function Navbar() {
                           navigate(item.path || item.to);
                         }
                       }}
-                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 cursor-pointer hover:text-brand-700 ${
-                        idx === 0 ? "first:rounded-t-lg" : ""
-                      } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
+                      className={`block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-brand-50 cursor-pointer hover:text-brand-700 ${idx === 0 ? "first:rounded-t-lg" : ""
+                        } ${idx === arr.length - 1 ? "last:rounded-b-lg" : ""}`}
                     >
                       {item.label}
                     </button>
@@ -711,11 +701,10 @@ export default function Navbar() {
             {/* Home */}
             <Link
               to="/"
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
-                location.pathname === "/"
-                  ? "text-brand-700 border-b-4 border-brand-700"
-                  : "text-gray-600 hover:text-brand-700"
-              }`}
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-brand-700"
+                }`}
               aria-label="Home"
             >
               <Home size={24} />
@@ -732,11 +721,10 @@ export default function Navbar() {
                   setIsAuthOpen(true);
                 }
               }}
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition cursor-pointer ${
-                location.pathname === "/profile"
-                  ? "text-brand-700 border-b-4 border-brand-700"
-                  : "text-gray-600 hover:text-brand-700"
-              }`}
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition cursor-pointer ${location.pathname === "/profile"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-brand-700"
+                }`}
               aria-label="Profile"
             >
               <User size={24} />
@@ -746,11 +734,10 @@ export default function Navbar() {
             {/* Contact */}
             <Link
               to="/contact"
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${
-                location.pathname === "/contact"
-                  ? "text-brand-700 border-b-4 border-brand-700"
-                  : "text-gray-600 hover:text-brand-700"
-              }`}
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition ${location.pathname === "/contact"
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-brand-700"
+                }`}
               aria-label="Contact"
             >
               <Phone size={24} />
@@ -780,11 +767,10 @@ export default function Navbar() {
             {/* Menu */}
             <button
               onClick={toggleMenu}
-              className={`flex flex-col items-center justify-center w-full h-full py-2 transition cursor-pointer ${
-                isMenuOpen
-                  ? "text-brand-700 border-b-4 border-brand-700"
-                  : "text-gray-600 hover:text-brand-700"
-              }`}
+              className={`flex flex-col items-center justify-center w-full h-full py-2 transition cursor-pointer ${isMenuOpen
+                ? "text-brand-700 border-b-4 border-brand-700"
+                : "text-gray-600 hover:text-brand-700"
+                }`}
               aria-label="Menu"
               aria-expanded={isMenuOpen}
             >
@@ -844,9 +830,8 @@ export default function Navbar() {
               Products{" "}
               <ChevronDown
                 size={18}
-                className={`transition-transform ${
-                  isMobileProductsDropdownOpen ? "rotate-180" : "rotate-0"
-                }`}
+                className={`transition-transform ${isMobileProductsDropdownOpen ? "rotate-180" : "rotate-0"
+                  }`}
               />
             </button>
             {isMobileProductsDropdownOpen && (

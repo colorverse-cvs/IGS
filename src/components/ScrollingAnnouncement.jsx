@@ -18,7 +18,8 @@ export default function ScrollingAnnouncement({
   speedSeconds = 180,
   bgClass = "bg-brand-800",
   textClass = "text-white",
-  height,          // e.g. "40px", "3rem", "2.5rem" — leave undefined for auto
+  height,          // e.g. "100px", "3rem" — leave undefined for auto
+  rows = 2,        // number of scrolling rows to show
 }) {
   // Build a single segment: all messages joined by the separator + trailing sep
   const segment = messages.join(`   ${separator}   `) + `   ${separator}   `;
@@ -26,10 +27,15 @@ export default function ScrollingAnnouncement({
   // Repeat the segment FILL_REPEAT times to make each half wide enough
   const halfContent = Array(FILL_REPEAT).fill(segment).join("");
 
+  // For multi-row: offset each row so different messages appear simultaneously.
+  // Row i starts its animation at -(i / rows * speedSeconds)s delay.
+  const rowCount = Math.max(1, rows);
+  const rowHeight = height ? `calc(${height} / ${rowCount})` : undefined;
+
   return (
     <div
-      className={`w-full overflow-hidden flex items-center ${bgClass} ${textClass} select-none`}
-      style={height ? { height } : { paddingTop: "0.625rem", paddingBottom: "0.625rem" }}
+      className={`w-full overflow-hidden flex flex-col justify-around ${bgClass} ${textClass} select-none`}
+      style={height ? { height } : {}}
       aria-label="Promotional announcement"
     >
       <style>{`
@@ -43,7 +49,6 @@ export default function ScrollingAnnouncement({
           width: max-content;
           white-space: nowrap;
           will-change: transform;
-          animation: igs-rtl ${speedSeconds}s linear infinite;
         }
 
         .igs-strip-track:hover {
@@ -51,10 +56,24 @@ export default function ScrollingAnnouncement({
         }
       `}</style>
 
-      <div className="igs-strip-track text-sm font-medium tracking-wide">
-        <span>{halfContent}</span>
-        <span aria-hidden="true">{halfContent}</span>
-      </div>
+      {Array.from({ length: rowCount }).map((_, i) => (
+        <div
+          key={i}
+          className="w-full overflow-hidden flex items-center"
+          style={rowHeight ? { height: rowHeight } : { paddingTop: "0.625rem", paddingBottom: "0.625rem" }}
+        >
+          <div
+            className="igs-strip-track text-sm font-medium tracking-wide"
+            style={{
+              animation: `igs-rtl ${speedSeconds}s linear infinite`,
+              animationDelay: `-${(i / rowCount) * speedSeconds}s`,
+            }}
+          >
+            <span>{halfContent}</span>
+            <span aria-hidden="true">{halfContent}</span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

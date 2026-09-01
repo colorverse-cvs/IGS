@@ -64,7 +64,10 @@ function AppContent() {
       <Navbar />
       {/* Strip announcement bar — shown below navbar when admin has active strips */}
       {!isAdminPanelOpen && activeStripTexts.length > 0 && (
-        <ScrollingAnnouncement messages={activeStripTexts} />
+        <ScrollingAnnouncement
+          messages={activeStripTexts}
+          rows={1}
+        />
       )}
       <main>
         <RoutesMap />
