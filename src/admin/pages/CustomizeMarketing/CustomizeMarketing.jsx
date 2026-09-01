@@ -8,19 +8,20 @@ import {
     Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { uploadBannerImage, deleteBannerImage, fetchBannerImage } from "../../../utils/marketingApi";
+import {
+    uploadBannerImage,
+    deleteBannerImage,
+    fetchBannerImage,
+    fetchBannerTexts,
+    addBannerTexts,
+    deleteBannerText,
+} from "../../../utils/marketingApi";
 
 /* ─────────────────────────────────
    Banner dimension requirements
 ───────────────────────────────── */
 const BANNER_REQUIRED_WIDTH = 1200;
 const BANNER_REQUIRED_HEIGHT = 400;
-
-/* ─────────────────────────────────
-   Unique ID helper
-───────────────────────────────── */
-let _id = Date.now();
-const uid = () => String(++_id);
 
 /* ─────────────────────────────────
    Validate image pixel dimensions
@@ -45,6 +46,7 @@ function validateImageDimensions(file, reqW, reqH) {
    MAIN COMPONENT
 ───────────────────────────────── */
 export default function CustomizeMarketing() {
+
     /* ── Banner upload state ── */
     const [bannerFile, setBannerFile] = useState(null);
     const [bannerPreview, setBannerPreview] = useState(null); // blob URL for local preview
@@ -58,13 +60,15 @@ export default function CustomizeMarketing() {
     const [currentBannerName, setCurrentBannerName] = useState(null);
     const [deletingBanner, setDeletingBanner] = useState(false);
 
-    /* ── Strip state (in-memory only, no persistence) ── */
-    const [stripTexts, setStripTexts] = useState(["", ""]);
-    const [strips, setStrips] = useState([]); // { id, name, texts }
-    const [deletingStripId, setDeletingStripId] = useState(null);
+    /* ── Strip texts from API ── */
+    const [stripTexts, setStripTexts] = useState(["", ""]); // input fields
+    const [texts, setTexts] = useState([]); // persisted texts from API [{ index, value }]
+    const [isAddingTexts, setIsAddingTexts] = useState(false);
+    const [deletingTextIndex, setDeletingTextIndex] = useState(null);
 
-    /* ── Fetch live banner on mount ── */
+    /* ── Fetch live data on mount ── */
     useEffect(() => {
+        // Banner image
         fetchBannerImage()
             .then((data) => {
                 setCurrentBannerUrl(data?.imageUrl ?? null);
@@ -74,6 +78,11 @@ export default function CustomizeMarketing() {
                 setCurrentBannerUrl(null);
                 setCurrentBannerName(null);
             });
+
+        // Strip texts
+        fetchBannerTexts()
+            .then((arr) => setTexts(arr.map((value, index) => ({ index, value }))))
+            .catch(() => setTexts([]));
     }, []);
 
     /* ── Revoke blob URL on unmount / change ── */
@@ -111,7 +120,7 @@ export default function CustomizeMarketing() {
             return;
         }
 
-        // Use blob URL for local preview (no base64 / no localStorage)
+        // Use blob URL for local preview
         if (bannerPreview) URL.revokeObjectURL(bannerPreview);
         setBannerFile(file);
         setBannerPreview(URL.createObjectURL(file));
@@ -129,7 +138,6 @@ export default function CustomizeMarketing() {
             const { imageUrl, imageFilename } = await uploadBannerImage(bannerFile);
             setCurrentBannerUrl(imageUrl);
             setCurrentBannerName(imageFilename);
-            // Clean up local preview
             if (bannerPreview) URL.revokeObjectURL(bannerPreview);
             setBannerFile(null);
             setBannerPreview(null);
@@ -157,44 +165,58 @@ export default function CustomizeMarketing() {
     };
 
     /* ────────────────────────
-       Strip handlers
+       Strip text input handlers
     ──────────────────────── */
-    const addStripText = () => setStripTexts((prev) => [...prev, ""]);
+    const addStripField = () => setStripTexts((prev) => [...prev, ""]);
 
-    const updateStripText = (index, value) =>
+    const updateStripField = (index, value) =>
         setStripTexts((prev) => prev.map((t, i) => (i === index ? value : t)));
 
-    const removeStripText = (index) =>
+    const removeStripField = (index) =>
         setStripTexts((prev) => prev.filter((_, i) => i !== index));
 
-    const handleAddStrip = () => {
-        const nonEmpty = stripTexts.filter((t) => t.trim());
+    const handleAddTexts = async () => {
+        const nonEmpty = stripTexts.map((t) => t.trim()).filter(Boolean);
         if (!nonEmpty.length) {
             toast.error("Please enter at least one strip text.");
             return;
         }
-        const newStrip = {
-            id: uid(),
-            name: nonEmpty.join(" | "),
-            texts: nonEmpty,
-        };
-        setStrips((prev) => [newStrip, ...prev]);
-        setStripTexts(["", ""]);
-        toast.success("Strip added!");
+
+        setIsAddingTexts(true);
+        try {
+            await addBannerTexts(nonEmpty);
+            // Re-fetch the full list from GET — POST may only return the new batch
+            const fullList = await fetchBannerTexts();
+            setTexts(fullList.map((value, index) => ({ index, value })));
+            window.dispatchEvent(new CustomEvent('bannerTextsUpdated', { detail: { texts: fullList } }));
+            setStripTexts(["", ""]);
+            toast.success("Strip texts saved!");
+        } catch (err) {
+            toast.error(err.message || "Failed to save strip texts.");
+        } finally {
+            setIsAddingTexts(false);
+        }
     };
 
-    const deleteStrip = (id) => {
-        setDeletingStripId(id);
-        setTimeout(() => {
-            setStrips((prev) => prev.filter((s) => s.id !== id));
-            setDeletingStripId(null);
-            toast.success("Strip removed.");
-        }, 150);
+    const handleDeleteText = async (index) => {
+        setDeletingTextIndex(index);
+        try {
+            await deleteBannerText(index);
+            // Re-fetch full list after delete to keep indices accurate
+            const fullList = await fetchBannerTexts();
+            setTexts(fullList.map((value, i) => ({ index: i, value })));
+            window.dispatchEvent(new CustomEvent('bannerTextsUpdated', { detail: { texts: fullList } }));
+            toast.success("Text removed.");
+        } catch (err) {
+            toast.error(err.message || "Failed to delete text.");
+        } finally {
+            setDeletingTextIndex(null);
+        }
     };
 
     /* ─── derived ─── */
     const hasBanner = !!currentBannerUrl;
-    const hasStrips = strips.length > 0;
+    const hasTexts = texts.length > 0;
 
     return (
         <div className="space-y-6">
@@ -314,7 +336,7 @@ export default function CustomizeMarketing() {
                         <div>
                             <p className="text-sm !font-medium text-gray-900">Customize Strip</p>
                             <p className="text-xs text-gray-400 mt-0.5">
-                                Create a promotional strip for your website.
+                                Add scrolling text messages for your website strip.
                             </p>
                         </div>
 
@@ -329,13 +351,13 @@ export default function CustomizeMarketing() {
                                         <input
                                             type="text"
                                             value={text}
-                                            onChange={(e) => updateStripText(index, e.target.value)}
+                                            onChange={(e) => updateStripField(index, e.target.value)}
                                             placeholder={`Enter text ${index + 1}…`}
                                             className="w-full border border-gray-200 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500"
                                         />
                                         {stripTexts.length > 1 && (
                                             <button
-                                                onClick={() => removeStripText(index)}
+                                                onClick={() => removeStripField(index)}
                                                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
                                             >
                                                 <X size={14} />
@@ -348,7 +370,7 @@ export default function CustomizeMarketing() {
 
                         {/* + Add Text link */}
                         <button
-                            onClick={addStripText}
+                            onClick={addStripField}
                             className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium cursor-pointer transition-colors"
                         >
                             <Plus size={14} />
@@ -356,13 +378,23 @@ export default function CustomizeMarketing() {
                         </button>
                     </div>
 
-                    {/* Add Strip button */}
+                    {/* Save Strip button */}
                     <button
-                        onClick={handleAddStrip}
-                        className="w-full py-3 bg-brand-700 hover:bg-brand-800 text-white text-sm font-medium rounded-b-xl flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                        onClick={handleAddTexts}
+                        disabled={isAddingTexts}
+                        className="w-full py-3 bg-brand-700 hover:bg-brand-800 disabled:bg-gray-400 text-white text-sm font-medium rounded-b-xl flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:cursor-not-allowed"
                     >
-                        <Plus size={16} />
-                        Add Strip
+                        {isAddingTexts ? (
+                            <>
+                                <Loader2 size={16} className="animate-spin" />
+                                Saving…
+                            </>
+                        ) : (
+                            <>
+                                <Plus size={16} />
+                                Add Strip
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
@@ -372,11 +404,11 @@ export default function CustomizeMarketing() {
                 <div>
                     <p className="text-base !font-medium text-gray-900">Recent</p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                        Manage your active banner and strips.
+                        Manage your active banner and strip texts.
                     </p>
                 </div>
 
-                {!hasBanner && !hasStrips ? (
+                {!hasBanner && !hasTexts ? (
                     <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-12 text-center">
                         <ImageIcon className="w-10 h-10 text-gray-200 mx-auto mb-3" />
                         <p className="text-sm text-gray-400">
@@ -429,39 +461,46 @@ export default function CustomizeMarketing() {
                         )}
 
                         {/* Gray divider */}
-                        {hasBanner && hasStrips && (
+                        {hasBanner && hasTexts && (
                             <hr className="border-gray-200 mx-5 my-1" />
                         )}
 
-                        {/* ── Strip sub-section ── */}
-                        {hasStrips && (
+                        {/* ── Strip texts sub-section ── */}
+                        {hasTexts && (
                             <div>
                                 <div className="px-5 pt-4 pb-2">
                                     <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                                        Strips
+                                        Strip Texts
                                     </p>
                                 </div>
                                 <div className="divide-y divide-gray-100">
-                                    {strips.map((strip) => (
+                                    {texts.map(({ index, value }) => (
                                         <div
-                                            key={strip.id}
+                                            key={index}
                                             className="flex items-center justify-between px-5 py-3.5 gap-4 hover:bg-gray-50 transition-colors"
                                         >
                                             <div className="min-w-0">
-                                                <p className="text-sm font-medium text-gray-800 truncate">{strip.name}</p>
-                                                <p className="text-xs text-gray-400 mt-0.5">Type: Strip</p>
+                                                {/* Preview the text as it will appear in the scrolling strip */}
+                                                <p className="text-sm font-medium text-gray-800 truncate">
+                                                    {value}
+                                                </p>
+                                                <p className="text-xs text-gray-400 mt-0.5">
+                                                    Strip · index {index}
+                                                </p>
                                             </div>
                                             <button
-                                                onClick={() => deleteStrip(strip.id)}
-                                                disabled={deletingStripId === strip.id}
+                                                onClick={() => handleDeleteText(index)}
+                                                disabled={deletingTextIndex === index}
                                                 className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-red-50 hover:border-red-200 text-red-500 hover:text-red-700 transition-all cursor-pointer flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                {deletingStripId === strip.id ? (
+                                                {deletingTextIndex === index ? (
                                                     <Loader2 size={13} className="animate-spin" />
                                                 ) : (
                                                     <Trash2 size={13} />
                                                 )}
-                                                <span>{deletingStripId === strip.id ? "Removing…" : "Delete"}</span>
+                                                <span>
+                                                    {deletingTextIndex === index ? "Removing…" : "Delete"}
+                                                </span>
                                             </button>
                                         </div>
                                     ))}

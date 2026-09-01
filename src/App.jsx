@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RoutesMap from "./routes";
 import Navbar from "./components/Navbar";
@@ -8,7 +8,7 @@ import { AdminPanelProvider, useAdminPanel } from "./contexts/AdminPanelContext"
 import { fetchProducts } from "./features/products/productSlice";
 import { initializeCart, fetchCartSummaryAsync } from "./features/cart/cartSlice";
 import { updateTokens, logout } from "./features/user/userSlice";
-import { getActiveStripTexts } from "./utils/marketingStorage";
+import { fetchBannerTexts } from "./utils/marketingApi";
 
 function AppContent() {
   const { isAdminPanelOpen } = useAdminPanel();
@@ -56,8 +56,18 @@ function AppContent() {
     };
   }, [dispatch]);
 
-  // Read active strip texts from localStorage (set by admin panel)
-  const activeStripTexts = getActiveStripTexts();
+  // Fetch active strip texts from the backend on mount
+  const [activeStripTexts, setActiveStripTexts] = useState([]);
+  useEffect(() => {
+    fetchBannerTexts()
+      .then((arr) => setActiveStripTexts(arr))
+      .catch(() => setActiveStripTexts([]));
+
+    // Keep in sync when admin adds/removes texts in the same browser session
+    const handleTextsUpdated = (e) => setActiveStripTexts(e.detail?.texts ?? []);
+    window.addEventListener('bannerTextsUpdated', handleTextsUpdated);
+    return () => window.removeEventListener('bannerTextsUpdated', handleTextsUpdated);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">

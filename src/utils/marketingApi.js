@@ -82,3 +82,68 @@ export async function deleteBannerImage() {
         throw new Error(err.message || `Delete failed (${response.status})`);
     }
 }
+
+/* ─────────────────────────────────
+   Banner Texts API
+   POST   /api/v1/marketing/banner/texts   — add texts array (admin)
+   GET    /api/v1/marketing/banner/texts   — fetch texts (public)
+   DELETE /api/v1/marketing/banner/texts/:index — remove by index (admin)
+───────────────────────────────── */
+
+const TEXTS_ENDPOINT = `${BASE_URL}/api/v1/marketing/banner/texts`;
+
+/**
+ * Fetch current banner texts (public, no auth required).
+ * @returns {Promise<string[]>}
+ */
+export async function fetchBannerTexts() {
+    const response = await fetch(TEXTS_ENDPOINT);
+
+    if (response.status === 404) return [];
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Fetch texts failed (${response.status})`);
+    }
+
+    const json = await response.json();
+    // Expected: { success: true, data: { texts: [...] } }  or  { texts: [...] }
+    return json.data?.texts ?? json.texts ?? [];
+}
+
+/**
+ * Add texts to the banner strip (admin only).
+ * @param {string[]} texts
+ * @returns {Promise<string[]>} — updated full texts array
+ */
+export async function addBannerTexts(texts) {
+    const response = await apiFetch(TEXTS_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texts }),
+    });
+
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Add texts failed (${response.status})`);
+    }
+
+    const json = await response.json();
+    return json.data?.texts ?? json.texts ?? texts;
+}
+
+/**
+ * Delete a single text by its index (admin only).
+ * @param {number} index
+ * @returns {Promise<string[]>} — updated texts array
+ */
+export async function deleteBannerText(index) {
+    const response = await apiFetch(`${TEXTS_ENDPOINT}/${index}`, { method: 'DELETE' });
+
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Delete text failed (${response.status})`);
+    }
+
+    const json = await response.json();
+    return json.data?.texts ?? json.texts ?? [];
+}
