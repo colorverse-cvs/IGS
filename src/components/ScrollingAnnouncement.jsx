@@ -18,24 +18,35 @@ export default function ScrollingAnnouncement({
   speedSeconds = 180,
   bgClass = "bg-brand-800",
   textClass = "text-white",
-  height,          // e.g. "100px", "3rem" — leave undefined for auto
-  rows = 2,        // number of scrolling rows to show
+  height,        // e.g. "100px", "3rem" — leave undefined for auto
+  rows,          // when provided: join all messages into this many combined rows
+  // when omitted: each message gets its own dedicated row
+  trackClass = "text-sm font-medium tracking-wide",  // override per usage
+  bgStyle,       // optional inline style for gradient/custom backgrounds
+  gap = 7,       // non-breaking spaces on each side of the separator
 }) {
-  // Build a single segment: all messages joined by the separator + trailing sep
-  const segment = messages.join(`   ${separator}   `) + `   ${separator}   `;
+  //   (non-breaking space) is used instead of regular spaces because
+  // HTML collapses multiple regular spaces into one even with white-space:nowrap
+  const sp = "\u00a0".repeat(gap);
+  const sep = `${sp}${separator}${sp}`;
 
-  // Repeat the segment FILL_REPEAT times to make each half wide enough
-  const halfContent = Array(FILL_REPEAT).fill(segment).join("");
+  const tracks = rows
+    ? Array.from({ length: Math.max(1, rows) }, () => {
+      const segment = messages.join(sep) + sep;
+      return Array(FILL_REPEAT).fill(segment).join("");
+    })
+    : messages.map((msg) => {
+      const segment = msg + sep;
+      return Array(FILL_REPEAT).fill(segment).join("");
+    });
 
-  // For multi-row: offset each row so different messages appear simultaneously.
-  // Row i starts its animation at -(i / rows * speedSeconds)s delay.
-  const rowCount = Math.max(1, rows);
+  const rowCount = tracks.length;
   const rowHeight = height ? `calc(${height} / ${rowCount})` : undefined;
 
   return (
     <div
-      className={`w-full overflow-hidden flex flex-col justify-around ${bgClass} ${textClass} select-none`}
-      style={height ? { height } : {}}
+      className={`w-full overflow-hidden flex flex-col justify-around ${bgStyle ? "" : bgClass} ${textClass} select-none`}
+      style={{ ...(height ? { height } : {}), ...(bgStyle ?? {}) }}
       aria-label="Promotional announcement"
     >
       <style>{`
@@ -56,14 +67,14 @@ export default function ScrollingAnnouncement({
         }
       `}</style>
 
-      {Array.from({ length: rowCount }).map((_, i) => (
+      {tracks.map((halfContent, i) => (
         <div
           key={i}
-          className="w-full overflow-hidden flex items-center"
-          style={rowHeight ? { height: rowHeight } : { paddingTop: "0.625rem", paddingBottom: "0.625rem" }}
+          className={`w-full overflow-hidden flex items-center justify-center md:justify-start${!rowHeight ? " mt-6 md:mt-0 md:pt-[0.6rem]" : ""}`}
+          style={rowHeight ? { height: rowHeight } : { paddingBottom: "0.625rem" }}
         >
           <div
-            className="igs-strip-track text-sm font-medium tracking-wide"
+            className={`igs-strip-track ${trackClass}`}
             style={{
               animation: `igs-rtl ${speedSeconds}s linear infinite`,
               animationDelay: `-${(i / rowCount) * speedSeconds}s`,

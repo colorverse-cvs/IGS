@@ -77,6 +77,7 @@ function AppContent() {
         <ScrollingAnnouncement
           messages={activeStripTexts}
           rows={1}
+          bgStyle={{ backgroundImage: "linear-gradient(to right, #7F00FF, #E100FF)" }}
         />
       )}
       <main>

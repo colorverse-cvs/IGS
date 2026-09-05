@@ -9,7 +9,7 @@ import CustomizationWorksPage from "./CustomizationWorksPage.jsx";
 import TestimonialsPage from "./TestimonialsPage.jsx";
 import testimonials from "../data/testimonials.json";
 import CustomOrderModal from "../components/CustomOrderModal.jsx";
-import ScrollingAnnouncement from "../components/ScrollingAnnouncement.jsx";
+// import ScrollingAnnouncement from "../components/ScrollingAnnouncement.jsx";
 import { fetchBannerImage } from "../utils/marketingApi";
 // import useAuth from "../hooks/useAuth";
 
@@ -131,17 +131,15 @@ export default function HomePage() {
           </div>
         </section>
       </div>
-      <ScrollingAnnouncement
+      {/* <ScrollingAnnouncement
         messages={[
-          "🔥 Hurry Up! Limited Time Offer",
-          "⚡ Limited Stock — Order Before It's Gone",
-          "🎁 Free Shipping on Orders Above ₹999",
-          "✨ Handcrafted with Love & Devotion",
-          "🛕 Exclusive Festive Deals Available Now",
+          "सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः।  सर्वे भद्राणि पश्यन्तु मा कश्चिद् दुःखभाग्भवेत्॥",
+          "May everyone be happy, healthy, blessed with auspiciousness, and free from sorrow."
         ]}
         speedSeconds={180}
         height="100px"
-      />
+        trackClass="text-xl font-semibold tracking-wide"
+      /> */}
       {/* ── Active marketing banner — above Featured Collections ── */}
       {bannerUrl && (
         <div className="px-4 md:px-15 lg:px-20 pt-6">

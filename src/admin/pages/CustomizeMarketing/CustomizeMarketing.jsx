@@ -313,7 +313,7 @@ export default function CustomizeMarketing() {
                     {/* Add Banner button */}
                     <button
                         onClick={handleAddBanner}
-                        disabled={isValidating || isUploading}
+                        disabled={!bannerFile || isValidating || isUploading}
                         className="w-full py-3 bg-brand-700 hover:bg-brand-800 disabled:bg-gray-400 text-white text-sm font-medium rounded-b-xl flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:cursor-not-allowed"
                     >
                         {isUploading ? (
@@ -381,7 +381,7 @@ export default function CustomizeMarketing() {
                     {/* Save Strip button */}
                     <button
                         onClick={handleAddTexts}
-                        disabled={isAddingTexts}
+                        disabled={isAddingTexts || !stripTexts.some((t) => t.trim())}
                         className="w-full py-3 bg-brand-700 hover:bg-brand-800 disabled:bg-gray-400 text-white text-sm font-medium rounded-b-xl flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:cursor-not-allowed"
                     >
                         {isAddingTexts ? (
