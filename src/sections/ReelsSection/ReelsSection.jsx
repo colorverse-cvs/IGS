@@ -1,103 +1,27 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { fetchReelIds } from "../../utils/marketingApi";
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const reels = [
-    { id: "DXRkO92DP5a", views: "12.4K", thumb: "" },
-    { id: "DXt4NeRivSm", views: "8.7K", thumb: "" },
-    { id: "DXRkO92DP5a", views: "15.2K", thumb: "" }, // replace id with actual reel id
-    { id: "DXt4NeRivSm", views: "10.1K", thumb: "" }, // replace id with actual reel id
-];
-
-// ─── Instagram embed clip constants (desktop player) ──────────────────────────
-const CARD_W = 240;
-const IG_HDR = 64;
-const IG_FTR = 190;
-const VIDEO_H = Math.round(CARD_W * (16 / 9));
-const IFRAME_H = IG_HDR + VIDEO_H + IG_FTR;
-const IFRAME_W = CARD_W + 4;
+const PAGE_SIZE = 4;
 
 // ─── Single Reel card ─────────────────────────────────────────────────────────
-function ReelCard({ id, views, thumb, isActive, onPlay, onClose, mobile }) {
-    const containerRef = useRef(null);
+// Clicking opens the Instagram reel directly — no in-page embed.
+function ReelCard({ id, thumb }) {
+    const reelUrl = `https://www.instagram.com/reel/${id}/`;
 
-    // Close on outside click
-    useEffect(() => {
-        if (!isActive) return;
-        const handle = (e) => {
-            if (containerRef.current && !containerRef.current.contains(e.target)) {
-                onClose();
-            }
-        };
-        const t = setTimeout(() => document.addEventListener("mousedown", handle), 150);
-        return () => {
-            clearTimeout(t);
-            document.removeEventListener("mousedown", handle);
-        };
-    }, [isActive, onClose]);
-
-    // ── Active / playing ──
-    if (isActive) {
-        const embedSrc = `https://www.instagram.com/reel/${id}/embed/?cr=1&v=14`;
-        // On mobile fill full column width, on desktop use fixed CARD_W
-        const w = mobile ? "100%" : CARD_W;
-        const h = mobile ? undefined : VIDEO_H;
-
-        return (
-            <div
-                ref={containerRef}
-                className="relative rounded-2xl shadow-2xl overflow-hidden bg-black"
-                style={mobile ? { width: "100%", aspectRatio: "9/16" } : { width: CARD_W, height: VIDEO_H }}
-            >
-                {/* Close button */}
-                <button
-                    onClick={onClose}
-                    aria-label="Close player"
-                    className="absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-black/70 hover:bg-black flex items-center justify-center transition-colors"
-                >
-                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-white" strokeWidth="2.5" fill="none">
-                        <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
-                    </svg>
-                </button>
-
-                {/* Clipping wrapper */}
-                <div className="absolute inset-0 overflow-hidden">
-                    <iframe
-                        src={embedSrc}
-                        title={`Instagram Reel ${id}`}
-                        frameBorder="0"
-                        scrolling="no"
-                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                        allowFullScreen
-                        style={{
-                            width: "100%",
-                            height: `calc(100% + ${IG_HDR + IG_FTR}px)`,
-                            marginTop: -IG_HDR,
-                            border: "none",
-                            display: "block",
-                            background: "#000",
-                        }}
-                    />
-                    {/* Bottom mask */}
-                    <div className="absolute bottom-0 left-0 right-0 h-2 bg-black z-10" />
-                </div>
-            </div>
-        );
-    }
-
-    // ── Teaser card ──
     return (
-        <button
-            onClick={onPlay}
-            className="relative w-full rounded-2xl overflow-hidden bg-[#1a0a2e] shadow-md group cursor-pointer border-0 p-0 focus:outline-none focus:ring-2 focus:ring-[#a34fc6]"
+        <a
+            href={reelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Watch reel on Instagram`}
+            className="relative block rounded-xl overflow-hidden bg-[#1a0a2e] shadow-md group focus:outline-none focus:ring-2 focus:ring-[#a34fc6]"
             style={{ aspectRatio: "9/16" }}
-            aria-label={`Play reel — ${views} views`}
         >
             {/* Thumbnail or gradient */}
             {thumb ? (
                 <img
                     src={thumb}
-                    alt={`Reel ${views} views`}
+                    alt="Instagram Reel"
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : (
@@ -111,32 +35,66 @@ function ReelCard({ id, views, thumb, isActive, onPlay, onClose, mobile }) {
 
             {/* Play button */}
             <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-12 h-12 rounded-full bg-white/25 backdrop-blur-sm border border-white/40 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/40 transition-all duration-200 shadow-lg">
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white ml-0.5" aria-hidden="true">
+                <div className="w-9 h-9 rounded-full bg-white/25 backdrop-blur-sm border border-white/40 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/40 transition-all duration-200 shadow-lg">
+                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white ml-0.5" aria-hidden="true">
                         <path d="M8 5v14l11-7z" />
                     </svg>
                 </div>
             </div>
+        </a>
+    );
+}
 
-            {/* View count */}
-            <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 z-10">
-                <svg viewBox="0 0 24 24" className="w-3 h-3 fill-white opacity-80" aria-hidden="true">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-                <span className="text-white text-[11px] font-semibold drop-shadow-sm">{views}</span>
-            </div>
+// ─── Pagination button ─────────────────────────────────────────────────────────
+function PaginationBtn({ onClick, disabled, direction, label }) {
+    return (
+        <button
+            onClick={onClick}
+            disabled={disabled}
+            aria-label={label}
+            className={`
+                flex items-center justify-center w-10 h-10 rounded-full border shadow-sm
+                transition-all duration-200
+                ${disabled
+                    ? "border-gray-200 bg-white/50 text-gray-300 cursor-not-allowed"
+                    : "border-[#d2a3e0] bg-white text-[#7b21b0] hover:bg-[#f6ebf9] hover:border-[#a34fc6] hover:shadow-md active:scale-95"
+                }
+            `}
+        >
+            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5">
+                {direction === "prev"
+                    ? <path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6" />
+                    : <path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6" />
+                }
+            </svg>
         </button>
     );
 }
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 export default function ReelsSection() {
-    const railRef = useRef(null);
-    const [activeId, setActiveId] = useState(null);
+    const [page, setPage] = useState(0);
+    const [reels, setReels] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const scrollRight = () => {
-        railRef.current?.scrollBy({ left: 340, behavior: "smooth" });
-    };
+    // Fetch reel IDs from API on mount
+    useEffect(() => {
+        fetchReelIds()
+            .then((ids) => setReels(ids.map((id) => ({ id, thumb: "" }))))
+            .catch(() => setReels([]))
+            .finally(() => setLoading(false));
+    }, []);
+
+    const totalPages = Math.ceil(reels.length / PAGE_SIZE);
+    const visibleReels = reels.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+    const hasPrev = page > 0;
+    const hasNext = page < totalPages - 1;
+
+    const goNext = () => setPage((p) => Math.min(p + 1, totalPages - 1));
+    const goPrev = () => setPage((p) => Math.max(p - 1, 0));
+
+    // Hide the whole section when there are no reels and we've finished loading
+    if (!loading && reels.length === 0) return null;
 
     // Shared Follow Us link
     const FollowLink = ({ className = "" }) => (
@@ -181,8 +139,8 @@ export default function ReelsSection() {
 
             <div className="relative z-10 w-full px-4 md:px-10 lg:px-20">
 
-                {/* ══ MOBILE header (left-aligned, matches reference image) ══ */}
-                <div className="sm:hidden mb-6">
+                {/* ══ MOBILE header ══ */}
+                <div className="sm:hidden mb-5">
                     <h2 className="text-3xl font-bold text-gray-900 mb-1">Reels</h2>
                     <p className="text-gray-500 text-sm leading-relaxed mb-3">
                         Discover our latest moments, behind the scenes, and special
@@ -192,8 +150,7 @@ export default function ReelsSection() {
                 </div>
 
                 {/* ══ DESKTOP header (centered) ══ */}
-                <div className="hidden sm:flex relative flex-col items-center text-center gap-3 mb-10">
-                    {/* Label */}
+                <div className="hidden sm:flex relative flex-col items-center text-center gap-3 mb-8">
                     <div className="flex items-center gap-3">
                         <div className="h-px w-8 bg-[#a34fc6]" />
                         <span className="text-[11px] tracking-[0.18em] uppercase font-semibold text-[#a34fc6]">
@@ -208,61 +165,75 @@ export default function ReelsSection() {
                         Get a closer look at our latest styles, customer moments
                         and the beauty of handcrafted jewellery.
                     </p>
-                    {/* Follow Us pinned right */}
                     <FollowLink className="absolute right-0 top-1/2 -translate-y-1/2" />
                 </div>
 
-                {/* ══ Reels grid / rail ══ */}
-                <div className="relative">
-                    {/* Mobile: 2-column grid */}
-                    <div className="grid grid-cols-2 gap-3 sm:hidden">
-                        {reels.map((reel, i) => (
-                            <ReelCard
-                                key={`m-${reel.id}-${i}`}
-                                id={reel.id}
-                                views={reel.views}
-                                thumb={reel.thumb}
-                                isActive={activeId === `m-${i}`}
-                                onPlay={() => setActiveId(`m-${i}`)}
-                                onClose={() => setActiveId(null)}
-                                mobile
-                            />
-                        ))}
-                    </div>
+                {/* ══ Reels grid — centered, 4 per page ══ */}
+                <div className="flex flex-col items-center gap-6">
 
-                    {/* Tablet+: horizontal scroll rail */}
-                    <div
-                        ref={railRef}
-                        className="hidden sm:flex gap-4 overflow-x-auto pb-2 items-start"
-                        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                    >
-                        {reels.map((reel, i) => (
-                            <ReelCard
-                                key={`d-${reel.id}-${i}`}
-                                id={reel.id}
-                                views={reel.views}
-                                thumb={reel.thumb}
-                                isActive={activeId === `d-${i}`}
-                                onPlay={() => setActiveId(`d-${i}`)}
-                                onClose={() => setActiveId(null)}
-                            />
-                        ))}
-                    </div>
+                    {/* Loading skeleton */}
+                    {loading ? (
+                        <div className="flex flex-wrap justify-center gap-3 w-full max-w-2xl mx-auto">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="rounded-xl bg-[#e8d8f5] animate-pulse flex-shrink-0"
+                                    style={{ width: 140, aspectRatio: "9/16" }}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        /* Cards — flex+wrap so they centre when fewer than 4 */
+                        <div className="flex flex-wrap justify-center gap-3 w-full max-w-2xl mx-auto">
+                            {visibleReels.map((reel, i) => (
+                                <div key={`${page}-${reel.id}-${i}`} className="flex-shrink-0" style={{ width: 140 }}>
+                                    <ReelCard id={reel.id} thumb={reel.thumb} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
-                    {/* Scroll arrow */}
-                    {reels.length > 3 && (
-                        <button
-                            onClick={scrollRight}
-                            aria-label="Scroll reels right"
-                            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-10 w-10 h-10 rounded-full bg-white border border-[#d2a3e0] shadow-md items-center justify-center hover:bg-[#f6ebf9] hover:border-[#a34fc6] transition-colors"
-                        >
-                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="#7b21b0" strokeWidth="2.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6" />
-                            </svg>
-                        </button>
+                    {/* ── Pagination controls (only shown when >1 page) ── */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center gap-4">
+                            {/* Prev */}
+                            <PaginationBtn
+                                onClick={goPrev}
+                                disabled={!hasPrev}
+                                direction="prev"
+                                label="Previous page"
+                            />
+
+                            {/* Dot indicators */}
+                            <div className="flex items-center gap-2">
+                                {Array.from({ length: totalPages }).map((_, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setPage(idx)}
+                                        aria-label={`Go to page ${idx + 1}`}
+                                        className={`
+                                            rounded-full transition-all duration-300
+                                            ${idx === page
+                                                ? "w-5 h-2 bg-[#a34fc6]"
+                                                : "w-2 h-2 bg-[#d2a3e0] hover:bg-[#a34fc6]/60"
+                                            }
+                                        `}
+                                    />
+                                ))}
+                            </div>
+
+                            {/* Next */}
+                            <PaginationBtn
+                                onClick={goNext}
+                                disabled={!hasNext}
+                                direction="next"
+                                label="Next page"
+                            />
+                        </div>
                     )}
                 </div>
             </div>
         </section>
     );
 }
+

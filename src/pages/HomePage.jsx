@@ -9,7 +9,7 @@ import CustomizationWorksPage from "./CustomizationWorksPage.jsx";
 import TestimonialsPage from "./TestimonialsPage.jsx";
 import testimonials from "../data/testimonials.json";
 import CustomOrderModal from "../components/CustomOrderModal.jsx";
-// import ReelsSection from "../sections/ReelsSection/ReelsSection.jsx";
+import ReelsSection from "../sections/ReelsSection/ReelsSection.jsx";
 // import ScrollingAnnouncement from "../components/ScrollingAnnouncement.jsx";
 import { fetchBannerImage } from "../utils/marketingApi";
 // import useAuth from "../hooks/useAuth";
@@ -157,7 +157,7 @@ export default function HomePage() {
       <div>
         <CollectionPage />
       </div>
-      {/* <ReelsSection /> */}
+      <ReelsSection />
       <div className="bg-brand-50">
         <div className="px-4 md:px-15 lg:px-20">
           <div className="container py-20 mx-auto">

@@ -147,3 +147,68 @@ export async function deleteBannerText(index) {
     const json = await response.json();
     return json.data?.texts ?? json.texts ?? [];
 }
+
+/* ─────────────────────────────────
+   Instagram Reel IDs API
+   GET    /api/v1/marketing/banner/instagram-reels         — public
+   POST   /api/v1/marketing/banner/instagram-reels         — admin, body: { reelIds: [] }
+   DELETE /api/v1/marketing/banner/instagram-reels/:index  — admin
+───────────────────────────────── */
+
+const REELS_ENDPOINT = `${BASE_URL}/api/v1/marketing/banner/instagram-reels`;
+
+/**
+ * Fetch current reel IDs (public, no auth required).
+ * @returns {Promise<string[]>}
+ */
+export async function fetchReelIds() {
+    const response = await fetch(REELS_ENDPOINT);
+
+    if (response.status === 404) return [];
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Fetch reel IDs failed (${response.status})`);
+    }
+
+    const json = await response.json();
+    // Expected: { success: true, data: { reelIds: [...] } }  or  { reelIds: [...] }
+    return json.data?.reelIds ?? json.reelIds ?? [];
+}
+
+/**
+ * Append reel IDs (admin only).
+ * @param {string[]} reelIds
+ * @returns {Promise<string[]>} — updated full reelIds array
+ */
+export async function addReelIds(reelIds) {
+    const response = await apiFetch(REELS_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reelIds }),
+    });
+
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Add reel IDs failed (${response.status})`);
+    }
+
+    const json = await response.json();
+    return json.data?.reelIds ?? json.reelIds ?? reelIds;
+}
+
+/**
+ * Delete a reel ID by its zero-based index (admin only).
+ * @param {number} index
+ * @returns {Promise<string[]>} — updated reelIds array
+ */
+export async function deleteReelId(index) {
+    const response = await apiFetch(`${REELS_ENDPOINT}/${index}`, { method: 'DELETE' });
+
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Delete reel ID failed (${response.status})`);
+    }
+
+    const json = await response.json();
+    return json.data?.reelIds ?? json.reelIds ?? [];
+}

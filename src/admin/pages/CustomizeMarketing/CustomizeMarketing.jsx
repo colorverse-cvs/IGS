@@ -15,6 +15,9 @@ import {
     fetchBannerTexts,
     addBannerTexts,
     deleteBannerText,
+    fetchReelIds,
+    addReelIds,
+    deleteReelId,
 } from "../../../utils/marketingApi";
 
 /* ─────────────────────────────────
@@ -66,6 +69,12 @@ export default function CustomizeMarketing() {
     const [isAddingTexts, setIsAddingTexts] = useState(false);
     const [deletingTextIndex, setDeletingTextIndex] = useState(null);
 
+    /* ── Reel IDs ── */
+    const [reelInputs, setReelInputs] = useState([""]); // input fields
+    const [savedReels, setSavedReels] = useState([]); // [{ id, value }]
+    const [isSavingReels, setIsSavingReels] = useState(false);
+    const [deletingReelId, setDeletingReelId] = useState(null);
+
     /* ── Fetch live data on mount ── */
     useEffect(() => {
         // Banner image
@@ -83,6 +92,11 @@ export default function CustomizeMarketing() {
         fetchBannerTexts()
             .then((arr) => setTexts(arr.map((value, index) => ({ index, value }))))
             .catch(() => setTexts([]));
+
+        // Reel IDs
+        fetchReelIds()
+            .then((ids) => setSavedReels(ids.map((value, index) => ({ id: index, value }))))
+            .catch(() => setSavedReels([]));
     }, []);
 
     /* ── Revoke blob URL on unmount / change ── */
@@ -156,9 +170,9 @@ export default function CustomizeMarketing() {
             await deleteBannerImage();
             setCurrentBannerUrl(null);
             setCurrentBannerName(null);
-            toast.success("Banner removed.");
+            toast.success("Banner removed.", { id: "delete-banner" });
         } catch (err) {
-            toast.error(err.message || "Failed to delete banner.");
+            toast.error(err.message || "Failed to delete banner.", { id: "delete-banner" });
         } finally {
             setDeletingBanner(false);
         }
@@ -206,17 +220,65 @@ export default function CustomizeMarketing() {
             const fullList = await fetchBannerTexts();
             setTexts(fullList.map((value, i) => ({ index: i, value })));
             window.dispatchEvent(new CustomEvent('bannerTextsUpdated', { detail: { texts: fullList } }));
-            toast.success("Text removed.");
+            toast.success("Text removed.", { id: "delete-text" });
         } catch (err) {
-            toast.error(err.message || "Failed to delete text.");
+            toast.error(err.message || "Failed to delete text.", { id: "delete-text" });
         } finally {
             setDeletingTextIndex(null);
+        }
+    };
+
+    /* ────────────────────────
+       Reel ID input handlers
+    ──────────────────────── */
+    const addReelField = () => setReelInputs((prev) => [...prev, ""]);
+
+    const updateReelField = (index, value) =>
+        setReelInputs((prev) => prev.map((v, i) => (i === index ? value : v)));
+
+    const removeReelField = (index) =>
+        setReelInputs((prev) => prev.filter((_, i) => i !== index));
+
+    const handleSaveReels = async () => {
+        const nonEmpty = reelInputs.map((v) => v.trim()).filter(Boolean);
+        if (!nonEmpty.length) {
+            toast.error("Please enter at least one Reel ID.");
+            return;
+        }
+        setIsSavingReels(true);
+        try {
+            await addReelIds(nonEmpty);
+            // Re-fetch full list so indices stay accurate
+            const fullList = await fetchReelIds();
+            setSavedReels(fullList.map((value, index) => ({ id: index, value })));
+            setReelInputs([""]);
+            toast.success("Reel IDs saved!");
+        } catch (err) {
+            toast.error(err?.message || "Failed to save Reel IDs.");
+        } finally {
+            setIsSavingReels(false);
+        }
+    };
+
+    const handleDeleteSavedReel = async (id) => {
+        setDeletingReelId(id);
+        try {
+            await deleteReelId(id); // id is the zero-based index
+            // Re-fetch full list after delete to keep indices accurate
+            const fullList = await fetchReelIds();
+            setSavedReels(fullList.map((value, index) => ({ id: index, value })));
+            toast.success("Reel ID removed.", { id: "delete-reel" });
+        } catch (err) {
+            toast.error(err?.message || "Failed to delete Reel ID.", { id: "delete-reel" });
+        } finally {
+            setDeletingReelId(null);
         }
     };
 
     /* ─── derived ─── */
     const hasBanner = !!currentBannerUrl;
     const hasTexts = texts.length > 0;
+    const hasReels = savedReels.length > 0;
 
     return (
         <div className="space-y-6">
@@ -509,6 +571,123 @@ export default function CustomizeMarketing() {
                         )}
                     </div>
                 )}
+            </div>
+
+            {/* ── REELS IDs SECTION ── */}
+            <div className="space-y-4">
+                <div>
+                    <p className="text-base !font-medium text-gray-900">Reel IDs</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                        Add Instagram Reel IDs to display in the Reels section of your website.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+
+                    {/* LEFT: Input card */}
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
+                        <div className="p-5 flex-1 space-y-4">
+
+                            {/* Dynamic reel ID inputs */}
+                            <div className="space-y-2.5">
+                                {reelInputs.map((val, index) => (
+                                    <div key={index}>
+                                        <label className="text-xs text-gray-500 mb-1 block">
+                                            Reel ID {index + 1}
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                value={val}
+                                                onChange={(e) => updateReelField(index, e.target.value)}
+                                                placeholder="e.g. DXRkO92DP5a"
+                                                className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                            />
+                                            {reelInputs.length > 1 && (
+                                                <button
+                                                    onClick={() => removeReelField(index)}
+                                                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all cursor-pointer"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* + Add New */}
+                            <button
+                                onClick={addReelField}
+                                className="flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium cursor-pointer transition-colors"
+                            >
+                                <Plus size={14} />
+                                Add New
+                            </button>
+                        </div>
+
+                        {/* Save button */}
+                        <button
+                            onClick={handleSaveReels}
+                            disabled={isSavingReels || !reelInputs.some((v) => v.trim())}
+                            className="w-full py-3 bg-brand-700 hover:bg-brand-800 disabled:bg-gray-400 text-white text-sm font-medium rounded-b-xl flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                        >
+                            {isSavingReels ? (
+                                <>
+                                    <Loader2 size={16} className="animate-spin" />
+                                    Saving…
+                                </>
+                            ) : (
+                                <>
+                                    <Plus size={16} />
+                                    Save Reel IDs
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    {/* RIGHT: Saved reel IDs list */}
+                    {hasReels ? (
+                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div className="px-5 pt-4 pb-2">
+                                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                                    Saved Reel IDs
+                                </p>
+                            </div>
+                            <div className="divide-y divide-gray-100">
+                                {savedReels.map(({ id, value }) => (
+                                    <div
+                                        key={id}
+                                        className="flex items-center justify-between px-5 py-3.5 gap-4 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-medium text-gray-800 truncate font-mono">
+                                                {value}
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-0.5">Reel ID</p>
+                                        </div>
+                                        <button
+                                            onClick={() => handleDeleteSavedReel(id)}
+                                            disabled={deletingReelId === id}
+                                            className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-red-50 hover:border-red-200 text-red-500 hover:text-red-700 transition-all cursor-pointer flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {deletingReelId === id ? (
+                                                <Loader2 size={13} className="animate-spin" />
+                                            ) : (
+                                                <Trash2 size={13} />
+                                            )}
+                                            <span>{deletingReelId === id ? "Removing…" : "Delete"}</span>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-12 text-center">
+                            <p className="text-sm text-gray-400">No Reel IDs saved yet.</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
