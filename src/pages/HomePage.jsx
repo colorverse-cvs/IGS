@@ -9,14 +9,24 @@ import CustomizationWorksPage from "./CustomizationWorksPage.jsx";
 import TestimonialsPage from "./TestimonialsPage.jsx";
 import testimonials from "../data/testimonials.json";
 import CustomOrderModal from "../components/CustomOrderModal.jsx";
-import ScrollingAnnouncement from "../components/ScrollingAnnouncement.jsx";
+import ReelsSection from "../sections/ReelsSection/ReelsSection.jsx";
+// import ScrollingAnnouncement from "../components/ScrollingAnnouncement.jsx";
+import { fetchBannerImage } from "../utils/marketingApi";
 // import useAuth from "../hooks/useAuth";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isCustomOrderModalOpen, setIsCustomOrderModalOpen] = useState(false);
+  const [bannerUrl, setBannerUrl] = useState(null);
   // const { isAuthenticated, user } = useAuth();
+
+  // Load the marketing banner from the backend (public GET)
+  useEffect(() => {
+    fetchBannerImage()
+      .then((data) => setBannerUrl(data?.imageUrl ?? null))
+      .catch(() => setBannerUrl(null));
+  }, []);
 
   // console.log("HomePage Auth Status:", { isAuthenticated, user });
 
@@ -124,16 +134,30 @@ export default function HomePage() {
       </div>
       {/* <ScrollingAnnouncement
         messages={[
-          "🔥 Hurry Up! Limited Time Offer",
-          "⚡ Limited Stock — Order Before It's Gone",
-          "🎁 Free Shipping on Orders Above ₹999",
-          "✨ Handcrafted with Love & Devotion",
-          "🛕 Exclusive Festive Deals Available Now",
+          "सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः।  सर्वे भद्राणि पश्यन्तु मा कश्चिद् दुःखभाग्भवेत्॥",
+          "May everyone be happy, healthy, blessed with auspiciousness, and free from sorrow."
         ]}
+        speedSeconds={180}
+        height="100px"
+        trackClass="text-xl font-semibold tracking-wide"
       /> */}
+      {/* ── Active marketing banner — above Featured Collections ── */}
+      {bannerUrl && (
+        <div className="px-4 md:px-15 lg:px-20 pt-6">
+          <div className="container mx-auto">
+            <img
+              src={bannerUrl}
+              alt="Promotional banner"
+              className="w-full rounded-2xl object-cover shadow-sm"
+              style={{ maxHeight: "400px" }}
+            />
+          </div>
+        </div>
+      )}
       <div>
         <CollectionPage />
       </div>
+      <ReelsSection />
       <div className="bg-brand-50">
         <div className="px-4 md:px-15 lg:px-20">
           <div className="container py-20 mx-auto">

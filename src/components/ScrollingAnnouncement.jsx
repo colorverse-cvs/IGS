@@ -8,48 +8,83 @@ const DEFAULT_MESSAGES = [
   "🛕 Exclusive Festive Deals Available Now",
 ];
 
+// How many times to repeat the text within EACH half of the track.
+// 8 repetitions × 2 halves = 16× the text length — enough for any viewport.
+const FILL_REPEAT = 8;
+
 export default function ScrollingAnnouncement({
   messages = DEFAULT_MESSAGES,
   separator = "✦",
-  speedSeconds = 30,
+  speedSeconds = 180,
   bgClass = "bg-brand-800",
   textClass = "text-white",
+  height,        // e.g. "100px", "3rem" — leave undefined for auto
+  rows,          // when provided: join all messages into this many combined rows
+  // when omitted: each message gets its own dedicated row
+  trackClass = "text-sm font-medium tracking-wide",  // override per usage
+  bgStyle,       // optional inline style for gradient/custom backgrounds
+  gap = 7,       // non-breaking spaces on each side of the separator
 }) {
-  // Build one strip: messages joined by separator
-  const strip = messages
-    .map((m) => `${m}`)
-    .join(`   ${separator}   `);
+  //   (non-breaking space) is used instead of regular spaces because
+  // HTML collapses multiple regular spaces into one even with white-space:nowrap
+  const sp = "\u00a0".repeat(gap);
+  const sep = `${sp}${separator}${sp}`;
 
-  // We duplicate the strip so the seam is invisible
-  const fullContent = `${strip}   ${separator}   `;
+  const tracks = rows
+    ? Array.from({ length: Math.max(1, rows) }, () => {
+      const segment = messages.join(sep) + sep;
+      return Array(FILL_REPEAT).fill(segment).join("");
+    })
+    : messages.map((msg) => {
+      const segment = msg + sep;
+      return Array(FILL_REPEAT).fill(segment).join("");
+    });
+
+  const rowCount = tracks.length;
+  const rowHeight = height ? `calc(${height} / ${rowCount})` : undefined;
 
   return (
     <div
-      className={`w-full overflow-hidden ${bgClass} ${textClass} py-2.5 select-none`}
-      aria-label="Announcement banner"
+      className={`w-full overflow-hidden flex flex-col justify-around ${bgStyle ? "" : bgClass} ${textClass} select-none`}
+      style={{ ...(height ? { height } : {}), ...(bgStyle ?? {}) }}
+      aria-label="Promotional announcement"
     >
       <style>{`
-        @keyframes igs-marquee {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        @keyframes igs-rtl {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
         }
-        .igs-marquee-track {
-          display: flex;
+
+        .igs-strip-track {
+          display: inline-flex;
+          width: max-content;
           white-space: nowrap;
           will-change: transform;
-          animation: igs-marquee ${speedSeconds}s linear infinite;
         }
-        .igs-marquee-track:hover {
+
+        .igs-strip-track:hover {
           animation-play-state: paused;
         }
       `}</style>
 
-      <div className="igs-marquee-track text-sm font-medium tracking-wide">
-        {/* Two identical copies — when the first scrolls fully off-screen
-            the second is already in view, making the loop seamless */}
-        <span className="px-6">{fullContent}</span>
-        <span className="px-6">{fullContent}</span>
-      </div>
+      {tracks.map((halfContent, i) => (
+        <div
+          key={i}
+          className={`w-full overflow-hidden flex items-center justify-center md:justify-start${!rowHeight ? " mt-6 md:mt-0 md:pt-[0.6rem]" : ""}`}
+          style={rowHeight ? { height: rowHeight } : { paddingBottom: "0.625rem" }}
+        >
+          <div
+            className={`igs-strip-track ${trackClass}`}
+            style={{
+              animation: `igs-rtl ${speedSeconds}s linear infinite`,
+              animationDelay: `-${(i / rowCount) * speedSeconds}s`,
+            }}
+          >
+            <span>{halfContent}</span>
+            <span aria-hidden="true">{halfContent}</span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

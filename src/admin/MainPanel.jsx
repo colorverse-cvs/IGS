@@ -18,6 +18,7 @@ export default function AdminPanelMain() {
     const titles = {
       "Dashboard": "Dashboard",
       "Products": "Products",
+      "Customize Marketing": "Customize Marketing",
       "Orders": "Orders",
       "Inventory": "Inventory",
       "Customers": "Customers",

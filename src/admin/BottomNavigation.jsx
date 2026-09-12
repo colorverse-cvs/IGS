@@ -13,6 +13,7 @@ export default function BottomNavigation({ activePage, setActivePage }) {
   const menuItems = [
     { name: "Dashboard", icon: HiHome, label: "Home" },
     { name: "Products", icon: HiCube, label: "Products" },
+    { name: "Customize Marketing", icon: HiTag, label: "Marketing" },
     { name: "Orders", icon: HiClipboardList, label: "Orders" },
     { name: "Inventory", icon: HiOfficeBuilding, label: "Stock" },
     { name: "Customers", icon: HiUsers, label: "Customers" },

@@ -8,12 +8,14 @@ import Customers from "./pages/Customers/Customers";
 import Payments from "./pages/Paymemts/Payments";
 // import Coupons from "./pages/Coupons/Coupons";
 import Settings from "./pages/Settings/Settings";
+import CustomizeMarketing from "./pages/CustomizeMarketing/CustomizeMarketing";
 
 export default function PageContent({ setActivePage, activePage }) {
   return (
     <div className="p-4 lg:p-6 overflow-auto h-full hide-scrollbar bg-gray-50" key={activePage}>
       {activePage === "Dashboard" && <Dashboard setActivePage={setActivePage} />}
       {activePage === "Products" && <Products />}
+      {activePage === "Customize Marketing" && <CustomizeMarketing />}
       {activePage === "Orders" && <Orders />}
       {activePage === "Inventory" && <Inventory />}
       {activePage === "Customers" && <Customers />}

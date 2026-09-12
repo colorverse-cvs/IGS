@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RoutesMap from "./routes";
 import Navbar from "./components/Navbar";
 import FooterPage from "./pages/FooterPage";
+import ScrollingAnnouncement from "./components/ScrollingAnnouncement";
 import { AdminPanelProvider, useAdminPanel } from "./contexts/AdminPanelContext";
 import { fetchProducts } from "./features/products/productSlice";
 import { initializeCart, fetchCartSummaryAsync } from "./features/cart/cartSlice";
 import { updateTokens, logout } from "./features/user/userSlice";
+import { fetchBannerTexts } from "./utils/marketingApi";
 
 function AppContent() {
   const { isAdminPanelOpen } = useAdminPanel();
@@ -54,19 +56,30 @@ function AppContent() {
     };
   }, [dispatch]);
 
-  // clear console every 10 seconds
+  // Fetch active strip texts from the backend on mount
+  const [activeStripTexts, setActiveStripTexts] = useState([]);
+  useEffect(() => {
+    fetchBannerTexts()
+      .then((arr) => setActiveStripTexts(arr))
+      .catch(() => setActiveStripTexts([]));
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     console.clear();
-  //   }, 10000); // 10 seconds
-
-  //   return () => clearInterval(interval);
-  // }, []);
+    // Keep in sync when admin adds/removes texts in the same browser session
+    const handleTextsUpdated = (e) => setActiveStripTexts(e.detail?.texts ?? []);
+    window.addEventListener('bannerTextsUpdated', handleTextsUpdated);
+    return () => window.removeEventListener('bannerTextsUpdated', handleTextsUpdated);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      {/* Strip announcement bar — shown below navbar when admin has active strips */}
+      {!isAdminPanelOpen && activeStripTexts.length > 0 && (
+        <ScrollingAnnouncement
+          messages={activeStripTexts}
+          rows={1}
+          bgStyle={{ backgroundImage: "linear-gradient(to right, #7F00FF, #E100FF)" }}
+        />
+      )}
       <main>
         <RoutesMap />
       </main>
