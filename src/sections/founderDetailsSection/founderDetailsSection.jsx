@@ -80,6 +80,7 @@ const FounderCard = ({
     quote,
     imageBgColor = "#9B59B6",
     quoteAlign = "left",
+    imageObjectFit = "object-cover object-top",
 }) => {
     return (
         <div className="flex flex-col sm:flex-row items-start gap-6 w-full max-w-[480px]">
@@ -92,7 +93,7 @@ const FounderCard = ({
                     <img
                         src={image}
                         alt={imageAlt}
-                        className="w-full h-full object-cover object-top"
+                        className={`w-full h-full ${imageObjectFit}`}
                     />
                 </div>
             </div>
@@ -170,8 +171,8 @@ export default function FounderDetailsSection() {
                     {/* Left founder — Shital */}
                     <div className="flex-1 flex justify-center lg:justify-end">
                         <FounderCard
-                            image="/assets/images/1AU.png"
-                            imageAlt="Shital Kulkarni"
+                            image="/assets/images/profile-owner-1.png"
+                            imageAlt="Profile-owner"
                             name="Shital Kulkarni"
                             role="Founder & CEO"
                             bio="A visionary entrepreneur with a passion for innovation and growth, Shital Kulkarni founded the company with the goal of delivering quality products and creating meaningful customer experiences."
@@ -195,17 +196,18 @@ export default function FounderDetailsSection() {
                         <div className="h-px flex-1 bg-[#d2a3e0]" />
                     </div>
 
-                    {/* Right founder — Ishita */}
+                    {/* Right founder — Color verse */}
                     <div className="flex-1 flex justify-center lg:justify-start">
                         <FounderCard
-                            image="/assets/images/Rectangle 33.png"
-                            imageAlt="Ishita Kulkarni"
-                            name="Ishita Kulkarni"
-                            role="Co-Founder & Creative Head"
-                            bio="A creative thinker and design enthusiast, Ishita brings fresh ideas to life. She leads the creative vision of the brand, blending tradition with modern aesthetics."
-                            quote="Where Tradition Meets Modernity"
+                            image="/assets/images/color-verse-logo.jpeg"
+                            imageAlt="ColorVerse Studio"
+                            name="ColorVerse Studio"
+                            role="Digital Presence & Marketing Partner"
+                            bio="A creative digital partner helping Ishita Gallery build a strong online presence through social media marketing, website management, digital branding, and creative communication."
+                            quote="Bringing Tradition to the Digital World"
                             imageBgColor="#8526b5"
                             quoteAlign="right"
+                            imageObjectFit="object-inherit"
                         />
                     </div>
 
@@ -222,7 +224,7 @@ export default function FounderDetailsSection() {
 
                 {/* ── Bottom stats bar ── */}
                 <div className="mt-14 md:mt-16 border-t border-[#e0bee8] pt-8">
-                    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 md:gap-x-14">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 md:gap-x-14 place-items-center">
                         {/* Authentic Indian Art */}
                         <StatBadge
                             label={

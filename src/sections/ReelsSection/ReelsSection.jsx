@@ -25,7 +25,13 @@ function ReelCard({ id, thumb }) {
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : (
-                <div className="absolute inset-0 bg-gradient-to-b from-[#4a1572] via-[#7b2d9e] to-[#2a0a4a]" />
+                <div className="absolute inset-0 bg-[#720da8] flex items-center justify-center">
+                    <img
+                        src="/ishita-gallery-logo.jpg"
+                        alt="Ishita Gallery"
+                        className="w-4/5 h-4/5 object-contain opacity-90"
+                    />
+                </div>
             )}
 
             {/* Radial glow */}
@@ -99,7 +105,7 @@ export default function ReelsSection() {
     // Shared Follow Us link
     const FollowLink = ({ className = "" }) => (
         <a
-            href="https://www.instagram.com/ishita.gallery/"
+            href="https://www.instagram.com/ishita_gallery_official/"
             target="_blank"
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-[#8526b5] transition-colors group ${className}`}
