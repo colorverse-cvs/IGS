@@ -42,22 +42,22 @@ export default function EditProductModal({
   // };
 
   const removeImage = (index) => {
-  setImages((prev) => {
-    const imgToRemove = prev[index];
+    setImages((prev) => {
+      const imgToRemove = prev[index];
 
-    // ✅ Track only existing images (not new uploads)
-    if (imgToRemove?.url && !imgToRemove?.file) {
-      // remove BASE_URL prefix before sending to backend
-      const relativeUrl = imgToRemove.url.replace(BASE_URL, "");
+      // ✅ Track only existing images (not new uploads)
+      if (imgToRemove?.url && !imgToRemove?.file) {
+        // remove BASE_URL prefix before sending to backend
+        const relativeUrl = imgToRemove.url.replace(BASE_URL, "");
 
-      setRemovedImages((prevRemoved) => [
-        ...new Set([...prevRemoved, relativeUrl]),
-      ]);
-    }
+        setRemovedImages((prevRemoved) => [
+          ...new Set([...prevRemoved, relativeUrl]),
+        ]);
+      }
 
-    return prev.filter((_, i) => i !== index);
-  });
-};
+      return prev.filter((_, i) => i !== index);
+    });
+  };
 
   /* -------------------------------------------
       CATEGORY + FORM STATES
@@ -107,6 +107,7 @@ export default function EditProductModal({
         existingProduct?.material ||
         "",
       color: existingProduct?.attributes?.color || "",
+      extraDiscount: existingProduct?.attributes?.extraDiscount ?? "",
     },
   });
   const [removedImages, setRemovedImages] = useState([]);
@@ -248,6 +249,7 @@ export default function EditProductModal({
           finish: formData.attributes.finish,
           origin: formData.attributes.origin,
           color: formData.attributes.color,
+          extraDiscount: Number(formData.attributes.extraDiscount || 0),
         })
       );
 
@@ -431,6 +433,7 @@ export default function EditProductModal({
             {renderInput("Discount (%)", "discount", false)}
             {renderInput("Stock", "stock", true)}
 
+
             <Input
               required
               label="Height (cm)"
@@ -450,6 +453,13 @@ export default function EditProductModal({
             />
 
             {renderInput("Weight", "weight", true)}
+            <Input
+              label="Extra Discount (%)"
+              name="extraDiscount"
+              value={formData.attributes.extraDiscount}
+              onChange={handleAttributeChange}
+              placeholder="0"
+            />
           </div>
         </div>
 
