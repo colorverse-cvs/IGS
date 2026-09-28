@@ -199,15 +199,15 @@ export default function FounderDetailsSection() {
                     {/* Right founder — Color verse */}
                     <div className="flex-1 flex justify-center lg:justify-start">
                         <FounderCard
-                            image="/assets/images/color-verse-logo.jpeg"
-                            imageAlt="ColorVerse Studio"
-                            name="ColorVerse Studio"
-                            role="Digital Presence & Marketing Partner"
-                            bio="A creative digital partner helping Ishita Gallery build a strong online presence through social media marketing, website management, digital branding, and creative communication."
-                            quote="Bringing Tradition to the Digital World"
+                            image="/assets/images/profile-owner-02.png"
+                            imageAlt="Mr.Prashant Kulkarni"
+                            name="Mr.Prashant Kulkarni"
+                            role="Man Behind The Project"
+                            bio="Every meaningful project begins with vision and determination. Mr. Prashant Kulkarni drives this project with experience, creativity, commitment, and a passion for lasting impact."
+                            quote="Dream boldly. Build passionately. Create tomorrow’s vision."
                             imageBgColor="#8526b5"
                             quoteAlign="right"
-                            imageObjectFit="object-inherit"
+                            imageObjectFit="object-cover"
                         />
                     </div>
 

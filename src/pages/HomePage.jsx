@@ -154,7 +154,7 @@ export default function HomePage() {
           </div>
         </div>
       )}
-      <div>
+      <div className="collection-page-wrapper mt-8 bg-gradient-to-t from-[#fff8e4] to-[#f6e6fb]">
         <CollectionPage />
       </div>
       <ReelsSection />

@@ -46,6 +46,7 @@ const transformProduct = (apiProduct) => {
     price: apiProduct.price,
     listPrice: apiProduct.listPrice || apiProduct.price,
     discount: discount,
+    extraDiscount: Number(apiProduct.attributes?.extraDiscount) || 0,
     rating: apiProduct.rating || 4.5,
     reviews: apiProduct.reviews || 0,
     isFeatured: apiProduct.isFeatured || false,

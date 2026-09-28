@@ -29,6 +29,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
     price,
     listPrice,
     discount,
+    extraDiscount,
     material,
     size,
     isFeatured,
@@ -89,7 +90,7 @@ const ProductCard = ({ product, onOpenProduct }) => {
     "
     >
       {/* --- Image and Tag Section --- */}
-      <div className="relative aspect-square w-full bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center border-1 border-gray-200 transition-all duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-sm">
+      <div className="relative aspect-square w-full bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center border-1 border-gray-200 transition-all duration-200 ease-out group-hover:-translate-y-1 group-hover:shadow-sm rounded-2xl">
         <img
           src={imageURL}
           alt={name}
@@ -139,6 +140,18 @@ const ProductCard = ({ product, onOpenProduct }) => {
             </span>
           )}
         </div>
+
+        {/* Extra Discount diagonal ribbon — top-right corner */}
+        {extraDiscount > 0 && (
+          <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden pointer-events-none">
+            <div
+              className="absolute top-4 right-[-28px] w-28 text-center text-white text-[10px] !font-semibold py-1 bg-violet-600"
+              style={{ transform: "rotate(45deg)", transformOrigin: "center" }}
+            >
+              Extra {extraDiscount}% Off
+            </div>
+          </div>
+        )}
       </div>
 
       {/* --- Product Details Section --- */}

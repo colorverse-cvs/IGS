@@ -51,6 +51,7 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       finish: "",
       material: "",
       color: "",
+      extraDiscount: "",
     },
   });
 
@@ -94,6 +95,14 @@ export default function AddProductModal({ onClose, onProductAdded }) {
         attributes: {
           ...prev.attributes,
           [name]: value,
+        },
+      }));
+    } else if (name === "extraDiscount") {
+      setFormData((prev) => ({
+        ...prev,
+        attributes: {
+          ...prev.attributes,
+          extraDiscount: allowOnlyNumbers(value),
         },
       }));
     } else {
@@ -205,7 +214,13 @@ export default function AddProductModal({ onClose, onProductAdded }) {
       formDataToSend.append("discount", discountPercent);
       formDataToSend.append("stock", Number(formData.stock));
       formDataToSend.append("weight", Number(formData.weight || 0));
-      formDataToSend.append("attributes", JSON.stringify(formData.attributes));
+      formDataToSend.append(
+        "attributes",
+        JSON.stringify({
+          ...formData.attributes,
+          extraDiscount: Number(formData.attributes.extraDiscount || 0),
+        })
+      );
       formDataToSend.append("dimensions", JSON.stringify(formData.dimensions));
       formDataToSend.append("categoryId", selectedCategory._id);
       formDataToSend.append("sku", sku);
@@ -450,6 +465,13 @@ export default function AddProductModal({ onClose, onProductAdded }) {
               value={formData.weight}
               onChange={handleChange}
               error={errors.weight}
+            />
+            <Input
+              label="Extra Discount (%)"
+              name="extraDiscount"
+              value={formData.attributes.extraDiscount}
+              onChange={handleChange}
+              placeholder="0"
             />
           </div>
         </div>
